@@ -1,0 +1,108 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+  width: auto;
+  height: auto;
+  background-color: #fff;
+}
+
+.modalDialog {
+  max-width: 900px;
+  width: 100%;
+  margin: 0;
+}
+
+.modalContent {
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  padding: 10px;
+}
+
+.modalHeader {
+  background-color: #fff;
+  color: #333;
+}
+
+.modalTitle {
+  font-size: 1rem;
+}
+
+.btnClose {
+  /* Bootstrap's btn-close style */
+}
+
+.modalBody {
+  color: #333;
+  position: relative;
+  border: 1px solid #696969;
+  margin: 10px 5px;
+  padding: 10px 10px;
+  border-radius: 5px;
+  background: #f0f0f0;
+}
+
+.modalFooter {
+  justify-content: center;
+}
+
+.btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #2cbbb7; /* Match Login button color */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Space between icon and text */
+}
+
+.btn:hover {
+  background-color: #3b9b98; /* Match Login button hover color */
+}
+
+.toast {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 10px;
+  font-size: 0.9rem;
+  z-index: 1060;
+  max-width: 300px;
+}
+
+.formRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Increased gap for better spacing */
+  margin-bottom: 15px; /* Added margin for row separation */
+}
+
+.formGroup {
+  flex: 1 1 calc(50% - 10px); /* Each field takes ~50% width minus half the gap */
+  min-width: 200px; /* Maintain minimum width for smaller screens */
+  box-sizing: border-box; /* Ensure padding/margins don't affect width */
+}
+
+@media (max-width: 600px) {
+  .formGroup {
+    flex: 1 1 100%; /* Stack fields vertically on small screens */
+  }
+}

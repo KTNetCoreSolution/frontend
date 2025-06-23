@@ -1,0 +1,31 @@
+.textModalBody {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.textContent {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: monospace;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Customize close button */
+.modal-header .btn-close {
+  padding: 0.5rem;
+  background-size: 1rem;
+}
+
+/* Ensure footer buttons are styled consistently */
+.modal-footer .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+}
+
+.modal-footer .btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+}

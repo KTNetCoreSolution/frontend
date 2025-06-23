@@ -1,0 +1,438 @@
+/* CSS 변수 정의 */
+:root {
+  --primary-color: #317271; /* 메인 색상 */
+  --secondary-color: #c1cac5; /* 보조 색상 */
+  --header-nav-bg: #2cbbb7; /* 헤더 내비게이션 배경 */
+  --text-color: #6b7770; /* 텍스트 색상 */
+  --link-color: #ffffff; /* 링크 색상 */
+  --white: #fff; /* 흰색 */
+  --transition-duration: 0.15s; /* 전환 시간 */
+  --transition-easing: ease-in-out; /* 전환 효과 */
+}
+
+/* ---------------------------------------------  */
+/* 레이아웃 그룹 (MainLayout 관련)  */
+.main {
+  /* background: var(--white); */
+  border-bottom: 10px solid var(--secondary-color);
+  padding: 0;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  display: flex;
+}
+
+.headerNav {
+  background: var(--header-nav-bg);
+  color: #ccc;
+}
+
+.logo {
+  cursor: pointer; /* Keep the pointer cursor for clickable div */
+}
+
+.logoImage {
+  height: 40px; /* Adjust height as needed */
+  width: auto; /* Maintain aspect ratio */
+  display: block; /* Ensure proper alignment */
+}
+
+/* --------------------------------------------- */
+/* 내비게이션 그룹 (MainTopNav 및 MenuItem 관련) */
+.nav {
+  position: relative;
+  z-index: 1000;
+  width: 100%;
+  text-align: center;
+  font-family: "Open Sans Condensed", sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: default;
+  font-size: 1.1em;
+}
+
+.navList {
+  list-style: none;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.nav li {
+  display: inline-block;
+  margin: 0 0.5em;
+  position: relative;
+  top: 0;
+  transition: top var(--transition-duration) var(--transition-easing);
+}
+
+.nav li a,
+.nav li span {
+  display: block;
+  text-decoration: none;
+  color: var(--link-color);
+  padding: 8px 2em 0.5em; /* Increased padding for larger hover area */
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  outline: 0;
+  transition: background-color 0.075s var(--transition-easing), color 0.075s var(--transition-easing);
+}
+
+.nav li:hover,
+.nav li.active {
+  top: 3px;
+  background: none; /* 전역 .active 충돌 방지 */
+}
+
+.nav li.active a,
+.nav li.active span {
+  background: var(--secondary-color);
+  color: var(--white);
+}
+
+/* --------------------------------------------- */
+/* 메뉴 아이템 그룹 (MenuItem 관련) */
+.menuItem {
+  position: relative;
+  padding: 5px; /* Added padding to increase hover area */
+}
+
+.menuLink {
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--text-color);
+  padding: 8px 2em 0.5em; /* Increased padding for consistency */
+  display: block;
+  transition: background-color 0.075s var(--transition-easing);
+}
+
+.menuLink:hover {
+  background-color: #ddd;
+}
+
+.navLink {
+  text-decoration: none;
+  color: var(--text-color);
+  padding: 8px 2em 0.5em; /* Increased padding for consistency */
+  display: block;
+  transition: background-color 0.075s var(--transition-easing);
+}
+
+.navLink:hover {
+  background-color: #7e9494;
+}
+
+.nav .navLink.navLinkActive {
+  background-color: var(--primary-color) !important; /* 우선순위 강화 */
+  color: var(--white) !important;
+}
+
+/* Secondary menu (direct child of .menuItem) */
+.menuItem > .subMenu {
+  position: absolute;
+  top: calc(100% - 10px);
+  left: 0; /* Align to the left edge of the parent */
+  transform: none; /* Remove centering */
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--text-color);
+  box-shadow: 0 1em 2em 0 rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition-delay: 0.2s;
+  border-radius: 6px;
+  z-index: 1000;
+}
+
+/* Tertiary menu (nested submenu) */
+.menuItem .subMenu .subMenu {
+  top: -10px;
+  left: 100%; /* Keep it adjacent to the right edge */
+  transform: none;
+}
+
+/* Common submenu visibility */
+.subMenu.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.subMenu li > a,
+.subMenu li > span {
+  display: block;
+  color: var(--white);
+  text-decoration: none;
+  padding: 8px 1.5em; /* Adjusted padding for better spacing */
+  transition: background-color 0.075s var(--transition-easing);
+}
+
+.subMenu li:hover > a,
+.subMenu li:hover > span {
+  color: var(--white);
+  background: #7b8780;
+}
+
+.headerNavGroup {
+  width: 100%;
+}
+
+/* 네비 위치 */
+.topNavLoc {
+  font-size: 12px;
+  color: #6b7770;
+  padding: 0 0 0 10px;
+}
+
+/* --------------------------------------------- */
+/* 헤더 그룹 (MainHeader 관련) */
+.headerTop {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  color: #fff;
+  padding: 0 2px;
+  background: var(--header-nav-bg); /* #2cbbb7 from the image */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.5em;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0.5em 1em;
+  background: var(--header-nav-bg); /* #2cbbb7 from the image */
+  color: var(--white);
+  cursor: pointer;
+}
+
+.headerMenu {
+  display: flex;
+}
+
+.headerMenu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0 0.5em;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  border-right: 1px solid rgba(255, 255, 255, 0.3); /* Lighter border for contrast */
+}
+
+.headerMenu ul:last-child {
+  border-right: none;
+}
+
+.headerMenu li {
+  padding: 0 1em;
+  font-size: 0.9em;
+  border-radius: 4px;
+  transition: background-color 0.15s var(--transition-easing);
+  color: var(--white);
+}
+
+.headerMenu ul:last-child > li:hover {
+  background: rgba(114, 56, 56, 0.2);
+  cursor: pointer;
+}
+
+.time {
+  font-weight: bold;
+  color: var(--white);
+}
+
+.extendLink,
+.logoutLink {
+  cursor: pointer;
+  transition: background-color 0.15s var(--transition-easing);
+}
+
+.extendLink {
+  background-color: #217b89;
+}
+
+.logoutLink {
+  background-color: #7b7b7b;
+}
+
+.extendLink:hover,
+.logoutLink:hover {
+  background: rgba(255, 255, 255, 0.2); /* Light hover effect */
+}
+
+/* --------------------------------------------- */
+/* 푸터 그룹 (MainFooter 관련) */
+.footer {
+  background: var(--text-color);
+  color: var(--white);
+  padding: 1.5em 0;
+  text-align: center;
+  font-size: 0.9em;
+}
+
+.footerContent {
+  margin: 0 auto;
+}
+
+.footerMenu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1.5em;
+}
+
+.footerMenu li {
+  margin: 0;
+}
+
+.footerLink {
+  color: var(--link-color);
+  text-decoration: none;
+  transition: color 0.075s var(--transition-easing);
+}
+
+.footerLink:hover {
+  color: var(--secondary-color);
+  text-decoration: underline;
+}
+
+.footerHighlight {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+/* --------------------------------------------- */
+/* 스크롤 링크 (공통) */
+.scrolly {
+  display: block;
+  text-align: center;
+  padding: 10px;
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.scrolly:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------------------- */
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  /* 레이아웃 */
+  .main {
+    padding: 3em 0;
+    border-bottom-width: 5px;
+  }
+
+  /* 내비게이션 */
+  .nav {
+    height: auto;
+    line-height: normal;
+    padding: 10px 0;
+  }
+
+  .nav li {
+    display: block;
+    margin: 0.5em 0;
+  }
+
+  .nav li a,
+  .nav li span {
+    padding: 10px;
+    top: 0;
+  }
+
+  .headerNav {
+    font-size: 12px;
+  }
+
+  /* 메뉴 아이템 */
+  .menuItem {
+    position: relative;
+    padding: 5px;
+  }
+
+  .menuItem::before {
+    content: '';
+    position: absolute;
+    top: 100%; /* Below the menu item */
+    left: 0;
+    width: 100%; /* Match the width of the parent */
+    height: 20px; /* Extend the hover area downward (adjust as needed) */
+    background: transparent;
+    z-index: 1001; /* Above other elements */
+  }
+
+  .menuLink,
+  .navLink {
+    padding: 10px;
+  }
+
+  /* Secondary and tertiary menus in mobile */
+  .subMenu,
+  .menuItem .subMenu .subMenu {
+    position: static;
+    min-width: 100%;
+    box-shadow: none;
+    background: #7b8780;
+    left: 0;
+    top: auto;
+    transform: none;
+  }
+
+  .subMenu li > a,
+  .subMenu li > span {
+    padding: 10px;
+  }
+
+  /* 헤더 */
+  .headerTop {
+    flex-direction: column;
+    padding: 1em;
+    text-align: center;
+  }
+
+  .logo {
+    margin-bottom: 1em;
+    font-size: 1.2em;
+    padding: 0.3em 0.8em;
+  }
+
+  .headerMenu {
+    flex-direction: column;
+    gap: 0.5em;
+  }
+
+  .headerMenu ul {
+    flex-direction: column;
+    gap: 0.3em;
+  }
+
+  .headerMenu li {
+    padding: 0.3em 0.8em;
+  }
+
+  /* 푸터 */
+  .footer {
+    padding: 1em 0;
+  }
+
+  .footerMenu {
+    flex-direction: column;
+    gap: 0.5em;
+  }
+}

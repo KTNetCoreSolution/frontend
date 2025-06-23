@@ -1,0 +1,9 @@
+[
+  { "menuId": "MENU0001", "role": "시스템관리자", "access": "Y" },
+  { "menuId": "MENU0001", "role": "안부담당자", "access": "N" },
+  { "menuId": "MENU0006", "role": "시스템관리자", "access": "Y" },
+  { "menuId": "MENU0011", "role": "시스템관리자", "access": "N" },
+  { "menuId": "MENU0012", "role": "일반사용자", "access": "Y" },
+  { "menuId": "MENU0002", "role": "시스템관리자", "access": "Y" },
+  { "menuId": "MENU0007", "role": "시스템관리자", "access": "Y" }
+]

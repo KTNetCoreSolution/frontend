@@ -1,0 +1,74 @@
+[
+  {
+    "name": "React",
+    "license": "MIT License",
+    "copyright": "Facebook, Inc. and its affiliates",
+    "repository": "https://github.com/facebook/react"
+  },
+  {
+    "name": "React Router DOM",
+    "license": "MIT License",
+    "copyright": "Remix Software, Inc",
+    "repository": "https://github.com/remix-run/react-router"
+  },
+  {
+    "name": "Bootstrap",
+    "license": "MIT License",
+    "copyright": "OpenJS Foundation",
+    "repository": "https://github.com/twbs/bootstrap"
+  },
+  {
+    "name": "Bootstrap Icons",
+    "license": "MIT License",
+    "copyright": "The Bootstrap Authors",
+    "repository": "https://github.com/twbs/icons"
+  },
+  {
+    "name": "FullCalendar",
+    "license": "MIT License",
+    "copyright": "FullCalendar LLC",
+    "repository": "https://github.com/fullcalendar/fullcalendar"
+  },
+  {
+    "name": "Axios",
+    "license": "MIT License",
+    "copyright": "Axios contributors",
+    "repository": "https://github.com/axios/axios"
+  },
+  {
+    "name": "Date-fns",
+    "license": "MIT License",
+    "copyright": "2015 Sasha Koss",
+    "repository": "https://github.com/date-fns/date-fns"
+  },
+  {
+    "name": "Styled-components",
+    "license": "MIT License",
+    "copyright": "2016-present Max Stoiber",
+    "repository": "https://github.com/styled-components/styled-components"
+  },
+  {
+    "name": "Swiper",
+    "license": "MIT License",
+    "copyright": "2014-present Vladimir Kharlampidi",
+    "repository": "https://github.com/nolimits4web/swiper"
+  },
+  {
+    "name": "Tabulator",
+    "license": "MIT License",
+    "copyright": "2012-present Oli Brooks",
+    "repository": "https://github.com/olifolkerd/tabulator"
+  },
+  {
+    "name": "XLSX",
+    "license": "Apache License 2.0",
+    "copyright": "2012-present, SheetJS",
+    "repository": "https://github.com/SheetJS/sheetjs"
+  },
+  {
+    "name": "Zustand",
+    "license": "MIT License",
+    "copyright": "2020-present POPLINE Studio",
+    "repository": "https://github.com/pmndrs/zustand"
+  }
+]

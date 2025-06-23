@@ -1,0 +1,7 @@
+[
+  { "MENUID": "MMENU0001", "MENUNM": "나의 정보", "URL": "/mobile/MobileUserInfo", "ICON": "person", "children": [] },
+  { "MENUID": "MMENU0002", "MENUNM": "운행일지", "URL": "/mobile/MobileDrivingLog", "ICON": "truck", "children": [] },
+  { "MENUID": "MMENU0003", "MENUNM": "고소차 작업일보", "URL": "/mobile/MobileWorkCarReport", "ICON": "truck-front", "children": [] },
+  { "MENUID": "MMENU0004", "MENUNM": "차량예약", "URL": "/mobile/MobileCarReservation", "ICON": "car-front", "children": [] },
+  { "MENUID": "MMENU0005", "MENUNM": "공용차량운행일지", "URL": "/mobile/MobileSharedCarLog", "ICON": "truck-flatbed", "children": [] }
+]

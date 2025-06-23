@@ -1,0 +1,150 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+  width: auto;
+  height: auto;
+  background-color: #fff;
+}
+
+.modalDialog {
+  max-width: 800px;
+  width: 100%;
+  margin: 0;
+}
+
+.modalContent {
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  padding: 10px;
+}
+
+.modalHeader {
+  background-color: #00c4b4;
+  color: #fff;
+  border-bottom: none;
+}
+
+.modalTitle {
+  font-size: 1rem;
+}
+
+.btnClose {
+  /* Bootstrap의 btn-close 스타일 유지 */
+}
+
+.modalBody {
+  color: #333;
+  position: relative;
+  border: 1px solid #696969;
+  margin: 10px 5px;
+  padding: 10px 10px;
+  border-radius: 5px;
+  background: #f0f0f0;
+  line-height: 3px !important;
+  display: flex;
+  align-items: stretch; /* Ensure input and buttons stretch appropriately */
+  flex-direction: column;
+}
+
+.inputGroup {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  margin-right: 0; /* Remove right margin since no additional controls */
+}
+
+.label {
+  width: 40px;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.input {
+  flex: 1;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  display: none; /* Hide the original input since Bootstrap input-group is used */
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 15px;
+  margin-top: 10px; /* Add some top margin for spacing */
+}
+
+.btn {
+  /* Bootstrap의 btn 스타일 유지 */
+  padding: 5px 15px;
+  font-size: 0.9rem;
+}
+
+.btnDownload {
+  background-color: #00c4b4;
+  border-color: #00c4b4;
+  color: #fff;
+}
+
+.btnDownload:hover {
+  background-color: #00a89a;
+  border-color: #009688;
+}
+
+.btnSave {
+  background-color: #00c4b4;
+  border-color: #00c4b4;
+  color: #fff;
+}
+
+.btnSave:hover {
+  background-color: #00a89a;
+  border-color: #009688;
+}
+
+.modalFooter {
+  justify-content: center;
+  border-top: none;
+}
+
+.btnSecondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+.btnSecondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+.toast {
+  position: absolute;
+  bottom: 20px;
+  left: 50px;
+  padding: 10px;
+  font-size: 0.9rem;
+  z-index: 1060;
+  max-width: 300px;
+  text-align: center; /* Center the toast message */
+}
+
+.margin1 {
+  margin: 1px;
+}

@@ -1,0 +1,41 @@
+.licenseContent {
+  font-size: 0.9rem;
+  color: #333;
+  line-height: 1.6;
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 16px;
+}
+
+.licenseContent h5 {
+  color: #317271;
+  margin-bottom: 15px;
+}
+
+.licenseContent ul {
+  padding-left: 20px;
+  margin-bottom: 15px;
+}
+
+.licenseContent li {
+  margin-bottom: 5px;
+}
+
+.licenseContent p {
+  margin-bottom: 10px;
+}
+
+.btn {
+  /* Maintain Bootstrap button styles */
+}
+
+.btnSecondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: #fff;
+}
+
+.btnSecondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}

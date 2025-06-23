@@ -1,0 +1,110 @@
+/* 날짜 선택 입력 필드 */
+.custom-datepicker-input {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 6px 8px;
+  font-size: 14px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  background-color: #ffffff;
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.custom-datepicker-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.6);
+}
+
+/* 캘린더 전체 영역 */
+.react-datepicker {
+  font-size: 12px;
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+}
+
+/* 캘린더 헤더 */
+.react-datepicker__current-month {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333333;
+}
+
+.react-datepicker__day-names,
+.react-datepicker__week {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* 각 날짜 셀 */
+.react-datepicker__day {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  border-radius: 50%;
+  transition: all 0.2s ease-in-out;
+  font-weight: normal;
+  color: #000000;
+}
+
+/* 오늘 날짜 */
+.react-datepicker__day--today {
+  color: #ffffff !important;
+  background-color: #007bff;
+  font-weight: bold;
+  border-radius: 50%;
+}
+
+/* 선택된 날짜 */
+.react-datepicker__day--selected {
+  background-color: #007bff !important;
+  color: #ffffff !important;
+  font-weight: bold;
+  border-radius: 50%;
+}
+
+/* 날짜 Hover 시 효과 */
+.react-datepicker__day:hover {
+  background-color: #0056b3;
+  color: #ffffff !important;
+}
+
+/* 비활성화된 날짜 */
+.react-datepicker__day--disabled {
+  color: #cccccc;
+  background-color: #f8f8f8;
+  pointer-events: none;
+}
+
+/* 월 드롭다운 */
+.react-datepicker__month-dropdown-container,
+.react-datepicker__year-container {
+  margin: 0 10px;
+}
+
+.react-datepicker__month-dropdown,
+.react-datepicker__year-dropdown {
+  background-color: #f0f0f0f8;
+  color: #333333;
+  font-size: 12px;
+  border: 1px solid #dddddd;
+  margin-bottom: 4px;
+}
+
+/* 입력 컨테이너 스타일 */
+.react-datepicker-wrapper,
+.react-datepicker__input-container {
+  width: 100% !important;
+  height: 100% !important;
+  display: inline-block;
+}
+
+/* 팝업 z-index 설정 */
+.react-datepicker-popper {
+  z-index: 1000;
+}

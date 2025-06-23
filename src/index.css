@@ -1,0 +1,70 @@
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #f9f9f9;
+  font-family: "Nanum Gothic", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-size: 14px;
+  padding: 0;
+  margin: 0 auto;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+a {
+  color: #006376;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: none;
+}
+
+section,
+article {
+  margin-bottom: 6em;
+}
+
+table {
+  margin-bottom: 3em;
+}
+
+section > :last-child,
+section:last-child,
+article > :last-child,
+article:last-child {
+  margin-bottom: 0;
+}
+
+footer {
+  padding: 3em 0;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 100%;
+  width: 64em;
+}
+
+#root {
+  width: 100vw;
+  min-height: 100vh;
+}

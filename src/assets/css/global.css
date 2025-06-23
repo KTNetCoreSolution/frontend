@@ -1,0 +1,125 @@
+/* Global Bootstrap font size and size overrides */
+
+/* Set smaller font size and scaling factor */
+:root {
+  --bs-body-font-size: 0.8rem; /* 20% reduction from 1rem */
+  --bs-body-line-height: 1.4; /* Adjusted for smaller font */
+  --bs-body-line-height: 1.4; /* Adjusted for smaller font */
+  --bs-scaling: 0.8; /* Scaling factor for sizes and padding */
+  --bs-body-bg: #f3f3f3;
+}
+
+/* Apply to body */
+body {
+  font-size: var(--bs-body-font-size);
+  line-height: var(--bs-body-line-height);
+}
+
+.list-group-item {
+    background-color: #fff;
+}
+
+/* Text elements */
+p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
+.alert, .badge, .breadcrumb, .card, .card-title, .card-text, .list-group-item {
+  font-size: var(--bs-body-font-size);
+}
+
+/* Textboxes and select boxes */
+.form-control, .form-select {
+  font-size: var(--bs-body-font-size);
+  padding: calc(0.375rem * var(--bs-scaling)) calc(0.75rem * var(--bs-scaling));
+  line-height: 1.4;
+  height: calc(2.25rem * var(--bs-scaling));
+  max-width: calc(100% * var(--bs-scaling)); /* Constrain width */
+}
+
+/* Buttons */
+.btn {
+  font-size: var(--bs-body-font-size);
+  padding: calc(0.375rem * var(--bs-scaling)) calc(0.75rem * var(--bs-scaling));
+  line-height: 1.4;
+}
+
+/* Checkboxes and radio buttons */
+.form-check-input {
+  width: calc(1rem * var(--bs-scaling));
+  height: calc(1rem * var(--bs-scaling));
+  margin-top: calc(0.125rem * var(--bs-scaling));
+}
+
+.form-check-label {
+  font-size: var(--bs-body-font-size);
+  line-height: 1.4;
+}
+
+/* Input groups */
+.input-group-text {
+  font-size: var(--bs-body-font-size);
+  padding: calc(0.375rem * var(--bs-scaling)) calc(0.75rem * var(--bs-scaling));
+}
+
+/* Tables */
+.table, .table th, .table td {
+  font-size: var(--bs-body-font-size);
+  padding: calc(0.5rem * var(--bs-scaling));
+}
+
+/* Dropdowns */
+.dropdown-menu, .dropdown-item {
+  font-size: var(--bs-body-font-size);
+}
+.dropdown-item {
+  padding: calc(0.25rem * var(--bs-scaling)) calc(1rem * var(--bs-scaling));
+}
+
+/* Modals */
+.modal-body, .modal-title, .modal-footer {
+  font-size: var(--bs-body-font-size);
+}
+.modal-content {
+  padding: calc(1rem * var(--bs-scaling));
+}
+
+/* Navbars and navs */
+.nav-link, .navbar-brand, .navbar-text {
+  font-size: var(--bs-body-font-size);
+}
+.nav-link {
+  padding: calc(0.5rem * var(--bs-scaling)) calc(1rem * var(--bs-scaling));
+}
+
+/* Alerts */
+.alert {
+  font-size: var(--bs-body-font-size);
+  padding: calc(1rem * var(--bs-scaling));
+}
+
+/* Cards */
+.card-body {
+  padding: calc(1rem * var(--bs-scaling));
+}
+
+/* Badges */
+.badge {
+  font-size: calc(var(--bs-body-font-size) * 0.75);
+  padding: calc(0.25rem * var(--bs-scaling)) calc(0.5rem * var(--bs-scaling));
+}
+
+/* Form controls */
+.custom-select, .custom-file-label {
+  font-size: var(--bs-body-font-size);
+  padding: calc(0.375rem * var(--bs-scaling)) calc(0.75rem * var(--bs-scaling));
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  :root {
+    --bs-body-font-size: 0.75rem; /* 12px for mobile */
+    --bs-scaling: 0.75;
+  }
+}
+
+.tabulator {
+    overflow-x: auto; /* 가로 스크롤 활성화 */
+}

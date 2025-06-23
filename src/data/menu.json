@@ -1,0 +1,29 @@
+[
+  { "MENUID": "MENU0000", "MENUNM": "Home", "URL": "/main" },
+  {
+    "MENUID": "MENU0001", "MENUNM": "A메뉴",
+    "URL": "",
+    "children": [
+      { "MENUID": "MENU0011", "MENUNM": "test1", "URL": "/main/test1", "children": [] },
+      { "MENUID": "MENU0012", "MENUNM": "TestPage12", "URL": "/main/TestPage12", "children": [] },
+      {
+        "MENUID": "MENU0211", "MENUNM": "TestPage13",
+        "URL": "",
+        "children": [
+          { "MENUID": "MENU2111", "MENUNM": "TestPage17", "URL": "/main/TestPage17", "children": [] },
+          { "MENUID": "MENU2112", "MENUNM": "TestPage18", "URL": "/main/TestPage18", "children": [] }
+        ]
+      }
+    ]
+  },
+  { "MENUID": "MENU0002", "MENUNM": "테블레이터", "URL": "/sample/TabulatorDirect", "children": [] },
+  { "MENUID": "MENU0003", "MENUNM": "TestPage4", "URL": "/main/TestPage4", "children": [] },
+  {
+    "MENUID": "MENU0004", "MENUNM": "시스템관리",
+    "children": [
+      { "MENUID": "MENU0041", "MENUNM": "사용자권한관리", "URL": "/sample/PermissionManager", "children": [] },
+      { "MENUID": "MENU0042", "MENUNM": "메뉴권한관리", "URL": "/oper/MenuAuthInfo", "children": [] },
+      { "MENUID": "MENU0043", "MENUNM": "TestPage12", "URL": "/main/TestPage12", "children": [] }
+    ]
+  }
+]

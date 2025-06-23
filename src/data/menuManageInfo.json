@@ -1,0 +1,162 @@
+[
+	{
+		"MENUID" : "MENU0000",
+		"MENUNM" : "메인화면",
+		"UPPERMENUID" : "",
+		"URL" : "\/main",
+		"MENULEVEL" : "0",
+		"LEAFMENUYN" : "N",
+		"MENUORDER" : "1",
+		"USEYN" : "N"
+	},
+	{
+		"MENUID" : "MENU0001",
+		"MENUNM" : "Home",
+		"UPPERMENUID" : "",
+		"URL" : "\/main",
+		"MENULEVEL" : "1",
+		"LEAFMENUYN" : "N",
+		"MENUORDER" : "1",
+		"USEYN" : "Y"
+	},
+	{
+		"MENUID" : "MENU0002",
+		"MENUNM" : "A메뉴",
+		"UPPERMENUID" : "",
+		"URL" : "",
+		"MENULEVEL" : "1",
+		"LEAFMENUYN" : "Y",
+		"MENUORDER" : "2",
+		"USEYN" : "Y"
+	},
+	{
+		"MENUID" : "MENU0003",
+		"MENUNM" : "테블레이터",
+		"UPPERMENUID" : "",
+		"URL" : "\/sample\/TabulatorDirect",
+		"MENULEVEL" : "1",
+		"LEAFMENUYN" : "N",
+		"MENUORDER" : "3",
+		"USEYN" : "Y"
+	},
+	{
+		"MENUID" : "MENU0004",
+		"MENUNM" : "TestPage4",
+		"UPPERMENUID" : "",
+		"URL" : "\/main\/TestPage4",
+		"MENULEVEL" : "1",
+		"LEAFMENUYN" : "N",
+		"MENUORDER" : "4",
+		"USEYN" : "Y"
+	},
+	{
+		"MENUID" : "MENU0005",
+		"MENUNM" : "시스템관리",
+		"UPPERMENUID" : "",
+		"URL" : "",
+		"MENULEVEL" : "1",
+		"LEAFMENUYN" : "Y",
+		"MENUORDER" : "5",
+		"USEYN" : "Y"
+	},
+	{
+		"MENUID" : "MENU0233",
+		"MENUNM" : "메뉴명",
+		"UPPERMENUID" : "",
+		"URL" : "",
+		"MENULEVEL" : "1",
+		"LEAFMENUYN" : "Y",
+		"MENUORDER" : "3",
+		"USEYN" : "Y"
+	},
+	{
+		"MENUID" : "MENU0021",
+		"MENUNM" : "test1",
+		"UPPERMENUID" : "MENU0002",
+		"URL" : "\/main\/test1",
+		"MENULEVEL" : "2",
+		"LEAFMENUYN" : "N",
+		"MENUORDER" : "1",
+		"USEYN" : "Y"
+	},
+	{
+		"MENUID" : "MENU0022",
+		"MENUNM" : "TestPage12",
+		"UPPERMENUID" : "MENU0002",
+		"URL" : "\/main\/TestPage12",
+		"MENULEVEL" : "2",
+		"LEAFMENUYN" : "Y",
+		"MENUORDER" : "2",
+		"USEYN" : "Y"
+	},
+	{
+		"MENUID" : "MENU0023",
+		"MENUNM" : "TestPage13",
+		"UPPERMENUID" : "MENU0002",
+		"URL" : "",
+		"MENULEVEL" : "2",
+		"LEAFMENUYN" : "Y",
+		"MENUORDER" : "3",
+		"USEYN" : "Y"
+	},
+	{
+		"MENUID" : "MENU0051",
+		"MENUNM" : "사용자권한관리",
+		"UPPERMENUID" : "MENU0005",
+		"URL" : "\/sample\/PermissionManager",
+		"MENULEVEL" : "2",
+		"LEAFMENUYN" : "N",
+		"MENUORDER" : "1",
+		"USEYN" : "Y"
+	},
+	{
+		"MENUID" : "MENU0052",
+		"MENUNM" : "메뉴권한관리",
+		"UPPERMENUID" : "MENU0005",
+		"URL" : "\/oper\/MenuAuthInfo",
+		"MENULEVEL" : "2",
+		"LEAFMENUYN" : "N",
+		"MENUORDER" : "2",
+		"USEYN" : "Y"
+	},
+	{
+		"MENUID" : "MENU0053",
+		"MENUNM" : "TestPage123",
+		"UPPERMENUID" : "MENU0005",
+		"URL" : "\/main\/TestPage123",
+		"MENULEVEL" : "2",
+		"LEAFMENUYN" : "N",
+		"MENUORDER" : "3",
+		"USEYN" : "Y"
+	},
+	{
+		"MENUID" : "MENU0234",
+		"MENUNM" : "메뉴명993",
+		"UPPERMENUID" : "MENU0233",
+		"URL" : "\/main\/TestPage11",
+		"MENULEVEL" : "2",
+		"LEAFMENUYN" : "N",
+		"MENUORDER" : "0",
+		"USEYN" : "Y"
+	},
+	{
+		"MENUID" : "MENU0231",
+		"MENUNM" : "TestPage17",
+		"UPPERMENUID" : "MENU0023",
+		"URL" : "\/main\/TestPage17",
+		"MENULEVEL" : "3",
+		"LEAFMENUYN" : "N",
+		"MENUORDER" : "1",
+		"USEYN" : "Y"
+	},
+	{
+		"MENUID" : "MENU0232",
+		"MENUNM" : "TestPage18",
+		"UPPERMENUID" : "MENU0023",
+		"URL" : "\/main\/TestPage18",
+		"MENULEVEL" : "3",
+		"LEAFMENUYN" : "N",
+		"MENUORDER" : "2",
+		"USEYN" : "Y"
+	}
+]

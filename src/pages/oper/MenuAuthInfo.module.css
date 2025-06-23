@@ -1,0 +1,96 @@
+.container {
+  width: 90em;
+}
+
+.textLeft {
+  text-align: left;
+  vertical-align: middle;
+  padding-left: 10px;
+  white-space: pre;
+}
+
+.stickyColumn {
+  position: sticky;
+  left: 0;
+  background: white;
+  z-index: 1;
+  min-width: 150px; /* Ensure consistent width for 목차관리 */
+}
+
+.stickyColumn2 {
+  position: sticky;
+  left: 150px; /* Set to match the width of stickyColumn to remove gap */
+  background: white;
+  z-index: 1;
+  min-width: 80px; /* Set width for 작업대상 */
+}
+
+.textCenter {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.tableResponsive {
+  height: calc(100vh - 270px);
+  min-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.table {
+  font-size: 0.85rem;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+  border-color: #547574;
+}
+
+.table > tbody > tr > td {
+  background-color: #fff;
+}
+
+.stickyTop {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 2;
+}
+
+.stickyTop > tr > th {
+  background-color: #d6dfdf;
+  border-color: #547574;
+}
+
+.table .formCheckInput {
+  accent-color: #547574;
+}
+
+.formCheckInline {
+  margin-right: 10px;
+}
+
+.changedCell {
+  background-color: #ffff99 !important; /* Yellow background for changed cells */
+}
+
+.btnReg {
+  background-color: #547574;
+  border-color: #547574;
+  font-size: 14px;
+  color: #fff;
+  padding: calc(0.375rem * var(--bs-scaling)) calc(0.75rem * var(--bs-scaling));
+  border-radius: 5px;
+}
+
+.btnCancel {
+  background-color: rgb(63, 63, 63);
+  border-color: rgb(63, 63, 63);
+  color: #fff;
+  font-size: 14px;
+  padding: calc(0.375rem * var(--bs-scaling)) calc(0.75rem * var(--bs-scaling));
+  border-radius: 5px;
+}

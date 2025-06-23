@@ -1,0 +1,6 @@
+[
+  { "MENUID": "UMENU0001", "MENUNM": "HOME", "URL": "/mobile/Main", "children": [] },
+  { "MENUID": "UMENU0002", "MENUNM": "나의정보", "URL": "/mobile/MobileUserInfo", "children": [] },
+  { "MENUID": "UMENU0003", "MENUNM": "메뉴1 조회", "URL": "/mobile/MobileCsDetails", "children": [] },
+  { "MENUID": "UMENU0004", "MENUNM": "메뉴2 조회", "URL": "/mobile/MobileMotDetails", "children": [] }
+]
