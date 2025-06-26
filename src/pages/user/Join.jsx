@@ -97,10 +97,10 @@ const Join = ({ show, onHide }) => {
       if (!response.success) {
         throw new Error(response.errMsg || '가입정보가 잘못되었습니다.');
       } else {
-        if (response.errMsg !== '' || response.data[0].ERRCD !== '00') {
+        if (response.errMsg !== '' || response.data[0].errCd !== '00') {
           let errMsg = response.errMsg;
 
-          if (response.data[0].ERRMSG !== '') errMsg = response.data[0].ERRMSG;
+          if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
 
           errorMsgPopup(errMsg);
         } else {
