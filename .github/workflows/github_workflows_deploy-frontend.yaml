@@ -15,23 +15,23 @@ jobs:
           node-version: '19.1'
       - name: Install dependencies
         run: npm ci
-        working-directory: D:\netcore\frontend
+        working-directory: ${{ github.workspace }}/frontend
       - name: Build frontend
         run: npm run build -- --mode production
-        working-directory: D:\netcore\frontend
+        working-directory: ${{ github.workspace }}/frontend
       - name: Copy to deploy
-        run: Copy-Item -Path D:\netcore\frontend\dist\* -Destination D:\netcore\deploy\frontend -Recurse -Force
+        run: Copy-Item -Path "${{ github.workspace }}/frontend/dist/*" -Destination "${{ github.workspace }}/deploy/frontend" -Recurse -Force
       - name: Reload Nginx
         run: D:\tool\nginx\nginx.exe -s reload
       - name: Backup source
         run: |
           $date = Get-Date -Format "yyyyMM"
           $day = Get-Date -Format "yyyyMMdd"
-          New-Item -ItemType Directory -Path D:\netcore\backup\source\frontend\$date -Force
-          Compress-Archive -Path D:\netcore\frontend\* -DestinationPath D:\netcore\backup\source\frontend\$date\$day.zip -Force
+          New-Item -ItemType Directory -Path "${{ github.workspace }}/backup/source/frontend/$date" -Force
+          Compress-Archive -Path "${{ github.workspace }}/frontend/*" -DestinationPath "${{ github.workspace }}/backup/source/frontend/$date/$day.zip" -Force
       - name: Backup deploy
         run: |
           $date = Get-Date -Format "yyyyMM"
           $day = Get-Date -Format "yyyyMMdd"
-          New-Item -ItemType Directory -Path D:\netcore\backup\deploy\frontend\$date -Force
-          Compress-Archive -Path D:\netcore\deploy\frontend\* -DestinationPath D:\netcore\backup\deploy\frontend\$date\$day.zip -Force
+          New-Item -ItemType Directory -Path "${{ github.workspace }}/backup/deploy/frontend/$date" -Force
+          Compress-Archive -Path "${{ github.workspace }}/deploy/frontend/*" -DestinationPath "${{ github.workspace }}/backup/deploy/frontend/$date/$day.zip" -Force
