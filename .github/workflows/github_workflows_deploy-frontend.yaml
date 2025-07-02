@@ -17,20 +17,20 @@ jobs:
           node-version: '19.1'
       - name: Install dependencies
         run: npm ci
-        working-directory: ${{ github.workspace }}/frontend
+        working-directory: ${{ github.workspace }}/source/frontend
       - name: Build frontend
         run: npm run build -- --mode production
-        working-directory: ${{ github.workspace }}/frontend
+        working-directory: ${{ github.workspace }}/source/frontend
       - name: Copy to deploy
-        run: Copy-Item -Path "${{ github.workspace }}/frontend/dist/*" -Destination "${{ github.workspace }}/deploy/frontend" -Recurse -Force
+        run: Copy-Item -Path "${{ github.workspace }}/source/frontend/dist/*" -Destination "${{ github.workspace }}/deploy/frontend" -Recurse -Force
       - name: Reload Nginx
-        run: D:\tool\nginx\nginx.exe -s reload
+        run: D:\tool\nginx\.\nginx.exe -s reload
       - name: Backup source
         run: |
           $date = Get-Date -Format "yyyyMM"
           $day = Get-Date -Format "yyyyMMdd"
           New-Item -ItemType Directory -Path "${{ github.workspace }}/backup/source/frontend/$date" -Force
-          Compress-Archive -Path "${{ github.workspace }}/frontend/*" -DestinationPath "${{ github.workspace }}/backup/source/frontend/$date/$day.zip" -Force
+          Compress-Archive -Path "${{ github.workspace }}/source/frontend/*" -DestinationPath "${{ github.workspace }}/backup/source/frontend/$date/$day.zip" -Force
       - name: Backup deploy
         run: |
           $date = Get-Date -Format "yyyyMM"
