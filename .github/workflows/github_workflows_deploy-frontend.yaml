@@ -6,8 +6,8 @@ on:
       - main
 
 permissions:
-  contents: write            
-  id-token: write            
+  contents: write
+  id-token: write
 
 jobs:
   deploy-frontend:
@@ -50,48 +50,65 @@ jobs:
           Compress-Archive -Path "$deployDir\*" -DestinationPath $backupFile -Force
           Write-Host "✅ Deploy files have been backed up to: $backupFile"
 
-      # 3. 최신 소스 코드 Checkout
+      # 3. 최신 소스 코드 가져오기 (Git 명령어 사용)
       - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          repository: KTNetCoreSolution/frontend
-          ref: main
-          token: ${{ secrets.NETCORE_DEV_FRONTEND_APP_TOKEN }}
-          path: source/frontend
+        shell: pwsh
+        run: |
+          $repoUrl = 'https://:${{ secrets.GITHUB_TOKEN }}@github.com//.git'  # GitHub 리포지토리 URL (인증 포함)
+          $branch = 'main'
+          $sourceDir = 'D:\actions_work\netcore\source\frontend'
 
-      # 4. Node.js 설치 (설치 스킵 설정 추가)
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '19.1'  # 이미 설치된 버전 사용
-          check-latest: false   # 최신 버전 다운로드 방지, 설치된 버전 사용
+          if (!(Test-Path -Path $sourceDir)) {
+            New-Item -ItemType Directory -Path $sourceDir -Force
+          }
 
-      # 5. FE 의존성 설치
+          cd $sourceDir
+          git init
+          git remote add origin $repoUrl
+          git fetch origin $branch --force
+          git reset --hard origin/$branch
+          Write-Host "✅ Source code checked out to: $sourceDir"
+
+      # 4. Node.js 설정 확인
+      - name: Verify Node.js Environment
+        shell: pwsh
+        run: |
+          Write-Host "Checking Node.js and npm versions..."
+          node -v
+          npm -v
+          Write-Host "✅ Node.js environment verified."
+
+      # 5. 프론트엔드 의존성 설치
       - name: Install dependencies
         shell: pwsh
-        run: npm ci
+        run: |
+          cd D:/actions_work/netcore/source/frontend
+          npm ci
         working-directory: D:/actions_work/netcore/source/frontend
 
       # 6. .env.production 파일 적용
       - name: Apply .env.production file
         shell: pwsh
         run: |
-          $envFile = "D:\actions_work\netcore\source\frontend\.env.production"
-          $destinationEnv = "D:\actions_work\netcore\source\frontend\.env"
+          $sourceDir = "D:\actions_work\netcore\source\frontend"
+          $envFile = "$sourceDir\.env.production"
+          $destinationEnv = "$sourceDir\.env"
 
           if (Test-Path -Path $envFile) {
             if (Test-Path -Path $destinationEnv) {
-              Remove-Item -Path $destinationEnv -Force
+              Remove-Item -Path $destinationEnv -Force -ErrorAction SilentlyContinue
             }
             Copy-Item -Path $envFile -Destination $destinationEnv -Force
             Write-Host "✅ .env.production has been successfully applied as .env file."
           } else {
-            Write-Host "⚠️ Warning: .env.production file not found. Default configuration will be used."
+            Write-Host "⚠️ .env.production file not found. Default configuration will be used."
 
-      # 7. FE 빌드
+      # 7. 프론트엔드 빌드
       - name: Build frontend
         shell: pwsh
-        run: npm run build -- --mode production
+        run: |
+          cd D:/actions_work/netcore/source/frontend
+          npm run build -- --mode production
         working-directory: D:/actions_work/netcore/source/frontend
 
       # 8. 빌드 결과 배포 디렉터리로 복사
@@ -106,17 +123,6 @@ jobs:
             New-Item -ItemType Directory -Path $deployDir -Force
           }
 
-          # 배포 디렉토리 기존 파일 삭제
-          Remove-Item -Path "$deployDir\*" -Recurse -Force -ErrorAction SilentlyContinue
-
-          # 새 빌드 파일 복사
-          Copy-Item -Path "$buildDir\*" -Destination "$deployDir" -Recurse -Force
-          Write-Host "✅ Frontend build files have been successfully deployed to: $deployDir"
-
-      # 9. Nginx 다시 로드
-      - name: Reload Nginx
-        shell: pwsh
-        run: |
-          Write-Host "♻️ Reloading Nginx server..."
-          Start-Process -NoNewWindow -FilePath 'cmd.exe' -ArgumentList '/c', 'nginx.exe -s reload' -WorkingDirectory 'D:\tool\nginx'
-          Write-Host "✅ Nginx server has been reloaded successfully."
+          # 빌드된 결과물을 배포 디렉터리로 복사
+          Copy-Item -Path "$buildDir\*" -Destination "$deployDir\" -Recurse -Force
+          Write-Host "✅ Build files have been deployed to: $deployDir"
