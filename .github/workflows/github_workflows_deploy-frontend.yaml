@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   deploy-frontend:
-    runs-on: [self-hosted, Windows, X64, dev-runner]
+    runs-on: [self-hosted, Windows, X64, dev]
 
     steps:
       # 1. 현재 소스 코드 백업
