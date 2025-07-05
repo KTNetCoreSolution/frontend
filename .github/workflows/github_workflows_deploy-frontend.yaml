@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write            
+  id-token: write            
+
 jobs:
   deploy-frontend:
     runs-on: [self-hosted, Windows, X64, dev-runner]
@@ -12,12 +16,13 @@ jobs:
     steps:
       # 1. 현재 소스 코드 백업
       - name: Backup current source
+        shell: pwsh
         run: |
           $baseDir = 'D:\actions_work\netcore'
           $sourceDir = "$baseDir\source\frontend"
           $backupBaseDir = "$baseDir\backup\source\frontend"
-          $currentMonthDir = "$backupBaseDir\$(Get-Date -Format 'yyyyMM')"
-          $currentDateTime = "$(Get-Date -Format 'yyyyMMddHHmmss').zip"
+          $currentMonthDir = Join-Path -Path $backupBaseDir -ChildPath (Get-Date -Format 'yyyyMM')
+          $currentDateTime = "$(Get-Date -Format 'yyyyMMdd-HHmmss').zip"
 
           if (!(Test-Path -Path $currentMonthDir)) {
             New-Item -ItemType Directory -Path $currentMonthDir -Force
@@ -25,16 +30,17 @@ jobs:
 
           $backupFile = Join-Path -Path $currentMonthDir -ChildPath $currentDateTime
           Compress-Archive -Path "$sourceDir\*" -DestinationPath $backupFile -Force
-          Write-Host "Source files have been backed up to: $backupFile"
+          Write-Host "✅ Source files have been backed up to: $backupFile"
 
       # 2. 현재 배포 파일 백업
       - name: Backup current deploy files
+        shell: pwsh
         run: |
           $baseDir = 'D:\actions_work\netcore'
           $deployDir = "$baseDir\deploy\frontend"
           $backupBaseDir = "$baseDir\backup\deploy\frontend"
-          $currentMonthDir = "$backupBaseDir\$(Get-Date -Format 'yyyyMM')"
-          $currentDateTime = "$(Get-Date -Format 'yyyyMMddHHmmss').zip"
+          $currentMonthDir = Join-Path -Path $backupBaseDir -ChildPath (Get-Date -Format 'yyyyMM')
+          $currentDateTime = "$(Get-Date -Format 'yyyyMMdd-HHmmss').zip"
 
           if (!(Test-Path -Path $currentMonthDir)) {
             New-Item -ItemType Directory -Path $currentMonthDir -Force
@@ -42,9 +48,9 @@ jobs:
 
           $backupFile = Join-Path -Path $currentMonthDir -ChildPath $currentDateTime
           Compress-Archive -Path "$deployDir\*" -DestinationPath $backupFile -Force
-          Write-Host "Deploy files have been backed up to: $backupFile"
+          Write-Host "✅ Deploy files have been backed up to: $backupFile"
 
-      # 3. 최신 소스 코드 Checkout (GitHub 레포지토리에서 소스 가져오기)
+      # 3. 최신 소스 코드 Checkout
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -53,49 +59,64 @@ jobs:
           token: ${{ secrets.NETCORE_DEV_FRONTEND_APP_TOKEN }}
           path: source/frontend
 
-      # 4. Node.js 설치
+      # 4. Node.js 설치 (설치 스킵 설정 추가)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '19.1'
+          node-version: '19.1'  # 이미 설치된 버전 사용
+          check-latest: false   # 최신 버전 다운로드 방지, 설치된 버전 사용
 
       # 5. FE 의존성 설치
       - name: Install dependencies
+        shell: pwsh
         run: npm ci
-        working-directory: D:\actions_work\netcore\source\frontend
+        working-directory: D:/actions_work/netcore/source/frontend
 
       # 6. .env.production 파일 적용
       - name: Apply .env.production file
+        shell: pwsh
         run: |
           $envFile = "D:\actions_work\netcore\source\frontend\.env.production"
-          $destinationPath = "D:\actions_work\netcore\source\frontend\.env"
+          $destinationEnv = "D:\actions_work\netcore\source\frontend\.env"
 
           if (Test-Path -Path $envFile) {
-            Remove-Item -Path $destinationPath -Force -ErrorAction SilentlyContinue
-            Copy-Item -Path $envFile -Destination $destinationPath -Force
-            Write-Host ".env.production has been successfully applied as .env file."
+            if (Test-Path -Path $destinationEnv) {
+              Remove-Item -Path $destinationEnv -Force
+            }
+            Copy-Item -Path $envFile -Destination $destinationEnv -Force
+            Write-Host "✅ .env.production has been successfully applied as .env file."
           } else {
-            Write-Host "Warning: .env.production file not found. Default configuration will be used."
+            Write-Host "⚠️ Warning: .env.production file not found. Default configuration will be used."
 
       # 7. FE 빌드
       - name: Build frontend
+        shell: pwsh
         run: npm run build -- --mode production
-        working-directory: D:\actions_work\netcore\source\frontend
+        working-directory: D:/actions_work/netcore/source/frontend
 
-      # 8. 빌드 결과 배포 디렉토리로 복사
-      - name: Copy to deploy
+      # 8. 빌드 결과 배포 디렉터리로 복사
+      - name: Deploy to frontend folder
+        shell: pwsh
         run: |
           $sourceDir = 'D:\actions_work\netcore\source\frontend'
-          $deployDir = 'D:\actions_work\netcore\deploy\frontend'
           $buildDir = "$sourceDir\dist"
+          $deployDir = 'D:\actions_work\netcore\deploy\frontend'
 
           if (!(Test-Path -Path $deployDir)) {
             New-Item -ItemType Directory -Path $deployDir -Force
           }
 
+          # 배포 디렉토리 기존 파일 삭제
+          Remove-Item -Path "$deployDir\*" -Recurse -Force -ErrorAction SilentlyContinue
+
+          # 새 빌드 파일 복사
           Copy-Item -Path "$buildDir\*" -Destination "$deployDir" -Recurse -Force
-          Write-Host "Frontend build has been copied to: $deployDir"
+          Write-Host "✅ Frontend build files have been successfully deployed to: $deployDir"
 
       # 9. Nginx 다시 로드
       - name: Reload Nginx
-        run: D:\tool\nginx\nginx.exe -s reload
+        shell: pwsh
+        run: |
+          Write-Host "♻️ Reloading Nginx server..."
+          Start-Process -NoNewWindow -FilePath 'cmd.exe' -ArgumentList '/c', 'nginx.exe -s reload' -WorkingDirectory 'D:\tool\nginx'
+          Write-Host "✅ Nginx server has been reloaded successfully."
