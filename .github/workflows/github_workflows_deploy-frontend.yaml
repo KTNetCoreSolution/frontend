@@ -1,4 +1,4 @@
-name: Deploy Frontend (Dev)
+﻿name: Deploy Frontend (Dev)
 
 on:
   push:
@@ -89,15 +89,36 @@ jobs:
               $currentTime = "$(Get-Date -Format 'yyyyMMdd-HHmmss').zip"
               $backupFilePath = Join-Path -Path $currentMonthDir -ChildPath $currentTime
 
-              # 압축 생성 (현재 소스 백업)
-              Write-Output "🔄 Compressing source files from $SourcePath to $backupFilePath"
-              Compress-Archive -Path "$SourcePath\*" -DestinationPath $backupFilePath -Force
+              # node_modules 제외한 파일 리스트 생성
+              Write-Output "📋 Generating file list excluding 'node_modules'..."
+              $filesToBackup = Get-ChildItem -Path $SourcePath -Recurse -Force |
+                               Where-Object { -not ($_.FullName -like '*\node_modules\*') -and -not ($_.PSIsContainer -and $_.Name -eq 'node_modules') }
+
+              # 압축 생성 (node_modules 제외한 파일만 포함)
+              Write-Output "🔄 Compressing source files (excluding node_modules) to $backupFilePath..."
+              $tempDir = Join-Path -Path $env:TEMP -ChildPath "BackupTemp" # 임시 디렉터리 경로 생성
+              if (Test-Path $tempDir) { 
+                  Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue 
+              }
+              New-Item -Path $tempDir -ItemType Directory -Force
+
+              foreach ($file in $filesToBackup) {
+                  $destinationPath = Join-Path -Path $tempDir -ChildPath ($file.FullName.Substring($SourcePath.Length).TrimStart('\'))
+                  $destinationDir = Split-Path -Path $destinationPath -Parent
+                  if (-not (Test-Path -Path $destinationDir)) { 
+                      New-Item -ItemType Directory -Path $destinationDir -Force 
+                  }
+                  Copy-Item -Path $file.FullName -Destination $destinationPath -Recurse -Force
+              }
+
+              Compress-Archive -Path "$tempDir\*" -DestinationPath $backupFilePath -Force
+              Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue
 
               Write-Output "✅ Backup completed at $backupFilePath"
           }
 
           # 함수 호출 (환경 변수 사용)
-          Backup-Files -SourcePath "${{ env.SOURCE_DIR }}" -BackupPath "${{ env.BACKUP_DIR }}\source\frontend"
+          Backup-Files -SourcePath "${{ env.SOURCE_DIR }}" -BackupPath "${{ env.BACKUP_DIR }}\source\frontend""
 
       ### 5. 최신 소스 코드 가져오기
       - name: Checkout Source Code
@@ -145,7 +166,7 @@ jobs:
 
           # 빌드 실행
           Write-Output "⚙️ Starting Vite production build..."
-          npm run build -- --mode production
+          npm run build
 
           # 빌드 성공 여부 확인
           if ($?) {
