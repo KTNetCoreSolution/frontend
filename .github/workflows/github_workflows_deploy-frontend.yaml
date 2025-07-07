@@ -101,21 +101,21 @@ jobs:
           git clone --branch $branch "${{ env.REPO_URL }}" "${{ env.SOURCE_DIR }}"
           Write-Output "✅ Source code cloned to: ${{ env.SOURCE_DIR }}"
           
-      ### 6. .env 파일 복사
-      - name: Copy .env file
-        shell: powershell
-        run: |
-          $envSourcePath = 'D:\actions_work\netcore\env\frontend.env.production'
-          $envDestinationPath = 'D:\actions_work\netcore\source\backend\.env.production'
-
-          # .env 파일이 존재하는지 확인하고 복사
-          if (Test-Path -Path $envSourcePath) {
-              Copy-Item -Path $envSourcePath -Destination $envDestinationPath -Force
-              Write-Output "✅ .env file copied to: $envDestinationPath"
-          } else {
-              Write-Output "❌ .env source file not found: $envSourcePath"
-              exit 1  # 실패 처리
-          }
+       ### 6. .env 파일 복사
+        - name: Copy .env file
+          shell: powershell
+          run: |
+            $envSourcePath = 'D:\actions_work\netcore\env\frontend.env.production'
+            $envDestinationPath = 'D:\actions_work\netcore\source\frontend\.env.production'
+        
+            # .env 파일이 존재하는지 확인하고 복사
+            if (Test-Path -Path $envSourcePath) {
+                Copy-Item -Path $envSourcePath -Destination $envDestinationPath -Force
+                Write-Output "✅ .env file copied to: $envDestinationPath"
+            } else {
+                Write-Output "❌ .env source file not found: $envSourcePath"
+                exit 1  # 실패 처리
+            }
 
         ### 7. 의존성 설치 및 빌드
         - name: Install and Build Frontend
