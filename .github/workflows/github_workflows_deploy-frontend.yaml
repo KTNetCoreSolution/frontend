@@ -100,8 +100,24 @@ jobs:
           # 최신 코드를 클론
           git clone --branch $branch "${{ env.REPO_URL }}" "${{ env.SOURCE_DIR }}"
           Write-Output "✅ Source code cloned to: ${{ env.SOURCE_DIR }}"
+          
+      ### 6. .env 파일 복사
+      - name: Copy .env file
+        shell: powershell
+        run: |
+          $envSourcePath = 'D:\actions_work\netcore\env\frontend.env.production'
+          $envDestinationPath = 'D:\actions_work\netcore\source\backend\.env.production'
 
-      ### 6. 의존성 설치 및 빌드
+          # .env 파일이 존재하는지 확인하고 복사
+          if (Test-Path -Path $envSourcePath) {
+              Copy-Item -Path $envSourcePath -Destination $envDestinationPath -Force
+              Write-Output "✅ .env file copied to: $envDestinationPath"
+          } else {
+              Write-Output "❌ .env source file not found: $envSourcePath"
+              exit 1  # 실패 처리
+          }
+
+      ### 7. 의존성 설치 및 빌드
       - name: Install and Build Frontend
         shell: powershell
         run: |
@@ -116,7 +132,7 @@ jobs:
               exit 1
           }
 
-      ### 7. 빌드 결과 배포 (Nginx 디렉터리로 복사)
+      ### 8. 빌드 결과 배포 (Nginx 디렉터리로 복사)
       - name: Deploy Build Files
         shell: powershell
         run: |
@@ -132,7 +148,7 @@ jobs:
           Copy-Item -Path "$buildOutput\*" -Destination $deployDir -Recurse -Force
           Write-Output "✅ Build files deployed to: $deployDir"
 
-      ### 8. Nginx 서비스 재시작
+      ### 9. Nginx 서비스 재시작
       - name: Restart Nginx Service
         shell: powershell
         run: |
