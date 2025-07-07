@@ -199,15 +199,20 @@ jobs:
       - name: Restart Nginx Service
         shell: powershell
         run: |
-          $serviceName = "${{ env.SERVICE_NAME }}"
-
+          $serviceName = "Nginx"
+          
           Write-Output "🔄 Restarting Nginx service..."
-
-          # Nginx 서비스 재시작
-          if (Get-Service -Name $serviceName -ErrorAction SilentlyContinue) {
-              Restart-Service -Name $serviceName -Force
-              Write-Output "✅ Nginx service restarted successfully."
-          } else {
-              Write-Error "❌ Nginx service not found. Please ensure it is properly registered."
+        
+          try {
+              # 서비스 상태 확인 및 재시작
+              if ((Get-Service -Name $serviceName).Status -eq "Running") {
+                  Restart-Service -Name $serviceName -Force
+                  Write-Output "✅ Nginx service restarted successfully."
+              } else {
+                  Start-Service -Name $serviceName
+                  Write-Output "✅ Nginx service started successfully."
+              }
+          } catch {
+              Write-Error "❌ Failed to restart Nginx service. Error: $_"
               exit 1
-          }
+          } 
