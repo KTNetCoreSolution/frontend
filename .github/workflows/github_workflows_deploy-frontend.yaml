@@ -118,7 +118,7 @@ jobs:
           }
 
           # 함수 호출 (환경 변수 사용)
-          Backup-Files -SourcePath "${{ env.SOURCE_DIR }}" -BackupPath "${{ env.BACKUP_DIR }}\source\frontend""
+          Backup-Files -SourcePath "${{ env.SOURCE_DIR }}" -BackupPath "${{ env.BACKUP_DIR }}\source\frontend"
 
       ### 5. 최신 소스 코드 가져오기
       - name: Checkout Source Code
