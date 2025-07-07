@@ -70,36 +70,52 @@ jobs:
           git config --global --add safe.directory ${{ env.SOURCE_DIR }}
           Write-Output "✅ Git safe directory added: ${{ env.SOURCE_DIR }}"
 
-      ### 4. 현재 소스 코드 백업
-      - name: Backup Current Source
-        shell: powershell
-        run: |
-          function Backup-Files {
-              param([string]$SourcePath, [string]$BackupPath)
-              $currentMonthDir = Join-Path -Path $BackupPath -ChildPath (Get-Date -Format 'yyyyMM')
-              if (!(Test-Path -Path $currentMonthDir)) {
-                  New-Item -ItemType Directory -Path $currentMonthDir -Force
-              }
-              $currentTime = "$(Get-Date -Format 'yyyyMMdd-HHmmss').zip"
-              Compress-Archive -Path "$SourcePath\*" -DestinationPath (Join-Path -Path $currentMonthDir -ChildPath $currentTime) -Force
-              Write-Output "✅ Backup completed at $currentMonthDir."
-          }
-          Backup-Files -SourcePath "${{ env.SOURCE_DIR }}" -BackupPath "${{ env.BACKUP_DIR }}/source/frontend"
+        ### 4. 현재 소스 코드 백업
+        - name: Backup Current Source
+          shell: powershell
+          run: |
+            # 백업 관련 함수 정의
+            function Backup-Files {
+                param([string]$SourcePath, [string]$BackupPath)
 
-      ### 5. 최신 소스 코드 가져오기
-      - name: Checkout Source Code
-        shell: powershell
-        run: |
-          $branch = 'main'
+                # 백업 대상 디렉터리 (월별 디렉터리) 생성
+                $currentMonthDir = Join-Path -Path $BackupPath -ChildPath (Get-Date -Format 'yyyyMM')
+                if (-not (Test-Path -Path $currentMonthDir)) {
+                    Write-Output "📂 Creating backup directory: $currentMonthDir"
+                    New-Item -ItemType Directory -Path $currentMonthDir -Force
+                }
 
-          # 기존 소스 제거
-          if (Test-Path -Path "${{ env.SOURCE_DIR }}") {
-              Remove-Item -Path "${{ env.SOURCE_DIR }}" -Recurse -Force -ErrorAction SilentlyContinue
-          }
+                # 압축 파일 이름 설정
+                $currentTime = "$(Get-Date -Format 'yyyyMMdd-HHmmss').zip"
+                $backupFilePath = Join-Path -Path $currentMonthDir -ChildPath $currentTime
 
-          # 최신 코드를 클론
-          git clone --branch $branch "${{ env.REPO_URL }}" "${{ env.SOURCE_DIR }}"
-          Write-Output "✅ Source code cloned to: ${{ env.SOURCE_DIR }}"
+                # 압축 생성 (현재 소스 백업)
+                Write-Output "🔄 Compressing source files from $SourcePath to $backupFilePath"
+                Compress-Archive -Path "$SourcePath\*" -DestinationPath $backupFilePath -Force
+
+                Write-Output "✅ Backup completed at $backupFilePath"
+            }
+
+            # 함수 호출 (환경 변수 사용)
+            Backup-Files -SourcePath "${{ env.SOURCE_DIR }}" -BackupPath "${{ env.BACKUP_DIR }}\source\frontend"
+
+        ### 5. 최신 소스 코드 가져오기
+        - name: Checkout Source Code
+          shell: powershell
+          run: |
+            $branch = 'main'
+
+            # 소스 디렉터리 삭제
+            if (Test-Path -Path "${{ env.SOURCE_DIR }}") {
+                Write-Output "📂 Removing existing source directory: ${{ env.SOURCE_DIR }}"
+                Remove-Item -Path "${{ env.SOURCE_DIR }}" -Recurse -Force -ErrorAction SilentlyContinue
+                Write-Output "✅ Existing source directory removed: ${{ env.SOURCE_DIR }}"
+            }
+
+            # 최신 코드 클론
+            Write-Output "🔄 Cloning repository from: ${{ env.REPO_URL }} (branch: $branch)"
+            git clone --branch $branch "${{ env.REPO_URL }}" "${{ env.SOURCE_DIR }}"
+            Write-Output "✅ Source code cloned successfully to: ${{ env.SOURCE_DIR }}"
           
        ### 6. .env 파일 복사
         - name: Copy .env file
