@@ -9,7 +9,7 @@ env:
   BASE_DIR: D:/actions_work/netcore
   SOURCE_DIR: D:/actions_work/netcore/source/frontend
   BACKUP_DIR: D:/actions_work/netcore/backup
-  DEPLOY_DIR: D:/tool/nginx/html  # Nginx 정적 파일 루트 디렉터리 경로
+  DEPLOY_DIR: D:/actions_work/netcore/deploy/frontend  # Nginx 정적 파일 루트 디렉터리 경로
   REPO_URL: https://${{ secrets.GITHUB_ACTOR }}:${{ secrets.KTNETCOREACTION }}@github.com/KTNetCoreSolution/frontend.git
 
   # Nginx 서비스 관련 환경 변수
