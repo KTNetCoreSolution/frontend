@@ -117,20 +117,27 @@ jobs:
               exit 1  # 실패 처리
           }
 
-      ### 7. 의존성 설치 및 빌드
-      - name: Install and Build Frontend
-        shell: powershell
-        run: |
-          cd "${{ env.SOURCE_DIR }}"
-          npm ci
-          npm run build
+        ### 7. 의존성 설치 및 빌드
+        - name: Install and Build Frontend
+          shell: powershell
+          run: |
+            cd "${{ env.SOURCE_DIR }}"
 
-          if ($?) {
-              Write-Output "✅ Frontend build completed successfully."
-          } else {
-              Write-Error "❌ Frontend build failed."
-              exit 1
-          }
+            # 의존성 설치
+            Write-Output "📦 Installing dependencies using npm install..."
+            npm install
+
+            # 빌드 실행
+            Write-Output "⚙️ Starting Vite production build..."
+            npm run build -- --mode production
+
+            # 빌드 성공 여부 확인
+            if ($?) {
+                Write-Output "✅ Frontend build completed successfully."
+            } else {
+                Write-Error "❌ Frontend build failed."
+                exit 1
+            }
 
       ### 8. 빌드 결과 배포 (Nginx 디렉터리로 복사)
       - name: Deploy Build Files
@@ -139,14 +146,17 @@ jobs:
           $deployDir = "${{ env.DEPLOY_DIR }}"
           $buildOutput = "${{ env.SOURCE_DIR }}\dist"
 
+          Write-Output "📂 Deploying build files to Nginx directory..."
+
           # 기존 배포 파일 삭제
           if (Test-Path -Path $deployDir) {
+              Write-Output "⚠️ Clearing existing files in: $deployDir"
               Remove-Item -Path $deployDir -Recurse -Force
           }
 
           # 새 빌드 파일 복사
           Copy-Item -Path "$buildOutput\*" -Destination $deployDir -Recurse -Force
-          Write-Output "✅ Build files deployed to: $deployDir"
+          Write-Output "✅ Build files successfully deployed to: $deployDir"
 
       ### 9. Nginx 서비스 재시작
       - name: Restart Nginx Service
@@ -154,9 +164,10 @@ jobs:
         run: |
           $serviceName = "${{ env.SERVICE_NAME }}"
 
+          Write-Output "🔄 Restarting Nginx service..."
+
           # Nginx 서비스 재시작
           if (Get-Service -Name $serviceName -ErrorAction SilentlyContinue) {
-              Write-Output "🔄 Restarting Nginx service..."
               Restart-Service -Name $serviceName -Force
               Write-Output "✅ Nginx service restarted successfully."
           } else {
