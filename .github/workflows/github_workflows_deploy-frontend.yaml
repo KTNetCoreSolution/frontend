@@ -42,6 +42,11 @@ jobs:
               Write-Error "❌ Node.js v22.x is required. Current version: $currentVersion"
               exit 1
           }
+      - name: whoami
+        shell: powershell
+        run: |
+          Write-Output "🔍 Current Runner Account:"
+          whoami
 
       ### 2. Nginx를 Windows 서비스로 등록 (필요 시)
       - name: Register Nginx as Windows Service
