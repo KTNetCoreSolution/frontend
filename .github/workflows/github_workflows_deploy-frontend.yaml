@@ -164,40 +164,37 @@ jobs:
         shell: powershell
         run: |
           cd "${{ env.SOURCE_DIR }}"
-
-          # 의존성 설치
+      
           Write-Output "📦 Installing dependencies using npm install..."
           npm install
-
-          # 빌드 실행
-          Write-Output "⚙️ Starting Vite production build..."
+      
+          Write-Output "⚙️ Starting production build..."
           npm run build
-
-          # 빌드 성공 여부 확인
+      
           if ($?) {
               Write-Output "✅ Frontend build completed successfully."
           } else {
               Write-Error "❌ Frontend build failed."
               exit 1
           }
-
+      
       ### 8. 빌드 결과 배포 (Nginx 디렉터리로 복사)
       - name: Deploy Build Files
         shell: powershell
         run: |
           $deployDir = "${{ env.DEPLOY_DIR }}"
           $buildOutput = "${{ env.SOURCE_DIR }}\dist"
-
+      
           Write-Output "📂 Deploying build files to Nginx directory..."
-
+      
           # 기존 배포 파일 삭제
           if (Test-Path -Path $deployDir) {
               Write-Output "⚠️ Clearing existing files in: $deployDir"
-              Remove-Item -Path $deployDir -Recurse -Force
+              Get-ChildItem -Path $deployDir -Recurse | Remove-Item -Recurse -Force
           }
-
-          # 새 빌드 파일 복사
-          Copy-Item -Path "$buildOutput\*" -Destination $deployDir -Recurse -Force
+      
+          # 새 빌드 파일 복사 (폴더 구조 유지)
+          Copy-Item -Path "$buildOutput\*" -Destination "$deployDir\" -Recurse -Container -Force
           Write-Output "✅ Build files successfully deployed to: $deployDir"
 
       ### 9. Nginx 서비스 재시작
