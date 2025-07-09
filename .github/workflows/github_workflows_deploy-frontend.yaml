@@ -48,34 +48,14 @@ jobs:
           Write-Output "🔍 Current Runner Account:"
           whoami
 
-      ### 2. Nginx를 Windows 서비스로 등록 (필요 시)
-      - name: Register Nginx as Windows Service
-        shell: powershell
-        run: |
-          Write-Output "🔄 Checking if the Nginx service is already registered..."
-
-          # 서비스 등록 여부 확인
-          $serviceName = "${{ env.SERVICE_NAME }}"
-          $serviceDisplayName = "${{ env.SERVICE_DISPLAY_NAME }}"
-          $serviceDescription = "${{ env.SERVICE_DESCRIPTION }}"
-          $nginxPath = "${{ env.NGINX_PATH }}"
-
-          if (-not (Get-Service -Name $serviceName -ErrorAction SilentlyContinue)) {
-              Write-Output "⚙️ Registering Nginx as a Windows service..."
-              New-Service -Name $serviceName -DisplayName $serviceDisplayName -Description $serviceDescription -BinaryPathName $nginxPath -StartupType Automatic
-              Write-Output "✅ Nginx is successfully registered as a Windows service."
-          } else {
-              Write-Output "✅ Nginx is already registered as a Windows service."
-          }
-
-      ### 3. Git Safe Directory 설정
+      ### 2. Git Safe Directory 설정
       - name: Add Safe Directory
         shell: powershell
         run: |
           git config --global --add safe.directory ${{ env.SOURCE_DIR }}
           Write-Output "✅ Git safe directory added: ${{ env.SOURCE_DIR }}"
 
-      ### 4. 현재 소스 코드 백업
+      ### 3. 현재 소스 코드 백업
       - name: Backup Current Source
         shell: powershell
         run: |
@@ -125,7 +105,7 @@ jobs:
           # 함수 호출 (환경 변수 사용)
           Backup-Files -SourcePath "${{ env.SOURCE_DIR }}" -BackupPath "${{ env.BACKUP_DIR }}\source\frontend"
 
-      ### 5. 최신 소스 코드 가져오기
+      ### 4. 최신 소스 코드 가져오기
       - name: Checkout Source Code
         shell: powershell
         run: |
@@ -143,7 +123,7 @@ jobs:
           git clone --branch $branch "${{ env.REPO_URL }}" "${{ env.SOURCE_DIR }}"
           Write-Output "✅ Source code cloned successfully to: ${{ env.SOURCE_DIR }}"
 
-      ### 6. .env 파일 복사
+      ### 5. .env 파일 복사
       - name: Copy .env file
         shell: powershell
         run: |
@@ -159,7 +139,7 @@ jobs:
               exit 1  # 실패 처리
           }
 
-      ### 7. 의존성 설치 및 빌드
+      ### 6. 의존성 설치 및 빌드
       - name: Install and Build Frontend
         shell: powershell
         run: |
@@ -178,7 +158,7 @@ jobs:
               exit 1
           }
       
-      ### 8. 빌드 결과 배포 (Nginx 디렉터리로 복사)
+      ### 7. 빌드 결과 배포 (Nginx 디렉터리로 복사)
       - name: Deploy Build Files
         shell: powershell
         run: |
@@ -197,7 +177,7 @@ jobs:
           Copy-Item -Path "$buildOutput\*" -Destination "$deployDir\" -Recurse -Container -Force
           Write-Output "✅ Build files successfully deployed to: $deployDir"
 
-      ### 9. Nginx 서비스 재시작
+      ### 8. Nginx 서비스 재시작
       - name: Restart Nginx Service
         shell: powershell
         run: |
