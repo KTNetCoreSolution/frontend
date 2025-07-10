@@ -199,38 +199,5 @@ jobs:
           } catch {
               Write-Error "❌ Failed to restart Nginx service. Error: $_"
               exit 1
-          } 
+          }       
           
-          ### 8. Nginx 서비스 재시작
-- name: Check Backend Service & Restart Nginx
-  shell: powershell
-  run: |
-    $backendServiceName = "Run_backend_service"
-    $nginxServiceName = "Nginx"
-    
-    Write-Host "🔄 Checking backend service status: $backendServiceName..."
-    $backendServiceStatus = (Get-Service -Name $backendServiceName -ErrorAction SilentlyContinue).Status
-    if (-not $backendServiceStatus) {
-        Write-Error "❌ Backend service '$backendServiceName' not found."
-        exit 1
-    } elseif ($backendServiceStatus -eq 'Running') {
-        Write-Host "✅ Backend service '$backendServiceName' is running."
-    } else {
-        Write-Host "⚠️ Backend service '$backendServiceName' is not running. Restarting..."
-        Start-Service -Name $backendServiceName
-        Start-Sleep -Seconds 5
-    }
-
-    Write-Host "🔄 Restarting Nginx service: $nginxServiceName..."
-    try {
-        if ((Get-Service -Name $nginxServiceName).Status -eq "Running") {
-            Restart-Service -Name $nginxServiceName -Force
-            Write-Output "✅ Nginx service restarted successfully."
-        } else {
-            Start-Service -Name $nginxServiceName
-            Write-Output "✅ Nginx service started successfully."
-        }
-    } catch {
-        Write-Error "❌ Failed to restart Nginx service. Error: $_"
-        exit 1
-    }
