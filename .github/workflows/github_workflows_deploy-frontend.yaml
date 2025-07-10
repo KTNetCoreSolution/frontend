@@ -6,10 +6,10 @@ on:
       - main
 
 env:
-  BASE_DIR: D:/actions_work/netcore
-  SOURCE_DIR: D:/actions_work/netcore/source/frontend
-  BACKUP_DIR: D:/actions_work/netcore/backup
-  DEPLOY_DIR: D:/actions_work/netcore/deploy/frontend  # Nginx 정적 파일 루트 디렉터리 경로
+  BASE_DIR: D:/workspace/netcore
+  SOURCE_DIR: D:/workspace/netcore/source/frontend
+  BACKUP_DIR: D:/workspace/netcore/backup
+  DEPLOY_DIR: D:/workspace/netcore/deploy/frontend  # Nginx 정적 파일 루트 디렉터리 경로
   REPO_URL: https://${{ secrets.GITHUB_ACTOR }}:${{ secrets.KTNETCOREACTION }}@github.com/KTNetCoreSolution/frontend.git
 
   # Nginx 서비스 관련 환경 변수
@@ -102,8 +102,10 @@ jobs:
               Write-Output "✅ Backup completed at $backupFilePath"
           }
 
-          # 함수 호출 (환경 변수 사용)
+          #소스 백업
           Backup-Files -SourcePath "${{ env.SOURCE_DIR }}" -BackupPath "${{ env.BACKUP_DIR }}\source\frontend"
+          #배포 백업
+          Backup-Files -SourcePath "${{ env.DEPLOY_DIR }}" -BackupPath "${{ env.BACKUP_DIR }}\deploy\frontend"
 
       ### 4. 최신 소스 코드 가져오기
       - name: Checkout Source Code
@@ -127,8 +129,8 @@ jobs:
       - name: Copy .env file
         shell: powershell
         run: |
-          $envSourcePath = 'D:\actions_work\netcore\env\frontend.env.production'
-          $envDestinationPath = 'D:\actions_work\netcore\source\frontend\.env.production'
+          $envSourcePath = 'D:\workspace\netcore\env\frontend.env.production'
+          $envDestinationPath = 'D:\workspace\netcore\source\frontend\.env.production'
         
           # .env 파일이 존재하는지 확인하고 복사
           if (Test-Path -Path $envSourcePath) {
@@ -198,3 +200,37 @@ jobs:
               Write-Error "❌ Failed to restart Nginx service. Error: $_"
               exit 1
           } 
+          
+          ### 8. Nginx 서비스 재시작
+- name: Check Backend Service & Restart Nginx
+  shell: powershell
+  run: |
+    $backendServiceName = "Run_backend_service"
+    $nginxServiceName = "Nginx"
+    
+    Write-Host "🔄 Checking backend service status: $backendServiceName..."
+    $backendServiceStatus = (Get-Service -Name $backendServiceName -ErrorAction SilentlyContinue).Status
+    if (-not $backendServiceStatus) {
+        Write-Error "❌ Backend service '$backendServiceName' not found."
+        exit 1
+    } elseif ($backendServiceStatus -eq 'Running') {
+        Write-Host "✅ Backend service '$backendServiceName' is running."
+    } else {
+        Write-Host "⚠️ Backend service '$backendServiceName' is not running. Restarting..."
+        Start-Service -Name $backendServiceName
+        Start-Sleep -Seconds 5
+    }
+
+    Write-Host "🔄 Restarting Nginx service: $nginxServiceName..."
+    try {
+        if ((Get-Service -Name $nginxServiceName).Status -eq "Running") {
+            Restart-Service -Name $nginxServiceName -Force
+            Write-Output "✅ Nginx service restarted successfully."
+        } else {
+            Start-Service -Name $nginxServiceName
+            Write-Output "✅ Nginx service started successfully."
+        }
+    } catch {
+        Write-Error "❌ Failed to restart Nginx service. Error: $_"
+        exit 1
+    }
