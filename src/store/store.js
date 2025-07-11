@@ -7,11 +7,13 @@ const useStore = create(
       user: null,
       menu: null,
       loading: false,
+      view: 'main',
       setUser: (user) => set({ user }),
       clearUser: () => set({ user: null }),
       setMenu: (menu) => set({ menu }),
       clearMenu: () => set({ menu: null }),
       setLoading: (loading) => set({ loading }),
+      setView: (view) => set({ view }),
     }),
     {
       name: 'user-storage',

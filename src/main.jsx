@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter , useLocation} from 'react-router-dom';
+import { BrowserRouter, useLocation } from 'react-router-dom';
 import App from './App';
 import common from './utils/common';
 import "bootstrap/dist/css/bootstrap.css"; // 부트스트랩 CSS 먼저 로드
@@ -10,11 +10,27 @@ import './index.css'; // index.css는 부트스트랩 이후 로드
 import globalCss from './assets/css/global.css?raw';
 import globalMobileCss from './assets/css/globalMobile.css?raw';
 
+// 모바일 도메인 (서버 환경에서만 사용)
+const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
+const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
+
 const Main = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const isMobileRoute = location.pathname.startsWith('/mobile/');
+    const isMobileRoute = window.location.host === MOBILE_DOMAIN || location.pathname.startsWith(`${BASE_NAME}/mobile`);
+    
+    // 디버깅 로그
+    if (import.meta.env.VITE_DEBUG === 'true') {
+      console.log({
+        MOBILE_DOMAIN,
+        BASE_NAME,
+        'window.location.host': window.location.host,
+        'location.pathname': location.pathname,
+        isMobileRoute,
+      });
+    }
+
     const styleId = 'dynamic-css';
     let styleElement = document.getElementById(styleId);
 

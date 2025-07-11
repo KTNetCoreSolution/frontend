@@ -6,6 +6,10 @@ import MobileMainLayout from './components/mobile/MobileMainLayout';
 import { MsgPopupProvider } from './components/popup/context/MsgPopupContext';
 import { ErrorMsgPopupProvider } from './components/popup/context/ErrorMsgPopupContext';
 
+// 모바일 도메인 (서버 환경에서만 사용)
+const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
+const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
+
 // Dynamically import all .jsx files in pages folder and subfolders
 const modules = import.meta.glob('/src/pages/**/*.jsx', { eager: false });
 
@@ -66,13 +70,33 @@ const App = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // localhost:9090 또는 /mobile 경로로 모바일 판단
+  const isMobile = window.location.host === MOBILE_DOMAIN || location.pathname.startsWith(`${BASE_NAME}/mobile`);
+
   useEffect(() => {
+    // 디버깅 로그
+    if (import.meta.env.VITE_DEBUG === 'true') {
+      console.log({
+        MOBILE_DOMAIN,
+        BASE_NAME,
+        'window.location.host': window.location.host,
+        'location.pathname': location.pathname,
+        isMobile,
+        user,
+        routes: routes.map(r => r.path),
+      });
+    }
+
     const normalizedPath = location.pathname.toLowerCase();
-    if ((normalizedPath === '/' || normalizedPath === '') && user) {
-      navigate('/main', { replace: true });
-    } else if (normalizedPath === '/mobile/login' && user) {
+    const basePath = BASE_NAME || '/';
+    // localhost:9090에서 루트 접속 시 /mobile/Login으로 리다이렉트
+    if (window.location.host === MOBILE_DOMAIN && (normalizedPath === basePath || normalizedPath === `${basePath}/`)) {
+      navigate('/mobile/Login', { replace: true });
+    } else if ((normalizedPath === basePath || normalizedPath === `${basePath}/`) && user) {
+      navigate(isMobile ? '/mobile/Main' : '/main', { replace: true });
+    } else if (normalizedPath === `${basePath}/mobile/login` && user) {
       navigate('/mobile/Main', { replace: true });
-    } else if (normalizedPath === '/login' && user) {
+    } else if (normalizedPath === `${basePath}/login` && user) {
       navigate('/main', { replace: true });
     }
   }, [user, navigate, location.pathname]);
@@ -129,13 +153,7 @@ const App = () => {
 
             {/* Mobile routes with MobileMainLayout */}
             <Route
-              element={
-                user ? (
-                  <MobileMainLayout />
-                ) : (
-                  <Navigate to="/mobile/Login" replace />
-                )
-              }
+              element={user ? <MobileMainLayout /> : <Navigate to="/mobile/Login" replace />}
             >
               {routes
                 .filter(
@@ -159,10 +177,10 @@ const App = () => {
                 <Navigate
                   to={
                     user
-                      ? location.pathname.toLowerCase().startsWith('/mobile/')
+                      ? isMobile
                         ? '/mobile/Main'
                         : '/main'
-                      : location.pathname.toLowerCase().startsWith('/mobile/')
+                      : isMobile
                       ? '/mobile/Login'
                       : '/Login'
                   }
