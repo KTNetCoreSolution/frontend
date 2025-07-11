@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CommonPopup from "./CommonPopup";
 import styles from "./LicensePopup.module.css";
-import { fetchJsonData, fetchData } from "../../utils/dataUtils";
+import { fetchJsonData } from "../../utils/dataUtils";
 import license from '../../data/license.json';
 
 const LicensePopup = ({ show, onHide }) => {
@@ -16,34 +16,7 @@ const LicensePopup = ({ show, onHide }) => {
         const clientResult = await fetchJsonData(license);
         const clientDataArray = Array.isArray(clientResult) ? clientResult : [clientResult];
 
-        const serverResponse = await fetchData("public/licenses/info");
-        if (!serverResponse.success && serverResponse.errMsg) {
-          console.error(serverResponse.errMsg);
-          throw new Error(serverResponse.errMsg || "Server license data fetch failed");
-        }
-        const serverDataArray = Array.isArray(serverResponse.data) ? serverResponse.data : [];
-
-        // Normalize and combine data
-        const normalizedClientData = clientDataArray.map(item => ({
-          name: item.name,
-          license: item.license,
-          copyright: item.copyright,
-          repository: item.repository
-        }));
-
-        const normalizedServerData = serverDataArray.map(item => ({
-          name: item.library,
-          license: item.license,
-          copyright: item.copyright,
-          repository: item.url
-        }));
-
-        // Combine and sort by name
-        const combinedData = [...normalizedClientData, ...normalizedServerData].sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
-
-        setLicenseData(combinedData);
+        setLicenseData(clientDataArray);
       } catch (err) {
         setLicenseData([]);
         setError("데이터 로드 실패: " + err.message);
