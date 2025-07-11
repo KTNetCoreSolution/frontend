@@ -1,5 +1,5 @@
 import React, { Suspense, lazy, useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import useStore from './store/store';
 import MainLayout from './components/main/MainLayout';
 import MobileMainLayout from './components/mobile/MobileMainLayout';
@@ -104,92 +104,92 @@ const App = () => {
   return (
     <ErrorMsgPopupProvider>
       <MsgPopupProvider>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Routes>
-            {routes.map(({ path, component: Component, public: isPublic }) => {
-              if (!Component) {
-                console.warn(`Component is undefined for path: ${path}`);
+          <Suspense fallback={<div>Loading...</div>}>
+            <Routes>
+              {routes.map(({ path, component: Component, public: isPublic }) => {
+                if (!Component) {
+                  console.warn(`Component is undefined for path: ${path}`);
+                  return null;
+                }
+                if (isPublic) {
+                  return (
+                    <Route
+                      key={path}
+                      path={path}
+                      element={
+                        user ? (
+                          <Navigate
+                            to={path === '/Login' ? '/main' : path === '/join' ? '/main' : '/mobile/Main'}
+                            replace
+                          />
+                        ) : (
+                          <Component />
+                        )
+                      }
+                    />
+                  );
+                }
                 return null;
-              }
-              if (isPublic) {
-                return (
-                  <Route
-                    key={path}
-                    path={path}
-                    element={
-                      user ? (
-                        <Navigate
-                          to={path === '/Login' ? '/main' : path === '/join' ? '/main' : '/mobile/Main'}
-                          replace
-                        />
-                      ) : (
-                        <Component />
-                      )
+              })}
+
+              {/* Non-mobile routes with MainLayout */}
+              <Route
+                element={user ? <MainLayout /> : <Navigate to="/Login" replace />}
+              >
+                {routes
+                  .filter(
+                    ({ path }) =>
+                      !path.toLowerCase().startsWith('/mobile/') &&
+                      !routes.some((r) => r.public && r.path === path)
+                  )
+                  .map(({ path, component: Component }) => {
+                    if (!Component) {
+                      console.warn(`Component is undefined for path: ${path}`);
+                      return null;
                     }
+                    return <Route key={path} path={path} element={<Component />} />;
+                  })}
+              </Route>
+
+              {/* Mobile routes with MobileMainLayout */}
+              <Route
+                element={user ? <MobileMainLayout /> : <Navigate to="/mobile/Login" replace />}
+              >
+                {routes
+                  .filter(
+                    ({ path }) =>
+                      path.toLowerCase().startsWith('/mobile/') &&
+                      !routes.some((r) => r.public && r.path === path)
+                  )
+                  .map(({ path, component: Component }) => {
+                    if (!Component) {
+                      console.warn(`Component is undefined for path: ${path}`);
+                      return null;
+                    }
+                    return <Route key={path} path={path} element={<Component />} />;
+                  })}
+              </Route>
+
+              {/* Catch-all route */}
+              <Route
+                path="*"
+                element={
+                  <Navigate
+                    to={
+                      user
+                        ? isMobile
+                          ? '/mobile/Main'
+                          : '/main'
+                        : isMobile
+                        ? '/mobile/Login'
+                        : '/Login'
+                    }
+                    replace
                   />
-                );
-              }
-              return null;
-            })}
-
-            {/* Non-mobile routes with MainLayout */}
-            <Route
-              element={user ? <MainLayout /> : <Navigate to="/Login" replace />}
-            >
-              {routes
-                .filter(
-                  ({ path }) =>
-                    !path.toLowerCase().startsWith('/mobile/') &&
-                    !routes.some((r) => r.public && r.path === path)
-                )
-                .map(({ path, component: Component }) => {
-                  if (!Component) {
-                    console.warn(`Component is undefined for path: ${path}`);
-                    return null;
-                  }
-                  return <Route key={path} path={path} element={<Component />} />;
-                })}
-            </Route>
-
-            {/* Mobile routes with MobileMainLayout */}
-            <Route
-              element={user ? <MobileMainLayout /> : <Navigate to="/mobile/Login" replace />}
-            >
-              {routes
-                .filter(
-                  ({ path }) =>
-                    path.toLowerCase().startsWith('/mobile/') &&
-                    !routes.some((r) => r.public && r.path === path)
-                )
-                .map(({ path, component: Component }) => {
-                  if (!Component) {
-                    console.warn(`Component is undefined for path: ${path}`);
-                    return null;
-                  }
-                  return <Route key={path} path={path} element={<Component />} />;
-                })}
-            </Route>
-
-            {/* Catch-all route */}
-            <Route
-              path="*"
-              element={
-                <Navigate
-                  to={
-                    user
-                      ? isMobile
-                        ? '/mobile/Main'
-                        : '/main'
-                      : isMobile
-                      ? '/mobile/Login'
-                      : '/Login'
-                  }
-                  replace
-                />
-              }
-            />
-          </Routes>
-        </Suspense>
+                }
+              />
+            </Routes>
+          </Suspense>
       </MsgPopupProvider>
     </ErrorMsgPopupProvider>
   );

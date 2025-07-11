@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, useLocation } from 'react-router-dom';
+import { HashRouter as Router, useLocation } from 'react-router-dom';
 import App from './App';
-import common from './utils/common';
+// import common from './utils/common';
 import "bootstrap/dist/css/bootstrap.css"; // 부트스트랩 CSS 먼저 로드
 import "bootstrap-icons/font/bootstrap-icons.css"; // 부트스트랩 아이콘 CSS 로드
 import "bootstrap/dist/js/bootstrap.bundle.min.js"; // 로컬 부트스트랩 JavaScript 로드
@@ -75,12 +75,7 @@ const Main = () => {
 };
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <BrowserRouter
-    basename={common.getBaseName()}
-    future={{
-      v7_startTransition: true,
-    }}
-  >
+  <Router>
     <Main />
-  </BrowserRouter>
+  </Router>
 );
