@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CommonPopup from "./CommonPopup";
 import styles from "./LicensePopup.module.css";
-import { fetchJsonData, fetchDataGet } from "../../utils/dataUtils";
+import { fetchJsonData, fetchData } from "../../utils/dataUtils";
 import license from '../../data/license.json';
 
 const LicensePopup = ({ show, onHide }) => {
@@ -16,8 +16,7 @@ const LicensePopup = ({ show, onHide }) => {
         const clientResult = await fetchJsonData(license);
         const clientDataArray = Array.isArray(clientResult) ? clientResult : [clientResult];
 
-        // Fetch server-side license data
-        const serverResponse = await fetchDataGet("public/licenses/info");
+        const serverResponse = await fetchData("public/licenses/info");
         if (!serverResponse.success && serverResponse.errMsg) {
           console.error(serverResponse.errMsg);
           throw new Error(serverResponse.errMsg || "Server license data fetch failed");
