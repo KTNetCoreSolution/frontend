@@ -31,7 +31,7 @@ export default defineConfig(({ mode, command }) => {
     },
     base: baseName || '/', // VITE_BASE_NAME이 빈 값이면 /
     build: {
-      outDir: '../backend/src/main/resources/static',
+      outDir: 'dist',
       assetsDir: 'assets',
       sourcemap: env.VITE_DEBUG === 'true',
       minify: 'esbuild',
@@ -59,7 +59,7 @@ export default defineConfig(({ mode, command }) => {
   } else if (envType === 'dev' || envType === 'prod') {
     envConfig = {
       build: {
-        outDir: '../backend/src/main/resources/static',
+        outDir: 'dist',
         assetsDir: 'assets',
         sourcemap: env.VITE_DEBUG === 'true',
         minify: 'esbuild',
