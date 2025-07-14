@@ -6,16 +6,22 @@ import { fetchData } from '../../utils/dataUtils';
 import logo from '../../assets/images/logo.png';
 import styles from './MobileMainLayout.module.css';
 
+const ENV = import.meta.env.VITE_ENV || 'local';
+const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
+const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
+
 const MobileMainLayout = () => {
   const navigate = useNavigate();
   const { user, clearUser } = useStore();
   const [isChecking, setIsChecking] = useState(true);
 
+  const isMobileDomain = window.location.host === MOBILE_DOMAIN;
+
   useEffect(() => {
     const verifyUser = async () => {
       const isValid = await checkTokenValiditySimple(clearUser);
       if (!isValid && user) {
-        navigate('/mobile/Login', { replace: true });
+        navigate(ENV === 'local' && !isMobileDomain ? '/mobile/Login' : '/', { replace: true });
       }
       setIsChecking(false);
     };
@@ -27,10 +33,10 @@ const MobileMainLayout = () => {
       // Assume backend clears the HTTP-only cookie via logout endpoint
       await fetchData('auth/logout', {});
       clearUser();
-      navigate('/mobile/Login', { replace: true });
+      navigate(ENV === 'local' && !isMobileDomain ? '/mobile/Login' : '/', { replace: true });
     } catch (error) {
       console.error('Logout error:', error);
-      navigate('/mobile/Login', { replace: true });
+      navigate(ENV === 'local' && !isMobileDomain ? '/mobile/Login' : '/', { replace: true });
     }
   };
 

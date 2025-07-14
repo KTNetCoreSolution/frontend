@@ -12,6 +12,7 @@ import MobileLogin from './pages/mobile/MobileLogin';
 
 const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
 const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
+const ENV = import.meta.env.VITE_ENV || 'local';
 
 // 페이지 컴포넌트 자동 로딩
 const modules = import.meta.glob('/src/pages/**/*.jsx', { eager: false });
@@ -22,18 +23,12 @@ const routes = Object.keys(modules).map((path) => {
   const relativePath = pathMatch[1];
   const name = relativePath.split('/').pop();
 
-  let isPublic = name.toLowerCase() === 'login' || name.toLowerCase() === 'join';
+  let isPublic = name.toLowerCase() === 'join';
   let permission = isPublic ? null : name.toLowerCase();
   let routePath;
 
-  if (relativePath.toLowerCase() === 'mobile/mobilelogin') {
-    isPublic = true;
-    routePath = '/mobile/Login';
-  } else if (relativePath.toLowerCase() === 'mobile/mobilemain') {
+  if (relativePath.toLowerCase() === 'mobile/mobilemain') {
     routePath = '/mobile/Main';
-  } else if (name.toLowerCase() === 'login') {
-    isPublic = true;
-    routePath = '/Login';
   } else if (name.toLowerCase() === 'join') {
     isPublic = true;
     routePath = '/join';
@@ -71,44 +66,69 @@ const App = () => {
   const { user } = useStore();
   const location = useLocation();
 
-  const isMobile = window.location.host === MOBILE_DOMAIN || location.pathname.startsWith(`${BASE_NAME}/mobile`);
-
-  // 주소창이 BASE_NAME 루트(/)인지 판별
-  const currentPath = location.pathname.replace(BASE_NAME, '');
-  const isRootPath = currentPath === '/' || currentPath === '';
+  const isMobileDomain = window.location.host === MOBILE_DOMAIN;
+  const isMobile = isMobileDomain || location.pathname.startsWith(`${BASE_NAME}/mobile`);
+  const isLocal = ENV === 'local';
 
   return (
     <ErrorMsgPopupProvider>
       <MsgPopupProvider>
-        {/* 주소는 바뀌지 않고 로그인 화면을 보여줌 */}
-        {isRootPath && !user && (
-          isMobile ? <MobileLogin /> : <Login />
-        )}
-
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
-            {routes.map(({ path, component: Component, public: isPublic }) => {
-              if (!Component) return null;
-              if (isPublic) {
-                return (
-                  <Route
-                    key={path}
-                    path={path}
-                    element={
-                      user ? (
-                        <Navigate to={path === '/Login' || path === '/join' ? '/main' : '/mobile/Main'} replace />
-                      ) : (
-                        <Component />
-                      )
-                    }
-                  />
-                );
+            {/* Root path handling for web and mobile */}
+            <Route
+              path="/"
+              element={
+                user ? (
+                  <Navigate to={isMobile ? '/mobile/Main' : '/main'} replace />
+                ) : (
+                  isMobile ? <MobileLogin /> : <Login />
+                )
               }
-              return null;
+            />
+
+            {/* Public routes (e.g., /join) */}
+            {routes.map(({ path, component: Component, public: isPublic }) => {
+              if (!Component || !isPublic) return null;
+              return (
+                <Route
+                  key={path}
+                  path={path}
+                  element={
+                    user ? (
+                      <Navigate to={isMobile ? '/mobile/Main' : '/main'} replace />
+                    ) : (
+                      <Component />
+                    )
+                  }
+                />
+              );
             })}
 
+            {/* Local environment: Allow /mobile/Login for non-mobile domain */}
+            {isLocal && !isMobileDomain && (
+              <Route
+                path="/mobile/Login"
+                element={
+                  user ? (
+                    <Navigate to="/mobile/Main" replace />
+                  ) : (
+                    <MobileLogin />
+                  )
+                }
+              />
+            )}
+
+            {/* Development server: Redirect /Login and /mobile/Login to root */}
+            {!isLocal && (
+              <>
+                <Route path="/Login" element={<Navigate to="/" replace />} />
+                <Route path="/mobile/Login" element={<Navigate to="/" replace />} />
+              </>
+            )}
+
             {/* 일반 사용자용 레이아웃 */}
-            <Route element={user ? <MainLayout /> : <Navigate to="/Login" replace />}>
+            <Route element={user ? <MainLayout /> : <Navigate to="/" replace />}>
               {routes
                 .filter(
                   ({ path }) =>
@@ -121,7 +141,7 @@ const App = () => {
             </Route>
 
             {/* 모바일 사용자용 레이아웃 */}
-            <Route element={user ? <MobileMainLayout /> : <Navigate to="/mobile/Login" replace />}>
+            <Route element={user ? <MobileMainLayout /> : <Navigate to={isLocal && !isMobileDomain ? '/mobile/Login' : '/'} replace />}>
               {routes
                 .filter(
                   ({ path }) =>
@@ -143,9 +163,9 @@ const App = () => {
                       ? isMobile
                         ? '/mobile/Main'
                         : '/main'
-                      : isMobile
+                      : isLocal && !isMobileDomain && location.pathname.startsWith(`${BASE_NAME}/mobile`)
                       ? '/mobile/Login'
-                      : '/Login'
+                      : '/'
                   }
                   replace
                 />

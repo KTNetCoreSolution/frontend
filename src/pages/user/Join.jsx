@@ -105,7 +105,7 @@ const Join = ({ show, onHide }) => {
           errorMsgPopup(errMsg);
         } else {
           msgPopup("가입되었습니다.");
-          navigate('/login');
+          navigate('/'); // Changed from '/login'
           onHide();
         }
       }

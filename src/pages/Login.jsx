@@ -8,6 +8,9 @@ import { msgPopup } from '../utils/msgPopup';
 import { errorMsgPopup } from '../utils/errorMsgPopup';
 import LicensePopup from '../components/popup/LicensePopup';
 
+const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
+const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
+
 const Login = () => {
   const [empNo, setEmpNo] = useState('admin');
   const [empPwd, setEmpPwd] = useState('new1234!');
@@ -31,7 +34,14 @@ const Login = () => {
   };
 
   const handleMobileLoginRedirect = () => {
-    navigate('/mobile/Login');
+    if (import.meta.env.VITE_ENV === 'local') {
+      // Local: Navigate to /mobile/Login within the same domain
+      navigate('/mobile/Login');
+    } else {
+      const protocol = import.meta.env.VITE_ENV === 'local' ? 'http' : 'https';
+      const basePath = BASE_NAME ? `/${BASE_NAME}` : '';
+      window.location.href = `${protocol}://${MOBILE_DOMAIN}${basePath}`;
+    }
   };
 
   const handleJoinClick = () => {
