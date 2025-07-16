@@ -85,6 +85,7 @@ const OrgSearchPopup = ({ onClose, onConfirm }) => {
               );
               
               tableInstance.current.setData(updatedTreeData); // 데이터를 새로 설정
+              setData(updatedTreeData); // React 상태 동기화
               tableInstance.current.setPage(currentPage); // 이전 페이지로 이동
             };
             const span = document.createElement("span");
@@ -103,6 +104,7 @@ const OrgSearchPopup = ({ onClose, onConfirm }) => {
               );
               
               tableInstance.current.setData(updatedTreeData); // 데이터를 새로 설정
+              setData(updatedTreeData); // React 상태 동기화
               tableInstance.current.setPage(currentPage); // 이전 페이지로 이동
             };
             div.appendChild(checkbox);
