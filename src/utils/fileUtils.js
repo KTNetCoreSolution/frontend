@@ -1,7 +1,7 @@
 const fileUtils = {
   // 상수 정의 (환경 변수에서 가져오거나 디폴트값 사용)
-  _MAX_FILES: parseInt(import.meta.env.VITE_MAX_FILES, 10) || 5, // 최대 파일 수 (기본값 5)
-  _MAX_FILE_SIZE: parseInt(import.meta.env.VITE_MAX_FILE_SIZE, 10) || 50 * 1024 * 1024, // 최대 파일 크기 (기본값 50MB)
+  _MAX_FILES: parseInt(import.meta.env.VITE_MAX_FILES, 10) || 10, // 최대 파일 수 (기본값 10)
+  _MAX_FILE_SIZE: parseInt(import.meta.env.VITE_MAX_FILE_SIZE, 10) || 100 * 1024 * 1024, // 최대 파일 크기 (기본값 100MB)
   _ACCEPT: '*', // 기본적으로 모든 파일 허용
 
   // MAX_FILES getter/setter
