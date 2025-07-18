@@ -103,9 +103,8 @@ const UserSearchPopup = ({ onClose, onConfirm }) => {
           { headerHozAlign: "center", hozAlign: "center", title: "이름", field: "EMPNM", sorter: "string", width: 80 },
           { headerHozAlign: "center", hozAlign: "center", title: "조직코드", field: "ORGCD", sorter: "string", width: 80 },
           { headerHozAlign: "center", hozAlign: "left", title: "조직명", field: "ORGNM", sorter: "string", width: 100 },
-          { headerHozAlign: "center", hozAlign: "center", title: "직무명", field: "JOBNM", sorter: "string", width: 80 },
-          { headerHozAlign: "center", hozAlign: "center", title: "직무명2", field: "JOBNM2", sorter: "string", width: 80 },
-          { headerHozAlign: "center", hozAlign: "center", title: "레벨명", field: "LEVELNM", sorter: "string", width: 80 },
+          { headerHozAlign: "center", hozAlign: "center", title: "직책명", field: "LEVELNM", sorter: "string", width: 80 },
+          { headerHozAlign: "center", hozAlign: "center", title: "호칭명", field: "TITLENM", sorter: "string", width: 80 },
         ], [], { height: '40vh', headerHozAlign: "center", headerFilter: true, layout: 'fitColumns', index: "seq" });
         if (!tableInstance.current) throw new Error("createTable returned undefined or null");
 

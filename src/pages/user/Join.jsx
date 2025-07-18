@@ -11,8 +11,7 @@ const Join = ({ show, onHide }) => {
   const [empNm, setEmpNm] = useState('');
   const [empPwd, setEmpPwd] = useState('');
   const [confirmPwd, setConfirmPwd] = useState('');
-  const [phone, setPhone] = useState('');
-  const [mobile, setMobile] = useState('');
+    const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
 
@@ -22,7 +21,6 @@ const Join = ({ show, onHide }) => {
       setEmpNm('');
       setEmpPwd('');
       setConfirmPwd('');
-      setPhone('');
       setMobile('');
       setEmail('');
     }
@@ -38,9 +36,6 @@ const Join = ({ show, onHide }) => {
 
     const empNmValidation = commonUtils.validateVarcharLength(empNm, 50, '이름');
     if (!empNmValidation.valid) return empNmValidation.error;
-
-    const phoneValidation = commonUtils.validateVarcharLength(phone, 20, '전화번호');
-    if (!phoneValidation.valid) return phoneValidation.error;
 
     const mobileValidation = commonUtils.validateVarcharLength(mobile, 20, '핸드폰번호');
     if (!mobileValidation.valid) return mobileValidation.error;
@@ -62,9 +57,6 @@ const Join = ({ show, onHide }) => {
     }
 
     const phoneRegex = /^(\d{2,3})-(\d{3,4})-(\d{3,4})$/;
-    if (phone && !phoneRegex.test(phone)) {
-      return "전화번호 형식이 올바르지 않습니다. (예: 02-1234-5678, 031-7777-7777)";
-    }
     if (mobile && !phoneRegex.test(mobile)) {
       return "핸드폰번호 형식이 올바르지 않습니다. (예: 010-1234-5678, 010-7777-7777)";
     }
@@ -86,7 +78,6 @@ const Join = ({ show, onHide }) => {
       pEMPNO: empNo,
       pEMPNM: empNm,
       pEMPPWD: empPwd,
-      pPHONE: phone || '',
       pMOBILE: mobile,
       pEMAIL: email
     };
@@ -191,19 +182,6 @@ const Join = ({ show, onHide }) => {
                 </div>
                 <div className={styles.formRow}>
                   <div className={styles.formGroup}>
-                    <label htmlFor="phone" className="form-label">
-                      <i className="bi bi-telephone me-2"></i>전화번호
-                    </label>
-                    <input
-                      type="tel"
-                      className="form-control"
-                      id="phone"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="(예: 02-1234-5678)"
-                    />
-                  </div>
-                  <div className={styles.formGroup}>
                     <label htmlFor="mobile" className="form-label">
                       <i className="bi bi-phone me-2"></i>핸드폰번호 <i className="bi bi-asterisk text-danger"></i>
                     </label>
@@ -216,6 +194,9 @@ const Join = ({ show, onHide }) => {
                       required
                       placeholder="(예: 010-1234-5678)"
                     />
+                  </div>
+                  <div className={styles.formGroup}>
+                    {/* Empty div to maintain layout balance */}
                   </div>
                 </div>
                 <div className={styles.formRow}>
