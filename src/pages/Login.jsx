@@ -12,8 +12,9 @@ const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
 const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
 
 const Login = () => {
-  const [empNo, setEmpNo] = useState('admin');
-  const [empPwd, setEmpPwd] = useState('new1234!');
+  const isLocal = import.meta.env.VITE_ENV === 'local';
+  const [empNo, setEmpNo] = useState(isLocal ? 'admin' : '');
+  const [empPwd, setEmpPwd] = useState(isLocal ? 'new1234!' : '');
   const [showJoinPopup, setShowJoinPopup] = useState(false);
   const [showPasswordChangePopup, setShowPasswordChangePopup] = useState(false);
   const [isManualPasswordChange, setIsManualPasswordChange] = useState(false);
