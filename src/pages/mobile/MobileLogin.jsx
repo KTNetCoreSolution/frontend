@@ -5,8 +5,9 @@ import LicensePopup from '../../components/popup/LicensePopup';
 import styles from './MobileLogin.module.css';
 
 const MobileLogin = () => {
-  const [empNo, setEmpNo] = useState('admin');
-  const [empPwd, setEmpPwd] = useState('new1234!');
+  const isLocal = import.meta.env.VITE_ENV === 'local';
+  const [empNo, setEmpNo] = useState(isLocal ? 'admin' : '');
+  const [empPwd, setEmpPwd] = useState(isLocal ? 'new1234!' : '');
   const [error, setError] = useState('');
   const [showLicensePopup, setShowLicensePopup] = useState(false);
   const navigate = useNavigate();
