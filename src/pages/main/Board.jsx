@@ -32,14 +32,6 @@ const Board = ({ canWriteBoard }) => {
         }
       } catch (e) {
         console.error('Error fetching notices:', e);
-        const fallback = await import('../../data/notice.json');
-        setNotices(
-          fallback.default.map((item) => ({
-            id: item.NOTICEID,
-            title: item.TITLE,
-            date: item.REGEDT,
-          })) || []
-        );
       }
     };
     fetchNotices();
