@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { performLogin } from '../service/login';
+import { performLogin, fetchCaptcha } from '../service/login';
 import styles from './Login.module.css';
 import Join from '../pages/user/Join';
 import PasswordChange from '../pages/user/PasswordChange';
@@ -15,28 +15,43 @@ const Login = () => {
   const isLocal = import.meta.env.VITE_ENV === 'local';
   const [empNo, setEmpNo] = useState(isLocal ? 'admin' : '');
   const [empPwd, setEmpPwd] = useState(isLocal ? 'new1234!' : '');
+  const [captchaInput, setCaptchaInput] = useState('');
+  const [captchaImage, setCaptchaImage] = useState(null); // Initialize as null
   const [showJoinPopup, setShowJoinPopup] = useState(false);
   const [showPasswordChangePopup, setShowPasswordChangePopup] = useState(false);
   const [isManualPasswordChange, setIsManualPasswordChange] = useState(false);
   const [showLicensePopup, setShowLicensePopup] = useState(false);
   const navigate = useNavigate();
 
+  // Fetch CAPTCHA image on component mount
+  useEffect(() => {
+    loadCaptcha();
+  }, []);
+
+  const loadCaptcha = async () => {
+    try {
+      const captchaUrl = await fetchCaptcha();
+      setCaptchaImage(captchaUrl);
+    } catch (error) {
+      errorMsgPopup(error.message);
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
-    const response = await performLogin('web', empNo, empPwd, navigate, (error) => {
+    const response = await performLogin('web', empNo, empPwd, captchaInput, navigate, (error) => {
       errorMsgPopup(error);
     });
 
     if (response && response.data.user.pwdChgYn === 'Y') {
       setIsManualPasswordChange(false);
-      msgPopup("최초 시에 비밀번호는 new1234!입니다.<br>기간이 만료되어 비밀번호를 변경해야 합니다.");
+      msgPopup("기간이 만료되어 비밀번호를 변경해야 합니다.");
       setShowPasswordChangePopup(true);
     }
   };
 
   const handleMobileLoginRedirect = () => {
     if (import.meta.env.VITE_ENV === 'local') {
-      // Local: Navigate to /mobile/Login within the same domain
       navigate('/mobile/Login');
     } else {
       const protocol = import.meta.env.VITE_ENV === 'local' ? 'http' : 'https';
@@ -88,6 +103,34 @@ const Login = () => {
             value={empPwd}
             onChange={(e) => setEmpPwd(e.target.value)}
             placeholder="비밀번호를 입력하세요"
+            required
+            className={styles.input}
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="captcha" className={styles.label}>
+            <i className="bi bi-shield-check"></i> 캡챠
+          </label>
+          <div className={styles.captchaContainer}>
+            {captchaImage ? (
+              <img src={captchaImage} alt="CAPTCHA" className={styles.captchaImage} />
+            ) : (
+              <div className={styles.captchaPlaceholder}>Loading CAPTCHA...</div>
+            )}
+            <button
+              type="button"
+              className={styles.smallButton}
+              onClick={loadCaptcha}
+            >
+              <i className="bi bi-arrow-repeat"></i>
+            </button>
+          </div>
+          <input
+            id="captcha"
+            type="text"
+            value={captchaInput}
+            onChange={(e) => setCaptchaInput(e.target.value)}
+            placeholder="캡챠 코드를 입력하세요"
             required
             className={styles.input}
           />

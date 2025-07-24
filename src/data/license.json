@@ -178,5 +178,17 @@
     "license": "Eclipse Public License 2.0",
     "copyright": "Copyright © Eclipse Foundation",
     "repository": "https://junit.org/junit5/"
+  },
+    {
+    "name": "Apache Commons Lang",
+    "license": "Apache License 2.0",
+    "copyright": "Copyright © 2001-2023 The Apache Software Foundation",
+    "repository": "https://commons.apache.org/proper/commons-lang/"
+  },
+  {
+    "name": "Java AWT and ImageIO (OpenJDK)",
+    "license": "GNU General Public License v2 with Classpath Exception note: Free for commercial and enterprise use with OpenJDK distributions (e.g., Adoptium Temurin, Amazon Corretto).",
+    "copyright": "Copyright © 1993-2023 Oracle and/or its affiliates, OpenJDK contributors",
+    "repository": "https://openjdk.java.net/"
   }
 ]
