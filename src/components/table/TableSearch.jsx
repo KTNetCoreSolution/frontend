@@ -4,6 +4,7 @@ import "tabulator-tables/dist/css/tabulator.min.css";
 import '../../assets/css/tabulatorGlobal.css';
 import styles from './TableSearch.module.css';
 import TableTitle from './TableTitle'; // Import the new TableTitle component
+import { fi } from 'date-fns/locale';
 
 const TableSearch = ({ filterFields, filters, setFilters, onDownloadExcel, children, buttonStyles, rowCount }) => {
   return (
@@ -11,7 +12,7 @@ const TableSearch = ({ filterFields, filters, setFilters, onDownloadExcel, child
       <div className={styles.searchSection}>
         <div className={styles.formGroupContainer}>
           {filterFields.map((field) => (
-            <div key={field.id} className={styles.formGroup}>
+            <div id={field.divid} key={field.id} className={styles.formGroup} style={{display: field.display}}>
               <label htmlFor={field.id}>{field.label}</label>
               {field.type === 'text' ? (
                 <input
@@ -23,8 +24,9 @@ const TableSearch = ({ filterFields, filters, setFilters, onDownloadExcel, child
                   onChange={(e) => handleInputChange(e, setFilters)}
                   style={{
                     width: field.width || 'auto',
-                    height: field.height || 'auto',
+                    height: field.height || 'auto',            
                   }}
+                  disabled={field.disabled || ''}
                 />
               ) : field.type === 'select' ? (
                 <select
@@ -36,6 +38,7 @@ const TableSearch = ({ filterFields, filters, setFilters, onDownloadExcel, child
                     width: field.width || 'auto',
                     height: field.height || 'auto',
                   }}
+                  disabled={field.disabled || ''}
                 >
                   {field.options.map((option) => (
                     <option key={option.value} value={option.value}>
