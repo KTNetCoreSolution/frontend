@@ -6,7 +6,7 @@ import styles from './TableSearch.module.css';
 import TableTitle from './TableTitle'; // Import the new TableTitle component
 import { fi } from 'date-fns/locale';
 
-const TableSearch = ({ filterFields, filters, setFilters, onDownloadExcel, children, buttonStyles, rowCount }) => {
+const TableSearch = ({ filterFields, filters, setFilters, onDownloadExcel, children, buttonStyles, rowCount, excelYn }) => {
   return (
     <div>
       <div className={styles.searchSection}>
@@ -51,7 +51,7 @@ const TableSearch = ({ filterFields, filters, setFilters, onDownloadExcel, child
           ))}
           {children && <div className={buttonStyles?.btnGroupCustom}>{children}</div>}
         </div>
-        <div className={styles.buttonContainer}>
+        <div className={styles.buttonContainer} style={{display: excelYn === 'N' ? 'none' : 'flex'}}>
           <button onClick={onDownloadExcel} className={styles.downloadButton}>
             엑셀 다운로드
           </button>

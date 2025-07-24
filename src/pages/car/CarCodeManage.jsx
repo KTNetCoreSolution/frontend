@@ -425,6 +425,7 @@ const CarCodeManage = () => {
         setFilters={setTableFilters} 
         rowCount={rowCount} 
         buttonStyles={styles}
+        excelYn={'N'}
       >
         <div className={styles.btnGroupCustom}>
           <button
