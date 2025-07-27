@@ -69,6 +69,13 @@
   font-size: 0.9rem;
 }
 
+.captchaTimer {
+  font-size: 1rem;
+  color: #ff0000;
+  width: 40px;
+  text-align: center;
+}
+
 .button {
   width: 100%;
   padding: 0.75rem;
@@ -139,6 +146,11 @@
     width: 160px;
     height: 55px;
   }
+
+  .captchaTimer {
+    font-size: 1.1rem;
+    width: 45px;
+  }
 }
 
 /* Mobile portrait mode */
@@ -167,6 +179,11 @@
   .captchaPlaceholder {
     width: 120px;
     height: 40px;
+  }
+
+  .captchaTimer {
+    font-size: 0.9rem;
+    width: 35px;
   }
 }
 
@@ -203,5 +220,10 @@
   .captchaPlaceholder {
     width: 120px;
     height: 40px;
+  }
+
+  .captchaTimer {
+    font-size: 0.9rem;
+    width: 35px;
   }
 }

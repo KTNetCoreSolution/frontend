@@ -9,24 +9,53 @@ const MobileLogin = () => {
   const [empNo, setEmpNo] = useState(isLocal ? 'admin' : '');
   const [empPwd, setEmpPwd] = useState(isLocal ? 'new1234!' : '');
   const [captchaInput, setCaptchaInput] = useState('');
-  const [captchaImage, setCaptchaImage] = useState(null); // Initialize as null
+  const [captchaImage, setCaptchaImage] = useState(null);
+  const [timer, setTimer] = useState(60);
+  const [isCaptchaLoading, setIsCaptchaLoading] = useState(true);
+  const [captchaError, setCaptchaError] = useState('');
   const [error, setError] = useState('');
   const [showLicensePopup, setShowLicensePopup] = useState(false);
   const navigate = useNavigate();
 
-  // Fetch CAPTCHA image on component mount
+  // 타이머 관리
   useEffect(() => {
-    loadCaptcha();
+    const interval = setInterval(() => {
+      setTimer((prev) => {
+        if (prev <= 1) {
+          loadCaptcha();
+          return 60;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  const loadCaptcha = async () => {
+  // 캡챠 이미지 로드 (재시도 로직 추가)
+  const loadCaptcha = async (retryCount = 3) => {
+    if (retryCount <= 0) {
+      setIsCaptchaLoading(false);
+      setCaptchaError('캡챠 이미지를 불러오지 못했습니다. 다시 시도해주세요.');
+      return;
+    }
+
+    setIsCaptchaLoading(true);
+    setCaptchaError('');
     try {
       const captchaUrl = await fetchCaptcha();
       setCaptchaImage(captchaUrl);
+      setTimer(60);
+      setIsCaptchaLoading(false);
     } catch (error) {
-      setError(error.message);
+      console.error('캡챠 로드 실패, 재시도 남음:', retryCount - 1, error.message);
+      setTimeout(() => loadCaptcha(retryCount - 1), 1000); // 1초 후 재시도
     }
   };
+
+  // 컴포넌트 마운트 시 캡챠 로드
+  useEffect(() => {
+    loadCaptcha();
+  }, []);
 
   const handleLicenseClick = () => {
     setShowLicensePopup(true);
@@ -70,14 +99,13 @@ const MobileLogin = () => {
           />
         </div>
         <div className={styles.formGroup}>
-          <label htmlFor="captcha" className={styles.label}>
-            <i className="bi bi-shield-check"></i> 캡챠
-          </label>
           <div className={styles.captchaContainer}>
             {captchaImage ? (
               <img src={captchaImage} alt="CAPTCHA" className={styles.captchaImage} />
             ) : (
-              <div className={styles.captchaPlaceholder}>Loading CAPTCHA...</div>
+              <div className={styles.captchaPlaceholder}>
+                {isCaptchaLoading ? 'Loading CAPTCHA...' : captchaError || '캡챠 로드 실패'}
+              </div>
             )}
             <button
               type="button"
@@ -86,14 +114,15 @@ const MobileLogin = () => {
             >
               <i className="bi bi-arrow-repeat"></i>
             </button>
+            <span className={styles.captchaTimer}>{timer}초</span>
           </div>
           <input
             id="captcha"
             type="text"
             className={styles.input}
             value={captchaInput}
-            onChange={(e) => setCaptchaInput(e.target.value)}
-            placeholder="캡챠 코드를 입력하세요"
+            onChange={(e) => setCaptchaInput(e.target.value.toUpperCase())}
+            placeholder="코드를 입력하세요"
             required
           />
         </div>
