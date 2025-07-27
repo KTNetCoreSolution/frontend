@@ -1,5 +1,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 import useStore from '../../store/store';
 import { checkTokenValiditySimple } from '../../utils/authUtils';
 import { fetchData } from '../../utils/dataUtils';
@@ -12,7 +14,7 @@ const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
 
 const MobileMainLayout = () => {
   const navigate = useNavigate();
-  const { user, clearUser } = useStore();
+  const { user, clearUser, loading } = useStore();
   const [isChecking, setIsChecking] = useState(true);
 
   const isMobileDomain = window.location.host === MOBILE_DOMAIN;
@@ -30,7 +32,6 @@ const MobileMainLayout = () => {
 
   const handleLogout = async () => {
     try {
-      // Assume backend clears the HTTP-only cookie via logout endpoint
       await fetchData('auth/logout', {});
       clearUser();
       navigate(ENV === 'local' && !isMobileDomain ? '/mobile/Login' : '/', { replace: true });
@@ -54,6 +55,20 @@ const MobileMainLayout = () => {
           Logout
         </button>
       </header>
+      {loading.isLoading && (
+        <div className={styles.progressBarContainer}>
+          <CircularProgressbar
+            value={loading.progress}
+            text={`${Math.round(loading.progress)}%`}
+            styles={buildStyles({
+              pathColor: '#007bff',
+              trailColor: '#f0f0f0',
+              textColor: '#007bff',
+              textSize: '24px',
+            })}
+          />
+        </div>
+      )}
       <section className={styles.main}>
         <Suspense fallback={<div>Loading...</div>}>
           <Outlet />

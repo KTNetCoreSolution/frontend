@@ -6,7 +6,7 @@ const useStore = create(
     (set) => ({
       user: null,
       menu: null,
-      loading: false,
+      loading: { isLoading: false, progress: 0 },
       view: 'main',
       setUser: (user) => set({ user }),
       clearUser: () => set({ user: null }),

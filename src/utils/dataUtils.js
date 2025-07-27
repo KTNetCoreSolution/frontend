@@ -1,5 +1,31 @@
 import api from './api';
 import common from './common';
+import useStore from '../store/store';
+
+/**
+ * 진행률 시뮬레이션 함수
+ * @param {Function} setLoading - 로딩 상태를 설정하는 함수
+ * @param {number} totalDuration - 전체 진행 시간 (밀리초, 기본 500ms)
+ * @returns {Promise<void>} 진행률 시뮬레이션 완료 후 resolve
+ */
+const simulateProgress = async (setLoading, totalDuration = 500) => {
+  const interval = 100;
+  const increment = 100 / (totalDuration / interval);
+  let currentProgress = 0;
+
+  return new Promise((resolve) => {
+    const timer = setInterval(() => {
+      currentProgress = Math.min(currentProgress + increment, 90);
+      setLoading({ isLoading: true, progress: currentProgress });
+    }, interval);
+
+    setTimeout(() => {
+      clearInterval(timer);
+      setLoading({ isLoading: true, progress: 100 });
+      resolve();
+    }, totalDuration);
+  });
+};
 
 /**
  * JSON 데이터를 필터링하여 반환합니다.
@@ -42,12 +68,17 @@ export async function fetchJsonData(jsonData, filters = {}) {
  * @returns {Promise<any|Error>} 응답 데이터 (배열 또는 객체) 또는 오류 객체
  */
 export async function fetchData(url, filters = {}, config = {}) {
+  const { setLoading } = useStore.getState();
   try {
+    setLoading({ isLoading: true, progress: 0 });
+    await simulateProgress(setLoading, 500);
     const response = await api.post(`${common.getServerUrl(url)}`, filters, config);
     return response.data;
   } catch (error) {
     console.error('데이터 가져오기 실패:', error.message, error.response?.data);
     throw error;
+  } finally {
+    setLoading({ isLoading: false, progress: 0 });
   }
 }
 
@@ -59,7 +90,10 @@ export async function fetchData(url, filters = {}, config = {}) {
  * @returns {Promise<any|Error>} 응답 데이터 (배열 또는 객체) 또는 오류 객체
  */
 export async function fetchDataGet(url, filters = {}, config = {}) {
+  const { setLoading } = useStore.getState();
   try {
+    setLoading({ isLoading: true, progress: 0 });
+    await simulateProgress(setLoading, 500);
     const queryParams = new URLSearchParams(filters).toString();
     const fullUrl = queryParams ? `${common.getServerUrl(url)}?${queryParams}` : `${common.getServerUrl(url)}`;
     const response = await api.get(fullUrl, config);
@@ -67,6 +101,8 @@ export async function fetchDataGet(url, filters = {}, config = {}) {
   } catch (error) {
     console.error('데이터 가져오기 실패 (GET):', error.message, error.response?.data);
     throw error;
+  } finally {
+    setLoading({ isLoading: false, progress: 0 });
   }
 }
 
@@ -78,7 +114,10 @@ export async function fetchDataGet(url, filters = {}, config = {}) {
  * @returns {Promise<Object>} 응답 데이터 또는 오류 메시지
  */
 export const fetchFileData = async (url, params, config = {}) => {
+  const { setLoading } = useStore.getState();
   try {
+    setLoading({ isLoading: true, progress: 0 });
+    await simulateProgress(setLoading, 500);
     const response = await api.post(`${common.getServerUrl(url)}`, params, config);
     return response.data || { success: false, message: "No data returned" };
   } catch (error) {
@@ -86,6 +125,8 @@ export const fetchFileData = async (url, params, config = {}) => {
       success: false,
       message: error.response?.data?.message || error.message || "Request failed",
     };
+  } finally {
+    setLoading({ isLoading: false, progress: 0 });
   }
 };
 
@@ -97,10 +138,16 @@ export const fetchFileData = async (url, params, config = {}) => {
  * @returns {Promise<Object>} 응답 데이터 또는 오류 메시지
  */
 export const fetchFileUpload = async (url, formData, config = {}) => {
+  const { setLoading } = useStore.getState();
   try {
+    setLoading({ isLoading: true, progress: 0 });
     const response = await api.post(`${common.getServerUrl(url)}`, formData, {
       ...config,
       headers: { "Content-Type": "multipart/form-data" },
+      onUploadProgress: (progressEvent) => {
+        const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+        setLoading({ isLoading: true, progress });
+      },
     });
     return response.data || { success: false, message: "No data returned" };
   } catch (error) {
@@ -108,6 +155,8 @@ export const fetchFileUpload = async (url, formData, config = {}) => {
       success: false,
       message: error.response?.data?.message || error.message || "Upload failed",
     };
+  } finally {
+    setLoading({ isLoading: false, progress: 0 });
   }
 };
 
@@ -121,12 +170,17 @@ export const fetchFileUpload = async (url, formData, config = {}) => {
  * @returns {Promise<any|Error>} 응답 데이터 (배열 또는 객체) 또는 오류 객체
  */
 export async function externalFetchData(url, filters = {}, config = {}) {
+  const { setLoading } = useStore.getState();
   try {
+    setLoading({ isLoading: true, progress: 0 });
+    await simulateProgress(setLoading, 500);
     const response = await api.post(url, filters, config);
     return response.data;
   } catch (error) {
     console.error('데이터 가져오기 실패:', error.message, error.response?.data);
     throw error;
+  } finally {
+    setLoading({ isLoading: false, progress: 0 });
   }
 }
 
@@ -138,7 +192,10 @@ export async function externalFetchData(url, filters = {}, config = {}) {
  * @returns {Promise<any|Error>} 응답 데이터 (배열 또는 객체) 또는 오류 객체
  */
 export async function externalFetchDataGet(url, filters = {}, config = {}) {
+  const { setLoading } = useStore.getState();
   try {
+    setLoading({ isLoading: true, progress: 0 });
+    await simulateProgress(setLoading, 500);
     const queryParams = new URLSearchParams(filters).toString();
     const fullUrl = queryParams ? `${url}?${queryParams}` : url;
     const response = await api.get(fullUrl, config);
@@ -146,6 +203,8 @@ export async function externalFetchDataGet(url, filters = {}, config = {}) {
   } catch (error) {
     console.error('데이터 가져오기 실패 (GET):', error.message, error.response?.data);
     throw error;
+  } finally {
+    setLoading({ isLoading: false, progress: 0 });
   }
 }
 
@@ -157,7 +216,10 @@ export async function externalFetchDataGet(url, filters = {}, config = {}) {
  * @returns {Promise<Object>} 응답 데이터 또는 오류 메시지
  */
 export const externalFetchFileData = async (url, params, config = {}) => {
+  const { setLoading } = useStore.getState();
   try {
+    setLoading({ isLoading: true, progress: 0 });
+    await simulateProgress(setLoading, 500);
     const response = await api.post(url, params, config);
     return response.data || { success: false, message: "No data returned" };
   } catch (error) {
@@ -165,6 +227,8 @@ export const externalFetchFileData = async (url, params, config = {}) => {
       success: false,
       message: error.response?.data?.message || error.message || "Request failed",
     };
+  } finally {
+    setLoading({ isLoading: false, progress: 0 });
   }
 };
 
@@ -176,10 +240,16 @@ export const externalFetchFileData = async (url, params, config = {}) => {
  * @returns {Promise<Object>} 응답 데이터 또는 오류 메시지
  */
 export const externalFetchFileUpload = async (url, formData, config = {}) => {
+  const { setLoading } = useStore.getState();
   try {
+    setLoading({ isLoading: true, progress: 0 });
     const response = await api.post(url, formData, {
       ...config,
       headers: { "Content-Type": "multipart/form-data" },
+      onUploadProgress: (progressEvent) => {
+        const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+        setLoading({ isLoading: true, progress });
+      },
     });
     return response.data || { success: false, message: "No data returned" };
   } catch (error) {
@@ -187,5 +257,7 @@ export const externalFetchFileUpload = async (url, formData, config = {}) => {
       success: false,
       message: error.response?.data?.message || error.message || "Upload failed",
     };
+  } finally {
+    setLoading({ isLoading: false, progress: 0 });
   }
 };

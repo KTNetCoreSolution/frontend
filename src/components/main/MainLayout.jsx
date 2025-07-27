@@ -1,5 +1,7 @@
 import React, { useEffect, useState, Suspense, useCallback } from 'react';
 import { useLocation, Outlet, useNavigate } from 'react-router-dom';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 import MainHeader from './MainHeader';
 import MainTopNav from './MainTopNav';
 import MainTopNavLoc from './MainTopNavLoc';
@@ -12,7 +14,7 @@ import logo from '../../assets/images/logo.png';
 
 const MainLayout = () => {
   const navigate = useNavigate();
-  const { user, clearUser, setMenu, menu } = useStore();
+  const { user, clearUser, setMenu, menu, loading } = useStore();
   const [isChecking, setIsChecking] = useState(true);
   const location = useLocation();
 
@@ -34,7 +36,6 @@ const MainLayout = () => {
 
   useEffect(() => {
     const initialize = async () => {
-      // Token verification
       const isValid = await checkTokenValiditySimple(clearUser);
       if (!isValid && user) {
         navigate('/', { replace: true });
@@ -42,7 +43,6 @@ const MainLayout = () => {
         return;
       }
 
-      // Fetch menu if needed
       if (!menu?.length && user?.empNo) {
         try {
           const response = await fetchData('auth/menu', { userId: user.empNo });
@@ -108,41 +108,54 @@ const MainLayout = () => {
     };
   }, [navigate, user, clearUser]);
 
-  useEffect(() => {
-  }, [location.pathname]);
+  useEffect(() => {}, [location.pathname]);
 
   if (isChecking || !user) {
     return <div>Loading...</div>;
   }
 
   return (
-  <div>
-    <header id="header" className={styles.header}>
-      <div className={styles.logo} onClick={handleLogoClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && handleLogoClick(e)}>
-        <img src={logo} alt="Logo" className={styles.logoImage} />
-      </div>
-      <div className={styles.headerNavGroup}>
-        <MainHeader />
-        <div className={styles.headerNav}>
-          <nav className={styles.nav}>
-            <MainTopNav />
-          </nav>
-        </div>
-      </div>
-    </header>
     <div>
-      <MainTopNavLoc />
+      <header id="header" className={styles.header}>
+        <div className={styles.logo} onClick={handleLogoClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && handleLogoClick(e)}>
+          <img src={logo} alt="Logo" className={styles.logoImage} />
+        </div>
+        <div className={styles.headerNavGroup}>
+          <MainHeader />
+          <div className={styles.headerNav}>
+            <nav className={styles.nav}>
+              <MainTopNav />
+            </nav>
+          </div>
+        </div>
+      </header>
+      <div>
+        <MainTopNavLoc />
+      </div>
+      {loading.isLoading && (
+        <div className={styles.progressBarContainer}>
+          <CircularProgressbar
+            value={loading.progress}
+            text={`${Math.round(loading.progress)}%`}
+            styles={buildStyles({
+              pathColor: '#2cbbb7',
+              trailColor: '#f0f0f0',
+              textColor: '#2cbbb7',
+              textSize: '24px',
+            })}
+          />
+        </div>
+      )}
+      <section className={styles.main}>
+        <Suspense fallback={<div>Loading...</div>}>
+          <Outlet />
+        </Suspense>
+      </section>
+      <footer id="footer">
+        <MainFooter />
+      </footer>
     </div>
-    <section className={styles.main}>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Outlet />
-      </Suspense>
-    </section>
-    <footer id="footer">
-      <MainFooter />
-    </footer>
-  </div>
-);
+  );
 };
 
 export default MainLayout;

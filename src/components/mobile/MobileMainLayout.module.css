@@ -47,6 +47,17 @@
   border-top: 1px solid #dee2e6;
 }
 
+/* 프로그레스바 컨테이너 스타일 */
+.progressBarContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  z-index: 1040;
+}
+
 /* Offcanvas 조정 */
 .offcanvas {
   width: 250px !important;
