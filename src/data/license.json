@@ -66,6 +66,12 @@
     "repository": "https://github.com/SheetJS/sheetjs"
   },
   {
+  "name": "ECharts",
+  "license": "Apache License 2.0",
+  "copyright": "2015-present Apache Software Foundation",
+  "repository": "https://github.com/apache/echarts"
+  },
+  {
     "name": "Zustand",
     "license": "MIT License",
     "copyright": "2020-present POPLINE Studio",

@@ -4,7 +4,6 @@ import "tabulator-tables/dist/css/tabulator.min.css";
 import '../../assets/css/tabulatorGlobal.css';
 import styles from './TableSearch.module.css';
 import TableTitle from './TableTitle'; // Import the new TableTitle component
-import { fi } from 'date-fns/locale';
 
 const TableSearch = ({ filterFields, filters, setFilters, onDownloadExcel, children, buttonStyles, rowCount, excelYn }) => {
   return (

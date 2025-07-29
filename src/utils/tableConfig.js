@@ -87,7 +87,10 @@ export function createTable(element, cols, data, customOptions = {}) {
     columnDefaults:{
         tooltip:true,                // 툴팁 (데이터 값을 툴팁으로 표시하려면 true)
         cssClass: "",                // 컬럼 및 데이터 셀에 적용할 CSS 클래스 ("" - 기본 없음)
-    }
+    },
+     groupBy: null,                     // 그룹핑 없음. 필요할 때 배열로 설정 ['본부', '센터/부', ...]
+     groupStartOpen: false,             // 그룹 기본 닫힘(false). 필요하면 true로 설정
+     groupToggleElement: 'arrow',       // 그룹 토글 UI (arrow, header 등)
   };
 
   // 사용자 정의 옵션과 기본 옵션 병합

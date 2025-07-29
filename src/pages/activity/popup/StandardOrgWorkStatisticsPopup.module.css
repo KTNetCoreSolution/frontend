@@ -1,0 +1,17 @@
+.customModal {
+  width: 800px !important;
+  max-width: 90vw !important;
+  margin: 0 auto;
+}
+
+.tableSection {
+  height: 400px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.btn {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+}
