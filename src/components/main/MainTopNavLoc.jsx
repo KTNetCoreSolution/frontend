@@ -10,10 +10,16 @@ const MainTopNavLoc = () => {
   const basename = common.getBaseName();
 
   const getBreadcrumbTrail = (path, menuItems) => {
-    const normalizedPath = path.replace(/\/$/, '').replace(new RegExp(`^${basename}`), '');
+    let normalizedPath = path.replace(/\/$/, '');
+
+    if (basename !== '/') {
+      normalizedPath = normalizedPath.replace(new RegExp(`^${basename}`), '');
+    }
+
     if (normalizedPath === '/main') {
       return [''];
     }
+
     let trail = ['Home'];
     const searchMenu = (items, parentName = null) => {
       for (const item of items) {
