@@ -6,12 +6,12 @@ import { msgPopup } from '../../utils/msgPopup';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import styles from './Join.module.css';
 
-const Join = ({ show, onHide }) => {
+const Join = ({ show, onHide, gubun }) => {
   const [empNo, setEmpNo] = useState('');
   const [empNm, setEmpNm] = useState('');
   const [empPwd, setEmpPwd] = useState('');
   const [confirmPwd, setConfirmPwd] = useState('');
-    const [mobile, setMobile] = useState('');
+  const [mobile, setMobile] = useState('');
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
 
@@ -96,7 +96,7 @@ const Join = ({ show, onHide }) => {
           errorMsgPopup(errMsg);
         } else {
           msgPopup("가입되었습니다.");
-          navigate('/'); // Changed from '/login'
+          navigate(gubun === 'mobile' ? '/mobile/Login' : '/');
           onHide();
         }
       }
@@ -190,7 +190,7 @@ const Join = ({ show, onHide }) => {
                       className="form-control"
                       id="mobile"
                       value={mobile}
-                      onChange={(e) => setMobile(e.target.value)} // Fixed typo: setPhone -> setMobile
+                      onChange={(e) => setMobile(e.target.value)}
                       required
                       placeholder="(예: 010-1234-5678)"
                     />

@@ -5,7 +5,7 @@ import { fetchData } from '../../utils/dataUtils';
 import { msgPopup } from '../../utils/msgPopup';
 import styles from './Join.module.css';
 
-const PasswordChange = ({ show, onHide, initialEmpNo, isEditable }) => {
+const PasswordChange = ({ show, onHide, initialEmpNo, isEditable, gubun }) => {
   const [empNo, setEmpNo] = useState(initialEmpNo || '');
   const [currentPwd, setCurrentPwd] = useState('');
   const [newPwd, setNewPwd] = useState('');
@@ -58,12 +58,12 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable }) => {
 
     try {
       const params = {
-          pEMPNO: empNo,
-          pEMPPWD: currentPwd,
-          pDEBUG: "F"
-        };
+        pEMPNO: empNo,
+        pEMPPWD: currentPwd,
+        pDEBUG: "F"
+      };
 
-      const checkResponse = await fetchData('auth/password/list', params );
+      const checkResponse = await fetchData('auth/password/list', params);
 
       if (!checkResponse.success || !checkResponse.data) {
         setError("입력한 비밀번호와 현재 비밀번호가 다릅니다.");
@@ -77,7 +77,7 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable }) => {
         pEMPPWD: newPwd
       };
 
-      const saveResponse = await fetchData('auth/password/save', userData );
+      const saveResponse = await fetchData('auth/password/save', userData);
 
       if (!saveResponse.success) {
         throw new Error(saveResponse.errMsg || '비밀번호 변경에 실패했습니다.');
@@ -86,7 +86,7 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable }) => {
           setError(saveResponse.errMsg);
         } else {
           msgPopup("비밀번호가 성공적으로 변경되었습니다.");
-          navigate('/'); // Changed from '/login'
+          navigate(gubun === 'mobile' ? '/mobile/Login' : '/');
           onHide();
         }
       }
@@ -120,8 +120,8 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable }) => {
                       className="form-control"
                       id="empNo"
                       value={empNo}
-                      onChange={(e) => isEditable && setEmpNo(e.target.value)} // Editable based on isEditable
-                      disabled={!isEditable} // Non-editable if triggered by pwdChgYn
+                      onChange={(e) => isEditable && setEmpNo(e.target.value)}
+                      disabled={!isEditable}
                       placeholder="아이디를 입력하세요"
                     />
                   </div>

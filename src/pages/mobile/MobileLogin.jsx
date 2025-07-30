@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { performLogin, fetchCaptcha } from '../../service/login';
+import Join from '../../pages/user/Join';
+import PasswordChange from '../../pages/user/PasswordChange';
+import { msgPopup } from '../../utils/msgPopup';
+import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import LicensePopup from '../../components/popup/LicensePopup';
 import styles from './MobileLogin.module.css';
 
@@ -14,6 +18,9 @@ const MobileLogin = () => {
   const [isCaptchaLoading, setIsCaptchaLoading] = useState(true);
   const [captchaError, setCaptchaError] = useState('');
   const [error, setError] = useState('');
+  const [showJoinPopup, setShowJoinPopup] = useState(false);
+  const [showPasswordChangePopup, setShowPasswordChangePopup] = useState(false);
+  const [isManualPasswordChange, setIsManualPasswordChange] = useState(false);
   const [showLicensePopup, setShowLicensePopup] = useState(false);
   const navigate = useNavigate();
 
@@ -57,89 +64,131 @@ const MobileLogin = () => {
     loadCaptcha();
   }, []);
 
-  const handleLicenseClick = () => {
-    setShowLicensePopup(true);
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+    const response = await performLogin('mobile', empNo, empPwd, captchaInput, navigate, (error) => {
+      errorMsgPopup(error);
+    });
+
+    if (response && response.data.user.pwdChgYn === 'Y') {
+      setIsManualPasswordChange(false);
+      msgPopup("기간이 만료되어 비밀번호를 변경해야 합니다.");
+      setShowPasswordChangePopup(true);
+    }
   };
 
-  const handleLogin = async () => {
-    setError('');
-    await performLogin('mobile', empNo, empPwd, captchaInput, navigate, setError);
+  const handleJoinClick = () => {
+    setShowJoinPopup(true);
+  };
+
+  const handlePasswordChangeClick = () => {
+    setIsManualPasswordChange(true);
+    setShowPasswordChangePopup(true);
+  };
+
+  const handleLicenseClick = () => {
+    setShowLicensePopup(true);
   };
 
   return (
     <div className={`${styles.loginContainer}`}>
       <div className={styles.card}>
         <h1 className={styles.title}>로그인</h1>
-        <div className={styles.formGroup}>
-          <label htmlFor="userid" className={styles.label}>
-            <i className="bi bi-person"></i> 아이디
-          </label>
-          <input
-            id="userid"
-            type="text"
-            className={styles.input}
-            value={empNo}
-            onChange={(e) => setEmpNo(e.target.value)}
-            placeholder="아이디를 입력하세요"
-            required
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="password" className={styles.label}>
-            <i className="bi bi-lock"></i> 비밀번호
-          </label>
-          <input
-            id="password"
-            type="password"
-            className={styles.input}
-            value={empPwd}
-            onChange={(e) => setEmpPwd(e.target.value)}
-            placeholder="비밀번호를 입력하세요"
-            required
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <div className={styles.captchaContainer}>
-            {captchaImage ? (
-              <img src={captchaImage} alt="CAPTCHA" className={styles.captchaImage} />
-            ) : (
-              <div className={styles.captchaPlaceholder}>
-                {isCaptchaLoading ? 'Loading CAPTCHA...' : captchaError || '캡챠 로드 실패'}
-              </div>
-            )}
+        <form onSubmit={handleLogin}>
+          <div className={styles.formGroup}>
+            <label htmlFor="userid" className={styles.label}>
+              <i className="bi bi-person"></i> 아이디
+            </label>
+            <input
+              id="userid"
+              type="text"
+              className={styles.input}
+              value={empNo}
+              onChange={(e) => setEmpNo(e.target.value)}
+              placeholder="아이디를 입력하세요"
+              required
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="password" className={styles.label}>
+              <i className="bi bi-lock"></i> 비밀번호
+            </label>
+            <input
+              id="password"
+              type="password"
+              className={styles.input}
+              value={empPwd}
+              onChange={(e) => setEmpPwd(e.target.value)}
+              placeholder="비밀번호를 입력하세요"
+              required
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <div className={styles.captchaContainer}>
+              {captchaImage ? (
+                <img src={captchaImage} alt="CAPTCHA" className={styles.captchaImage} />
+              ) : (
+                <div className={styles.captchaPlaceholder}>
+                  {isCaptchaLoading ? 'Loading CAPTCHA...' : captchaError || '캡챠 로드 실패'}
+                </div>
+              )}
+              <button
+                type="button"
+                className={styles.captchaRefreshButton}
+                onClick={loadCaptcha}
+              >
+                <i className="bi bi-arrow-repeat"></i>
+              </button>
+              <span className={styles.captchaTimer}>{timer}초</span>
+            </div>
+            <input
+              id="captcha"
+              type="text"
+              className={styles.input}
+              value={captchaInput}
+              onChange={(e) => setCaptchaInput(e.target.value.toUpperCase())}
+              placeholder="코드를 입력하세요"
+              required
+            />
+          </div>
+          <div className={styles.buttonGroup}>
+            <button type="submit" className={styles.button}>
+              <i className="bi bi-box-arrow-in-right"></i> 로그인
+            </button>
             <button
               type="button"
               className={styles.smallButton}
-              onClick={loadCaptcha}
+              onClick={handleJoinClick}
             >
-              <i className="bi bi-arrow-repeat"></i>
+              <i className="bi bi-person-plus"></i>
             </button>
-            <span className={styles.captchaTimer}>{timer}초</span>
+            <button
+              type="button"
+              className={styles.smallButton}
+              onClick={handlePasswordChangeClick}
+            >
+              <i className="bi bi-key"></i>
+            </button>
+            <button
+              type="button"
+              className={styles.smallButton}
+              onClick={handleLicenseClick}
+            >
+              <i className="bi bi-info-circle"></i>
+            </button>
           </div>
-          <input
-            id="captcha"
-            type="text"
-            className={styles.input}
-            value={captchaInput}
-            onChange={(e) => setCaptchaInput(e.target.value.toUpperCase())}
-            placeholder="코드를 입력하세요"
-            required
-          />
-        </div>
-        <div className={styles.buttonGroup}>
-          <button type="button" className={styles.button} onClick={handleLogin}>
-            <i className="bi bi-box-arrow-in-right"></i> Login
-          </button>
-          <button
-            type="button"
-            className={styles.smallButton}
-            onClick={handleLicenseClick}
-          >
-            <i className="bi bi-info-circle"></i>
-          </button>
-        </div>
-        {error && <p className={styles.error}>{error}</p>}
+          {error && <p className={styles.error}>{error}</p>}
+        </form>
       </div>
+      <Join show={showJoinPopup} onHide={() => setShowJoinPopup(false)} gubun="mobile" />
+      <PasswordChange
+        show={showPasswordChangePopup}
+        onHide={() => setShowPasswordChangePopup(false)}
+        initialEmpNo={empNo}
+        isEditable={isManualPasswordChange}
+        gubun="mobile"
+      />
       <LicensePopup
         show={showLicensePopup}
         onHide={() => setShowLicensePopup(false)}

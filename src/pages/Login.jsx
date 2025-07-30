@@ -200,12 +200,13 @@ const Login = () => {
           </button>
         )}
       </form>
-      <Join show={showJoinPopup} onHide={() => setShowJoinPopup(false)} />
+      <Join show={showJoinPopup} onHide={() => setShowJoinPopup(false)} gubun="web" />
       <PasswordChange 
         show={showPasswordChangePopup} 
         onHide={() => setShowPasswordChangePopup(false)} 
         initialEmpNo={empNo} 
         isEditable={isManualPasswordChange}
+        gubun="web"
       />
       <LicensePopup
         show={showLicensePopup}
