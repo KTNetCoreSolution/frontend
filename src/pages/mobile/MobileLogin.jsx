@@ -94,7 +94,7 @@ const MobileLogin = () => {
   return (
     <div className={`${styles.loginContainer}`}>
       <div className={styles.card}>
-        <h1 className={styles.title}>로그인</h1>
+        <h1 className={styles.title}>Login</h1>
         <form onSubmit={handleLogin}>
           <div className={styles.formGroup}>
             <label htmlFor="userid" className={styles.label}>
