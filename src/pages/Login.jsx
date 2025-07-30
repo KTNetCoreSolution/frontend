@@ -190,13 +190,15 @@ const Login = () => {
             <i className="bi bi-info-circle"></i>
           </button>
         </div>
-        <button 
-          type="button" 
-          className={styles.button}
-          onClick={handleMobileLoginRedirect}
-        >
-          <i className="bi bi-phone"></i> 모바일로그인으로 이동
-        </button>
+        {isLocal && (
+          <button 
+            type="button" 
+            className={styles.button}
+            onClick={handleMobileLoginRedirect}
+          >
+            <i className="bi bi-phone"></i> 모바일로그인으로 이동
+          </button>
+        )}
       </form>
       <Join show={showJoinPopup} onHide={() => setShowJoinPopup(false)} />
       <PasswordChange 

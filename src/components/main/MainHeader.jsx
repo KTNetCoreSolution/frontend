@@ -6,7 +6,6 @@ import { fetchData } from '../../utils/dataUtils';
 import styles from './MainLayout.module.css';
 
 const MainHeader = () => {
-  const [logout, setLogout] = useState(false);
   const [timeDisplay, setTimeDisplay] = useState('00:00');
   const { user, setUser, clearUser, clearMenu } = useStore();
   const navigate = useNavigate();
@@ -27,9 +26,8 @@ const MainHeader = () => {
   };
 
   const handleLogout = async () => {
-    setLogout(true);
     try {
-      // Assume backend clears the HTTP-only cookie via logout endpoint
+      // 백엔드에서 HTTP-only 쿠키를 지우는 로그아웃 엔드포인트 호출
       await fetchData('auth/logout', {});
       clearUser();
       if (clearMenu) {
@@ -40,25 +38,24 @@ const MainHeader = () => {
       navigate('/', { replace: true });
     } catch (error) {
       console.error('Logout error:', error);
+      clearUser(); // 오류 발생 시에도 사용자 상태 초기화
       navigate('/', { replace: true });
     }
   };
 
   useEffect(() => {
-    if (logout) {
-      navigate('/', { replace: true });
-    }
-  }, [logout, navigate]);
-
-  useEffect(() => {
     if (!user || !user.expiresAt) {
-      checkTokenValidity(navigate, user, setUser, clearUser);
+      setTimeDisplay('00:00');
       return;
     }
 
     setTimeDisplay(calculateTimeDisplay(user.expiresAt));
 
     const updateTime = () => {
+      if (!user || !user.expiresAt) {
+        setTimeDisplay('00:00');
+        return;
+      }
       const now = new Date().getTime();
       const timeLeft = user.expiresAt - now;
       if (timeLeft <= 0) {

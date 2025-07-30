@@ -21,8 +21,15 @@ const MobileMainLayout = () => {
 
   useEffect(() => {
     const verifyUser = async () => {
+      // 로그아웃 상태(user가 null 또는 undefined)면 토큰 검증 생략
+      if (!user) {
+        setIsChecking(false);
+        navigate(ENV === 'local' && !isMobileDomain ? '/mobile/Login' : '/', { replace: true });
+        return;
+      }
+
       const isValid = await checkTokenValiditySimple(clearUser);
-      if (!isValid && user) {
+      if (!isValid) {
         navigate(ENV === 'local' && !isMobileDomain ? '/mobile/Login' : '/', { replace: true });
       }
       setIsChecking(false);

@@ -36,8 +36,15 @@ const MainLayout = () => {
 
   useEffect(() => {
     const initialize = async () => {
+      // 로그아웃 상태(user가 null 또는 undefined)면 즉시 로그인 페이지로 이동
+      if (!user) {
+        setIsChecking(false);
+        navigate('/', { replace: true });
+        return;
+      }
+
       const isValid = await checkTokenValiditySimple(clearUser);
-      if (!isValid && user) {
+      if (!isValid) {
         navigate('/', { replace: true });
         setIsChecking(false);
         return;
@@ -57,12 +64,26 @@ const MainLayout = () => {
       setIsChecking(false);
     };
 
-    if (user) initialize();
+    // user가 없으면 즉시 초기화 종료
+    if (!user) {
+      setIsChecking(false);
+      navigate('/', { replace: true });
+      return;
+    }
+
+    initialize();
   }, [user, navigate, clearUser, setMenu, menu?.length]);
 
   useEffect(() => {
     const handleClick = async (e) => {
       if (!e.target.classList.contains(styles.scrolly)) return;
+
+      // user가 없으면 토큰 검증 생략
+      if (!user) {
+        e.preventDefault();
+        navigate('/', { replace: true });
+        return;
+      }
 
       const isValid = await checkTokenValiditySimple(clearUser);
       if (!isValid) {
