@@ -74,7 +74,7 @@ const Login = () => {
 
     if (response && response.data.user.pwdChgYn === 'Y') {
       setIsManualPasswordChange(false);
-      msgPopup("기간이 만료되어 비밀번호를 변경해야 합니다.");
+      msgPopup("최초 비밀번호나 기간만료로 인해 비밀번호를 변경해야 합니다.");
       setShowPasswordChangePopup(true);
     }
   };
