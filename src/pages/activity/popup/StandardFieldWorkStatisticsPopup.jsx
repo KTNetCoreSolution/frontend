@@ -26,7 +26,9 @@ const StandardFieldWorkStatisticsPopup = ({ show, onHide, workHours }) => {
       setLoading(true);
       try {
         const result = await fetchJsonData(standardFieldworkPopupData, {});
-        const processedData = Array.isArray(result) ? result.map(row => ({ ...row, '업무량(시간)': parseFloat(row['업무량(시간)']) || 0 })) : [{ "본부": "오류", "센터/부": "데이터 없음", "부": "", "팀": "", "업무량(시간)": 0 }];
+        const processedData = Array.isArray(result) && result.length > 0 
+          ? result.map(row => ({ ...row, '업무량(시간)': parseFloat(row['업무량(시간)']) || 0 }))
+          : [{ "본부": "오류", "센터/부": "데이터 없음", "부": "", "팀": "", "업무량(시간)": 0 }];
         setData(processedData);
       } catch (err) {
         console.error('데이터 로드 실패:', err);
@@ -36,7 +38,7 @@ const StandardFieldWorkStatisticsPopup = ({ show, onHide, workHours }) => {
       }
     };
 
-    if (show && !tableInstance.current) {
+    if (show) {
       loadData();
     }
   }, [show]);
@@ -46,9 +48,11 @@ const StandardFieldWorkStatisticsPopup = ({ show, onHide, workHours }) => {
     if (!show || !tableRef.current) return;
 
     const initializeTable = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // DOM 준비 대기
+      // DOM 준비 대기
+      await new Promise((resolve) => setTimeout(resolve, 100)); // 지연 시간을 100ms로 줄여 성능 개선
       if (!tableRef.current) {
         console.warn("테이블 컨테이너가 준비되지 않았습니다.");
+        setTableStatus("error");
         return;
       }
       if (tableInstance.current) {
@@ -64,7 +68,7 @@ const StandardFieldWorkStatisticsPopup = ({ show, onHide, workHours }) => {
           { title: '업무량(시간)', field: '업무량(시간)', hozAlign: 'right' },
         ], data, {
           layout: 'fitColumns',
-          groupBy: ['본부', '센터/부', '부'], // "팀" 그룹핑 제외
+          groupBy: ['본부', '센터/부', '부'],
           groupStartOpen: true,
           groupToggleElement: 'arrow',
           groupHeader: (value, count, data) => {
@@ -81,9 +85,7 @@ const StandardFieldWorkStatisticsPopup = ({ show, onHide, workHours }) => {
       }
     };
 
-    if (!tableInstance.current) {
-      initializeTable();
-    }
+    initializeTable();
 
     return () => {
       if (tableInstance.current) {
@@ -92,14 +94,26 @@ const StandardFieldWorkStatisticsPopup = ({ show, onHide, workHours }) => {
         setTableStatus("initializing");
       }
     };
-  }, [show, data]);
+  }, [show]); // data 의존성 제거
 
   // 데이터 변경 시 테이블 갱신
   useEffect(() => {
     if (tableInstance.current && tableStatus === "ready" && !loading && data.length > 0) {
       try {
-        tableInstance.current.setData(data);
-        setRowCount(tableInstance.current.getDataCount());
+        // 테이블이 완전히 초기화되었는지 확인
+        if (tableInstance.current.isTableReady && tableInstance.current.isTableReady()) {
+          tableInstance.current.setData(data);
+          setRowCount(tableInstance.current.getDataCount());
+        } else {
+          // 테이블이 준비되지 않은 경우 약간의 지연 후 재시도
+          const timer = setTimeout(() => {
+            if (tableInstance.current && tableInstance.current.isTableReady && tableInstance.current.isTableReady()) {
+              tableInstance.current.setData(data);
+              setRowCount(tableInstance.current.getDataCount());
+            }
+          }, 100);
+          return () => clearTimeout(timer);
+        }
       } catch (err) {
         console.error('데이터 설정 실패:', err);
       }
@@ -110,23 +124,27 @@ const StandardFieldWorkStatisticsPopup = ({ show, onHide, workHours }) => {
   useEffect(() => {
     if (!tableInstance.current || loading || tableStatus !== "ready") return;
     const { filterSelect, filterText } = filters;
-    if (filterText && filterSelect) {
-      tableInstance.current.setFilter(filterSelect, "like", filterText);
-    } else if (filterText) {
-      tableInstance.current.setFilter([
-        { field: "본부", type: "like", value: filterText },
-        { field: "센터/부", type: "like", value: filterText },
-        { field: "부", type: "like", value: filterText },
-        { field: "팀", type: "like", value: filterText },
-        { field: "업무량(시간)", type: "like", value: filterText },
-      ], "or");
-    } else {
-      tableInstance.current.clearFilter();
+    try {
+      if (filterText && filterSelect) {
+        tableInstance.current.setFilter(filterSelect, "like", filterText);
+      } else if (filterText) {
+        tableInstance.current.setFilter([
+          { field: "본부", type: "like", value: filterText },
+          { field: "센터/부", type: "like", value: filterText },
+          { field: "부", type: "like", value: filterText },
+          { field: "팀", type: "like", value: filterText },
+          { field: "업무량(시간)", type: "like", value: filterText },
+        ], "or");
+      } else {
+        tableInstance.current.clearFilter();
+      }
+      setRowCount(tableInstance.current.getDataCount());
+    } catch (err) {
+      console.error('필터 적용 실패:', err);
     }
-    setRowCount(tableInstance.current.getDataCount());
   }, [filters, loading, tableStatus]);
 
-  // 엑셀 다운로드 호출 (직접 참조 사용)
+  // 엑셀 다운로드 호출
   const onDownloadExcel = () => {
     handleDownloadExcel(tableInstance.current, tableStatus, "분야별업무현황.xlsx");
   };
@@ -146,7 +164,7 @@ const StandardFieldWorkStatisticsPopup = ({ show, onHide, workHours }) => {
           filters={filters}
           setFilters={setFilters}
           rowCount={rowCount}
-          onDownloadExcel={onDownloadExcel} // 참조 메서드 호출
+          onDownloadExcel={onDownloadExcel}
           buttonStyles={styles}
         />
         <div ref={tableRef} className={styles.tableSection} style={{ visibility: loading || tableStatus !== "ready" ? "hidden" : "visible" }} />
