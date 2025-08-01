@@ -1,5 +1,6 @@
 /* 날짜 선택 입력 필드 */
 .custom-datepicker-input {
+  cursor: pointer !important;
   width: 100% !important;
   height: 100% !important;
   padding: 6px 8px;

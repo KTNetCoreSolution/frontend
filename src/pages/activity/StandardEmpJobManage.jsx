@@ -89,7 +89,7 @@ const getFieldOptions = (fieldId, dependentValue = '', classData) => {
       { value: '정규', label: '정규' },
       { value: '계약', label: '계약' },
       { value: '파견', label: '파견' },
-      { value: '일근', label: '일근' }, // JSON 데이터의 WORKTYPE 값 반영
+      { value: '일근', label: '일근' },
     ];
   }
 
@@ -101,6 +101,13 @@ const getFieldOptions = (fieldId, dependentValue = '', classData) => {
       { value: 'CLASSCNM', label: '소분류' },
       { value: 'NAME', label: '이름' },
       { value: 'WORKTYPE', label: '근무형태' },
+    ];
+  }
+
+  if (fieldId === 'dayGubun') {
+    return [
+      { value: 'M', label: '월' },
+      { value: 'D', label: '일' },
     ];
   }
 
@@ -122,7 +129,7 @@ const StandardEmpJobManage = () => {
   const [_class2Options, setClass2Options] = useState([]);
   const [_class3Options, setClass3Options] = useState([]);
   const [classData, setClassData] = useState([]);
-  const [filters, setFilters] = useState({ CLASSACD: '', CLASSBCD: '', CLASSCCD: '' });
+  const [filters, setFilters] = useState({ CLASSACD: '', CLASSBCD: '', CLASSCCD: '', dayGubun: 'M' });
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -144,29 +151,62 @@ const StandardEmpJobManage = () => {
   );
 
   // 초기 searchConfig 설정
-  const [searchConfig, setSearchConfig] = useState({
+  const baseSearchConfig = {
     areas: [
       {
         type: 'search',
         fields: [
-          { id: 'selectBtn', type: 'button', label: '선택', labelVisible: false, eventType: 'showClassPopup', width: '60px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
-          { id: 'CLASSACD', type: 'select', row: 1, label: '대분류', labelVisible: true, options: [], width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
-          { id: 'CLASSBCD', type: 'select', row: 1, label: '중분류', labelVisible: true, options: [], width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
-          { id: 'CLASSCCD', type: 'select', row: 1, label: '소분류', labelVisible: true, options: [], width: '250px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
-          { id: 'rangeStartDate', type: 'startday', row: 2, label: '작업일시', labelVisible: true, placeholder: '시작일 선택', width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true, defaultValue: today },
-          { id: 'rangeEndDate', type: 'endday', row: 2, label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true, defaultValue: today },
-          { id: 'WORKTYPE', type: 'select', row: 2, label: '근무형태', labelVisible: true, options: getFieldOptions('WORKTYPE', '', []), width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
+          { id: 'selectBtn', type: 'button', label: '선택', labelVisible: false, eventType: 'showClassPopup', width: '60px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true }, // 분류 선택 버튼
+          { id: 'CLASSACD', type: 'select', row: 1, label: '대분류', labelVisible: true, options: [], width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 대분류 드롭다운
+          { id: 'CLASSBCD', type: 'select', row: 1, label: '중분류', labelVisible: true, options: [], width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 중분류 드롭다운
+          { id: 'CLASSCCD', type: 'select', row: 1, label: '소분류', labelVisible: true, options: [], width: '250px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 소분류 드롭다운
+          { id: 'dayGubunLbl', type: 'label', row: 2, label: '작업', labelVisible: false, width: '26px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 작업 라벨
+          { id: 'dayGubun', type: 'select', row: 2, label: '', labelVisible: false, options: [{ value: 'M', label: '월' }, { value: 'D', label: '일' }], defaultValue: 'M', width: '50px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 월/일 선택 드롭다운
+          { id: 'monthDate', type: 'month', row: 2, label: '', labelVisible: true, placeholder: '월 선택', width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: today }, // 월 선택 입력 (dayGubun: 'M'일 때 표시)
+          { id: 'rangeStartDate', type: 'startday', row: 2, label: '', labelVisible: true, placeholder: '시작일 선택', width: '120px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: today }, // 시작일 입력 (dayGubun: 'D'일 때 표시)
+          { id: 'rangeEndDate', type: 'endday', row: 2, label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', width: '120px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: today }, // 종료일 입력 (dayGubun: 'D'일 때 표시)
         ],
       },
       {
         type: 'buttons',
         fields: [
-          { id: 'addBtn', type: 'button', row: 1, label: '개별업무', eventType: 'showAddPopup', width: '100px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
-          { id: 'searchBtn', type: 'button', row: 1, label: '검색', eventType: 'search', width: '80px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
+          { id: 'addBtn', type: 'button', row: 1, label: '개별업무', eventType: 'showAddPopup', width: '100px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true }, // 개별업무 추가 버튼
+          { id: 'searchBtn', type: 'button', row: 1, label: '검색', eventType: 'search', width: '80px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true }, // 검색 버튼
         ],
       },
     ],
-  });
+  };
+
+  // 동적 searchConfig: dayGubun 값에 따라 monthDate 또는 rangeStartDate/rangeEndDate 표시
+  const [searchConfig, setSearchConfig] = useState(baseSearchConfig);
+
+  useEffect(() => {
+    setSearchConfig((prev) => {
+      const newAreas = prev.areas.map((area) => {
+        if (area.type !== 'search') return area;
+        const baseFields = baseSearchConfig.areas.find((a) => a.type === 'search').fields;
+        const currentFields = prev.areas.find((a) => a.type === 'search').fields;
+        const newFields = baseFields
+          .filter((field) => {
+            if (filters.dayGubun === 'M') {
+              return field.id !== 'rangeStartDate' && field.id !== 'rangeEndDate';
+            } else if (filters.dayGubun === 'D') {
+              return field.id !== 'monthDate';
+            }
+            return true;
+          })
+          .map((field) => {
+            const currentField = currentFields.find((f) => f.id === field.id);
+            if (['CLASSACD', 'CLASSBCD', 'CLASSCCD'].includes(field.id) && currentField?.options) {
+              return { ...field, options: currentField.options };
+            }
+            return field;
+          });
+        return { ...area, fields: newFields };
+      });
+      return { ...prev, areas: newAreas };
+    });
+  }, [filters.dayGubun]);
 
   // useEffect에서 class1Options, class2Options, class3Options 초기화 및 searchConfig 설정
   useEffect(() => {
@@ -188,7 +228,6 @@ const StandardEmpJobManage = () => {
             if (field.id === 'CLASSACD') return { ...field, options: initialClass1Options };
             if (field.id === 'CLASSBCD') return { ...field, options: initialClass2Options };
             if (field.id === 'CLASSCCD') return { ...field, options: initialClass3Options };
-            if (field.id === 'WORKTYPE') return { ...field, options: getFieldOptions('WORKTYPE', '', []) };
             return field;
           });
           return { ...area, fields: newFields };
@@ -196,10 +235,17 @@ const StandardEmpJobManage = () => {
         return { ...prev, areas: newAreas };
       });
 
+      // 초기 filters 설정
+      setFilters((prev) => ({
+        ...prev,
+        CLASSACD: prev.CLASSACD || 'all',
+        CLASSBCD: prev.CLASSBCD || 'all',
+        CLASSCCD: prev.CLASSCCD || 'all',
+      }));
     }
   }, []);
 
-  // filters 초기화, 기존 CLASSACD, CLASSBCD, CLASSCCD 유지
+  // filters 초기화, CLASSACD, CLASSBCD, CLASSCCD, dayGubun, monthDate 초기값 설정
   useEffect(() => {
     setFilters((prev) => {
       const searchFields = searchConfig.areas.find((area) => area.type === 'search').fields;
@@ -207,17 +253,22 @@ const StandardEmpJobManage = () => {
       searchFields.forEach((field) => {
         if (['day', 'startday', 'endday'].includes(field.type) && prev[field.id] === undefined) {
           dateFilters[field.id] = field.defaultValue || today;
+        } else if (['month', 'startmonth', 'endmonth'].includes(field.type) && prev[field.id] === undefined) {
+          dateFilters[field.id] = field.defaultValue || today.substring(0, 7);
         }
       });
-      return {
+      const initialFilters = {
         ...prev,
         ...dateFilters,
         CLASSACD: prev.CLASSACD || '',
         CLASSBCD: prev.CLASSBCD || '',
         CLASSCCD: prev.CLASSCCD || '',
+        dayGubun: prev.dayGubun || 'M', // 초기 렌더링 시에만 'M' 설정, 이후 기존 값 유지
+        monthDate: prev.monthDate || today.substring(0, 7), // monthDate 초기값 설정
       };
+      return initialFilters;
     });
-  }, [searchConfig]);
+  }, [searchConfig, today]);
 
   useEffect(() => {
     setTableFilters(initialFilters(filterTableFields));
@@ -252,7 +303,6 @@ const StandardEmpJobManage = () => {
       });
       return { ...prev, areas: newAreas };
     });
-
   }, [filters.CLASSACD, filters.CLASSBCD, updatedClass2Options, updatedClass3Options]);
 
   const columns = [
@@ -277,16 +327,15 @@ const StandardEmpJobManage = () => {
         CLASSACD: filters.CLASSACD === 'all' ? '' : filters.CLASSACD,
         CLASSBCD: filters.CLASSBCD === 'all' ? '' : filters.CLASSBCD,
         CLASSCCD: filters.CLASSCCD === 'all' ? '' : filters.CLASSCCD,
-        //WORKTYPE: filters.WORKTYPE || '',
-        // rangeStartDate: filters.rangeStartDate || '',
-        // rangeEndDate: filters.rangeEndDate || '',
+        dayGubun: filters.dayGubun,
+        monthDate: filters.dayGubun === 'M' ? filters.monthDate : undefined,
+        rangeStartDate: filters.dayGubun === 'D' ? filters.rangeStartDate : undefined,
+        rangeEndDate: filters.dayGubun === 'D' ? filters.rangeEndDate : undefined,
       };
 
-      // standardActivityEmpData 사용
       const result = await fetchJsonData(standardActivityEmpData, params);
       const responseData = Array.isArray(result) ? result : (Array.isArray(standardActivityEmpData) ? standardActivityEmpData : []);
 
-      // CLASSANM, CLASSBNM, CLASSCNM 매핑
       const mappedData = responseData.map((row, index) => {
         const classInfo = standardActivityClass.find(
           (item) =>
@@ -316,7 +365,6 @@ const StandardEmpJobManage = () => {
         };
       });
 
-      // 중복 제거
       const seen = new Set();
       const filteredData = mappedData.filter((row) => {
         const key = `${row.CLASSACD}-${row.CLASSBCD}-${row.CLASSCCD}-${row.NAME}-${row.WORKDATE}-${row.STARTTIME}`;
@@ -327,9 +375,11 @@ const StandardEmpJobManage = () => {
           (!params.CLASSACD || params.CLASSACD === 'all' || row.CLASSACD === params.CLASSACD) &&
           (!params.CLASSBCD || params.CLASSBCD === 'all' || row.CLASSBCD === params.CLASSBCD) &&
           (!params.CLASSCCD || params.CLASSCCD === 'all' || row.CLASSCCD === params.CLASSCCD) &&
-          (!params.WORKTYPE || row.WORKTYPE === params.WORKTYPE) &&
-          (!params.rangeStartDate || row.WORKDATE >= params.rangeStartDate) &&
-          (!params.rangeEndDate || row.WORKDATE <= params.rangeEndDate)
+          (!params.dayGubun || params.dayGubun === 'D' || row.WORKDATE.startsWith(params.monthDate)) &&
+          (!params.dayGubun || params.dayGubun === 'M' || (
+            (!params.rangeStartDate || row.WORKDATE >= params.rangeStartDate) &&
+            (!params.rangeEndDate || row.WORKDATE <= params.rangeEndDate)
+          ))
         );
       });
 
@@ -369,10 +419,6 @@ const StandardEmpJobManage = () => {
         });
         if (!tableInstance.current) throw new Error('createTable returned undefined or null');
         setTableStatus('ready');
-
-        // tableInstance.current.on('rowClick', (e, row) => {
-        //   console.log('Row clicked:', row.getData());
-        // });
       } catch (err) {
         setTableStatus('error');
         console.error('Table initialization failed:', err.message);
@@ -446,6 +492,36 @@ const StandardEmpJobManage = () => {
           newFilters.CLASSCCD = '';
         } else if (id === 'CLASSBCD') {
           newFilters.CLASSCCD = '';
+        } else if (id === 'dayGubun') {
+          // dayGubun 변경 시 searchConfig 동적 업데이트 및 필드 초기화
+          newFilters.monthDate = value === 'M' ? today.substring(0, 7) : '';
+          newFilters.rangeStartDate = value === 'D' ? today : '';
+          newFilters.rangeEndDate = value === 'D' ? today : '';
+          setSearchConfig((prevConfig) => {
+            const newAreas = prevConfig.areas.map((area) => {
+              if (area.type !== 'search') return area;
+              const baseFields = baseSearchConfig.areas.find((a) => a.type === 'search').fields;
+              const currentFields = prevConfig.areas.find((a) => a.type === 'search').fields;
+              const newFields = baseFields
+                .filter((field) => {
+                  if (value === 'M') {
+                    return field.id !== 'rangeStartDate' && field.id !== 'rangeEndDate';
+                  } else if (value === 'D') {
+                    return field.id !== 'monthDate';
+                  }
+                  return true;
+                })
+                .map((field) => {
+                  const currentField = currentFields.find((f) => f.id === field.id);
+                  if (['CLASSACD', 'CLASSBCD', 'CLASSCCD'].includes(field.id) && currentField?.options) {
+                    return { ...field, options: currentField.options };
+                  }
+                  return field;
+                });
+              return { ...area, fields: newFields };
+            });
+            return { ...prevConfig, areas: newAreas };
+          });
         }
         return newFilters;
       });

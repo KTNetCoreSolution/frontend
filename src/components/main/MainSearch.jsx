@@ -28,14 +28,16 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
 
   const getStyleValue = (value, defaultValue) => value === 'default' || !value ? defaultValue : value;
 
+  // 필터 초기화: 날짜 및 월 관련 필드의 기본값 설정
   useEffect(() => {
     const searchFields = config.areas.find((area) => area.type === 'search')?.fields || [];
     const initialDateFilters = {};
     searchFields.forEach((field) => {
       if (['day', 'startday', 'endday'].includes(field.type) && filters[field.id] === undefined) {
         initialDateFilters[field.id] = field.defaultValue || todayDate;
-      } else if (['startmonth', 'endmonth'].includes(field.type) && filters[field.id] === undefined) {
-        initialDateFilters[field.id] = field.defaultValue || todayMonth;
+      } else if (['startmonth', 'endmonth', 'month'].includes(field.type) && filters[field.id] === undefined) {
+        initialDateFilters[field.id] = field.defaultValue ? 
+          (field.defaultValue.includes('-') ? field.defaultValue.substring(0, 7) : todayMonth) : todayMonth;
       } else if (['dayperiod', 'monthperiod'].includes(field.type) && filters[field.id] === undefined) {
         initialDateFilters[field.id] = field.defaultValue || {
           start: field.type === 'dayperiod' ? todayDate : todayMonth,
@@ -52,8 +54,13 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
   }, [config, filters, setFilters]);
 
   const handleChangeWithValidation = (e, field) => {
-    const { id, maxLength, type } = field;
+    const { id, maxLength, type, enabled } = field;
     let value = e.target?.value ?? e;
+
+    // 날짜 관련 필드는 enabled=false라도 허용
+    if (enabled === false && !['day', 'startday', 'endday', 'startmonth', 'endmonth', 'month', 'dayperiod', 'monthperiod'].includes(type)) {
+      return;
+    }
 
     if (type === 'text' || type === 'textarea') {
       const validationResult = common.validateVarcharLength(value, maxLength || defaultMaxLength, field.label || '입력값');
@@ -63,19 +70,19 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
       }
     }
 
-    setFilters((prevFilters) => {
-      const newFilters = { ...prevFilters, [id]: value };
-      return newFilters;
-    });
+    setFilters((prevFilters) => ({ ...prevFilters, [id]: value }));
 
     if (field.event) {
       onEvent(field.event, { id, value });
     } else if (type === 'select') {
       onEvent('selectChange', { id, value });
+    } else if (['day', 'startday', 'endday', 'startmonth', 'endmonth', 'month', 'dayperiod', 'monthperiod'].includes(type)) {
+      onEvent('dateChange', { id, value }); // 날짜 선택 이벤트 트리거
     }
   };
 
   const handleCheckboxChange = (e, field) => {
+    if (field.enabled === false) return; // enabled: false일 때 동작 차단
     setFilters((prevFilters) => ({
       ...prevFilters,
       [field.id]: e.target.checked,
@@ -86,6 +93,7 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
   };
 
   const handleRadioChange = (e, field) => {
+    if (field.enabled === false) return; // enabled: false일 때 동작 차단
     handleInputChange(e, setFilters);
     if (field.event) {
       onEvent(field.event, { id: field.id, value: e.target.value });
@@ -93,6 +101,7 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
   };
 
   const handleResetDate = (field) => {
+    if (field.enabled === false) return; // enabled: false일 때 동작 차단
     const { id, type } = field;
     let newFilters = {};
     if (id === 'rangeEndDate') {
@@ -105,7 +114,7 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
         end: type === 'dayperiod' ? todayDate : todayMonth,
       };
     } else {
-      newFilters[id] = type === 'startmonth' || type === 'endmonth' ? todayMonth : todayDate;
+      newFilters[id] = type === 'startmonth' || type === 'endmonth' || type === 'month' ? todayMonth : todayDate;
     }
     setFilters((prevFilters) => ({
       ...prevFilters,
@@ -126,6 +135,9 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
     }
     if (field.type === 'endmonth' && filters.rangeStartMonth) {
       return { minDate: filters.rangeStartMonth };
+    }
+    if (field.type === 'month') {
+      return {};
     }
     return {};
   };
@@ -152,7 +164,7 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
         <div className={styles.searchFields}>
           {rows[rowIndex].search.map((field) => (
             <div key={field.id} className={styles.formGroup}>
-              {(field.labelVisible !== false && field.label) && <label htmlFor={field.id}>{field.label}</label>}
+              {(field.labelVisible !== false && field.label && field.type !== 'label') && <label htmlFor={field.id}>{field.label}</label>}
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                 {(field.type === 'text' || field.type === 'textarea') && (
                   field.type === 'text' ? (
@@ -171,7 +183,7 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
                         boxSizing: 'border-box',
                         margin: 0,
                       }}
-                      disabled={field.enabled === false}
+                      readOnly={!field.enabled}
                     />
                   ) : (
                     <textarea
@@ -183,16 +195,16 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
                       style={{
                         width: getStyleValue(field.width, defaultStyles.width),
                         height: getStyleValue(field.height, defaultStyles.height),
-                        backgroundColor: getStyleValue(field.backgroundColor),
+                        backgroundColor: getStyleValue(field.backgroundColor, defaultStyles.backgroundColor),
                         color: getStyleValue(field.color, defaultStyles.color),
                         boxSizing: 'border-box',
                         margin: 0,
                       }}
-                      disabled={field.enabled === false}
+                      readOnly={!field.enabled}
                     />
                   )
                 )}
-                {['day', 'startday', 'endday', 'startmonth', 'endmonth', 'dayperiod', 'monthperiod'].includes(field.type) && (
+                {['day', 'startday', 'endday', 'startmonth', 'endmonth', 'month', 'dayperiod', 'monthperiod'].includes(field.type) && (
                   <div style={{
                     width: getStyleValue(field.width, defaultStyles.width),
                     height: getStyleValue(field.height, defaultStyles.height),
@@ -201,7 +213,7 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
                   }}>
                     <DatePickerCommon
                       id={field.id}
-                      type={field.type}
+                      type={field.type === 'month' ? 'startmonth' : field.type}
                       value={filters[field.id]}
                       onChange={(e) => handleChangeWithValidation(e, field)}
                       placeholder={field.placeholder || field.label || ''}
@@ -217,6 +229,7 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
                       onClick={() => handleResetDate(field)}
                       title="초기화"
                       style={{ lineHeight: '1' }}
+                      disabled={field.enabled === false}
                     >
                       <i className="bi bi-x-square fs-6"></i>
                     </button>
@@ -236,7 +249,7 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
                       boxSizing: 'border-box',
                       margin: 0,
                     }}
-                    disabled={field.enabled === false}
+                    readOnly={!field.enabled}
                   >
                     {field.options.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -308,6 +321,21 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
                   >
                     {field.label}
                   </button>
+                )}
+                {field.type === 'label' && (
+                  <span
+                    style={{
+                      width: getStyleValue(field.width, defaultStyles.width),
+                      height: getStyleValue(field.height, defaultStyles.height),
+                      color: getStyleValue(field.color, defaultStyles.color),
+                      display: 'inline-block',
+                      lineHeight: getStyleValue(field.height, defaultStyles.height),
+                      boxSizing: 'border-box',
+                      margin: 0,
+                    }}
+                  >
+                    {field.label}
+                  </span>
                 )}
               </div>
             </div>
