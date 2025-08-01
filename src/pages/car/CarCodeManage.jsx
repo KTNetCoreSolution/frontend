@@ -10,6 +10,8 @@ import { fetchData, fetchFileUpload } from "../../utils/dataUtils";
 import common from "../../utils/common";
 import { errorMsgPopup } from "../../utils/errorMsgPopup";
 import { msgPopup } from "../../utils/msgPopup";
+import ImageViewPopup from '../../components/popup/ImageViewPopup';
+import fileUtils from '../../utils/fileUtils';
 
 const getFieldOptions = (fieldId) => {
   const optionsMap = {
@@ -50,6 +52,24 @@ const fn_CellButton = (label, className, onClick) => ({
     button.innerText = label;
     button.onclick = () => onClick(cell.getData());
     return button;
+  },
+});
+
+const fn_CellImageView = (onClick) => ({
+  formatter: (cell) => {
+    const div = document.createElement("div");
+    div.style.display = "flex";
+    div.style.alignItems = "center";
+    div.style.justifyContent = "center";
+    div.style.gap = "5px";
+    div.style.cursor = "pointer";
+    div.onclick = () => onClick(cell.getData());
+
+    const span = document.createElement("span");
+    span.innerText = cell.getData().IMGNM || "";
+
+    div.appendChild(span);
+    return div;
   },
 });
 
@@ -115,6 +135,49 @@ const CarCodeManage = () => {
   const [isSearched, setIsSearched] = useState(false);
   const [showAddPopup, setShowAddPopup] = useState(false);
   const [newCodeInfo, setNewCodeInfo] = useState({CARTYPE: '', CARCLASS: '', CARSIZE: '', CARNM: '', FILES: [] });
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
+
+  const showImagePopup = (rowData) => {
+    if (rowData.CARCD !== '' && rowData.IMGNM !== '' ) {
+      handleImageClick(rowData.CARCD);
+    }
+  };
+
+  const closeImagePopup = () => {
+    setSelectedImage(null);
+    setZoomLevel(1);
+  };
+
+  const handleZoomIn = () => {
+    setZoomLevel((prev) => Math.min(prev + 0.1, 3));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel((prev) => Math.max(prev - 0.1, 0.1));
+  };
+
+  const handleImageClick = async (carcd) => {
+    try {
+      const params = { pCARCD: carcd, pDEBUG: "F" };
+      const result = await fetchData('carcode/CarCodeImage', params);
+
+      if (result.errCd === '00' && result.data.length > 0) {
+        const extension = fileUtils.getFileExtension(result.data[0].IMGNM)?.toLowerCase();
+        const mimeType = fileUtils.mimeTypes[extension] || 'application/octet-stream';
+        const fileData = result.data[0].IMGDATA;
+
+        const dataUrl = `data:${mimeType};base64,${fileData}`;
+        setSelectedImage({ src: dataUrl, fileName: result.data[0].IMGNM });
+      } else {
+        console.error('Failed to fetch image details:', result.errMsg);
+        errorMsgPopup('이미지를 불러오지 못했습니다.');
+      } 
+    } catch (error) {
+      console.error('Error fetching image details:', error);
+      errorMsgPopup('이미지를 불러오는 중 오류가 발생했습니다.');
+    }
+  };
 
   useEffect(() => {
     const initializeTable = async () => {
@@ -197,7 +260,7 @@ const CarCodeManage = () => {
           { headerHozAlign: "center", hozAlign: "center", title: "차형", field: "CARCLASS", sorter: "string", width: 100, ...fn_CellSelect(getFieldOptions('CLASS')), cellEdited: (cell) => fn_HandleCellEdit(cell, "CARCLASS", setData, tableInstance) },
           { headerHozAlign: "center", hozAlign: "center", title: "규모", field: "CARSIZE", sorter: "string", width: 100, ...fn_CellSelect(getFieldOptions('SIZE')), cellEdited: (cell) => fn_HandleCellEdit(cell, "CARSIZE", setData, tableInstance) },
           { headerHozAlign: "center", hozAlign: "left", title: "차명", field: "CARNM", sorter: "string", width: 150, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CARNM", setData, tableInstance) },
-          { headerHozAlign: "center", hozAlign: "center", title: "이미지명", field: "IMGNM", sorter: "string", width: 200, editable: false },
+          { headerHozAlign: "center", hozAlign: "center", title: "이미지명", field: "IMGNM", sorter: "string", width: 200, ...fn_CellImageView((rowData) => showImagePopup(rowData)) },
           { headerHozAlign: "center", hozAlign: "center", title: "이미지타입", field: "IMGTYPE", sorter: "string", width: 100, editable: false },
           { headerHozAlign: "center", hozAlign: "right", title: "이미지용량", field: "IMGSIZE", sorter: "string", width: 100, editable: false },
         ], [], {
@@ -517,6 +580,14 @@ const CarCodeManage = () => {
           />
         </div>
       </CommonPopup>
+      {selectedImage && <ImageViewPopup
+        imageSrc={selectedImage.src}
+        fileName={selectedImage.fileName}
+        onClose={closeImagePopup}
+        zoomLevel={zoomLevel}
+        onZoomIn={handleZoomIn}
+        onZoomOut={handleZoomOut}
+      />}
     </div>
   );
 };

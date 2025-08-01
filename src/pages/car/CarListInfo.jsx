@@ -9,10 +9,12 @@ import MainSearch from '../../components/main/MainSearch';
 import TableSearch from '../../components/table/TableSearch';
 import CommonPopup from '../../components/popup/CommonPopup';
 import OrgSearchPopup from '../../components/popup/OrgSearchPopup';
+import CarDetailPopup from '../car/CarDetailPopup';
 import ExcelUploadPopup from '../../components/popup/ExcelUploadPopup'; // Add this line
 import styles from '../../components/table/TableSearch.module.css';
 import { fetchData } from '../../utils/dataUtils';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
+import { msgPopup } from '../../utils/msgPopup.js';
 import { tr } from 'date-fns/locale';
 
 const fn_CellButton = (label, className, onClick) => ({
@@ -83,6 +85,8 @@ const getFieldOptions = (fieldId, dependentValue = '') => {
 const CarListInfo = () => {
   const { user } = useStore();
   const [showPopup, setShowPopup] = useState(false);
+  const [showDetailPopup, setShowDetailPopup] = useState(false);  
+  const [carId, setCarId] = useState('');
   const [showExcelPopup, setShowExcelPopup] = useState(false); // Add this line
   const [popupTitle, setPopupTitle] = useState('');
   const [excelPopupTitle, setExcelPopupTitle] = useState(''); // Add this line
@@ -92,14 +96,14 @@ const CarListInfo = () => {
   const [_selectedUsers] = useState([]);
   const selectedOrgRef = useRef(selectedOrg); // 최신 selectedOrg 값을 추적
 
-  const fn_DetailPopup = (carNo) => {
-    setPopupTitle('차량정보 상세');
-    setPopupContent(`차량번호: ${carNo}`);
-    setPopupOnConfirm(() => () => {
-      setShowPopup(false);
-      return true;
-    });
-    setShowPopup(true);
+  const fn_DetailPopup = (carId) => {
+    setCarId(carId);
+    setShowDetailPopup(true);
+  };
+
+  const handleDetailCancel = () => {
+    setCarId('');
+    setShowDetailPopup(false);
   };
 
   // selectedOrg 변경 시 ref 업데이트
@@ -139,7 +143,7 @@ const CarListInfo = () => {
       {
         type: 'search',
         fields: [
-          { id: 'orgText', type: 'text', row: 1, label: '조직예제', labelVisible: true, placeholder: '조직 선택', width: '150px', height: '30px', backgroundColor: '#f0f0f0', color: '#000000', enabled: false },
+          { id: 'orgText', type: 'text', row: 1, label: '조직', labelVisible: true, placeholder: '조직 선택', width: '150px', height: '30px', backgroundColor: '#f0f0f0', color: '#000000', enabled: false },
           { id: 'orgPopupBtn', type: 'popupIcon', row: 1, label: '조직 선택', labelVisible: false, eventType: 'showOrgPopup', width: '30px', height: '30px', backgroundColor: '#f0f0f0', color: '#000000', enabled: true },
           { id: 'carno', type: 'text', row: 1, label: '차량번호', labelVisible: true, maxLength: 50, width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
           { id: 'mgmtstatus', type: 'select', row: 1, label: '운용관리상태', labelVisible: true, options: getFieldOptions('mgmtstatus'), width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
@@ -196,7 +200,7 @@ const CarListInfo = () => {
   const columns = [
     { title: '번호', field: 'ID', width: 60, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '임대여부', field: 'RENTALTYPE', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차대번호', field: 'CARID', width: 150, headerHozAlign: 'center', hozAlign: 'center', visible: false},
+    { title: '차대번호', field: 'CARID', width: 150, headerHozAlign: 'center', hozAlign: 'center'},
     { title: '차량번호', field: 'CARNO', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '운용관리상태', field: 'MGMTSTATUS', headerHozAlign: 'center', hozAlign: 'center' },
     { title: '차종', field: 'CARTYPE', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
@@ -211,18 +215,14 @@ const CarListInfo = () => {
     { title: '차량가', field: 'CARPRICE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '월납부액', field: 'RENTALPRICE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '조직', field: 'ORG_GROUP', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '본부', field: 'ORGNMLV1', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '설계부/운용센터', field: 'ORGNMLV2', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '부', field: 'ORGNMLV3', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '팀', field: 'ORGNMLV4', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '운전자(정)사번', field: 'PRIMARY_MANAGER_EMPNO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '본부', field: 'ORGNMLV1', width: 120, headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '설계부/운용센터', field: 'ORGNMLV2', width: 120, headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '부', field: 'ORGNMLV3', width: 120, headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '팀', field: 'ORGNMLV4', width: 120, headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '운전자(정)', field: 'PRIMARY_MANAGER_EMPNM', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '운전자(정)전화번호', field: 'PRIMARY_MANAGER_MOBILE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '차고지주소(정)', field: 'PRIMARY_GARAGE_ADDR', headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    //{ title: '운전자(부)사번', field: 'SECONDARY_MANAGER_EMPNO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    //{ title: '운전자(부)', field: 'SECONDARY_MANAGER_EMPNM', headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    //{ title: '운전자(부)전화번호', field: 'SECONDARY_MANAGER_MOBILE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    //{ title: '차고지주소(부)', field: 'SECONDARY_GARAGE_ADDR', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '안전관리자여부', field: 'SAFETY_MANAGER', headerHozAlign: 'center', hozAlign: 'center' },
     { title: '기타사항', field: 'NOTICE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '사번', field: 'UNDER26AGE_EMPNO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '성명', field: 'UNDER26AGE_EMPNM', headerHozAlign: 'center', hozAlign: 'center', visible: false },
@@ -235,7 +235,7 @@ const CarListInfo = () => {
   ];
 
   const handleDetail = (rowData) => {
-    fn_DetailPopup(rowData.CARNO);
+    fn_DetailPopup(rowData.CARID);
   };
   
   // 데이터 로드 함수
@@ -262,7 +262,7 @@ const CarListInfo = () => {
 
     // API 로 통신할 경우 fetchData()
     try {
-      const params = {pORGCD: currentFilters.orgcd, pCARNO: currentFilters.carno || '', pSTATUS: currentFilters.status || '', pDEBUG: "F"};
+      const params = {pORGCD: currentFilters.orgcd, pCARID: '', pCARNO: currentFilters.carno || '', pSTATUS: currentFilters.status || '', pDEBUG: "F"};
 
       const response = await fetchData("car/listInfo", params);
       if (!response.success) {
@@ -296,7 +296,6 @@ const CarListInfo = () => {
     if (eventType === 'search') {
       loadData();
     } else if (eventType === 'showOrgPopup') {
-      alert('showOrgPopup 이벤트 발생');
       setPopupTitle('조직 선택');
       setPopupContent(
         <div>
@@ -317,10 +316,12 @@ const CarListInfo = () => {
       });
       setShowPopup(true);
     } else if (eventType === 'showPopup') {
-      fn_DetailPopup('');
+      //fn_DetailPopup('');
+      msgPopup("준비중입니다.");
     } else if (eventType === 'showExcelUploadPopup') {
-      setExcelPopupTitle('일괄등록');
-      setShowExcelPopup(true);
+      //setExcelPopupTitle('일괄등록');
+      //setShowExcelPopup(true);
+      msgPopup("준비중입니다.");
     }
   };
 
@@ -488,14 +489,10 @@ const CarListInfo = () => {
           style={{ visibility: loading || tableStatus !== 'ready' ? 'hidden' : 'visible' }}
         />
       </div>
-      <CommonPopup
-        show={showPopup}
-        onHide={() => setShowPopup(false)}
-        onConfirm={popupOnConfirm}
-        title={popupTitle}
-      >
+      <CommonPopup show={showPopup} onHide={() => setShowPopup(false)} onConfirm={popupOnConfirm} title={popupTitle}>
         {popupContent}
       </CommonPopup>
+      <CarDetailPopup show={showDetailPopup} onHide={handleDetailCancel} data={carId} />
       <ExcelUploadPopup
         show={showExcelPopup}
         onHide={() => setShowExcelPopup(false)}
