@@ -1,195 +1,248 @@
-import React, { useState, useEffect, useRef } from "react";
-import { createTable } from '../../utils/tableConfig';
-import { errorMsgPopup } from '../../utils/errorMsgPopup';
-import styled from 'styled-components';
+import React, { useState, useEffect } from "react";
+import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
+import { TreeItem } from "@mui/x-tree-view/TreeItem";
+import { FaChevronDown, FaChevronRight } from "react-icons/fa";
+import Checkbox from "@mui/material/Checkbox";
+import styled from "styled-components";
 import styles from "./OrgSearchPopup.module.css";
-import useStore from '../../store/store';
-import { fetchData } from '../../utils/dataUtils';
-import { updateChildrenRecursive } from '../../utils/tableUtils';
-import { convertOrgInfoToHierarchy } from '../../utils/hierarchyJsonUtils';
+import useStore from "../../store/store";
+import { fetchData } from "../../utils/dataUtils";
+import { errorMsgPopup } from "../../utils/errorMsgPopup";
+import { convertOrgInfoToHierarchy } from "../../utils/hierarchyJsonUtils";
 
-const TableWrapper = styled.div`
-  .tabulator-header .tabulator-col {
-    min-height: 20px;
-    line-height: 12px;
+const TreeWrapper = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  & .MuiTreeView-root {
+    width: 100%;
+    --TreeView-itemChildrenIndentation: 16px;
   }
-  .tabulator-row {
-    line-height: 12px;
+  & .MuiTreeItem-content {
+    padding: 2px 6px;
+    padding-left: calc(8px + var(--TreeView-itemChildrenIndentation) * var(--TreeView-itemDepth));
+    box-sizing: border-box;
+  }
+  & .MuiTreeItem-label {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  & .MuiTreeItem-iconContainer {
+    width: 16px;
+    display: flex;
+    align-items: center;
+  }
+`;
+
+const StyledTreeItem = styled(TreeItem, {
+  shouldForwardProp: (prop) => !['ownerState', 'theme', 'sx', 'as'].includes(prop)
+})`
+  & .MuiTreeItem-content {
+    padding: 2px 6px;
+    padding-left: calc(8px + var(--TreeView-itemChildrenIndentation, 16px) * var(--TreeView-itemDepth));
+    box-sizing: border-box;
+  }
+  & .MuiTreeItem-label {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  & .MuiTreeItem-iconContainer {
+    width: 16px;
+    display: flex;
+    align-items: center;
   }
 `;
 
 const OrgSearchPopup = ({ onClose, onConfirm }) => {
   const { user } = useStore();
   const [isOpen, setIsOpen] = useState(false);
-  const tableRef = useRef(null);
-  const tableInstance = useRef(null);
-
-  const [data, setData] = useState([]);
+  const [treeData, setTreeData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [tableStatus, setTableStatus] = useState("initializing");
-  const [_rowCount, setRowCount] = useState(0);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [expanded, setExpanded] = useState([]);
 
+  // 트리 데이터 초기화
   useEffect(() => {
     setIsOpen(true);
-    const initializeTable = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      if (!tableRef.current) return;
-
+    const loadData = async () => {
+      setLoading(true);
       try {
-        tableInstance.current = createTable(tableRef.current, [
-          { headerHozAlign: "center", hozAlign: "left", title: "조직명", field: "ORGNM", sorter: "string", width: 200, frozen: true },
-          {
-            frozen: true,
-            headerHozAlign: "center",
-            hozAlign: "center",
-            title: "작업",
-            field: "select",
-            width: 80,
-            formatter: (cell) => {
-              const rowData = cell.getRow().getData();
-              const seqKey = "seq";
-              const selectKey = "select";
-              const targetSeq = rowData[seqKey];
-              const div = document.createElement("div");
-              div.style.display = "flex";
-              div.style.alignItems = "center";
-              div.style.justifyContent = "center";
-              div.style.gap = "5px";
-              const checkbox = document.createElement("input");
-              checkbox.type = "checkbox";
-              checkbox.checked = rowData.select === "Y";
-              checkbox.onclick = (e) => {
-                e.stopPropagation();
-                const currentPage = tableInstance.current.getPage();
-                const allRows = tableInstance.current.getData();
-                const updatedTreeData = allRows
-                  .map((row) => updateChildrenRecursive([row], seqKey, null, selectKey, "N")[0])
-                  .map((row) => updateChildrenRecursive([row], seqKey, targetSeq, selectKey, "Y")[0]);
-                tableInstance.current.setData(updatedTreeData);
-                setData(updatedTreeData);
-                tableInstance.current.setPage(currentPage);
-              };
-              const span = document.createElement("span");
-              span.innerText = "선택";
-              span.style.cursor = "pointer";
-              span.onclick = checkbox.onclick;
-              div.appendChild(checkbox);
-              div.appendChild(span);
-              return div;
-            },
-          },
-          { headerHozAlign: "center", hozAlign: "center", title: "순번", field: "seq", sorter: "number", width: 60 },
-          { headerHozAlign: "center", hozAlign: "center", title: "조직코드", field: "ORGCD", sorter: "string", width: 100 },
-          { headerHozAlign: "center", hozAlign: "center", title: "상위조직코드", field: "UPPERORGCD", sorter: "string", width: 120 },
-          { headerHozAlign: "center", hozAlign: "center", title: "조직레벨", field: "ORGLEVEL", sorter: "number", width: 80 },
-        ], [], {
-          height: '420px',
-          headerHozAlign: "center",
-          layout: 'fitColumns',
-          index: "seq",
-          dataTree: true,
-          dataTreeStartExpanded: (row, level) => {
-            return level <= 0; // 레벨 0(1레벨)만 펼침
-          },
-          movableRows: false,
-          pagination: false,
-        });
+        const params = {
+          pGUBUN: "EMPNO",
+          pMDATE: new Date().toISOString().slice(0, 7).replace("-", ""),
+          pSEARCH: user?.empNo || "",
+          pDEBUG: "F",
+        };
 
-        setTableStatus("ready");
-      } catch (err) {
-        setTableStatus("error");
-        console.error("Table initialization failed:", err.message);
-      }
-    };
+        const response = await fetchData("common/orginfo/list", params);
 
-    initializeTable();
-    return () => {
-      if (tableInstance.current) {
-        tableInstance.current.destroy();
-        tableInstance.current = null;
-        setTableStatus("initializing");
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (tableStatus === "ready" && !loading) {
-      const loadData = async () => {
-        setLoading(true);
-        try {
-          const params = {
-            pGUBUN: "EMPNO",
-            pMDATE: new Date().toISOString().slice(0, 7).replace("-", ""),
-            pSEARCH: user?.empNo || "",
-            pDEBUG: "F",
-          };
-
-          const response = await fetchData("common/orginfo/list", params);
-
-          if (!response.success || response.errMsg) {
-            errorMsgPopup(response.message || "데이터를 가져오는 중 오류가 발생했습니다.");
-            setData([]);
-            return;
-          }
-
-          const responseData = Array.isArray(response.data) ? response.data : [];
-          const hierarchicalData = convertOrgInfoToHierarchy(responseData);
-
-          let seqCounter = 1;
-          const assignSeq = (nodes) =>
-            nodes.map((item) => {
-              const newItem = { ...item, seq: seqCounter++, select: "N" };
-              if (item._children) {
-                newItem._children = assignSeq(item._children);
-              }
-              return newItem;
-            });
-
-          const finalData = assignSeq(hierarchicalData);
-          setData(finalData);
-        } catch {
-          errorMsgPopup("데이터를 가져오는 중 오류가 발생했습니다.");
-          setData([]);
-        } finally {
-          setLoading(false);
+        if (!response.success || response.errMsg) {
+          errorMsgPopup(response.message || "데이터를 가져오는 중 오류가 발생했습니다.");
+          setTreeData([]);
+          return;
         }
-      };
 
-      loadData();
+        const responseData = Array.isArray(response.data) ? response.data : [];
+        const hierarchicalData = convertOrgInfoToHierarchy(responseData);
+
+        let seqCounter = 1;
+        const assignSeq = (nodes) =>
+          nodes.map((item) => {
+            const newItem = {
+              ...item,
+              id: `node-${seqCounter++}`,
+              name: item.ORGNM || "Unknown",
+              ORGCD: item.ORGCD || "",
+              UPPERORGCD: item.UPPERORGCD || "",
+              ORGLEVEL: item.ORGLEVEL || 0,
+            };
+            if (item._children) {
+              newItem.children = assignSeq(item._children);
+            }
+            return newItem;
+          });
+
+        const finalData = assignSeq(hierarchicalData);
+        setTreeData(finalData);
+
+        // 1레벨 노드만 기본 확장
+        const initialExpanded = finalData
+          .filter((node) => node.ORGLEVEL <= 1)
+          .map((node) => node.id);
+        setExpanded(initialExpanded);
+      } catch (error) {
+        console.error("Error loading data:", error);
+        errorMsgPopup("데이터를 가져오는 중 오류가 발생했습니다.");
+        setTreeData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, [user?.empNo]);
+
+  // 노드 확장/축소 처리
+  const handleToggle = (event, itemId, isExpanded) => {
+    setExpanded((prev) =>
+      isExpanded ? [...prev, itemId] : prev.filter((id) => id !== itemId)
+    );
+  };
+
+  // 하위 노드 ID 수집
+  const collectChildIds = (node) => {
+    let ids = [node.id];
+    if (node.children) {
+      node.children.forEach((child) => {
+        ids = [...ids, ...collectChildIds(child)];
+      });
     }
-  }, [tableStatus, user?.empNo]);
+    return ids;
+  };
 
-  useEffect(() => {
-    if (tableInstance.current && tableStatus === "ready" && !loading) {
-      tableInstance.current.setData(data);
-      setRowCount(tableInstance.current.getDataCount() || 0);
-      if (data.length === 0) {
-        tableInstance.current.alert("데이터가 없습니다.", "info");
+  // 체크박스 선택 처리
+  const handleSelect = (nodeId) => {
+    setSelectedIds((prev) => {
+      const isSelected = prev.includes(nodeId);
+      const node = findNodeById(treeData, nodeId);
+      if (!node) return prev;
+
+      const childIds = node.children ? collectChildIds(node).filter((id) => id !== nodeId) : [];
+
+      if (isSelected) {
+        // 체크 해제: 현재 노드와 하위 노드 모두 제거
+        return prev.filter((id) => id !== nodeId && !childIds.includes(id));
       } else {
-        tableInstance.current.clearAlert();
+        // 체크 선택: 현재 노드와 하위 노드 모두 추가
+        const newIds = [...new Set([...prev, nodeId, ...childIds])];
+        return newIds;
+      }
+    });
+  };
+
+  // ID로 노드 찾기
+  const findNodeById = (nodes, id) => {
+    for (const node of nodes) {
+      if (node.id === id) return node;
+      if (node.children) {
+        const found = findNodeById(node.children, id);
+        if (found) return found;
       }
     }
-  }, [data, tableStatus, loading]);
+    return null;
+  };
 
+  // 상위 노드만 선택 (하위 노드 체크 무시)
+  const collectTopLevelSelected = (nodes, selectedIds) => {
+    let selected = [];
+    nodes.forEach((node) => {
+      if (!node || !node.id) {
+        console.warn("Invalid node found:", node);
+        return;
+      }
+      if (selectedIds.includes(node.id)) {
+        selected.push({
+          ORGCD: node.ORGCD || "",
+          ORGNM: node.name || "Unknown",
+        });
+      } else if (node.children) {
+        selected = [...selected, ...collectTopLevelSelected(node.children, selectedIds)];
+      }
+    });
+    return selected;
+  };
+
+  // 확인 버튼 처리
+  const handleConfirm = () => {
+    try {
+      if (onConfirm) {
+        const selectedNodes = collectTopLevelSelected(treeData, selectedIds);
+        const orgCodes = selectedNodes
+          .map((node) => node.ORGCD)
+          .filter((code) => code && typeof code === "string")
+          .join(",");
+        const orgNames = selectedNodes
+          .map((node) => node.ORGNM)
+          .filter((name) => name && typeof name === "string")
+          .join(",");
+        console.log("Selected Nodes:", { ORGCD: orgCodes, ORGNM: orgNames });
+        onConfirm([{ ORGCD: orgCodes, ORGNM: orgNames }]);
+      }
+    } catch (error) {
+      console.error("Error in handleConfirm:", error);
+      errorMsgPopup("선택된 데이터를 처리하는 중 오류가 발생했습니다.");
+    } finally {
+      handleClose();
+    }
+  };
+
+  // 닫기 버튼 처리
   const handleClose = () => {
     setIsOpen(false);
     if (onClose) onClose();
   };
 
-  const handleConfirm = () => {
-    if (onConfirm) {
-      const collectSelected = (nodes) => {
-        let selected = [];
-        nodes.forEach((node) => {
-          if (node.select === "Y") selected.push(node);
-          if (node._children) selected = [...selected, ...collectSelected(node._children)];
-        });
-        return selected;
-      };
-      onConfirm(collectSelected(data));
-    }
-    handleClose();
-  };
+  // 커스텀 노드 렌더링
+  const renderTreeItems = (nodes) =>
+    nodes.map((node) => (
+      <StyledTreeItem
+        key={node.id}
+        itemId={node.id}
+        label={
+          <div className={styles.nodeContainer}>
+            <Checkbox
+              className={styles.nodeCheckbox}
+              checked={selectedIds.includes(node.id)}
+              onChange={() => handleSelect(node.id)}
+              onClick={(e) => e.stopPropagation()}
+            />
+            <span className={styles.nodeLabel}>
+              {node.name} (레벨: {node.ORGLEVEL})
+            </span>
+          </div>
+        }
+      >
+        {node.children && renderTreeItems(node.children)}
+      </StyledTreeItem>
+    ));
 
   if (!isOpen) return null;
 
@@ -197,19 +250,46 @@ const OrgSearchPopup = ({ onClose, onConfirm }) => {
     <div className={styles.overlay}>
       <div className={styles.popupContainer}>
         <div className={styles.header}>
-          <h3>조직</h3>
-          <button className={styles.closeButton} onClick={handleClose}>×</button>
+          <h3>조직 선택</h3>
+          <button className={styles.closeButton} onClick={handleClose}>
+            ×
+          </button>
         </div>
 
-        <TableWrapper className={styles.tableWrapper}>
-          {tableStatus === "initializing" && <div className={styles.loading}>초기화 중...</div>}
+        <TreeWrapper className={styles.tableWrapper}>
           {loading && <div className={styles.loading}>로딩 중...</div>}
-          <div ref={tableRef} className={styles.tableSection} />
-        </TableWrapper>
+          {!loading && treeData.length === 0 && (
+            <div className={styles.loading}>데이터가 없습니다.</div>
+          )}
+          {!loading && treeData.length > 0 && (
+            <SimpleTreeView
+              slots={{
+                collapseIcon: FaChevronDown,
+                expandIcon: FaChevronRight,
+              }}
+              expandedItems={expanded}
+              onItemExpansionToggle={handleToggle}
+              multiSelect
+              disableSelection={false}
+            >
+              {renderTreeItems(treeData)}
+            </SimpleTreeView>
+          )}
+        </TreeWrapper>
 
         <div className={styles.buttonContainer}>
-          <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={handleClose}>닫기</button>
-          <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleConfirm}>확인</button>
+          <button
+            className={`${styles.btn} ${styles.btnSecondary}`}
+            onClick={handleClose}
+          >
+            닫기
+          </button>
+          <button
+            className={`${styles.btn} ${styles.btnPrimary}`}
+            onClick={handleConfirm}
+          >
+            확인
+          </button>
         </div>
       </div>
     </div>

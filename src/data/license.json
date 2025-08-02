@@ -72,6 +72,41 @@
   "repository": "https://github.com/apache/echarts"
   },
   {
+    "name": "emotion/react",
+    "license": "MIT License",
+    "copyright": "2017-present Mitsuru Shibata and Emotion contributors",
+    "repository": "https://github.com/emotion-js/emotion",
+    "free": true
+  },
+  {
+    "name": "emotion/styled",
+    "license": "MIT License",
+    "copyright": "2017-present Mitsuru Shibata and Emotion contributors",
+    "repository": "https://github.com/emotion-js/emotion",
+    "free": true
+  },
+  {
+    "name": "mui/material",
+    "license": "MIT License",
+    "copyright": "2014-present MUI contributors",
+    "repository": "https://github.com/mui/material-ui",
+    "free": true
+  },
+  {
+    "name": "react-icons",
+    "license": "MIT License",
+    "copyright": "2016-present React Icons contributors",
+    "repository": "https://github.com/react-icons/react-icons",
+    "free": true
+  },
+  {
+    "name": "mui/x-tree-view",
+    "license": "MIT License",
+    "copyright": "2020-present MUI contributors",
+    "repository": "https://github.com/mui/mui-x",
+    "free": true
+  },
+  {
     "name": "Zustand",
     "license": "MIT License",
     "copyright": "2020-present POPLINE Studio",
