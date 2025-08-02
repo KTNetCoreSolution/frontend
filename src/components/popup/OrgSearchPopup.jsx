@@ -203,7 +203,6 @@ const OrgSearchPopup = ({ onClose, onConfirm }) => {
           .map((node) => node.ORGNM)
           .filter((name) => name && typeof name === "string")
           .join(",");
-        console.log("Selected Nodes:", { ORGCD: orgCodes, ORGNM: orgNames });
         onConfirm([{ ORGCD: orgCodes, ORGNM: orgNames }]);
       }
     } catch (error) {
