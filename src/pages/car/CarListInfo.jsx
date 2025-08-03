@@ -307,6 +307,7 @@ const CarListInfo = () => {
               setFilters((prev) => ({ ...prev, orgText: orgNames || '' }));
               console.log('Selected Organizations in TabulatorDirect:', selectedRows); // 추가된 디버깅 로그
             }}
+            pGUBUN="CAREMPNO" //차량용 트리 시(_fix 테이블 사용)
           />
         </div>
       );

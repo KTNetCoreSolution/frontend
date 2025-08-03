@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import { FaChevronDown, FaChevronRight } from "react-icons/fa";
@@ -52,13 +52,24 @@ const StyledTreeItem = styled(TreeItem, {
   }
 `;
 
-const OrgSearchPopup = ({ onClose, onConfirm }) => {
+const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN }) => {
   const { user } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [treeData, setTreeData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
   const [expanded, setExpanded] = useState([]);
+
+  // initialSelectedOrgs를 정규화하여 배열로 변환
+  const normalizedInitialSelectedOrgs = useMemo(() => {
+    if (typeof initialSelectedOrgs === 'string') {
+      return initialSelectedOrgs.split(/[,^]/).map((code) => code.trim()).filter(Boolean);
+    }
+    return Array.isArray(initialSelectedOrgs) ? initialSelectedOrgs : [];
+  }, [initialSelectedOrgs]);
+
+  // 의존성 배열용 키
+  const initialSelectedOrgsKey = useMemo(() => normalizedInitialSelectedOrgs.join("^"), [normalizedInitialSelectedOrgs]);
 
   // 트리 데이터 초기화
   useEffect(() => {
@@ -67,12 +78,11 @@ const OrgSearchPopup = ({ onClose, onConfirm }) => {
       setLoading(true);
       try {
         const params = {
-          pGUBUN: "EMPNO",
+          pGUBUN: pGUBUN || "EMPNO",
           pMDATE: new Date().toISOString().slice(0, 7).replace("-", ""),
           pSEARCH: user?.empNo || "",
           pDEBUG: "F",
         };
-
         const response = await fetchData("common/orginfo/list", params);
 
         if (!response.success || response.errMsg) {
@@ -104,6 +114,23 @@ const OrgSearchPopup = ({ onClose, onConfirm }) => {
         const finalData = assignSeq(hierarchicalData);
         setTreeData(finalData);
 
+        // initialSelectedOrgs로 체크박스 자동 선택
+        if (normalizedInitialSelectedOrgs.length > 0) {
+          const preSelectedIds = [];
+          const findIdsByOrgCd = (nodes, orgCds) => {
+            nodes.forEach((node) => {
+              if (orgCds.includes(node.ORGCD)) {
+                preSelectedIds.push(node.id);
+              }
+              if (node.children) {
+                findIdsByOrgCd(node.children, orgCds);
+              }
+            });
+          };
+          findIdsByOrgCd(finalData, normalizedInitialSelectedOrgs);
+          setSelectedIds(preSelectedIds);
+        }
+
         // 1레벨 노드만 기본 확장
         const initialExpanded = finalData
           .filter((node) => node.ORGLEVEL <= 1)
@@ -118,7 +145,7 @@ const OrgSearchPopup = ({ onClose, onConfirm }) => {
       }
     };
     loadData();
-  }, [user?.empNo]);
+  }, [user?.empNo, initialSelectedOrgsKey, pGUBUN]);
 
   // 노드 확장/축소 처리
   const handleToggle = (event, itemId, isExpanded) => {
@@ -148,10 +175,8 @@ const OrgSearchPopup = ({ onClose, onConfirm }) => {
       const childIds = node.children ? collectChildIds(node).filter((id) => id !== nodeId) : [];
 
       if (isSelected) {
-        // 체크 해제: 현재 노드와 하위 노드 모두 제거
         return prev.filter((id) => id !== nodeId && !childIds.includes(id));
       } else {
-        // 체크 선택: 현재 노드와 하위 노드 모두 추가
         const newIds = [...new Set([...prev, nodeId, ...childIds])];
         return newIds;
       }
@@ -170,7 +195,7 @@ const OrgSearchPopup = ({ onClose, onConfirm }) => {
     return null;
   };
 
-  // 상위 노드만 선택 (하위 노드 체크 무시)
+  // 최상위 선택된 노드만 수집
   const collectTopLevelSelected = (nodes, selectedIds) => {
     let selected = [];
     nodes.forEach((node) => {
@@ -195,15 +220,9 @@ const OrgSearchPopup = ({ onClose, onConfirm }) => {
     try {
       if (onConfirm) {
         const selectedNodes = collectTopLevelSelected(treeData, selectedIds);
-        const orgCodes = selectedNodes
-          .map((node) => node.ORGCD)
-          .filter((code) => code && typeof code === "string")
-          .join(",");
-        const orgNames = selectedNodes
-          .map((node) => node.ORGNM)
-          .filter((name) => name && typeof name === "string")
-          .join(",");
-        onConfirm([{ ORGCD: orgCodes, ORGNM: orgNames }]);
+        const orgCd = selectedNodes.map((node) => node.ORGCD).filter(Boolean).join("^");
+        const orgNm = selectedNodes.map((node) => node.ORGNM).filter(Boolean).join(",");
+        onConfirm([{ ORGCD: orgCd, ORGNM: orgNm }]);
       }
     } catch (error) {
       console.error("Error in handleConfirm:", error);
@@ -257,7 +276,7 @@ const OrgSearchPopup = ({ onClose, onConfirm }) => {
 
         <TreeWrapper className={styles.tableWrapper}>
           {loading && <div className={styles.loading}>로딩 중...</div>}
-          {!loading && treeData.length === 0 && (
+          {!loading && treeData.length == 0 && (
             <div className={styles.loading}>데이터가 없습니다.</div>
           )}
           {!loading && treeData.length > 0 && (

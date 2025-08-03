@@ -259,6 +259,7 @@ const TabulatorDirect = () => {
               setFilters((prev) => ({ ...prev, orgText: orgNames || '' }));
               console.log('Selected Organizations in TabulatorDirect:', selectedRows);
             }}
+            pGUBUN="CAREMPNO" //차량용 트리 시
           />
         </div>
       );
