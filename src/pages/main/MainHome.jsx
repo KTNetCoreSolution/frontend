@@ -4,7 +4,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Card, CardContent, Button, Typography } from '@mui/material';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css/navigation';
+import { Pagination, Autoplay, Navigation } from 'swiper/modules';
 import useStore from '../../store/store';
 import { hasPermission } from '../../utils/authUtils';
 import { fetchData } from '../../utils/dataUtils';
@@ -33,7 +34,7 @@ const MainHome = () => {
             contents: item.CONTENTS,
             date: item.REGEDT,
           }));
-          setNotices(mappedNotices.slice(0, 2));
+          setNotices(mappedNotices.slice(0, 4)); // 상위 4개 로드
         } else {
           setNotices([]);
         }
@@ -51,7 +52,7 @@ const MainHome = () => {
             contents: item.CONTENTS,
             date: item.REGEDT,
           }));
-          setCarnotices(mappedCarnotices.slice(0, 2));
+          setCarnotices(mappedCarnotices.slice(0, 4)); // 상위 4개 로드
         } else {
           setCarnotices([]);
         }
@@ -77,11 +78,12 @@ const MainHome = () => {
       <div className="d-flex flex-column h-100 p-2" style={{ width: "98vw" }}>
         <div className="border w-100 mb-3">
           <Swiper
-            modules={[Pagination, Autoplay]}
+            modules={[Pagination, Autoplay, Navigation]}
             spaceBetween={0}
             slidesPerView={1}
             pagination={{ clickable: true }}
             autoplay={{ delay: 3000, disableOnInteraction: false }}
+            navigation
             loop
             style={{ height: '120px' }}
           >
@@ -138,10 +140,34 @@ const MainHome = () => {
               spaceBetween={10}
               slidesPerView={2}
               pagination={{ clickable: true }}
-              style={{ paddingBottom: '20px', width: '100%' }}
+              style={{ paddingBottom: '10px', width: '100%' }}
             >
-              {notices.map((notice, index) => (
+              {notices.slice(0, 2).map((notice, index) => ( // 위쪽 2개
                 <SwiperSlide key={index} style={{ width: 'auto' }} onClick={() => handleNavigate('/main/boardView', { noticeid: notice.noticeid, type: 'notice' })}>
+                  <Card sx={{ minWidth: 275, margin: '10px', cursor: 'pointer' }}>
+                    <CardContent>
+                      <Typography variant="h6" component="div" sx={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {notice.title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {notice.contents}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {notice.date || new Date().toLocaleDateString()}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            <Swiper
+              spaceBetween={10}
+              slidesPerView={2}
+              pagination={{ clickable: true }}
+              style={{ paddingTop: '10px', width: '100%' }}
+            >
+              {notices.slice(2, 4).map((notice, index) => ( // 아래쪽 2개
+                <SwiperSlide key={index + 2} style={{ width: 'auto' }} onClick={() => handleNavigate('/main/boardView', { noticeid: notice.noticeid, type: 'notice' })}>
                   <Card sx={{ minWidth: 275, margin: '10px', cursor: 'pointer' }}>
                     <CardContent>
                       <Typography variant="h6" component="div" sx={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -190,10 +216,34 @@ const MainHome = () => {
               spaceBetween={10}
               slidesPerView={2}
               pagination={{ clickable: true }}
-              style={{ paddingBottom: '20px', width: '100%' }}
+              style={{ paddingBottom: '10px', width: '100%' }}
             >
-              {carnotices.map((notice, index) => (
+              {carnotices.slice(0, 2).map((notice, index) => ( // 위쪽 2개
                 <SwiperSlide key={index} style={{ width: 'auto' }} onClick={() => handleNavigate('/main/boardView', { noticeid: notice.noticeid, type: 'carnotice' })}>
+                  <Card sx={{ minWidth: 275, margin: '10px', cursor: 'pointer' }}>
+                    <CardContent>
+                      <Typography variant="h6" component="div" sx={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {notice.title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {notice.contents}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {notice.date || new Date().toLocaleDateString()}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            <Swiper
+              spaceBetween={10}
+              slidesPerView={2}
+              pagination={{ clickable: true }}
+              style={{ paddingTop: '10px', width: '100%' }}
+            >
+              {carnotices.slice(2, 4).map((notice, index) => ( // 아래쪽 2개
+                <SwiperSlide key={index + 2} style={{ width: 'auto' }} onClick={() => handleNavigate('/main/boardView', { noticeid: notice.noticeid, type: 'carnotice' })}>
                   <Card sx={{ minWidth: 275, margin: '10px', cursor: 'pointer' }}>
                     <CardContent>
                       <Typography variant="h6" component="div" sx={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>
