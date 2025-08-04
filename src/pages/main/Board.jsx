@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchData } from '../../utils/dataUtils';
 import styles from './Board.module.css';
 
-const Board = ({ canWriteBoard }) => {
+const Board = ({ canWriteBoard, type = 'notice' }) => {
   const navigate = useNavigate();
   const [notices, setNotices] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -12,13 +12,14 @@ const Board = ({ canWriteBoard }) => {
 
   useEffect(() => {
     const fetchNotices = async () => {
+      const apiEndpoint = type === 'carnotice' ? 'carnotice/list' : 'notice/list';
       const params = {
         gubun: 'LIST',
         noticeId: '',
         debug: 'F',
       };
       try {
-        const result = await fetchData('notice/list', params);
+        const result = await fetchData(apiEndpoint, params);
         if (result.errCd === '00') {
           const mappedNotices = result.data.map((item) => ({
             id: item.NOTICEID,
@@ -35,10 +36,10 @@ const Board = ({ canWriteBoard }) => {
       }
     };
     fetchNotices();
-  }, [canWriteBoard]);
+  }, [type]);
 
   const handleNoticeClick = (notice) => {
-    navigate('/main/boardView', { state: { notice } });
+    navigate('/main/boardView', { state: { notice, type } });
   };
 
   const totalNotices = notices.length || 0;
@@ -68,12 +69,12 @@ const Board = ({ canWriteBoard }) => {
     <div className="h-100 p-3 border" style={{ width: '100%' }}>
       <div className="list-group-item d-flex justify-content-between align-items-center">
         <h3 className={`mb-3 fs-5 text-dark ${styles.boardTitle}`}>
-          공지사항
+          {type === 'carnotice' ? '게시판2' : '공지사항'}
         </h3>
         {canWriteBoard && (
           <button
             className={`btn btn-primary mb-3 ${styles.btnReg}`}
-            onClick={() => navigate('/main/boardWrite')}
+            onClick={() => navigate('/main/boardWrite', { state: { type } })}
           >
             등록
           </button>
@@ -144,9 +145,7 @@ const Board = ({ canWriteBoard }) => {
               </li>
             ))}
             <li
-              className={`page-item ${
-                currentPage === totalPages ? 'disabled' : ''
-              }`}
+              className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}
             >
               <button
                 className={`page-link ${styles.pageLink}`}
@@ -158,9 +157,7 @@ const Board = ({ canWriteBoard }) => {
             </li>
             {totalPages > maxPageButtons && (
               <li
-                className={`page-item ${
-                  currentPage === totalPages ? 'disabled' : ''
-                }`}
+                className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}
               >
                 <button
                   className={`page-link ${styles.pageLink}`}
@@ -174,6 +171,12 @@ const Board = ({ canWriteBoard }) => {
           </ul>
         </nav>
       )}
+      <button
+        className="btn btn-secondary me-2 mb-3 mt-5"
+        onClick={() => navigate('/main')}
+      >
+        뒤로 가기
+      </button>
     </div>
   );
 };

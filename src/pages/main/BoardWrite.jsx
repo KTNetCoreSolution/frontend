@@ -14,6 +14,7 @@ const BoardWrite = () => {
   const { user } = useStore();
   const isEdit = !!state?.notice;
   const existingFiles = state?.files || [];
+  const type = state?.type || 'notice';
 
   useEffect(() => {
     fileUtils.setAccept('*');
@@ -75,13 +76,14 @@ const BoardWrite = () => {
     }
 
     try {
+      const apiEndpoint = type === 'carnotice' ? 'carnotice/filedelete' : 'notice/filedelete';
       const payload = {
         gubun: 'D',
         fileId: String(file.fileId),
         noticeId: String(state.notice.id)
       };
 
-      const deleteResponse = await fetchData("notice/filedelete", payload);
+      const deleteResponse = await fetchData(apiEndpoint, payload);
 
       if (deleteResponse.errCd !== '00') {
         throw new Error(deleteResponse.errMsg || "파일 삭제 실패");
@@ -135,6 +137,7 @@ const BoardWrite = () => {
     setLoading(true);
 
     try {
+      const apiEndpoint = type === 'carnotice' ? 'carnotice/save' : 'notice/save';
       const gubun = isEdit ? 'U' : 'I';
       const noticeId = isEdit ? String(state.notice.id) : '0';
       const payload = {
@@ -144,7 +147,7 @@ const BoardWrite = () => {
         content,
       };
 
-      const saveResponse = await fetchData("notice/save", payload);
+      const saveResponse = await fetchData(apiEndpoint, payload);
 
       if (saveResponse.errCd !== '00') {
         throw new Error(saveResponse.errMsg || "공지사항 저장 실패");
@@ -154,6 +157,7 @@ const BoardWrite = () => {
 
       const validFiles = files.filter(file => file != null);
       if (validFiles.length > 0) {
+        const uploadEndpoint = type === 'carnotice' ? 'carnotice/filesave' : 'notice/filesave';
         const formData = new FormData();
         formData.append("gubun", "I");
         formData.append("fileId", "");
@@ -163,7 +167,7 @@ const BoardWrite = () => {
           formData.append("files", file);
         });
 
-        const uploadResponse = await fetchFileUpload("notice/filesave", formData);
+        const uploadResponse = await fetchFileUpload(uploadEndpoint, formData);
 
         if (uploadResponse.errCd !== '00') {
           throw new Error(uploadResponse.errMsg || "파일 업로드 실패");
@@ -193,6 +197,7 @@ const BoardWrite = () => {
 
     setLoading(true);
     try {
+      const apiEndpoint = type === 'carnotice' ? 'carnotice/save' : 'notice/save';
       const noticeId = String(state.notice.id);
       const payload = {
         gubun: 'D',
@@ -201,7 +206,7 @@ const BoardWrite = () => {
         content: content || '',
       };
 
-      const deleteResponse = await fetchData("notice/save", payload);
+      const deleteResponse = await fetchData(apiEndpoint, payload);
       if (deleteResponse.errCd !== '00') {
         throw new Error(deleteResponse.errMsg || "공지사항 삭제 실패");
       }
@@ -220,7 +225,7 @@ const BoardWrite = () => {
   return (
     <div className="container bg-body">
       <h2 className={`text-primary text-dark fs-5 mb-4 pt-3 ${styles.boardTitle}`}>
-        {isEdit ? '공지 변경' : '공지 등록'}
+        {type === 'carnotice' ? '차량관리 공지사항' : '표준활동 공지사항'} {isEdit ? '변경' : '등록'}
       </h2>
       <div className={styles.boardTitleLine}></div>
       <form onSubmit={handleSubmit}>

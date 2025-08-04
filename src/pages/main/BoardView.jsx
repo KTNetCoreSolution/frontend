@@ -13,15 +13,16 @@ const BoardView = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const { user } = useStore();
-  const notice = state?.notice;
+  const noticeId = state?.noticeid;
+  const type = state?.type || 'notice';
   const canModifyBoard = user && hasPermission(user.auth, 'mainBoard');
 
-  const [title, setTitle] = useState(notice?.title || '');
+  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [files, setFiles] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedText, setSelectedText] = useState(null);
-  const [noticeDetails, setNoticeDetails] = useState(notice);
+  const [noticeDetails, setNoticeDetails] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
 
   const closeImagePopup = () => {
@@ -36,7 +37,8 @@ const BoardView = () => {
   useEffect(() => {
     const fetchNoticeDetails = async () => {
       try {
-        const result = await fetchData('notice/list', {gubun: 'DETAIL', noticeId: notice.id, debug: 'F', });
+        const apiEndpoint = type === 'carnotice' ? 'carnotice/list' : 'notice/list';
+        const result = await fetchData(apiEndpoint, { gubun: 'DETAIL', noticeId: noticeId, debug: 'F' });
         if (result.errCd === '00' && result.data.length > 0) {
           const detail = {
             id: result.data[0].NOTICEID,
@@ -60,7 +62,8 @@ const BoardView = () => {
 
     const fetchFiles = async () => {
       try {
-        const result = await fetchData('notice/filelist', {gubun: 'LIST', noticeId: notice.id, fileId: '', debug: 'F', });
+        const apiEndpoint = type === 'carnotice' ? 'carnotice/filelist' : 'notice/filelist';
+        const result = await fetchData(apiEndpoint, { gubun: 'LIST', noticeId: noticeId, fileId: '', debug: 'F' });
         if (result.errCd === '00') {
           const mappedFiles = result.data.map((file) => ({
             fileId: file.FILEID,
@@ -78,19 +81,20 @@ const BoardView = () => {
       }
     };
 
-    if (notice?.id) {
+    if (noticeId) {
       fetchNoticeDetails();
       fetchFiles();
     }
-  }, [notice?.id]);
+  }, [noticeId, type]);
 
   const handleEdit = () => {
-    navigate('/main/boardWrite', { state: { notice: noticeDetails, files } });
+    navigate('/main/boardWrite', { state: { notice: noticeDetails, files, type } });
   };
 
   const handleFileClick = async (file) => {
     try {
-      const result = await fetchData('notice/filelist', {gubun: 'DETAIL', noticeId: notice.id || '', fileId: file.fileId, debug: 'F', });
+      const apiEndpoint = type === 'carnotice' ? 'carnotice/filelist' : 'notice/filelist';
+      const result = await fetchData(apiEndpoint, { gubun: 'DETAIL', noticeId: noticeId || '', fileId: file.fileId, debug: 'F' });
       if (result.errCd === '00' && result.data.length > 0) {
         const extension = fileUtils.getFileExtension(result.data[0].FILENM)?.toLowerCase();
         const mimeType = fileUtils.mimeTypes[extension] || 'application/octet-stream';
@@ -103,7 +107,6 @@ const BoardView = () => {
           const textContent = fileUtils.decodeBase64ToText(fileData);
           setSelectedText({ content: textContent, fileName: result.data[0].FILENM });
         } else {
-          // Trigger download for non-image, non-text files
           const link = document.createElement('a');
           link.href = `data:${mimeType};base64,${fileData}`;
           link.download = result.data[0].FILENM;
@@ -123,7 +126,8 @@ const BoardView = () => {
 
   const handleDownload = async (file) => {
     try {
-      const result = await fetchData('notice/filelist', {gubun: 'DETAIL', noticeId: notice.id || '', fileId: file.fileId, debug: 'F', });
+      const apiEndpoint = type === 'carnotice' ? 'carnotice/filelist' : 'notice/filelist';
+      const result = await fetchData(apiEndpoint, { gubun: 'DETAIL', noticeId: noticeId || '', fileId: file.fileId, debug: 'F' });
       if (result.errCd === '00' && result.data.length > 0) {
         const fileData = result.data[0].FILEDATA;
         const mimeType = fileUtils.mimeTypes[fileUtils.getFileExtension(file.fileName)] || 'application/octet-stream';
@@ -168,7 +172,7 @@ const BoardView = () => {
   return (
     <div className="container bg-body">
       <h2 className={`text-primary text-dark fs-5 mb-4 pt-3 ${styles.boardTitle}`}>
-        공지사항 상세
+        {type === 'carnotice' ? '차량관리 공지사항 상세' : '표준활동 공지사항 상세'}
       </h2>
       <div className="mb-3">
         <label className="form-label">작성일</label>

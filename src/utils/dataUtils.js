@@ -5,10 +5,10 @@ import useStore from '../store/store';
 /**
  * 진행률 시뮬레이션 함수
  * @param {Function} setLoading - 로딩 상태를 설정하는 함수
- * @param {number} totalDuration - 전체 진행 시간 (밀리초, 기본 500ms)
+ * @param {number} totalDuration - 전체 진행 시간 (밀리초, 기본 200ms)
  * @returns {Promise<void>} 진행률 시뮬레이션 완료 후 resolve
  */
-const simulateProgress = async (setLoading, totalDuration = 500) => {
+const simulateProgress = async (setLoading, totalDuration = 200) => {
   const interval = 100;
   const increment = 100 / (totalDuration / interval);
   let currentProgress = 0;
@@ -71,7 +71,7 @@ export async function fetchData(url, filters = {}, config = {}) {
   const { setLoading } = useStore.getState();
   try {
     setLoading({ isLoading: true, progress: 0 });
-    await simulateProgress(setLoading, 500);
+    await simulateProgress(setLoading, 200);
     const response = await api.post(`${common.getServerUrl(url)}`, filters, config);
     return response.data;
   } catch (error) {
@@ -93,7 +93,7 @@ export async function fetchDataGet(url, filters = {}, config = {}) {
   const { setLoading } = useStore.getState();
   try {
     setLoading({ isLoading: true, progress: 0 });
-    await simulateProgress(setLoading, 500);
+    await simulateProgress(setLoading, 200);
     const queryParams = new URLSearchParams(filters).toString();
     const fullUrl = queryParams ? `${common.getServerUrl(url)}?${queryParams}` : `${common.getServerUrl(url)}`;
     const response = await api.get(fullUrl, config);
@@ -117,7 +117,7 @@ export const fetchFileData = async (url, params, config = {}) => {
   const { setLoading } = useStore.getState();
   try {
     setLoading({ isLoading: true, progress: 0 });
-    await simulateProgress(setLoading, 500);
+    await simulateProgress(setLoading, 200);
     const response = await api.post(`${common.getServerUrl(url)}`, params, config);
     return response.data || { success: false, message: "No data returned" };
   } catch (error) {
@@ -173,7 +173,7 @@ export async function externalFetchData(url, filters = {}, config = {}) {
   const { setLoading } = useStore.getState();
   try {
     setLoading({ isLoading: true, progress: 0 });
-    await simulateProgress(setLoading, 500);
+    await simulateProgress(setLoading, 200);
     const response = await api.post(url, filters, config);
     return response.data;
   } catch (error) {
@@ -195,7 +195,7 @@ export async function externalFetchDataGet(url, filters = {}, config = {}) {
   const { setLoading } = useStore.getState();
   try {
     setLoading({ isLoading: true, progress: 0 });
-    await simulateProgress(setLoading, 500);
+    await simulateProgress(setLoading, 200);
     const queryParams = new URLSearchParams(filters).toString();
     const fullUrl = queryParams ? `${url}?${queryParams}` : url;
     const response = await api.get(fullUrl, config);
@@ -219,7 +219,7 @@ export const externalFetchFileData = async (url, params, config = {}) => {
   const { setLoading } = useStore.getState();
   try {
     setLoading({ isLoading: true, progress: 0 });
-    await simulateProgress(setLoading, 500);
+    await simulateProgress(setLoading, 200);
     const response = await api.post(url, params, config);
     return response.data || { success: false, message: "No data returned" };
   } catch (error) {
