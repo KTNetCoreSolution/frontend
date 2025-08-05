@@ -52,7 +52,7 @@ const StyledTreeItem = styled(TreeItem, {
   }
 `;
 
-const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN }) => {
+const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN, isMulti = true }) => {
   const { user } = useStore();
   const [isOpen, setIsOpen] = useState(false);
   const [treeData, setTreeData] = useState([]);
@@ -172,13 +172,22 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN }
       const node = findNodeById(treeData, nodeId);
       if (!node) return prev;
 
-      const childIds = node.children ? collectChildIds(node).filter((id) => id !== nodeId) : [];
-
-      if (isSelected) {
-        return prev.filter((id) => id !== nodeId && !childIds.includes(id));
+      if (!isMulti) {
+        // 단일 선택 모드
+        if (isSelected) {
+          return []; // 이미 선택된 경우 해제
+        } else {
+          return [nodeId]; // 새로 선택한 노드만 유지
+        }
       } else {
-        const newIds = [...new Set([...prev, nodeId, ...childIds])];
-        return newIds;
+        // 다중 선택 모드
+        const childIds = node.children ? collectChildIds(node).filter((id) => id !== nodeId) : [];
+        if (isSelected) {
+          return prev.filter((id) => id !== nodeId && !childIds.includes(id));
+        } else {
+          const newIds = [...new Set([...prev, nodeId, ...childIds])];
+          return newIds;
+        }
       }
     });
   };
@@ -276,7 +285,7 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN }
 
         <TreeWrapper className={styles.tableWrapper}>
           {loading && <div className={styles.loading}>로딩 중...</div>}
-          {!loading && treeData.length == 0 && (
+          {!loading && treeData.length === 0 && (
             <div className={styles.loading}>데이터가 없습니다.</div>
           )}
           {!loading && treeData.length > 0 && (
@@ -287,7 +296,7 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN }
               }}
               expandedItems={expanded}
               onItemExpansionToggle={handleToggle}
-              multiSelect
+              multiSelect={isMulti}
               disableSelection={false}
             >
               {renderTreeItems(treeData)}

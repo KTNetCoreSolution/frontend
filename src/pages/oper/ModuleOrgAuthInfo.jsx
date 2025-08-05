@@ -152,8 +152,8 @@ const ModuleOrgAuthInfo = () => {
     },
   ];
 
-  const [filters, setFilters] = useState(initialFilters(searchConfig.areas.find((area) => area.type === "search").fields));
-  const [_popupType, setPopupType] = useState(null); 
+  const [filters, setFilters] = useState({...initialFilters(searchConfig.areas.find((area) => area.type === "search").fields), orgText: user?.orgNm || '', ORGCD: user?.orgCd || '',});
+  const [_popupType, setPopupType] = useState(null);
   const [tableFilters, setTableFilters] = useState(initialFilters(filterTableFields));
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -166,14 +166,13 @@ const ModuleOrgAuthInfo = () => {
   const [showSearchOrgPopup, setShowSearchOrgPopup] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [selectedRowData, setSelectedRowData] = useState(null);
-  const [newAuth, setNewAuth] = useState({ ID: "", EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "CAR", inputType: "EMP" });
+  const [newAuth, setNewAuth] = useState({ ID: "", EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "CAR", inputType: "EMP", AUTHOPERATOR: "" });
   const [imsiCounter, setImsiCounter] = useState(1);
   const [rowCount, setRowCount] = useState(0);
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
   const isInitialRender = useRef(true);
 
-  // initialSelectedOrgs 메모이제이션
   const initialSelectedOrgs = useMemo(() => (newAuth.ORGCD ? newAuth.ORGCD.split("^") : []), [newAuth.ORGCD]);
 
   const columns = [
@@ -257,7 +256,7 @@ const ModuleOrgAuthInfo = () => {
       title: "담당조직/담당자",
       field: "EMPORG",
       sorter: "string",
-      width: 200,
+      width: 300,
       ...fn_CellText,
       cellEdited: (cell) => fn_HandleCellEdit(cell, "EMPORG", setData, tableInstance),
       formatter: (cell) => {
@@ -276,11 +275,11 @@ const ModuleOrgAuthInfo = () => {
         orgButton.style.backgroundColor = "#f0f0f0";
         orgButton.style.color = "#000000";
         orgButton.onclick = () => {
-            setPopupType("EMPORG");
-            setSelectedId(rowData.ID);
-            setSelectedRowData(rowData);
-            setNewAuth({ ...newAuth, ID: rowData.ID, EMPORG: rowData.EMPORG || "", EMPNO: rowData.EMPNO || "", MODULETYPE: rowData.MODULETYPE || "CAR" });
-            setTimeout(() => setShowEmpOrgPopup(true), 0);
+          setPopupType("EMPORG");
+          setSelectedId(rowData.ID);
+          setSelectedRowData(rowData);
+          setNewAuth({ ...newAuth, ID: rowData.ID, EMPORG: rowData.EMPORG || "", EMPNO: rowData.EMPNO || "", MODULETYPE: rowData.MODULETYPE || "CAR", AUTHOPERATOR: rowData.AUTHOPERATOR || "" });
+          setTimeout(() => setShowEmpOrgPopup(true), 0);
         };
         const userButton = document.createElement("button");
         userButton.className = `btn btn-sm ${styles.popupIcon}`;
@@ -291,7 +290,7 @@ const ModuleOrgAuthInfo = () => {
         userButton.style.color = "#000000";
         userButton.onclick = () => {
           setSelectedId(rowData.ID);
-          setNewAuth({ ...newAuth, ID: rowData.ID, EMPORG: rowData.EMPORG || "", EMPNO: rowData.EMPNO || "" });
+          setNewAuth({ ...newAuth, ID: rowData.ID, EMPORG: rowData.EMPORG || "", EMPNO: rowData.EMPNO || "", AUTHOPERATOR: rowData.AUTHOPERATOR || "" });
           setShowUserPopup(true);
         };
         div.appendChild(span);
@@ -326,7 +325,7 @@ const ModuleOrgAuthInfo = () => {
       title: "권한조직",
       field: "ORGNM",
       sorter: "string",
-      width: 150,
+      width: 500,
       formatter: (cell) => {
         const rowData = cell.getRow().getData();
         const div = document.createElement("div");
@@ -341,7 +340,7 @@ const ModuleOrgAuthInfo = () => {
         button.onclick = () => {
           setSelectedId(rowData.ID);
           setSelectedRowData(rowData);
-          setNewAuth({ ...newAuth, ID: rowData.ID, ORGCD: rowData.ORGCD || "", ORGNM: rowData.ORGNM || "" });
+          setNewAuth({ ...newAuth, ID: rowData.ID, ORGCD: rowData.ORGCD || "", ORGNM: rowData.ORGNM || "", AUTHOPERATOR: rowData.AUTHOPERATOR || "" });
           setShowOrgPopup(true);
         };
         div.appendChild(span);
@@ -357,6 +356,11 @@ const ModuleOrgAuthInfo = () => {
     {
       title: "EMPNO",
       field: "EMPNO",
+      visible: false,
+    },
+    {
+      title: "AUTHOPERATOR",
+      field: "AUTHOPERATOR",
       visible: false,
     },
     {
@@ -391,6 +395,7 @@ const ModuleOrgAuthInfo = () => {
         ID: row.ID || String(index + 1),
         ORGNM: row.ORGNM || "",
         EMPNO: row.EMPNO || "",
+        AUTHOPERATOR: row.inputType === "EMP" ? row.EMPNO : row.ORGCD || "",
         inputType: row.inputType || "EMP",
         isDeleted: "N",
         isEdited: "N",
@@ -501,7 +506,7 @@ const ModuleOrgAuthInfo = () => {
 
   const handleAddClick = () => {
     const newId = `IMSI${String(imsiCounter).padStart(4, "0")}`;
-    setNewAuth({ ID: newId, EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "CAR", inputType: "EMP" });
+    setNewAuth({ ID: newId, EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "CAR", inputType: "EMP", AUTHOPERATOR: "" });
     setShowAddPopup(true);
   };
 
@@ -510,7 +515,7 @@ const ModuleOrgAuthInfo = () => {
       errorMsgPopup("업무를 선택해주세요.");
       return;
     }
-    if (!newAuth.EMPORG && !newAuth.ORGCD) {
+    if (!newAuth.EMPORG) {
       errorMsgPopup("담당자 또는 담당조직을 입력해주세요.");
       return;
     }
@@ -518,10 +523,15 @@ const ModuleOrgAuthInfo = () => {
       errorMsgPopup("권한조직을 선택해주세요.");
       return;
     }
+    if (!newAuth.AUTHOPERATOR) {
+      errorMsgPopup("담당자 또는 담당조직 코드를 설정해주세요.");
+      return;
+    }
     const newRow = {
       ID: newAuth.ID,
       EMPORG: newAuth.EMPORG,
-      EMPNO: newAuth.EMPNO,
+      EMPNO: newAuth.inputType === "EMP" ? newAuth.EMPNO : "",
+      AUTHOPERATOR: newAuth.AUTHOPERATOR,
       MODULETYPE: newAuth.MODULETYPE,
       ORGCD: newAuth.ORGCD,
       ORGNM: newAuth.ORGNM,
@@ -533,21 +543,30 @@ const ModuleOrgAuthInfo = () => {
     setData((prevData) => [newRow, ...prevData]);
     setImsiCounter((prev) => prev + 1);
     setShowAddPopup(false);
-    setNewAuth({ ID: "", EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "CAR", inputType: "EMP" });
+    setNewAuth({ ID: "", EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "CAR", inputType: "EMP", AUTHOPERATOR: "" });
   };
 
   const handleAddCancel = () => {
     setShowAddPopup(false);
-    setNewAuth({ ID: "", EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "CAR", inputType: "EMP" });
+    setNewAuth({ ID: "", EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "CAR", inputType: "EMP", AUTHOPERATOR: "" });
   };
 
   const handleOrgConfirm = (selectedRows) => {
     const newOrgCd = selectedRows[0]?.ORGCD || "";
     const newOrgNm = selectedRows[0]?.ORGNM || "";
     if (showAddPopup && showEmpOrgPopup) {
-      setNewAuth((prev) => ({ ...prev, EMPORG: newOrgNm, inputType: "ORG" }));
+      setNewAuth((prev) => ({
+        ...prev,
+        EMPORG: newOrgNm,
+        AUTHOPERATOR: newOrgCd,
+        inputType: "ORG",
+      }));
     } else if (showAddPopup && showOrgPopup) {
-      setNewAuth((prev) => ({ ...prev, ORGCD: newOrgCd, ORGNM: newOrgNm }));
+      setNewAuth((prev) => ({
+        ...prev,
+        ORGCD: newOrgCd,
+        ORGNM: newOrgNm,
+      }));
     } else if (selectedId && showEmpOrgPopup) {
       setData((prevData) =>
         prevData.map((row) => {
@@ -556,6 +575,7 @@ const ModuleOrgAuthInfo = () => {
               ...row,
               EMPORG: newOrgNm,
               EMPNO: "",
+              AUTHOPERATOR: newOrgCd,
               inputType: "ORG",
               isChanged: row.isDeleted === "N" && row.isAdded === "N" ? "Y" : row.isChanged,
             };
@@ -599,7 +619,13 @@ const ModuleOrgAuthInfo = () => {
     const newEmpNo = selectedRows[0]?.EMPNO || "";
     const newEmpNm = selectedRows[0]?.EMPNM || "";
     if (showAddPopup && showUserPopup) {
-      setNewAuth((prev) => ({ ...prev, EMPNO: newEmpNo, EMPORG: newEmpNm, inputType: "EMP" }));
+      setNewAuth((prev) => ({
+        ...prev,
+        EMPNO: newEmpNo,
+        EMPORG: newEmpNm,
+        AUTHOPERATOR: newEmpNo,
+        inputType: "EMP",
+      }));
     } else if (selectedId && showUserPopup) {
       setData((prevData) =>
         prevData.map((row) => {
@@ -608,6 +634,7 @@ const ModuleOrgAuthInfo = () => {
               ...row,
               EMPORG: newEmpNm,
               EMPNO: newEmpNo,
+              AUTHOPERATOR: newEmpNo,
               inputType: "EMP",
               isChanged: row.isDeleted === "N" && row.isAdded === "N" ? "Y" : row.isChanged,
             };
@@ -675,10 +702,10 @@ const ModuleOrgAuthInfo = () => {
         }
         const params = {
           pGUBUN,
-          pAUTHOPERATOR: row.isAdded === "Y" ? String(imsiCounter - 1) : row.ID,
-          pEMPORG: row.EMPORG || "",
           pMODULETYPE: row.MODULETYPE || "",
+          pAUTHOPERATOR: row.AUTHOPERATOR || "",
           pORGCD: row.ORGCD || "",
+          pUPPERYN: "N",
         };
         try {
           const response = await fetchData("oper/moduleorgauth/save", params);
@@ -707,26 +734,22 @@ const ModuleOrgAuthInfo = () => {
     }
   };
 
-  // pGUBUN 계산 함수
   const getPgubunForOrgPopup = () => {
-    // 담당자 팝업 또는 담당조직 팝업일 경우
     if (showEmpOrgPopup || showOrgPopup) {
-        const moduleType = selectedRowData?.MODULETYPE || newAuth.MODULETYPE;
-        if (moduleType === "CAR") {
+      const moduleType = selectedRowData?.MODULETYPE || newAuth.MODULETYPE;
+      if (moduleType === "CAR") {
         return "CAREMPNO";
-        }
-        return "EMPNO";
+      }
+      return "EMPNO";
     }
-
     return "EMPNO";
-    };
+  };
 
-  // pGUBUN 메모이제이션
-    const pGUBUN = useMemo(
+  const pGUBUN = useMemo(
     () => getPgubunForOrgPopup(),
     [showEmpOrgPopup, showOrgPopup, showSearchOrgPopup, selectedId, selectedRowData, newAuth.MODULETYPE]
-    );
-    
+  );
+
   return (
     <div className={styles.container}>
       <MainSearch
@@ -772,7 +795,7 @@ const ModuleOrgAuthInfo = () => {
           <select
             className={`form-select ${styles.formSelect}`}
             value={newAuth.inputType}
-            onChange={(e) => setNewAuth({ ...newAuth, inputType: e.target.value, EMPNO: "", EMPORG: "" })}
+            onChange={(e) => setNewAuth({ ...newAuth, inputType: e.target.value, EMPNO: "", EMPORG: "", AUTHOPERATOR: "" })}
           >
             <option value="EMP">담당자</option>
             <option value="ORG">담당조직</option>
@@ -817,7 +840,7 @@ const ModuleOrgAuthInfo = () => {
               <button
                 className={`btn btn-sm ${styles.popupIcon}`}
                 onClick={() => {
-                  setTimeout(() => setShowEmpOrgPopup(true), 0); // 지연 추가
+                  setTimeout(() => setShowEmpOrgPopup(true), 0);
                 }}
                 style={{ width: "30px", height: "30px", padding: "0", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f0f0f0", color: "#000000" }}
               >
@@ -875,6 +898,7 @@ const ModuleOrgAuthInfo = () => {
           onConfirm={handleOrgConfirm}
           initialSelectedOrgs={initialSelectedOrgs}
           pGUBUN={pGUBUN}
+          isMulti={showEmpOrgPopup ? false : true}
         />
       </CommonPopup>
       <CommonPopup
