@@ -10,13 +10,12 @@ import { initialFilters } from "../../utils/tableEvent";
 import { handleDownloadExcel } from "../../utils/tableExcel";
 import styles from "../../components/table/TableSearch.module.css";
 import { fetchData } from "../../utils/dataUtils";
-import common from "../../utils/common";
 import { errorMsgPopup } from "../../utils/errorMsgPopup";
 import { msgPopup } from "../../utils/msgPopup";
 import OrgSearchPopup from "../../components/popup/OrgSearchPopup";
 import UserSearchPopup from "../../components/popup/UserSearchPopup";
 
-const fn_CellText = { editor: "input", editable: true };
+const fn_CellText = { editor: "input", editable: false };
 const fn_CellSelect = (values) => ({ editor: "list", editorParams: { values, autocomplete: true }, editable: true });
 const fn_CellButton = (label, className, onClick) => ({
   formatter: (cell) => {
@@ -31,13 +30,6 @@ const fn_CellButton = (label, className, onClick) => ({
 const fn_HandleCellEdit = (cell, field, setData, tableInstance) => {
   const rowId = cell.getRow().getData().ID;
   const newValue = cell.getValue();
-  if (field === "EMPORG") {
-    const validation = common.validateVarcharLength(newValue, 100, "담당조직/담당자");
-    if (!validation.valid) {
-      errorMsgPopup(validation.error);
-      return;
-    }
-  }
   setTimeout(() => {
     setData((prevData) =>
       prevData.map((row) => {
@@ -173,7 +165,10 @@ const ModuleOrgAuthInfo = () => {
   const tableInstance = useRef(null);
   const isInitialRender = useRef(true);
 
-  const initialSelectedOrgs = useMemo(() => (newAuth.ORGCD ? newAuth.ORGCD.split("^") : []), [newAuth.ORGCD]);
+  const initialSelectedOrgs = useMemo(() => {
+    const orgs = newAuth.ORGCD ? newAuth.ORGCD.split("^").filter(Boolean) : [];
+    return orgs;
+  }, [newAuth.ORGCD]);
 
   const columns = [
     {
@@ -244,6 +239,8 @@ const ModuleOrgAuthInfo = () => {
       },
     },
     {
+      headerHozAlign: "center",
+      hozAlign: "center",
       title: "ID",
       field: "ID",
       sorter: "string",
@@ -258,7 +255,6 @@ const ModuleOrgAuthInfo = () => {
       sorter: "string",
       width: 300,
       ...fn_CellText,
-      cellEdited: (cell) => fn_HandleCellEdit(cell, "EMPORG", setData, tableInstance),
       formatter: (cell) => {
         const rowData = cell.getRow().getData();
         const div = document.createElement("div");
@@ -267,35 +263,42 @@ const ModuleOrgAuthInfo = () => {
         div.style.gap = "5px";
         const span = document.createElement("span");
         span.innerText = rowData.EMPORG || "";
-        const orgButton = document.createElement("button");
-        orgButton.className = `btn btn-sm ${styles.popupIcon}`;
-        orgButton.innerText = "담당조직";
-        orgButton.style.width = "60px";
-        orgButton.style.height = "30px";
-        orgButton.style.backgroundColor = "#f0f0f0";
-        orgButton.style.color = "#000000";
-        orgButton.onclick = () => {
-          setPopupType("EMPORG");
-          setSelectedId(rowData.ID);
-          setSelectedRowData(rowData);
-          setNewAuth({ ...newAuth, ID: rowData.ID, EMPORG: rowData.EMPORG || "", EMPNO: rowData.EMPNO || "", MODULETYPE: rowData.MODULETYPE || "CAR", AUTHOPERATOR: rowData.AUTHOPERATOR || "" });
-          setTimeout(() => setShowEmpOrgPopup(true), 0);
-        };
-        const userButton = document.createElement("button");
-        userButton.className = `btn btn-sm ${styles.popupIcon}`;
-        userButton.innerText = "담당자";
-        userButton.style.width = "60px";
-        userButton.style.height = "30px";
-        userButton.style.backgroundColor = "#f0f0f0";
-        userButton.style.color = "#000000";
-        userButton.onclick = () => {
-          setSelectedId(rowData.ID);
-          setNewAuth({ ...newAuth, ID: rowData.ID, EMPORG: rowData.EMPORG || "", EMPNO: rowData.EMPNO || "", AUTHOPERATOR: rowData.AUTHOPERATOR || "" });
-          setShowUserPopup(true);
-        };
-        div.appendChild(span);
-        div.appendChild(orgButton);
-        div.appendChild(userButton);
+        
+        if (rowData.isAdded === "Y") {
+          const orgButton = document.createElement("button");
+          orgButton.className = `btn btn-sm ${styles.popupIcon}`;
+          orgButton.innerText = "담당조직";
+          orgButton.style.width = "60px";
+          orgButton.style.height = "30px";
+          orgButton.style.backgroundColor = "#f0f0f0";
+          orgButton.style.color = "#000000";
+          orgButton.onclick = () => {
+            setPopupType("EMPORG");
+            setSelectedId(rowData.ID);
+            setSelectedRowData(rowData);
+            setNewAuth({ ...newAuth, ID: rowData.ID, EMPORG: rowData.EMPORG || "", EMPNO: rowData.EMPNO || "", MODULETYPE: rowData.MODULETYPE || "CAR", AUTHOPERATOR: rowData.AUTHOPERATOR || "" });
+            setTimeout(() => setShowEmpOrgPopup(true), 0);
+          };
+          
+          const userButton = document.createElement("button");
+          userButton.className = `btn btn-sm ${styles.popupIcon}`;
+          userButton.innerText = "담당자";
+          userButton.style.width = "60px";
+          userButton.style.height = "30px";
+          userButton.style.backgroundColor = "#f0f0f0";
+          userButton.style.color = "#000000";
+          userButton.onclick = () => {
+            setSelectedId(rowData.ID);
+            setNewAuth({ ...newAuth, ID: rowData.ID, EMPORG: rowData.EMPORG || "", EMPNO: rowData.EMPNO || "", AUTHOPERATOR: rowData.AUTHOPERATOR || "" });
+            setShowUserPopup(true);
+          };
+          
+          div.appendChild(span);
+          div.appendChild(orgButton);
+          div.appendChild(userButton);
+        } else {
+          div.appendChild(span);
+        }
         return div;
       },
     },
@@ -307,6 +310,7 @@ const ModuleOrgAuthInfo = () => {
       sorter: "string",
       width: 120,
       ...fn_CellSelect(["CAR", "STANDARD", "RENTAL", "TOOL"]),
+      editable: (cell) => cell.getRow().getData().isAdded === "Y",
       cellEdited: (cell) => fn_HandleCellEdit(cell, "MODULETYPE", setData, tableInstance),
       formatter: (cell) => {
         const value = cell.getValue();
@@ -390,17 +394,26 @@ const ModuleOrgAuthInfo = () => {
         return;
       }
       const responseData = Array.isArray(response.data) ? response.data : [];
-      const formattedData = responseData.map((row, index) => ({
-        ...row,
-        ID: row.ID || String(index + 1),
-        ORGNM: row.ORGNM || "",
-        EMPNO: row.EMPNO || "",
-        AUTHOPERATOR: row.inputType === "EMP" ? row.EMPNO : row.ORGCD || "",
-        inputType: row.inputType || "EMP",
-        isDeleted: "N",
-        isEdited: "N",
-        isAdded: "N",
-      }));
+      const formattedData = responseData.map((row, index) => {
+        const empno = row.EMPNO || "";
+        const orgcd = row.ORGCD || "";
+        const authOperator = row.AUTHOPERATOR || (row.inputType === "EMP" ? empno : orgcd.split("^")[0] || "");
+        if (row.inputType === "ORG" && authOperator.includes("^")) {
+          console.warn(`Invalid AUTHOPERATOR: ${authOperator} contains multiple ORGCDs for ID: ${row.ID}`);
+        }
+
+        return {
+          ...row,
+          ID: row.ID || String(index + 1),
+          ORGNM: row.ORGNM || "",
+          EMPNO: empno,
+          AUTHOPERATOR: authOperator,
+          inputType: row.inputType || "EMP",
+          isDeleted: "N",
+          isEdited: "N",
+          isAdded: "N",
+        };
+      });
       setData(formattedData);
       setImsiCounter(formattedData.length + 1);
     } catch (err) {
@@ -552,13 +565,24 @@ const ModuleOrgAuthInfo = () => {
   };
 
   const handleOrgConfirm = (selectedRows) => {
-    const newOrgCd = selectedRows[0]?.ORGCD || "";
-    const newOrgNm = selectedRows[0]?.ORGNM || "";
+    if (!selectedRows || selectedRows.length === 0) {
+      errorMsgPopup("조직을 선택해주세요.");
+      return;
+    }
+    const newOrgCd = selectedRows.map(row => row.ORGCD).join("^") || "";
+    const newOrgNm = selectedRows.map(row => row.ORGNM).join(", ") || "";
+    const singleOrgCd = selectedRows[0]?.ORGCD || "";
+    
     if (showAddPopup && showEmpOrgPopup) {
+      if (selectedRows.length > 1) {
+        errorMsgPopup("담당조직은 단일 조직만 선택 가능합니다.");
+        return;
+      }
       setNewAuth((prev) => ({
         ...prev,
         EMPORG: newOrgNm,
-        AUTHOPERATOR: newOrgCd,
+        EMPNO: "",
+        AUTHOPERATOR: singleOrgCd,
         inputType: "ORG",
       }));
     } else if (showAddPopup && showOrgPopup) {
@@ -568,43 +592,41 @@ const ModuleOrgAuthInfo = () => {
         ORGNM: newOrgNm,
       }));
     } else if (selectedId && showEmpOrgPopup) {
+      if (selectedRows.length > 1) {
+        errorMsgPopup("담당조직은 단일 조직만 선택 가능합니다.");
+        return;
+      }
       setData((prevData) =>
         prevData.map((row) => {
           if (row.ID === selectedId) {
-            const updatedRow = {
+            return {
               ...row,
               EMPORG: newOrgNm,
               EMPNO: "",
-              AUTHOPERATOR: newOrgCd,
+              AUTHOPERATOR: singleOrgCd,
               inputType: "ORG",
               isChanged: row.isDeleted === "N" && row.isAdded === "N" ? "Y" : row.isChanged,
             };
-            return updatedRow;
           }
           return row;
         })
       );
-      if (tableInstance.current) {
-        tableInstance.current.redraw();
-      }
+      if (tableInstance.current) tableInstance.current.redraw();
     } else if (selectedId && showOrgPopup) {
       setData((prevData) =>
         prevData.map((row) => {
           if (row.ID === selectedId) {
-            const updatedRow = {
+            return {
               ...row,
               ORGCD: newOrgCd,
               ORGNM: newOrgNm,
               isChanged: row.isDeleted === "N" && row.isAdded === "N" ? "Y" : row.isChanged,
             };
-            return updatedRow;
           }
           return row;
         })
       );
-      if (tableInstance.current) {
-        tableInstance.current.redraw();
-      }
+      if (tableInstance.current) tableInstance.current.redraw();
     } else if (showSearchOrgPopup) {
       setFilters((prev) => ({ ...prev, orgText: newOrgNm, ORGCD: newOrgCd }));
     }
@@ -618,6 +640,11 @@ const ModuleOrgAuthInfo = () => {
   const handleUserConfirm = (selectedRows) => {
     const newEmpNo = selectedRows[0]?.EMPNO || "";
     const newEmpNm = selectedRows[0]?.EMPNM || "";
+    
+    if (!newEmpNo) {
+      errorMsgPopup("사번이 선택되지 않았습니다. 담당자를 선택해주세요.");
+      return;
+    }
     if (showAddPopup && showUserPopup) {
       setNewAuth((prev) => ({
         ...prev,
@@ -630,7 +657,7 @@ const ModuleOrgAuthInfo = () => {
       setData((prevData) =>
         prevData.map((row) => {
           if (row.ID === selectedId) {
-            const updatedRow = {
+            return {
               ...row,
               EMPORG: newEmpNm,
               EMPNO: newEmpNo,
@@ -638,14 +665,11 @@ const ModuleOrgAuthInfo = () => {
               inputType: "EMP",
               isChanged: row.isDeleted === "N" && row.isAdded === "N" ? "Y" : row.isChanged,
             };
-            return updatedRow;
           }
           return row;
         })
       );
-      if (tableInstance.current) {
-        tableInstance.current.redraw();
-      }
+      if (tableInstance.current) tableInstance.current.redraw();
     }
     setShowUserPopup(false);
     setSelectedId(null);
@@ -700,6 +724,10 @@ const ModuleOrgAuthInfo = () => {
         } else if (row.isChanged === "Y" && row.isDeleted === "N") {
           pGUBUN = "U";
         }
+        if (row.inputType === "ORG" && row.AUTHOPERATOR.includes("^")) {
+          console.warn(`Invalid pAUTHOPERATOR: ${row.AUTHOPERATOR} contains multiple ORGCDs for ID: ${row.ID}`);
+          return { ...row, success: false, error: "pAUTHOPERATOR contains multiple ORGCDs" };
+        }
         const params = {
           pGUBUN,
           pMODULETYPE: row.MODULETYPE || "",
@@ -707,6 +735,7 @@ const ModuleOrgAuthInfo = () => {
           pORGCD: row.ORGCD || "",
           pUPPERYN: "N",
         };
+        
         try {
           const response = await fetchData("oper/moduleorgauth/save", params);
           if (!response.success) {
