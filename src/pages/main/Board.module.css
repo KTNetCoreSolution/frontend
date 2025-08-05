@@ -72,6 +72,8 @@
 
  .formControl {
     max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
  }
 
  .fileItem {
@@ -92,4 +94,10 @@
   margin-right: 10px;
   border: 1px solid #dee2e6;
   border-radius: 4px;
+}
+
+.textarea {
+  min-height: 200px;
+  height: 200px;
+  resize: vertical;
 }

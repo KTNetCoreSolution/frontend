@@ -36,9 +36,15 @@ const BoardView = () => {
 
   useEffect(() => {
     const fetchNoticeDetails = async () => {
+      if (!noticeId) {
+        console.error('No noticeId provided');
+        errorMsgPopup('공지사항 ID가 없습니다.');
+        return;
+      }
       try {
         const apiEndpoint = type === 'carnotice' ? 'carnotice/list' : 'notice/list';
         const result = await fetchData(apiEndpoint, { gubun: 'DETAIL', noticeId: noticeId, debug: 'F' });
+
         if (result.errCd === '00' && result.data.length > 0) {
           const detail = {
             id: result.data[0].NOTICEID,
@@ -61,9 +67,11 @@ const BoardView = () => {
     };
 
     const fetchFiles = async () => {
+      if (!noticeId) return;
       try {
         const apiEndpoint = type === 'carnotice' ? 'carnotice/filelist' : 'notice/filelist';
         const result = await fetchData(apiEndpoint, { gubun: 'LIST', noticeId: noticeId, fileId: '', debug: 'F' });
+
         if (result.errCd === '00') {
           const mappedFiles = result.data.map((file) => ({
             fileId: file.FILEID,
@@ -81,10 +89,8 @@ const BoardView = () => {
       }
     };
 
-    if (noticeId) {
-      fetchNoticeDetails();
-      fetchFiles();
-    }
+    fetchNoticeDetails();
+    fetchFiles();
   }, [noticeId, type]);
 
   const handleEdit = () => {
@@ -172,7 +178,7 @@ const BoardView = () => {
   return (
     <div className="container bg-body">
       <h2 className={`text-primary text-dark fs-5 mb-4 pt-3 ${styles.boardTitle}`}>
-        {type === 'carnotice' ? '차량관리 공지사항 상세' : '표준활동 공지사항 상세'}
+        {type === 'carnotice' ? '차량관리 상세' : '공지사항 상세'}
       </h2>
       <div className="mb-3">
         <label className="form-label">작성일</label>
@@ -201,8 +207,8 @@ const BoardView = () => {
       <div className="mb-3">
         <label className="form-label">내용</label>
         <textarea
-          className={`form-control ${styles.formControl}`}
-          rows="5"
+          className={`form-control ${styles.formControl} ${styles.textarea}`}
+          rows="8"
           value={content}
           readOnly
         />
@@ -252,7 +258,7 @@ const BoardView = () => {
       </div>
       <button
         className="btn btn-secondary me-2 mb-3 mt-5"
-        onClick={() => navigate('/main')}
+        onClick={() => navigate('/main/boardMain')}
       >
         뒤로 가기
       </button>

@@ -23,6 +23,7 @@ const Board = ({ canWriteBoard, type = 'notice' }) => {
         if (result.errCd === '00') {
           const mappedNotices = result.data.map((item) => ({
             id: item.NOTICEID,
+            noticeid: item.NOTICEID, // 명시적으로 noticeid 추가
             title: item.TITLE,
             date: item.REGEDT,
           }));
@@ -39,7 +40,7 @@ const Board = ({ canWriteBoard, type = 'notice' }) => {
   }, [type]);
 
   const handleNoticeClick = (notice) => {
-    navigate('/main/boardView', { state: { notice, type } });
+    navigate('/main/boardView', { state: { noticeid: notice.noticeid, type } });
   };
 
   const totalNotices = notices.length || 0;
@@ -69,7 +70,7 @@ const Board = ({ canWriteBoard, type = 'notice' }) => {
     <div className="h-100 p-3 border" style={{ width: '100%' }}>
       <div className="list-group-item d-flex justify-content-between align-items-center">
         <h3 className={`mb-3 fs-5 text-dark ${styles.boardTitle}`}>
-          {type === 'carnotice' ? '게시판2' : '공지사항'}
+          {type === 'carnotice' ? '차량관리' : '공지사항'}
         </h3>
         {canWriteBoard && (
           <button
@@ -171,12 +172,12 @@ const Board = ({ canWriteBoard, type = 'notice' }) => {
           </ul>
         </nav>
       )}
-      <button
+      {/* <button
         className="btn btn-secondary me-2 mb-3 mt-5"
         onClick={() => navigate('/main')}
       >
         뒤로 가기
-      </button>
+      </button> */}
     </div>
   );
 };

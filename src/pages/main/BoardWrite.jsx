@@ -38,7 +38,7 @@ const BoardWrite = () => {
 
   useEffect(() => {
     if (!user || !hasPermission(user.auth, 'mainBoard')) {
-      navigate('/');
+      navigate('/main/boardMain');
       return;
     }
   }, [user, navigate]);
@@ -175,7 +175,7 @@ const BoardWrite = () => {
       }
 
       msgPopup(isEdit ? "공지사항이 성공적으로 변경되었습니다." : "공지사항이 성공적으로 등록되었습니다.");
-      navigate('/main');
+      navigate('/main/boardMain');
     } catch (error) {
       console.error("공지사항 저장 실패:", {
         message: error.message,
@@ -212,7 +212,7 @@ const BoardWrite = () => {
       }
 
       msgPopup("공지사항이 성공적으로 삭제되었습니다.");
-      navigate('/main');
+      navigate('/main/boardMain');
     } catch (error) {
       console.error("공지사항 삭제 실패:", error);
 
@@ -225,7 +225,7 @@ const BoardWrite = () => {
   return (
     <div className="container bg-body">
       <h2 className={`text-primary text-dark fs-5 mb-4 pt-3 ${styles.boardTitle}`}>
-        {type === 'carnotice' ? '차량관리 공지사항' : '표준활동 공지사항'} {isEdit ? '변경' : '등록'}
+        {type === 'carnotice' ? '차량관리' : '공지사항'} {isEdit ? '변경' : '등록'}
       </h2>
       <div className={styles.boardTitleLine}></div>
       <form onSubmit={handleSubmit}>
@@ -242,8 +242,8 @@ const BoardWrite = () => {
         <div className="mb-3">
           <label className="form-label">내용</label>
           <textarea
-            className={`form-control bg-light-subtle ${styles.formControl}`}
-            rows="5"
+            className={`form-control bg-light-subtle ${styles.formControl} ${styles.textarea}`}
+            rows="8"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="내용을 입력하세요"
@@ -324,7 +324,7 @@ const BoardWrite = () => {
           <button
             type="button"
             className={`btn ${styles.btnCancel}`}
-            onClick={() => navigate('/main')}
+            onClick={() => navigate('/main/boardMain')}
           >
             취소
           </button>

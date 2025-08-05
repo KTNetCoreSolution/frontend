@@ -43,7 +43,7 @@ const routes = Object.keys(modules).map((path) => {
     }
   }
 
-  if (['board', 'boardview', 'boardwrite'].includes(name.toLowerCase())) {
+  if (['board', 'boardmain', 'boardview', 'boardwrite'].includes(name.toLowerCase())) {
     permission = 'mainBoard';
   }
 
