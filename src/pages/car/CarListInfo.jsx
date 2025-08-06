@@ -153,20 +153,20 @@ const CarListInfo = () => {
         type: 'buttons',
         fields: [
           { id: 'searchBtn', type: 'button', row: 1, label: '검색', eventType: 'search', width: '80px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
-          { id: 'popupBtn2', type: 'button', row: 2, label: '팝업 버튼', eventType: 'showPopup', width: '100px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
+          { id: 'popupBtn2', type: 'button', row: 2, label: '차량등록', eventType: 'showPopup', width: '80px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
           { id: 'excelUploadBtn', type: 'button', row: 2, label: '엑셀업로드', eventType: 'showExcelUploadPopup', width: '100px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
         ],
       },
     ],
   };
 
-  const filterTableFields = [
+  const [filterTableFields, setFilterTableFields] = useState([
     { id: 'filterSelect', type: 'select', label: '', options: getFieldOptions('filterSelect'), width: 'default', height: 'default', backgroundColor: 'default', color: 'default', display: 'flex' },
     { id: 'filterValue', type: 'text', label: '', width: 'default', height: 'default', backgroundColor: 'default', color: 'default', disabled: 'disabled', display: 'flex' },
     { id: 'filterCarType', type: 'select', label: '', options: getFieldOptions('filterCarType'), width: '100px', height: 'default', backgroundColor: 'default', color: 'default', display: 'none' },
     { id: 'filterCarClass', type: 'select', label: '', options: getFieldOptions('filterCarClass'), width: '100px', height: 'default', backgroundColor: 'default', color: 'default', display: 'none' },
     { id: 'filterCarSize', type: 'select', label: '', options: getFieldOptions('filterCarSize'), width: '100px', height: 'default', backgroundColor: 'default', color: 'default', display: 'none' },
-  ];
+  ]);
 
   // 엑셀 저장 시 추가로 보여줄 엑셀 field 설정
   const visibleColumns = ['CARID|Y', 'MAIN_COMP_PHONE|Y', 'CARACQUIREDDT|Y', 'RENTALEXFIREDDT|Y', 'CARREGDATE|Y', 'CARPRICE|Y', 'RENTALPRICE|Y', 'PRIMARY_MANAGER_EMPNO|Y', 'PRIMARY_MANAGER_MOBILE|Y', 'PRIMARY_GARAGE_ADDR|Y'
@@ -249,10 +249,17 @@ const CarListInfo = () => {
     setError(null);
     setTableFilters(initialFilters(filterTableFields));
 
-    document.getElementById('filterValue').parentElement.style.display = 'flex';
-    document.getElementById('filterCarType').parentElement.style.display = 'none';
-    document.getElementById('filterCarClass').parentElement.style.display = 'none';
-    document.getElementById('filterCarSize').parentElement.style.display = 'none';
+    setFilterTableFields((prevFields) => {
+      return prevFields.map((filter) => {
+        if (filter.id === 'filterSelect') {  
+          return { ...filter, display: 'flex' }; 
+        } else if (filter.id === 'filterValue') {
+          return { ...filter, display: 'flex', value: '' };
+        } else {
+          return { ...filter, display: 'none', value: '' }; // 기본적으로 숨김 처리
+        }
+      });
+    });    
 
     // 상태 업데이트 대기
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -317,8 +324,8 @@ const CarListInfo = () => {
       });
       setShowPopup(true);
     } else if (eventType === 'showPopup') {
-      //fn_DetailPopup('');
-      msgPopup("준비중입니다.");
+      fn_DetailPopup('');
+      //msgPopup("준비중입니다.");
     } else if (eventType === 'showExcelUploadPopup') {
       //setExcelPopupTitle('일괄등록');
       //setShowExcelPopup(true);
@@ -411,30 +418,37 @@ const CarListInfo = () => {
     }
 
     const fields = tableFilters.filterSelect;    
-    document.getElementById('filterCarType').value = '';
-    document.getElementById('filterCarClass').value = '';
-    document.getElementById('filterCarSize').value = '';
+
+    setFilterTableFields((prevFields) => {
+      return prevFields.map((filter) => {
+        if (filter.id === 'filterSelect') {  
+          return { ...filter, display: 'flex' }; 
+        } else if (filter.id === 'filterCarType') { 
+          return { ...filter, display: fields === 'CARTYPE' ? 'flex' : 'none', value: '' };
+        } else if (filter.id === 'filterCarClass') { 
+          return { ...filter, display: fields === 'CARCLASS' ? 'flex' : 'none', value: '' };
+        } else if (filter.id === 'filterCarSize') { 
+          return { ...filter, display: fields === 'CARSIZE' ? 'flex' : 'none', value: '' };
+        } else {
+          return { ...filter, display: fields === '' ? 'flex' : 'none', value: '' }; // 기본적으로 숨김 처리
+        }
+      });
+    });
+
+    let values = '';
 
     if (fields === 'CARTYPE') {
-      document.getElementById('filterValue').parentElement.style.display = 'none';
-      document.getElementById('filterCarType').parentElement.style.display = 'flex';
-      document.getElementById('filterCarClass').parentElement.style.display = 'none';
-      document.getElementById('filterCarSize').parentElement.style.display = 'none';
+      values = tableFilters.filterCarType;
     } else if (fields === 'CARCLASS') {
-      document.getElementById('filterValue').parentElement.style.display = 'none';
-      document.getElementById('filterCarType').parentElement.style.display = 'none';
-      document.getElementById('filterCarClass').parentElement.style.display = 'flex';
-      document.getElementById('filterCarSize').parentElement.style.display = 'none';
+      values = tableFilters.filterCarClass;
     } else if (fields === 'CARSIZE') {
-      document.getElementById('filterValue').parentElement.style.display = 'none';
-      document.getElementById('filterCarType').parentElement.style.display = 'none';
-      document.getElementById('filterCarClass').parentElement.style.display = 'none';
-      document.getElementById('filterCarSize').parentElement.style.display = 'flex';
-    } else {
-      document.getElementById('filterValue').parentElement.style.display = 'flex';
-      document.getElementById('filterCarType').parentElement.style.display = 'none';
-      document.getElementById('filterCarClass').parentElement.style.display = 'none';
-      document.getElementById('filterCarSize').parentElement.style.display = 'none';
+      values = tableFilters.filterCarSize;
+    }
+    
+    if (fields !== '' && fields !== undefined) {
+      if(tableInstance.current !== null && tableInstance.current !== undefined) {
+        tableInstance.current.setFilter(fields, "like", values);
+      }
     }
 
   }, [tableFilters.filterSelect]);
@@ -459,7 +473,7 @@ const CarListInfo = () => {
     
     if (fields !== '' && fields !== undefined) {
       if(tableInstance.current !== null && tableInstance.current !== undefined) {
-        tableInstance.current.setFilter(fields, "=", values);
+        tableInstance.current.setFilter(fields, "like", values);
       }
     }
   }, [tableFilters.filterCarType, tableFilters.filterCarClass, tableFilters.filterCarSize]);
@@ -493,7 +507,7 @@ const CarListInfo = () => {
       <CommonPopup show={showPopup} onHide={() => setShowPopup(false)} onConfirm={popupOnConfirm} title={popupTitle}>
         {popupContent}
       </CommonPopup>
-      <CarDetailPopup show={showDetailPopup} onHide={handleDetailCancel} data={carId} />
+      <CarDetailPopup show={showDetailPopup} onHide={handleDetailCancel} onParentSearch={loadData} data={carId} />
       <ExcelUploadPopup
         show={showExcelPopup}
         onHide={() => setShowExcelPopup(false)}

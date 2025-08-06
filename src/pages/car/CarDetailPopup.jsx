@@ -1,20 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import useStore from '../../store/store';
 import { useNavigate } from 'react-router-dom';
 import commonUtils from '../../utils/common.js';
 import { fetchData } from '../../utils/dataUtils.js';
+import CommonPopup from '../../components/popup/CommonPopup';
+import OrgSearchPopup from '../../components/popup/OrgSearchPopup';
+import MngUserSearchPopup from '../../components/popup/UserSearchPopup';
+import Under26UserSearchPopup from '../../components/popup/UserSearchPopup';
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import Modal from 'react-bootstrap/Modal';
 import styles from './CarInfoDetailPopup.module.css';
 
-const CarInfoDetailPopup = ({ show, onHide, data }) => {
+const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
+  const { user } = useStore();
   const today = new Date().toISOString().split('T')[0];
-  const [carId, setCarId] = useState('');
+  const [vStyle, setVStyle] = useState({vDISPLAY: 'show', vBTNDEL: 'show', vDISABLED: ''});  
+  const [showOrgPopup, setShowOrgPopup] = useState(false);
+  const [showMngUserPopup, setShowMngUserPopup] = useState(false);
+  const [showUnder26UserPopup, setShowUnder26UserPopup] = useState(false);
   const [carList, setCarList] = useState({});
-  const [carInfo, setCarInfo] = useState({GUBUN: '', CARID: '', CARNO: '', RENTALTYPE: '', MGMTSTATUS: '', CARCD: '', USEFUEL: '', MAINCOMPPHONE: '', CARACQUIREDDT: '', RENTALEXFIREDDT: '', CARREGDATE: ''
-                                          , CARPRICE: '', RENTALPRICE: '', INSURANCE: '', DEDUCTIONYN: '', ORGGROUP: '', ORGCD: '', PRIMARYMNGEMPNM: '', PRIMARYMNGMOBILE: '', PRIMARYGARAGEADDR: '', SAFETYMANAGER: ''
-                                          , NOTICE: '', UNDER26AGEREMPNO: '', UNDER26AGEREMPNM: '', UNDER26AGERJUMINBTRTHNO: '', UNDER26AGECHGDT: '', CARDNO: '', EXFIREDT: '', NOTICE2: ''});
-                                          
+  const initialCarInfo = {GUBUN: '', CARID: '', CARNO: '', RENTALTYPE: '', MGMTSTATUS: '', CARCD: '', USEFUEL: '', MAINCOMPPHONE: '', CARACQUIREDDT: today, RENTALEXFIREDDT: today, CARREGDATE: today
+                                          , CARPRICE: '', RENTALPRICE: '', INSURANCE: '', DEDUCTIONYN: '', ORGGROUP: '', ORGCD: '', ORGNM: '', PRIMARYMNGEMPNO: '', PRIMARYMNGEMPNM: '', PRIMARYMNGMOBILE: '', PRIMARYGARAGEADDR: '', SAFETYMANAGER: ''
+                                          , INVERTER: '', NOTICE: '', UNDER26AGEEMPNO: '', UNDER26AGEEMPNM: '', UNDER26AGEJUMINBTRTHNO: '', UNDER26AGECHGDT: '', CARDNO: '', EXFIREDT: '', NOTICE2: ''};
+  const [carInfo, setCarInfo] = useState(initialCarInfo);
+  const [chkCarId, setChkCarId] = useState('');      
+                              
   const navigate = useNavigate();
   useEffect(() => {
     // 컴포넌트 언마운트 시 테이블 정리
@@ -24,7 +35,6 @@ const CarInfoDetailPopup = ({ show, onHide, data }) => {
 
       // Component에 들어갈 데이터 로딩
       try {
-        setCarId(data);
         const params = { pDEBUG: "F" };
         const response = await fetchData('car/carCodeList', params);
 
@@ -52,35 +62,67 @@ const CarInfoDetailPopup = ({ show, onHide, data }) => {
   }, []);
   
   useEffect(() => {
-    if (!show) {
-      //setCarInfo({});
-    } 
-    else {
+    setCarInfo(initialCarInfo);
+    if (show) {
+      if(data !== ''){ 
+        setCarInfo({...carInfo, GUBUN:'U', CARID: data});
+        setChkCarId(data);
+
+        if(data.substring(0, 13) === 'ZZZZZZZZZZZZZ'){
+          setVStyle({vDISPLAY: 'show', vBTNDEL: 'show', vDISABLED: ''});
+        }
+        else {
+          setVStyle({vDISPLAY: 'none', vBTNDEL: 'show', vDISABLED: 'disabled'});
+        }
+
+        handleSearchCarInfo(data); //차량정보 조회
+      }
+      else {
+        setCarInfo({...carInfo, GUBUN:''});
+        setVStyle({vDISPLAY: 'show', vBTNDEL: 'none', vDISABLED: ''});
+      }
     }
-  }, [show]);  
+    else {
+      setVStyle({vDISPLAY: 'show', vBTNDEL: 'show', vDISABLED: ''});
+    }
+  }, [show]);
   
   const validateForm = () => {
-    if (!carId || !carNo || !rentalType || !carCd || !useFuel || !mainCompPhone || !carSize || !orgGroup || !orgCd) {
-      return "필수 입력 항목을 모두 채워주세요.";
+    if (!carInfo.GUBUN || carInfo.GUBUN === '') {
+      return "차대번호 확인 버튼을 클릭하여 차량 정보를 확인해주세요.";
     }
 
-    const carNoValidation = commonUtils.validateVarcharLength(carNo, 20, '차량번호');
-    if (!carNoValidation.valid) return carNoValidation.error;
+    if(chkCarId !== carInfo.CARID) {
+      return "차대번호가 변경되었습니다. 차대번호 확인 버튼을 클릭하여 차량 정보를 확인해주세요.";
+    }
+  
+    if (!carInfo.CARID || !carInfo.CARNO || !carInfo.MGMTSTATUS|| !carInfo.USEFUEL || !carInfo.RENTALTYPE || !carInfo.CARCD || !carInfo.ORGGROUP || !carInfo.ORGCD || !carInfo.PRIMARYMNGEMPNM) {
+      return "필수 입력 항목을 모두 입력해주세요.";
+    }
 
-    const carIdValidation = commonUtils.validateVarcharLength(carId, 30, '차대번호');
+    const carIdValidation = commonUtils.validateVarcharLength(carInfo.CARID, 30, '차대번호');
     if (!carIdValidation.valid) return carIdValidation.error;
 
-    const mainCompPhoneValidation = commonUtils.validateVarcharLength(mainCompPhone, 50, '대표번호');
+    const carNoValidation = commonUtils.validateVarcharLength(carInfo.CARNO, 20, '차량번호');
+    if (!carNoValidation.valid) return carNoValidation.error;
+
+    const mainCompPhoneValidation = commonUtils.validateVarcharLength(carInfo.MAINCOMPPHONE, 50, '대표번호');
     if (!mainCompPhoneValidation.valid) return mainCompPhoneValidation.error;
 
-    const primaryGarageAddrValidation = commonUtils.validateVarcharLength(primaryGarageAddr, 200, '차고지주소(정)');
+    const primaryGarageAddrValidation = commonUtils.validateVarcharLength(carInfo.PRIMARYGARAGEADDR, 200, '차고지주소(정)');
     if (!primaryGarageAddrValidation.valid) return primaryGarageAddrValidation.error;
 
-    const noticeValidation = commonUtils.validateVarcharLength(notice, 1500, '기타사항');
+    const noticeValidation = commonUtils.validateVarcharLength(carInfo.NOTICE, 1500, '기타사항');
     if (!noticeValidation.valid) return noticeValidation.error;
 
-    const notice2Validation = commonUtils.validateVarcharLength(notice2, 1500, '비고');
-    if (!notice2Validation.valid) return notice2Validation.error;
+    return '';
+  };
+  
+  const validateDelForm = () => {
+    if (!carInfo.CARID || carInfo.CARID === '') {
+      alert(1);
+      return "잘못된 접근입니다.";
+    }
 
     return '';
   };
@@ -88,18 +130,52 @@ const CarInfoDetailPopup = ({ show, onHide, data }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    msgPopup("준비중입니다.");
-    /* const validationError = validateForm();
+    const validationError = validateForm();
+
     if (validationError) {
       errorMsgPopup(validationError);
       return;
     }
 
     try {
-      const response = await fetchData('auth/join/save', carInfo);
+      const params = {
+        pGUBUN: carInfo.GUBUN,
+        pCARID: carInfo.CARID,
+        pCARNO: carInfo.CARNO,
+        pRENTALTYPE: carInfo.RENTALTYPE,
+        pMGMTSTATUS: carInfo.MGMTSTATUS,
+        pCARCD: carInfo.CARCD,
+        pUSEFUEL: carInfo.USEFUEL,
+        pMAINCOMPPHONE: carInfo.MAINCOMPPHONE,
+        pCARACQUIREDDT: carInfo.CARACQUIREDDT,
+        pRENTALEXFIREDDT: carInfo.RENTALEXFIREDDT,
+        pCARREGDATE: carInfo.CARREGDATE,
+        pCARPRICE: carInfo.CARPRICE || '',
+        pRENTALPRICE: carInfo.RENTALPRICE || '',
+        pINSURANCE: carInfo.INSURANCE || '',
+        pDEDUCTIONYN: carInfo.DEDUCTIONYN || '',
+        pORGGROUP: carInfo.ORGGROUP,
+        pORGCD: carInfo.ORGCD,
+        pPRIMARYMNGEMPNM: carInfo.PRIMARYMNGEMPNM,
+        pPRIMARYMNGMOBILE: carInfo.PRIMARYMNGMOBILE || '',
+        pPRIMARYGARAGEADDR: carInfo.PRIMARYGARAGEADDR,
+        pSAFETYMANAGER: carInfo.SAFETYMANAGER,
+        pINVERTER: carInfo.INVERTER,
+        pNOTICE: carInfo.NOTICE,
+        pUNDER26AGEEMPNO: carInfo.UNDER26AGEEMPNO,
+        pUNDER26AGEEMPNM: carInfo.UNDER26AGEEMPNM,
+        pUNDER26AGEJUMINBTRTHNO: carInfo.UNDER26AGEJUMINBTRTHNO,
+        pUNDER26AGECHGDT: carInfo.UNDER26AGECHGDT,
+        pCARDNO: carInfo.CARDNO,
+        pEXFIREDT: carInfo.EXFIREDT,
+        pNOTICE2: carInfo.NOTICE2,
+        pREGEMPNO: user?.empNo || ''
+      };
+
+      const response = await fetchData('car/CarinfoTransaction', params);
 
       if (!response.success) {
-        throw new Error(response.errMsg || '가입정보가 잘못되었습니다.');
+        throw new Error(response.errMsg || '차량정보가 잘못되었습니다.');
       } else {
         if (response.errMsg !== '' || response.data[0].errCd !== '00') {
           let errMsg = response.errMsg;
@@ -108,29 +184,105 @@ const CarInfoDetailPopup = ({ show, onHide, data }) => {
 
           errorMsgPopup(errMsg);
         } else {
-          msgPopup("가입되었습니다.");
-          navigate('/'); // Changed from '/login'
+          msgPopup("차량정보가 저장되었습니다.");
           onHide();
+          onParentSearch();
         }
       }
     } catch (error) {
       console.error('Registration error:', error);
-      errorMsgPopup(error.message || '가입 중 오류가 발생했습니다. 다시 시도해주세요.');
-    } */
+      errorMsgPopup(error.message || '차량정보 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } 
   };
 
-  const handleSearchCarInfo = async () => {
-    //차량정보 조회
-    alert(1);
-    if (!carInfo.CARID || carInfo.CARID === '') {
-      return "차대번호를 입력해주세요.";
+  const handleDelete = async (e) => {
+    e.preventDefault();
+    
+    if(confirm("차량 정보를 삭제하시겠습니까?")) { 
+      const validationError = validateDelForm();
+
+      if (validationError) {
+        errorMsgPopup(validationError);
+        return;
+      }
+
+      try {
+        const params = {
+          pGUBUN: 'D',
+          pCARID: carInfo.CARID,
+          pCARNO: '',
+          pRENTALTYPE: '',
+          pMGMTSTATUS: '',
+          pCARCD: '',
+          pUSEFUEL: '',
+          pMAINCOMPPHONE: '',
+          pCARACQUIREDDT: '',
+          pRENTALEXFIREDDT: '',
+          pCARREGDATE: '',
+          pCARPRICE: '',
+          pRENTALPRICE: '',
+          pINSURANCE: '',
+          pDEDUCTIONYN: '',
+          pORGGROUP: '',
+          pORGCD: '',
+          pPRIMARYMNGEMPNM: '',
+          pPRIMARYMNGMOBILE: '',
+          pPRIMARYGARAGEADDR: '',
+          pSAFETYMANAGER: '',
+          pINVERTER: '',
+          pNOTICE: '',
+          pUNDER26AGEEMPNO: '',
+          pUNDER26AGEEMPNM: '',
+          pUNDER26AGEJUMINBTRTHNO: '',
+          pUNDER26AGECHGDT: '',
+          pCARDNO: '',
+          pEXFIREDT: '',
+          pNOTICE2: '',
+          pREGEMPNO: user?.empNo || ''
+        };
+
+        const response = await fetchData('car/CarinfoTransaction', params);
+
+        if (!response.success) {
+          throw new Error(response.errMsg || '차량정보 삭제 중 오류가 발생했습니다.');
+        } else {
+          if (response.errMsg !== '' || response.data[0].errCd !== '00') {
+            let errMsg = response.errMsg;
+
+            if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+
+            errorMsgPopup(errMsg);
+          } else {
+            msgPopup("차량정보가 삭제되었습니다.");
+            onHide();
+            onParentSearch();
+          }
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        errorMsgPopup(error.message || '차량정보 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+      } 
+    }
+  };
+
+  const handleSearchCarInfo = async (data) => {
+    let carId = '';
+    if (data && data !== '' && data !== 'undefined') { 
+      carId = data;
+      setCarInfo({...carInfo, CARID: data});
+      setChkCarId(data);
+    }
+    else {
+      carId = carInfo.CARID;
     }
 
-    const carIdValidation = commonUtils.validateVarcharLength(carId, 30, '차대번호');
-    if (!carIdValidation.valid) return carIdValidation.error;
+    if (!carId || carId === '') {
+      msgPopup("차대번호를 입력해주세요.");
+      return;
+    }
 
     const carData = {
-      pCARID: carInfo.CARID,
+      pCARID: carId,
       pDEBUG: 'F' 
     };
     
@@ -140,19 +292,29 @@ const CarInfoDetailPopup = ({ show, onHide, data }) => {
       if (!response.success) {
         throw new Error(response.errMsg || '차량 정보 조회 중 오류가 발생했습니다.');
       } else {
-        if (response.errMsg !== '' || response.data[0].errCd !== '00') {
-          let errMsg = response.errMsg;
-
-          if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
-
-          errorMsgPopup(errMsg);
-        } else {
-          if(response.data.length === 0){
+          if(response.data === null) {
+            setCarInfo({GUBUN: 'I', CARID: carId, CARNO: '', RENTALTYPE: '', MGMTSTATUS: '', CARCD: '', USEFUEL: '', MAINCOMPPHONE: '', CARACQUIREDDT: today, RENTALEXFIREDDT: today, CARREGDATE: today
+                        , CARPRICE: '', RENTALPRICE: '', INSURANCE: '', DEDUCTIONYN: '', ORGGROUP: '', ORGCD: '', ORGNM: '', PRIMARYMNGEMPNO: '', PRIMARYMNGEMPNM: '', PRIMARYMNGMOBILE: '', PRIMARYGARAGEADDR: '', SAFETYMANAGER: ''
+                        , INVERTER: '', NOTICE: '', UNDER26AGEEMPNO: '', UNDER26AGEEMPNM: '', UNDER26AGEJUMINBTRTHNO: '', UNDER26AGECHGDT: '', CARDNO: '', EXFIREDT: '', NOTICE2: ''});
             msgPopup("신규 등록 가능한 차대번호입니다.");
-          }
-          else{
+          } else { 
+            if (response.errMsg !== '' || response.data[0].errCd !== '00') {          
+              let errMsg = response.errMsg;
+
+            if(response.data !== null && response.data.length > 0){
+              if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+            }
+
+            errorMsgPopup(errMsg);
+          } else {
             //차량정보 컴포넌트에 바인딩
-          }          
+            setCarInfo({GUBUN: 'U', CARID: response.data[0].CARID, CARNO: response.data[0].CARNO, RENTALTYPE: response.data[0].RENTALTYPE, MGMTSTATUS: response.data[0].MGMTSTATUS, CARCD: response.data[0].CARCD, USEFUEL: response.data[0].USEFUEL
+                      , MAINCOMPPHONE: response.data[0].MAIN_COMP_PHONE, CARACQUIREDDT: response.data[0].CARACQUIREDDT, RENTALEXFIREDDT: response.data[0].RENTALEXFIREDDT, CARREGDATE: response.data[0].CARREGDT, CARPRICE: response.data[0].CARPRICE
+                      , RENTALPRICE: response.data[0].RENTALPRICE, INSURANCE: response.data[0].INSURANCE, DEDUCTIONYN: response.data[0].DEDUCTIONYN, ORGGROUP: response.data[0].ORG_GROUP, ORGCD: response.data[0].ORGCD, ORGNM: response.data[0].ORGNM
+                      , PRIMARYMNGEMPNM: response.data[0].PRIMARY_MANAGER_EMPNM, PRIMARYMNGMOBILE: response.data[0].PRIMARY_MANAGER_MOBILE, PRIMARYGARAGEADDR: response.data[0].PRIMARY_GARAGE_ADDR, SAFETYMANAGER: response.data[0].SAFETY_MANAGER
+                      , INVERTER: response.data[0].INVERTER, NOTICE: response.data[0].NOTICE, UNDER26AGEEMPNO: response.data[0].UNDER26AGE_EMPNO, UNDER26AGEEMPNM: response.data[0].UNDER26AGE_EMPNM, UNDER26AGEJUMINBTRTHNO: response.data[0].UNDER26AGE_JUMIN_BIRTH_NO
+                      , UNDER26AGECHGDT: response.data[0].UNDER26AGE_CHGDT, CARDNO: response.data[0].CARDNO, EXFIREDT: response.data[0].EXFIREDT, NOTICE2: response.data[0].NOTICE2});
+          }
         }
       }
     } catch (error) {
@@ -161,107 +323,220 @@ const CarInfoDetailPopup = ({ show, onHide, data }) => {
     }
   };
 
+  const handleMaxLength = (e, maxlength) => {
+    const value = e.target.value;
+    
+    if (value > maxlength) {
+      e.target.value = value.substring(0, maxlength);
+    }
+  }
+
   if (!show) return null;
 
   return (
-    <Modal show={show} onHide={onHide} centered>
+    <Modal show={show} onHide={onHide} onParentSearch={onParentSearch} centered>
       <Modal.Header closeButton>
         <Modal.Title>기동장비정보 관리</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="mb-3">
-          <label className="form-label">차대번호 </label>
-          <input type="text" className={`form-control ${styles.formControl}`} id="carId" style={{width:180 +'px'}} placeholder="차대번호를 입력하세요" onChange={(e) => {setCarInfo({ ...carInfo, CARID: e.target.value })}} />
-          <button type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 +'px', float:'right', marginTop:-30+'px', marginRight:190+'px'}} onClick={handleSearchCarInfo}>확인</button>
+        <div className="mb-2">
+          
         </div>
-        <div className="mb-3">
-          <label className="form-label">차량번호 </label>
-          <input type="text" className={`form-control ${styles.formControl}`} id="carNo" placeholder="차량번호을 입력하세요" onChange={(e) => {setCarInfo({ ...carInfo, CARNO: e.target.value })}} />
+        <div className="mb-2">
+          <label className="form-label">차대번호 <font color='red'>*</font></label><label className="form-label" style={{float:'right'}}><font color='red'>*</font>은 필수 입력 항목입니다.</label>
+          <input type="text" className={`form-control ${styles.formControl}`} id="carId" value={carInfo.CARID} style={{width:47 +'%'}} disabled={`${vStyle.vDISABLED}`} placeholder="차대번호를 입력하세요" onInput={(e) => {handleMaxLength(e, 30)}} onChange={(e) => {setCarInfo({ ...carInfo, CARID: e.target.value })}} />
+          <button id="btnCarId" type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 +'px', float:'right', marginTop:-30+'px', marginRight:163+'px', display:`${vStyle.vDISPLAY}`}} disabled={`${vStyle.vDISABLED}`} onClick={(e) => handleSearchCarInfo(carInfo.CARID)}>확인</button>
+          <button className={`btn btn-sm btn-danger ${styles.deleteButton}`} style={{width:60 +'px', float:'right', marginTop:-30+'px', marginRight:0+'px', display:`${vStyle.vBTNDEL}`}} onClick={handleDelete}>삭제</button>
         </div>
-        <div className="mb-3">
-          <label className="form-label">임대구분 </label>
-          <select id="rentalType" className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, RENTALTYPE: e.target.value })}}>
-            <option value="">선택하세요</option>
-            {['렌탈', '리스'].map((type) => (<option key={type} value={type}>{type}</option>))}
-          </select>
+        <div className="mb-2 row">
+          <div className="col">
+          <label className="form-label">차량번호 <font color='red'>*</font></label>
+          <input type="text" value={carInfo.CARNO} className={`form-control ${styles.formControl}`} id="carNo" placeholder="차량번호을 입력하세요" onInput={(e) => {handleMaxLength(e, 20)}} onChange={(e) => {setCarInfo({ ...carInfo, CARNO: e.target.value })}} />
+          </div>
+          <div className="col">
+            <label className="form-label">운용관리상태 <font color='red'>*</font></label>
+            <select id="mgmtStatus" className={`form-select ${styles.formSelect}`} value={carInfo.MGMTSTATUS} onChange={(e) => {setCarInfo({ ...carInfo, MGMTSTATUS: e.target.value })}}>
+              <option value="">선택하세요</option>
+              {['운행', '유휴', '반납'].map((type) => (<option key={type} value={type}>{type}</option>))}
+            </select>
+          </div>
         </div>
-        <div className="mb-3">
-          <label className="form-label">운용관리상태 </label>
-          <select id="mgmtStatus" className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, MGMTSTATUS: e.target.value })}}>
-            <option value="">선택하세요</option>
-            {['운행', '유휴', '반납'].map((type) => (<option key={type} value={type}>{type}</option>))}
-          </select>
+        <div className="mb-2 row">
+          <div className="col">
+            <label className="form-label">임대구분 <font color='red'>*</font></label>
+            <select id="rentalType" className={`form-select ${styles.formSelect}`} value={carInfo.RENTALTYPE} onChange={(e) => {setCarInfo({ ...carInfo, RENTALTYPE: e.target.value })}}>
+              <option value="">선택하세요</option>
+              {['렌탈', '리스'].map((type) => (<option key={type} value={type}>{type}</option>))}
+            </select>
+          </div>
+          <div className="col">
+            <label className="form-label">사용연료 <font color='red'>*</font></label>
+            <select id="rentalType" className={`form-select ${styles.formSelect}`} value={carInfo.USEFUEL} onChange={(e) => {setCarInfo({ ...carInfo, USEFUEL: e.target.value })}}>
+              <option value="">선택하세요</option>
+              {['휘발유', '경유'].map((type) => (<option key={type} value={type}>{type}</option>))}
+            </select>
+          </div>
         </div>
-        <div className="mb-3">
-          <label className="form-label">차량</label>
-          <select id="carcd" className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, CARCD: e.target.value })}}>
+        <div className="mb-2">
+          <label className="form-label">차량 <font color='red'>*</font></label>
+          <select id="carcd" className={`form-select ${styles.formSelect}`} value={carInfo.CARCD} onChange={(e) => {setCarInfo({ ...carInfo, CARCD: e.target.value })}}>
             <option value="">선택하세요</option>
             {carList.map((item) => <option key={item.CARCD} value={item.CARCD}>{item.CARNM}</option>)}
           </select>
         </div>
-        <div className="mb-3">
-          <label className="form-label">차량</label>
-          <select id="usefuel" className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, USEFUEL: e.target.value })}}>
-            <option value="">선택하세요</option>
-            {['운행', '유휴', '반납'].map((type) => (<option key={type} value={type}>{type}</option>))}
-          </select>
-        </div>
-        <div className="mb-3">
+        <div className="mb-2">
           <label className="form-label">대표번호</label>
-          <input type="text" id="mainCompPhone" className={`form-control ${styles.formControl}`} placeholder="대표번호를 입력하세요" onChange={(e) => {setCarInfo({ ...carInfo, MAINCOMPPHONE: e.target.value })}} />
+          <input type="text" id="mainCompPhone" value={carInfo.MAINCOMPPHONE} className={`form-control ${styles.formControl}`} placeholder="대표번호를 입력하세요" onChange={(e) => {setCarInfo({ ...carInfo, MAINCOMPPHONE: e.target.value })}} />
         </div>
-        <div className="mb-3">
-          <label className="form-label">차량취득일</label>
-          <input type="date" id="carAquireddt" className={`form-control ${styles.formControl}`} defaultValue={today} onChange={(e) => {setCarInfo({ ...carInfo, CARACQUIREDDT: e.target.value })}} />
+        <div className="mb-2 row">
+          <div className="col">
+            <label className="form-label">차량취득일</label>
+            <input type="date" id="carAquireddt" className={`form-control ${styles.formControl}`} value={carInfo.CARACQUIREDDT} onChange={(e) => {setCarInfo({ ...carInfo, CARACQUIREDDT: e.target.value })}} />
+          </div>
+          <div className="col">
+            <label className="form-label">계약만료일</label>
+            <input type="date" id="rentalExfiredDt" className={`form-control ${styles.formControl}`} value={carInfo.RENTALEXFIREDDT} onChange={(e) => {setCarInfo({ ...carInfo, RENTALEXFIREDDT: e.target.value })}} />
+          </div>
         </div>
-        <div className="mb-3">
-          <label className="form-label">계약만료일</label>
-          <input type="date" id="rentalExfiredDt" className={`form-control ${styles.formControl}`} defaultValue={today} onChange={(e) => {setCarInfo({ ...carInfo, RENTALEXFIREDDT: e.target.value })}} />
-        </div>
-        <div className="mb-3">
+        <div className="mb-2">
           <label className="form-label">최초등록일</label>
-          <input type="date" id="carRegDate" className={`form-control ${styles.formControl}`} defaultValue={today} onChange={(e) => {setCarInfo({ ...carInfo, CARREGDATE: e.target.value })}} />
+          <input type="date" id="carRegDate" style={{width:47 +'%'}} className={`form-control ${styles.formControl}`} value={carInfo.CARREGDATE} onChange={(e) => {setCarInfo({ ...carInfo, CARREGDATE: e.target.value })}} />
         </div>
-        <div className="mb-3">
-          <label className="form-label">차량가</label>
-          <input type="number" id="carPrice" className={`form-control ${styles.formControl}`} onChange={(e) => {setCarInfo({ ...carInfo, CARPRICE: e.target.value })}} />
+        <div className="mb-2 row">
+          <div className="col">
+            <label className="form-label">차량가</label>
+            <input type="number" id="carPrice" value={carInfo.CARPRICE} className={`form-control ${styles.formControl}`} onChange={(e) => {setCarInfo({ ...carInfo, CARPRICE: e.target.value })}} />
+          </div>
+          <div className="col">
+            <label className="form-label">월납부액</label>
+            <input type="number" id="rentalPrice" value={carInfo.RENTALPRICE} className={`form-control ${styles.formControl}`} onChange={(e) => {setCarInfo({ ...carInfo, RENTALPRICE: e.target.value })}} />
+          </div>
         </div>
-        <div className="mb-3">
-          <label className="form-label">월납부액</label>
-          <input type="number" id="rentalPrice" className={`form-control ${styles.formControl}`} onChange={(e) => {setCarInfo({ ...carInfo, RENTALPRICE: e.target.value })}} />
+        <div className="mb-2 row">
+          <div className="col">
+            <label className="form-label">보험료</label>
+            <input type="number" id="insurance" value={carInfo.INSURANCE} className={`form-control ${styles.formControl}`} onChange={(e) => {setCarInfo({ ...carInfo, INSURANCE: e.target.value })}} />
+          </div>
+          <div className="col">
+            <label className="form-label">공제여부</label>
+            <select id="deductionYn" value={carInfo.DEDUCTIONYN} className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, DEDUCTIONYN: e.target.value })}}>
+              <option value="">선택하세요</option>
+              {['공제', '불공제'].map((type) => (<option key={type} value={type}>{type}</option>))}
+            </select>
+          </div>
         </div>
-        <div className="mb-3">
-          <label className="form-label">보험료</label>
-          <input type="number" id="insurance" className={`form-control ${styles.formControl}`} onChange={(e) => {setCarInfo({ ...carInfo, INSURANCE: e.target.value })}} />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">공제여부</label>
-          <select id="deductionYn" className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, USEFUEL: e.target.value })}}>
-            <option value="">선택하세요</option>
-            {['공제', '불공제'].map((type) => (<option key={type} value={type}>{type}</option>))}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label className="form-label">본부</label>
-          <select id="orgGroup" className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, USEFUEL: e.target.value })}}>
+        <div className="mb-2">
+          <label className="form-label">본부 <font color='red'>*</font></label>
+          <select id="orgGroup" value={carInfo.ORGGROUP} style={{width:47 +'%'}} className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, ORGGROUP: e.target.value })}}>
             <option value="">선택하세요</option>
             {['본사', 'Biz', '선로', '설계', '인프라운용본부', '재배치'].map((type) => (<option key={type} value={type}>{type}</option>))}
           </select>
         </div>
-        <div className="mb-3">
-          <label className="form-label">조직</label>
-          <input type="text" className={`form-control ${styles.formControl}`} id="orgCd" disabled="disabled" onChange={(e) => {setCarInfo({ ...carInfo, ORGCD: e.target.value })}}/>
-          <button type="button" className={`${styles.btn} btn-close`} onClick={(e) => {alert('작업중')}}> + </button>
+        <div className="mb-2">
+          <label className="form-label">조직 <font color='red'>*</font></label>
+          <CommonPopup show={showOrgPopup} onHide={() => setShowOrgPopup(false)} title={'조직 선택'}>
+            <div>
+              <OrgSearchPopup
+                onClose={() => setShowOrgPopup(false)}
+                onConfirm={(selectedRows) => {
+                  const orgNm = selectedRows.length > 0 ? selectedRows[0].ORGNM : ''
+                  const orgCd = selectedRows.length > 0 ? selectedRows[0].ORGCD : ''
+                  setCarInfo({ ...carInfo, ORGCD: orgCd, ORGNM: orgNm });
+                }}
+                pGUBUN="CAREMPNO" //차량용 트리 시(_fix 테이블 사용)
+              />
+            </div>
+          </CommonPopup>
+          <input type="text" style={{width:47 +'%'}} className={`form-control ${styles.formControl}`} id="orgNm" value={carInfo.ORGNM} disabled="disabled"/>
+          <button type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 +'px', float:'right', marginTop:-30+'px', marginRight:163+'px'}} onClick={(e) => {setShowOrgPopup(true)}}>선택</button>
         </div>
-        <div className="mb-3">
-          <label className="form-label">운전자(정)</label>
-          <input type="text" className={`form-control ${styles.formControl}`} id="primaryMngEmpNm" disabled="disabled" onChange={(e) => {setCarInfo({ ...carInfo, PRIMARYMNGEMPNM: e.target.value })}}/>
-          <input type="text" className={`form-control ${styles.formControl}`} id="primaryMngMobile" disabled="disabled" onChange={(e) => {setCarInfo({ ...carInfo, PRIMARYMNGMOBILE: e.target.value })}}/>
-          <button type="button" className={`${styles.btn} btn-close`} onClick={(e) => {alert('작업중')}}> + </button>
+        <div className="mb-2">
+          <label className="form-label">운전자(정) <font color='red'>*</font></label>
+          <CommonPopup show={showMngUserPopup} onHide={() => setShowMngUserPopup(false)} title={'운전자 선택'}>
+            <div>
+              <MngUserSearchPopup
+                onClose={() => setShowMngUserPopup(false)}
+                onConfirm={(selectedRows) => {
+                  const userEmpNo = selectedRows.length > 0 ? selectedRows[0].EMPNO : '';
+                  const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';
+                  const userMobile = selectedRows.length > 0 ? selectedRows[0].MOBILE : '';
+                  setCarInfo({ ...carInfo, PRIMARYMNGEMPNO: userEmpNo, PRIMARYMNGEMPNM: userEmpNm, PRIMARYMNGMOBILE: userMobile });
+                }}
+              />
+            </div>
+          </CommonPopup>
+          <input type="text" value={carInfo.PRIMARYMNGEMPNM} style={{width:47 +'%'}} className={`form-control ${styles.formControl}`} id="primaryMngEmpNm" disabled="disabled"/>
+          <button type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 +'px', float:'right', marginTop:-30+'px', marginRight:163+'px'}} onClick={(e) => {setShowMngUserPopup(true)}}>선택</button>
         </div>
-        <div className="mb-3">
+        <div className="mb-2">
+          <input type="text" value={carInfo.PRIMARYMNGMOBILE} className={`form-control ${styles.formControl}`} id="primaryMngMobile" disabled="disabled"/>
+        </div>
+        <div className="mb-2">
           <label className="form-label">차고지주소</label>
-          <input type="text" className={`form-control ${styles.formControl}`} id="primaryGarageAddr" onChange={(e) => {setCarInfo({ ...carInfo, PRIMARYGARAGEADDR: e.target.value })}}/>
+          <input type="text" value={carInfo.PRIMARYGARAGEADDR} className={`form-control ${styles.formControl}`} id="primaryGarageAddr" onChange={(e) => {setCarInfo({ ...carInfo, PRIMARYGARAGEADDR: e.target.value })}}/>
+        </div>
+        <div className="mb-2 row">
+          <div className="col">
+            <label className="form-label">안전관리자여부</label>
+            <select id="inverter" value={carInfo.SAFETYMANAGER} className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, SAFETYMANAGER: e.target.value })}}>
+              <option value="">선택하세요</option>
+              {['Y', 'N'].map((type) => (<option key={type} value={type}>{type}</option>))}
+            </select>
+          </div>
+          <div className="col">
+            <label className="form-label">인버터</label>
+            <select id="inverter" value={carInfo.INVERTER} className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, INVERTER: e.target.value })}}>
+              <option value="">선택하세요</option>
+              {['정상', '수리', '폐기'].map((type) => (<option key={type} value={type}>{type}</option>))}
+            </select>
+          </div>
+        </div>
+        <div className="mb-2">
+          <label className="form-label">기타사항</label>
+          <input type="text" value={carInfo.NOTICE} className={`form-control ${styles.formControl}`} id="notice" onChange={(e) => {setCarInfo({ ...carInfo, NOTICE: e.target.value })}}/>
+        </div>
+        <div className="mb-2">
+            <label className="form-label" style={{marginRight:10+'px'}}>만26세미만운전자</label>
+          <CommonPopup show={showUnder26UserPopup} onHide={() => setShowUnder26UserPopup(false)} title={'만26세미만운전자 선택'}>
+            <div>
+              <Under26UserSearchPopup
+                onClose={() => setShowUnder26UserPopup(false)}
+                onConfirm={(selectedRows) => {
+                  const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';
+                  const userEmpNo = selectedRows.length > 0 ? selectedRows[0].EMPNO : '';
+                  setCarInfo({ ...carInfo, UNDER26AGEEMPNO: userEmpNo, UNDER26AGEEMPNM: userEmpNm });
+                }}
+              />
+            </div>
+          </CommonPopup>
+            <button type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 +'px', marginleft:20+'px'}} onClick={(e) => {setShowUnder26UserPopup(true)}}>선택</button>
+        </div>
+        <div className="mb-2 row">
+          <div className="col">
+            <input type="text" value={carInfo.UNDER26AGEEMPNO} className={`form-control ${styles.formControl}`} id="under26AgeEmpNo" disabled="disabled"/>
+          </div>
+          <div className="col"> 
+            <input type="text" value={carInfo.UNDER26AGEEMPNM} className={`form-control ${styles.formControl}`} id="under26AgeEmpNm" disabled="disabled"/>
+          </div>
+        </div>
+        <div className="mb-2 row">
+          <div className="col">
+            <input type="number" value={carInfo.UNDER26AGEJUMINBTRTHNO} className={`form-control ${styles.formControl}`} id="under26AgeJuminBirthNo" onInput={(e) => {handleMaxLength(e, 6)}} onChange={(e) => {setCarInfo({ ...carInfo, UNDER26AGEJUMINBTRTHNO: e.target.value })}}/>
+          </div>
+          <div className="col"> 
+            <input type="date" className={`form-control ${styles.formControl}`} id="under26AgeChgDt" value={carInfo.UNDER26AGECHGDT} onChange={(e) => {setCarInfo({ ...carInfo, UNDER26AGECHGDT: e.target.value })}}/>
+          </div>
+        </div>
+        <div className="mb-2">
+          <label className="form-label">주유카드</label>
+          <input type="text" value={carInfo.CARDNO} className={`form-control ${styles.formControl}`} id="cardNo" style={{width:280 +'px'}} disabled="disabled" onChange={(e) => {setCarInfo({ ...carInfo, CARDNO: e.target.value })}}/>
+          <button type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 +'px', float:'right', marginTop:-30+'px', marginRight:90+'px'}} onClick={(e) => {alert('작업중')}}>선택</button>
+        </div>
+        <div className="mb-2">
+          <input type="text" value={carInfo.EXFIREDT} className={`form-control ${styles.formControl}`} id="exfireDt" style={{width:47 +'%'}} disabled="disabled" onChange={(e) => {setCarInfo({ ...carInfo, EXFIREDT: e.target.value })}}/>
+        </div>
+        <div className="mb-2">
+          <input type="text" value={carInfo.NOTICE2} className={`form-control ${styles.formControl}`} id="notice2" disabled="disabled" onChange={(e) => {setCarInfo({ ...carInfo, NOTICE2: e.target.value })}}/>
         </div>
       </Modal.Body>
       <Modal.Footer>
