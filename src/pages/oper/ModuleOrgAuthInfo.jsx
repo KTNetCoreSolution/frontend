@@ -166,7 +166,7 @@ const ModuleOrgAuthInfo = () => {
   const isInitialRender = useRef(true);
 
   const initialSelectedOrgs = useMemo(() => {
-    const orgs = newAuth.ORGCD ? newAuth.ORGCD.split("^").filter(Boolean) : [];
+    const orgs = newAuth.ORGCD ? newAuth.ORGCD.split(",").filter(Boolean) : [];
     return orgs;
   }, [newAuth.ORGCD]);
 
@@ -397,8 +397,8 @@ const ModuleOrgAuthInfo = () => {
       const formattedData = responseData.map((row, index) => {
         const empno = row.EMPNO || "";
         const orgcd = row.ORGCD || "";
-        const authOperator = row.AUTHOPERATOR || (row.inputType === "EMP" ? empno : orgcd.split("^")[0] || "");
-        if (row.inputType === "ORG" && authOperator.includes("^")) {
+        const authOperator = row.AUTHOPERATOR || (row.inputType === "EMP" ? empno : orgcd.split(",")[0] || "");
+        if (row.inputType === "ORG" && authOperator.includes(",")) {
           console.warn(`Invalid AUTHOPERATOR: ${authOperator} contains multiple ORGCDs for ID: ${row.ID}`);
         }
 
@@ -569,8 +569,8 @@ const ModuleOrgAuthInfo = () => {
       errorMsgPopup("조직을 선택해주세요.");
       return;
     }
-    const newOrgCd = selectedRows.map(row => row.ORGCD).join("^") || "";
-    const newOrgNm = selectedRows.map(row => row.ORGNM).join(", ") || "";
+    const newOrgCd = selectedRows.map(row => row.ORGCD).join(",") || "";
+    const newOrgNm = selectedRows.map(row => row.ORGNM).join(",") || "";
     const singleOrgCd = selectedRows[0]?.ORGCD || "";
     
     if (showAddPopup && showEmpOrgPopup) {
@@ -724,7 +724,7 @@ const ModuleOrgAuthInfo = () => {
         } else if (row.isChanged === "Y" && row.isDeleted === "N") {
           pGUBUN = "U";
         }
-        if (row.inputType === "ORG" && row.AUTHOPERATOR.includes("^")) {
+        if (row.inputType === "ORG" && row.AUTHOPERATOR.includes(",")) {
           console.warn(`Invalid pAUTHOPERATOR: ${row.AUTHOPERATOR} contains multiple ORGCDs for ID: ${row.ID}`);
           return { ...row, success: false, error: "pAUTHOPERATOR contains multiple ORGCDs" };
         }
@@ -767,11 +767,11 @@ const ModuleOrgAuthInfo = () => {
     if (showEmpOrgPopup || showOrgPopup) {
       const moduleType = selectedRowData?.MODULETYPE || newAuth.MODULETYPE;
       if (moduleType === "CAR") {
-        return "CAREMPNO";
+        return "CAROPEREMPNO";
       }
-      return "EMPNO";
+      return "OPEREMPNO";
     }
-    return "EMPNO";
+    return "OPEREMPNO";
   };
 
   const pGUBUN = useMemo(
@@ -928,6 +928,7 @@ const ModuleOrgAuthInfo = () => {
           initialSelectedOrgs={initialSelectedOrgs}
           pGUBUN={pGUBUN}
           isMulti={showEmpOrgPopup ? false : true}
+          isChecked={false}
         />
       </CommonPopup>
       <CommonPopup
