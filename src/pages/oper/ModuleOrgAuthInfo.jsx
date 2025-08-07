@@ -50,6 +50,7 @@ const fn_HandleCellEdit = (cell, field, setData, tableInstance) => {
 const ModuleOrgAuthInfo = () => {
   const { user } = useStore();
   const navigate = useNavigate();
+  const [moduleOptions, setModuleOptions] = useState([{ value: "", label: "전체" }]);
 
   const searchConfig = {
     areas: [
@@ -89,13 +90,7 @@ const ModuleOrgAuthInfo = () => {
             row: 1,
             label: "업무",
             labelVisible: true,
-            options: [
-              { value: "", label: "전체" },
-              { value: "CAR", label: "차량관리" },
-              { value: "STANDARD", label: "표준활동관리" },
-              { value: "RENTAL", label: "렌탈관리" },
-              { value: "TOOL", label: "공기구관리" },
-            ],
+            options: moduleOptions,
             width: "150px",
             height: "30px",
             backgroundColor: "#ffffff",
@@ -159,7 +154,7 @@ const ModuleOrgAuthInfo = () => {
   const [showSearchOrgPopup, setShowSearchOrgPopup] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [selectedRowData, setSelectedRowData] = useState(null);
-  const [newAuth, setNewAuth] = useState({ ID: "", EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "CAR", inputType: "EMP", AUTHOPERATOR: "" });
+  const [newAuth, setNewAuth] = useState({ ID: "", EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "", inputType: "EMP", AUTHOPERATOR: "" });
   const [imsiCounter, setImsiCounter] = useState(1);
   const [rowCount, setRowCount] = useState(0);
   const tableRef = useRef(null);
@@ -170,6 +165,36 @@ const ModuleOrgAuthInfo = () => {
     const orgs = newAuth.ORGCD ? newAuth.ORGCD.split(",").filter(Boolean) : [];
     return orgs;
   }, [newAuth.ORGCD]);
+
+  useEffect(() => {
+    const fetchModuleOptions = async () => {
+      try {
+        const params = {
+          pGUBUN: "ALL",
+          pSEARCH: "",
+          pDEBUG: "F",
+        };
+        const response = await fetchData("oper/moduleinfo/list", params);
+        if (!response.success) {
+          errorMsgPopup(response.message || "업무 목록을 가져오는 중 오류가 발생했습니다.");
+          return;
+        }
+        const moduleData = Array.isArray(response.data) ? response.data : [];
+        const options = [
+          { value: "", label: "전체" },
+          ...moduleData.map((item) => ({
+            value: item.MODULETYPE,
+            label: item.MODULENM,
+          })),
+        ];
+        setModuleOptions(options);
+      } catch (err) {
+        console.error("업무 목록 로드 실패:", err);
+        errorMsgPopup(err.response?.data?.message || "업무 목록을 가져오는 중 오류가 발생했습니다.");
+      }
+    };
+    fetchModuleOptions();
+  }, []);
 
   const columns = [
     {
@@ -277,7 +302,7 @@ const ModuleOrgAuthInfo = () => {
             setPopupType("EMPORG");
             setSelectedId(rowData.ID);
             setSelectedRowData(rowData);
-            setNewAuth({ ...newAuth, ID: rowData.ID, EMPORG: rowData.EMPORG || "", EMPNO: rowData.EMPNO || "", MODULETYPE: rowData.MODULETYPE || "CAR", AUTHOPERATOR: rowData.AUTHOPERATOR || "" });
+            setNewAuth({ ...newAuth, ID: rowData.ID, EMPORG: rowData.EMPORG || "", EMPNO: rowData.EMPNO || "", MODULETYPE: rowData.MODULETYPE || "", AUTHOPERATOR: rowData.AUTHOPERATOR || "" });
             setTimeout(() => setShowEmpOrgPopup(true), 0);
           };
           
@@ -310,18 +335,13 @@ const ModuleOrgAuthInfo = () => {
       field: "MODULETYPE",
       sorter: "string",
       width: 120,
-      ...fn_CellSelect(["CAR", "STANDARD", "RENTAL", "TOOL"]),
+      ...fn_CellSelect(moduleOptions.map(opt => opt.value).filter(Boolean)),
       editable: (cell) => cell.getRow().getData().isAdded === "Y",
       cellEdited: (cell) => fn_HandleCellEdit(cell, "MODULETYPE", setData, tableInstance),
       formatter: (cell) => {
         const value = cell.getValue();
-        switch (value) {
-          case "CAR": return "차량관리";
-          case "STANDARD": return "표준활동관리";
-          case "RENTAL": return "렌탈관리";
-          case "TOOL": return "공기구관리";
-          default: return value;
-        }
+        const option = moduleOptions.find(opt => opt.value === value);
+        return option ? option.label : value;
       },
     },
     {
@@ -520,7 +540,7 @@ const ModuleOrgAuthInfo = () => {
 
   const handleAddClick = () => {
     const newId = `IMSI${String(imsiCounter).padStart(4, "0")}`;
-    setNewAuth({ ID: newId, EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "CAR", inputType: "EMP", AUTHOPERATOR: "" });
+    setNewAuth({ ID: newId, EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "", inputType: "EMP", AUTHOPERATOR: "" });
     setShowAddPopup(true);
   };
 
@@ -557,12 +577,12 @@ const ModuleOrgAuthInfo = () => {
     setData((prevData) => [newRow, ...prevData]);
     setImsiCounter((prev) => prev + 1);
     setShowAddPopup(false);
-    setNewAuth({ ID: "", EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "CAR", inputType: "EMP", AUTHOPERATOR: "" });
+    setNewAuth({ ID: "", EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "", inputType: "EMP", AUTHOPERATOR: "" });
   };
 
   const handleAddCancel = () => {
     setShowAddPopup(false);
-    setNewAuth({ ID: "", EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "CAR", inputType: "EMP", AUTHOPERATOR: "" });
+    setNewAuth({ ID: "", EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "", inputType: "EMP", AUTHOPERATOR: "" });
   };
 
   const handleOrgConfirm = (selectedRows) => {
@@ -888,10 +908,12 @@ const ModuleOrgAuthInfo = () => {
               setNewAuth({ ...newAuth, MODULETYPE: e.target.value });
             }}
           >
-            <option value="CAR">차량관리</option>
-            <option value="STANDARD">표준활동관리</option>
-            <option value="RENTAL">렌탈관리</option>
-            <option value="TOOL">공기구관리</option>
+            <option value="">선택</option>
+            {moduleOptions.filter(opt => opt.value !== "").map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
         <div className="mb-3">

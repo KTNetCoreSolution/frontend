@@ -38,20 +38,27 @@ const CommonPopup = ({
 
   const handleConfirm = async (action) => {
     try {
-      const { result, onSuccess } = await action();
-      if (result && result.error) {
-        setToastMessage(result.error);
-        setShowToast(true);
-      } else if (result && result.success) {
-        setToastMessage(result.success);
-        setShowToast(true);
-        return { onSuccess };
+      // action이 함수인지 확인하고 호출
+      if (typeof action === "function") {
+        const result = await action();
+        // action이 객체를 반환하는 경우에만 구조 분해 시도
+        if (result && typeof result === "object") {
+          const { result: actionResult, onSuccess } = result;
+          if (actionResult && actionResult.error) {
+            setToastMessage(actionResult.error);
+            setShowToast(true);
+          } else if (actionResult && actionResult.success) {
+            setToastMessage(actionResult.success);
+            setShowToast(true);
+            if (onSuccess) onSuccess();
+          }
+        }
+        // action이 undefined를 반환하거나 단순 실행인 경우 추가 처리 없음
       }
     } catch (error) {
       setToastMessage("오류가 발생했습니다: " + error.message);
       setShowToast(true);
     }
-    return {};
   };
 
   const handleButtonClick = (action) => {
@@ -84,8 +91,8 @@ const CommonPopup = ({
   if (!show) return null;
 
   const defaultButtons = [
-  { label: "취소", className: `${styles.btn} ${styles.btnSecondary} btn btn-secondary`, action: onHide },
-  { label: "확인", className: `${styles.btn} ${styles.btnPrimary} btn text-bg-success`, action: onConfirm },
+    { label: "취소", className: `${styles.btn} ${styles.btnSecondary} btn btn-secondary`, action: onHide },
+    { label: "확인", className: `${styles.btn} ${styles.btnPrimary} btn text-bg-success`, action: onConfirm },
   ];
 
   const activeButtons = buttons.length > 0 ? buttons.slice(0, 5) : defaultButtons;
