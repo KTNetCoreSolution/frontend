@@ -378,7 +378,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
             <label className="form-label">사용연료 <font color='red'>*</font></label>
             <select id="rentalType" className={`form-select ${styles.formSelect}`} value={carInfo.USEFUEL} onChange={(e) => {setCarInfo({ ...carInfo, USEFUEL: e.target.value })}}>
               <option value="">선택하세요</option>
-              {['휘발유', '경유'].map((type) => (<option key={type} value={type}>{type}</option>))}
+              {['LPG', '휘발유', '경유'].map((type) => (<option key={type} value={type}>{type}</option>))}
             </select>
           </div>
         </div>

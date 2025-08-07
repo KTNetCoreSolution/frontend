@@ -327,9 +327,9 @@ const CarListInfo = () => {
       fn_DetailPopup('');
       //msgPopup("준비중입니다.");
     } else if (eventType === 'showExcelUploadPopup') {
-      //setExcelPopupTitle('일괄등록');
-      //setShowExcelPopup(true);
-      msgPopup("준비중입니다.");
+      setExcelPopupTitle('일괄등록');
+      setShowExcelPopup(true);
+      //msgPopup("준비중입니다.");
     }
   };
 
@@ -518,8 +518,8 @@ const CarListInfo = () => {
           return result;
         }}
         title={excelPopupTitle}
-        rptCd="exceluploadsample"
-        templateParams={{ pGUBUN: 'RPTCD', pTITLE: '', pFILEID: '', pRPTCD: 'exceluploadsample', pDEBUG: 'F' }}
+        rptCd="CARINFOEXCELUPLOAD"
+        templateParams={{ pGUBUN: 'RPTCD', pTITLE: '', pFILEID: '7', pRPTCD: 'CARINFOEXCELUPLOAD', pDEBUG: 'F' }}
       />
     </div>
   );
