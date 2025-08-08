@@ -41,13 +41,20 @@ export async function checkTokenValidity(navigate, user, setUser, clearUser) {
   }
 }
 
-export async function checkTokenValiditySimple(clearUser) {
+export const checkTokenValiditySimple = async (clearUser) => {
   try {
-    const response = await fetchDataGet('auth/check', {} );
-    return response.success;
+    const response = await fetchDataGet('auth/check', {}, { withCredentials: true });
+    if (response.success && response.data) {
+      return true;
+    } else {
+      clearUser();
+      sessionStorage.removeItem('user-storage');
+      return false;
+    }
   } catch (error) {
-    console.error('Simple token check failed:', error.message);
+    console.error('Token validation failed:', error);
     clearUser();
+    sessionStorage.removeItem('user-storage');
     return false;
   }
-}
+};

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 const useStore = create(
   persist(
@@ -16,8 +16,8 @@ const useStore = create(
       setView: (view) => set({ view }),
     }),
     {
-      name: 'user-storage',
-      getStorage: () => (typeof window !== 'undefined' ? sessionStorage : undefined),
+    name: 'user-storage', // 저장소 키 이름 유지
+      storage: createJSONStorage(() => sessionStorage), // localStorage -> sessionStorage로 변경
     }
   )
 );

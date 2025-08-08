@@ -27,18 +27,25 @@ const MainHeader = () => {
 
   const handleLogout = async () => {
     try {
-      // 백엔드에서 HTTP-only 쿠키를 지우는 로그아웃 엔드포인트 호출
-      await fetchData('auth/logout', {});
-      clearUser();
-      if (clearMenu) {
+      const response = await fetchData('auth/logout', {}, { withCredentials: true });
+      if (response.success) {
+        console.log('Logout successful, cookie cleared');
+        clearUser();
         clearMenu();
+        sessionStorage.removeItem('user-storage');
+        navigate('/', { replace: true });
       } else {
-        console.error('clearMenu is undefined');
+        console.error('Logout failed:', response.errMsg);
+        clearUser();
+        clearMenu();
+        sessionStorage.removeItem('user-storage');
+        navigate('/', { replace: true });
       }
-      navigate('/', { replace: true });
     } catch (error) {
       console.error('Logout error:', error);
-      clearUser(); // 오류 발생 시에도 사용자 상태 초기화
+      clearUser();
+      clearMenu();
+      sessionStorage.removeItem('user-storage');
       navigate('/', { replace: true });
     }
   };

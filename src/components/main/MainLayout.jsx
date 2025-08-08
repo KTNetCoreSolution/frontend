@@ -36,15 +36,16 @@ const MainLayout = () => {
 
   useEffect(() => {
     const initialize = async () => {
-      // 로그아웃 상태(user가 null 또는 undefined)면 즉시 로그인 페이지로 이동
       if (!user) {
         setIsChecking(false);
+        sessionStorage.removeItem('user-storage');
         navigate('/', { replace: true });
         return;
       }
 
       const isValid = await checkTokenValiditySimple(clearUser);
       if (!isValid) {
+        sessionStorage.removeItem('user-storage');
         navigate('/', { replace: true });
         setIsChecking(false);
         return;
@@ -52,7 +53,7 @@ const MainLayout = () => {
 
       if (!menu?.length && user?.empNo) {
         try {
-          const response = await fetchData('auth/menu', { userId: user.empNo });
+          const response = await fetchData('auth/menu', { userId: user.empNo }, { withCredentials: true });
           if (response.success && response.data?.length > 0) {
             setMenu(response.data);
           }
@@ -64,9 +65,9 @@ const MainLayout = () => {
       setIsChecking(false);
     };
 
-    // user가 없으면 즉시 초기화 종료
     if (!user) {
       setIsChecking(false);
+      sessionStorage.removeItem('user-storage');
       navigate('/', { replace: true });
       return;
     }
