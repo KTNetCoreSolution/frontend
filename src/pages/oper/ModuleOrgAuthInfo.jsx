@@ -57,7 +57,7 @@ const ModuleOrgAuthInfo = () => {
       {
         type: "search",
         fields: [
-          { id: 'msgLabel', type: 'label', row: 2, label: '업무조직은 디폴트가 인사테이블이고, 여기서 작업한 저장 정보가 업무조직을 최우선시  합니다.', labelVisible: true, width: '600px', height: '30px', backgroundColor: '#ffffff', color: '#d62424', enabled: true },
+          { id: 'msgLabel', type: 'label', row: 2, label: '업무조직은 디폴트가 인사테이블의 조직이고, 여기서 작업한 저장 정보가 업무조직을 최우선 시 합니다.', labelVisible: true, width: '600px', height: '30px', backgroundColor: '#ffffff', color: '#d62424', enabled: true },
           {
             id: "orgText",
             type: "text",
@@ -128,19 +128,23 @@ const ModuleOrgAuthInfo = () => {
         { value: "", label: "선택" },
         { value: "EMPORG", label: "담당조직/담당자" },
         { value: "MODULETYPE", label: "업무" },
-        { value: "ORGNM", label: "권한조직" },
-      ],
+        { value: "ORGNM", label: "권한조직" }
+      ]
     },
     {
       id: "filterText",
       label: "",
       type: "text",
       placeholder: "찾을 내용을 입력하세요",
-      width: "200px",
-    },
+      width: "200px"
+    }
   ];
 
-  const [filters, setFilters] = useState({...initialFilters(searchConfig.areas.find((area) => area.type === "search").fields), orgText: user?.orgNm || '', ORGCD: user?.orgCd || '',});
+  const [filters, setFilters] = useState({
+    ...initialFilters(searchConfig.areas.find((area) => area.type === "search").fields),
+    orgText: user?.orgNm || '',
+    ORGCD: user?.orgCd || ''
+  });
   const [_popupType, setPopupType] = useState(null);
   const [tableFilters, setTableFilters] = useState(initialFilters(filterTableFields));
   const [loading, setLoading] = useState(false);
@@ -154,7 +158,16 @@ const ModuleOrgAuthInfo = () => {
   const [showSearchOrgPopup, setShowSearchOrgPopup] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [selectedRowData, setSelectedRowData] = useState(null);
-  const [newAuth, setNewAuth] = useState({ ID: "", EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "", inputType: "EMP", AUTHOPERATOR: "" });
+  const [newAuth, setNewAuth] = useState({
+    ID: "",
+    EMPNO: "",
+    EMPORG: "",
+    ORGCD: "",
+    ORGNM: "",
+    MODULETYPE: "",
+    inputType: "EMP",
+    AUTHOPERATOR: ""
+  });
   const [imsiCounter, setImsiCounter] = useState(1);
   const [rowCount, setRowCount] = useState(0);
   const tableRef = useRef(null);
@@ -172,7 +185,7 @@ const ModuleOrgAuthInfo = () => {
         const params = {
           pGUBUN: "ALL",
           pSEARCH: "",
-          pDEBUG: "F",
+          pDEBUG: "F"
         };
         const response = await fetchData("oper/moduleinfo/list", params);
         if (!response.success) {
@@ -184,8 +197,8 @@ const ModuleOrgAuthInfo = () => {
           { value: "", label: "전체" },
           ...moduleData.map((item) => ({
             value: item.MODULETYPE,
-            label: item.MODULENM,
-          })),
+            label: item.MODULENM
+          }))
         ];
         setModuleOptions(options);
       } catch (err) {
@@ -205,7 +218,7 @@ const ModuleOrgAuthInfo = () => {
       field: "actions",
       width: 80,
       visible: true,
-      ...fn_CellButton("삭제", `btn-danger ${styles.deleteButton}`, (rowData) => handleDelete(rowData)),
+      ...fn_CellButton("삭제", `btn-danger ${styles.deleteButton}`, (rowData) => handleDelete(rowData))
     },
     {
       frozen: true,
@@ -262,7 +275,7 @@ const ModuleOrgAuthInfo = () => {
         div.appendChild(checkbox);
         div.appendChild(span);
         return div;
-      },
+      }
     },
     {
       headerHozAlign: "center",
@@ -271,7 +284,7 @@ const ModuleOrgAuthInfo = () => {
       field: "ID",
       sorter: "string",
       width: 100,
-      visible: true,
+      visible: true
     },
     {
       headerHozAlign: "center",
@@ -326,7 +339,7 @@ const ModuleOrgAuthInfo = () => {
           div.appendChild(span);
         }
         return div;
-      },
+      }
     },
     {
       headerHozAlign: "center",
@@ -342,7 +355,7 @@ const ModuleOrgAuthInfo = () => {
         const value = cell.getValue();
         const option = moduleOptions.find(opt => opt.value === value);
         return option ? option.label : value;
-      },
+      }
     },
     {
       headerHozAlign: "center",
@@ -371,28 +384,28 @@ const ModuleOrgAuthInfo = () => {
         div.appendChild(span);
         div.appendChild(button);
         return div;
-      },
+      }
     },
     {
       title: "ORGCD",
       field: "ORGCD",
-      visible: false,
+      visible: false
     },
     {
       title: "EMPNO",
       field: "EMPNO",
-      visible: false,
+      visible: false
     },
     {
       title: "AUTHOPERATOR",
       field: "AUTHOPERATOR",
-      visible: false,
+      visible: false
     },
     {
       title: "inputType",
       field: "inputType",
-      visible: false,
-    },
+      visible: false
+    }
   ];
 
   const loadData = async () => {
@@ -402,7 +415,7 @@ const ModuleOrgAuthInfo = () => {
       const params = {
         ORGCD: filters.ORGCD || "",
         MODULETYPE: filters.MODULETYPE || "",
-        DEBUG: "F",
+        DEBUG: "F"
       };
       const response = await fetchData("oper/moduleorgauth/list", params);
       if (!response.success) {
@@ -432,7 +445,7 @@ const ModuleOrgAuthInfo = () => {
           inputType: row.inputType || "EMP",
           isDeleted: "N",
           isEdited: "N",
-          isAdded: "N",
+          isAdded: "N"
         };
       });
       setData(formattedData);
@@ -467,7 +480,7 @@ const ModuleOrgAuthInfo = () => {
             if (data.isDeleted === "Y") el.classList.add(styles.deletedRow);
             else if (data.isAdded === "Y") el.classList.add(styles.addedRow);
             else if (data.isChanged === "Y") el.classList.add(styles.editedRow);
-          },
+          }
         });
         if (!tableInstance.current) throw new Error("createTable returned undefined or null");
         setTableStatus("ready");
@@ -518,7 +531,7 @@ const ModuleOrgAuthInfo = () => {
           [
             { field: "EMPORG", type: "like", value: filterText },
             { field: "MODULETYPE", type: "like", value: filterText },
-            { field: "ORGNM", type: "like", value: filterText },
+            { field: "ORGNM", type: "like", value: filterText }
           ],
           "or"
         );
@@ -544,7 +557,7 @@ const ModuleOrgAuthInfo = () => {
     setShowAddPopup(true);
   };
 
-  const handleAddConfirm = () => {
+  const handleAddConfirm = async () => {
     if (!newAuth.MODULETYPE) {
       errorMsgPopup("업무를 선택해주세요.");
       return;
@@ -561,23 +574,36 @@ const ModuleOrgAuthInfo = () => {
       errorMsgPopup("담당자 또는 담당조직 코드를 설정해주세요.");
       return;
     }
-    const newRow = {
-      ID: newAuth.ID,
-      EMPORG: newAuth.EMPORG,
-      EMPNO: newAuth.inputType === "EMP" ? newAuth.EMPNO : "",
-      AUTHOPERATOR: newAuth.AUTHOPERATOR,
-      MODULETYPE: newAuth.MODULETYPE,
-      ORGCD: newAuth.ORGCD,
-      ORGNM: newAuth.ORGNM,
-      inputType: newAuth.inputType,
-      isDeleted: "N",
-      isEdited: "N",
-      isAdded: "Y",
-    };
-    setData((prevData) => [newRow, ...prevData]);
-    setImsiCounter((prev) => prev + 1);
-    setShowAddPopup(false);
-    setNewAuth({ ID: "", EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "", inputType: "EMP", AUTHOPERATOR: "" });
+    if (newAuth.inputType === "ORG" && newAuth.AUTHOPERATOR.includes(",")) {
+      errorMsgPopup("담당조직은 단일 조직만 선택 가능합니다.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const params = {
+        pGUBUN: "I",
+        pMODULETYPE: newAuth.MODULETYPE || "",
+        pAUTHOPERATOR: newAuth.AUTHOPERATOR || "",
+        pORGCD: newAuth.ORGCD || "",
+        pUPPERYN: "N"
+      };
+
+      const response = await fetchData("oper/moduleorgauth/save", params);
+      if (!response.success) {
+        throw new Error(response.message || "데이터 저장에 실패했습니다.");
+      }
+
+      msgPopup("데이터가 성공적으로 저장되었습니다.");
+      await loadData();
+      setShowAddPopup(false);
+      setNewAuth({ ID: "", EMPNO: "", EMPORG: "", ORGCD: "", ORGNM: "", MODULETYPE: "", inputType: "EMP", AUTHOPERATOR: "" });
+    } catch (err) {
+      console.error("데이터 저장 실패:", err);
+      errorMsgPopup(err.message || "데이터 저장 중 오류가 발생했습니다.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAddCancel = () => {
@@ -604,13 +630,13 @@ const ModuleOrgAuthInfo = () => {
         EMPORG: newOrgNm,
         EMPNO: "",
         AUTHOPERATOR: singleOrgCd,
-        inputType: "ORG",
+        inputType: "ORG"
       }));
     } else if (showAddPopup && showOrgPopup) {
       setNewAuth((prev) => ({
         ...prev,
         ORGCD: newOrgCd,
-        ORGNM: newOrgNm,
+        ORGNM: newOrgNm
       }));
     } else if (selectedId && showEmpOrgPopup) {
       if (selectedRows.length > 1) {
@@ -626,7 +652,7 @@ const ModuleOrgAuthInfo = () => {
               EMPNO: "",
               AUTHOPERATOR: singleOrgCd,
               inputType: "ORG",
-              isChanged: row.isDeleted === "N" && row.isAdded === "N" ? "Y" : row.isChanged,
+              isChanged: row.isDeleted === "N" && row.isAdded === "N" ? "Y" : row.isChanged
             };
           }
           return row;
@@ -641,7 +667,7 @@ const ModuleOrgAuthInfo = () => {
               ...row,
               ORGCD: newOrgCd,
               ORGNM: newOrgNm,
-              isChanged: row.isDeleted === "N" && row.isAdded === "N" ? "Y" : row.isChanged,
+              isChanged: row.isDeleted === "N" && row.isAdded === "N" ? "Y" : row.isChanged
             };
           }
           return row;
@@ -672,7 +698,7 @@ const ModuleOrgAuthInfo = () => {
         EMPNO: newEmpNo,
         EMPORG: newEmpNm,
         AUTHOPERATOR: newEmpNo,
-        inputType: "EMP",
+        inputType: "EMP"
       }));
     } else if (selectedId && showUserPopup) {
       setData((prevData) =>
@@ -684,7 +710,7 @@ const ModuleOrgAuthInfo = () => {
               EMPNO: newEmpNo,
               AUTHOPERATOR: newEmpNo,
               inputType: "EMP",
-              isChanged: row.isDeleted === "N" && row.isAdded === "N" ? "Y" : row.isChanged,
+              isChanged: row.isDeleted === "N" && row.isAdded === "N" ? "Y" : row.isChanged
             };
           }
           return row;
@@ -754,7 +780,7 @@ const ModuleOrgAuthInfo = () => {
           pMODULETYPE: row.MODULETYPE || "",
           pAUTHOPERATOR: row.AUTHOPERATOR || "",
           pORGCD: row.ORGCD || "",
-          pUPPERYN: "N",
+          pUPPERYN: "N"
         };
         
         try {
