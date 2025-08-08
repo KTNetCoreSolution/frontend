@@ -454,6 +454,9 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
                     setCarInfo({ ...carInfo, ORGCD: orgCd, ORGNM: orgNm });
                   }}
                   pGUBUN="CAREMPNO" //차량용 트리 시(_fix 테이블 사용)
+                  isMulti={false}
+                  initialSelectedOrgs={carInfo.ORGCD} //초기 선택된 조직
+                  isChecked={true} //체크박스 사용 여부
                 />
               </div>
             </CommonPopup>

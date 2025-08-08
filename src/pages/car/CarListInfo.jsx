@@ -15,7 +15,7 @@ import styles from '../../components/table/TableSearch.module.css';
 import { fetchData } from '../../utils/dataUtils';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import { msgPopup } from '../../utils/msgPopup.js';
-import { tr } from 'date-fns/locale';
+import { arEG, tr } from 'date-fns/locale';
 
 const fn_CellButton = (label, className, onClick) => ({
   formatter: (cell) => {
@@ -93,6 +93,7 @@ const CarListInfo = () => {
   const [popupContent, setPopupContent] = useState(null);
   const [popupOnConfirm, setPopupOnConfirm] = useState(null);
   const [selectedOrg, setSelectedOrg] = useState(user?.orgCd || ''); // 조직 선택 팝업용 상태
+  const [selectedOrgNm, setSelectedOrgNm] = useState(user?.orgNm || ''); // 조직 선택 팝업용 상태
   const [_selectedUsers] = useState([]);
   const selectedOrgRef = useRef(selectedOrg); // 최신 selectedOrg 값을 추적
 
@@ -109,6 +110,7 @@ const CarListInfo = () => {
   // selectedOrg 변경 시 ref 업데이트
   useEffect(() => {
     selectedOrgRef.current = selectedOrg;
+    setFilters((prev) => ({ ...prev, orgText: selectedOrgNm }));
   }, [selectedOrg]);
 
   // 검색 및 버튼 구성
@@ -169,7 +171,7 @@ const CarListInfo = () => {
   ]);
 
   // 엑셀 저장 시 추가로 보여줄 엑셀 field 설정
-  const visibleColumns = ['CARID|Y', 'MAIN_COMP_PHONE|Y', 'CARACQUIREDDT|Y', 'RENTALEXFIREDDT|Y', 'CARREGDATE|Y', 'CARPRICE|Y', 'RENTALPRICE|Y', 'PRIMARY_MANAGER_EMPNO|Y', 'PRIMARY_MANAGER_MOBILE|Y', 'PRIMARY_GARAGE_ADDR|Y'
+  const visibleColumns = ['MAIN_COMP_PHONE|Y', 'CARACQUIREDDT|Y', 'RENTALEXFIREDDT|Y', 'CARREGDATE|Y', 'CARPRICE|Y', 'RENTALPRICE|Y', 'INSURANCE|Y', 'DEDUCTIONYN|Y', 'ORGCD|Y', 'PRIMARY_MANAGER_EMPNO|Y', 'PRIMARY_MANAGER_MOBILE|Y', 'PRIMARY_GARAGE_ADDR|Y'
     , 'NOTICE|Y', 'UNDER26AGE_EMPNO|Y', 'UNDER26AGE_EMPNM|Y', 'UNDER26AGE_JUMIN_BIRTH_NO|Y', 'UNDER26AGE_CHGDT|Y', 'CARDNO|Y', 'EXFIREDT|Y', 'NOTICE2|Y', 'DETAILBUTTON|N'];  
 
   // const [filters, setFilters] = useState(initialFilters(searchConfig.areas.find((area) => area.type === 'search').fields));
@@ -200,34 +202,39 @@ const CarListInfo = () => {
   const columns = [
     { title: '번호', field: 'ID', width: 60, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '임대여부', field: 'RENTALTYPE', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차대번호', field: 'CARID', width: 150, headerHozAlign: 'center', hozAlign: 'center'},
     { title: '차량번호', field: 'CARNO', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '차대번호', field: 'CARID', width: 150, headerHozAlign: 'center', hozAlign: 'center'},
     { title: '운용관리상태', field: 'MGMTSTATUS', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차종', field: 'CARTYPE', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차형', field: 'CARCLASS', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '규모', field: 'CARSIZE', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '차종', field: 'CARTYPE', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '차형', field: 'CARCLASS', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '규모', field: 'CARSIZE', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '차명', field: 'CARNM', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '사용연료', field: 'USEFUEL', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '사용연료', field: 'USEFUEL', width: 90, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '대표번호', field: 'MAIN_COMP_PHONE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '차량취득일(kt도입기준)', field: 'CARACQUIREDDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '계약만료일', field: 'RENTALEXFIREDDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '최초등록일(자동차등록증)', field: 'CARREGDATE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '차량가', field: 'CARPRICE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '월납부액', field: 'RENTALPRICE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    { title: '조직', field: 'ORG_GROUP', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '본부', field: 'ORGNMLV1', width: 120, headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    { title: '설계부/운용센터', field: 'ORGNMLV2', width: 120, headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    { title: '부', field: 'ORGNMLV3', width: 120, headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    { title: '팀', field: 'ORGNMLV4', width: 120, headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '보험료', field: 'INSURANCE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '공제여부', field: 'DEDUCTIONYN', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '조직', field: 'ORG_GROUP', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '본부', field: 'ORGNMLV1', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '설계부/운용센터', field: 'ORGNMLV2', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '부', field: 'ORGNMLV3', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '팀', field: 'ORGNMLV4', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '조직코드', field: 'ORGCD', width: 120, headerHozAlign: 'center', hozAlign: 'center', visible: false  },
+    { title: '운전자(정)사번', field: 'PRIMARY_MANAGER_EMPNO', width: 100, headerHozAlign: 'center', hozAlign: 'center', visible: false  },
     { title: '운전자(정)', field: 'PRIMARY_MANAGER_EMPNM', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '운전자(정)전화번호', field: 'PRIMARY_MANAGER_MOBILE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    { title: '차고지주소(정)', field: 'PRIMARY_GARAGE_ADDR', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '차고지주소', field: 'PRIMARY_GARAGE_ADDR', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '안전관리자여부', field: 'SAFETY_MANAGER', headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '인버터', field: 'INVERTER', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '기타사항', field: 'NOTICE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    { title: '사번', field: 'UNDER26AGE_EMPNO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    { title: '성명', field: 'UNDER26AGE_EMPNM', headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    { title: '주민번호앞자리', field: 'UNDER26AGE_JUMIN_BIRTH_NO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    { title: '변경기준일', field: 'UNDER26AGE_CHGDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '만26세미만운전자사번', field: 'UNDER26AGE_EMPNO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '만26세미만운전자성명', field: 'UNDER26AGE_EMPNM', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '만26세미만운전자주민번호앞자리', field: 'UNDER26AGE_JUMIN_BIRTH_NO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '만26세미만운전자변경기준일', field: 'UNDER26AGE_CHGDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '카드번호', field: 'CARDNO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '유효기간', field: 'EXFIREDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '비고', field: 'NOTICE2', headerHozAlign: 'center', hozAlign: 'center', visible: false },    
@@ -311,10 +318,11 @@ const CarListInfo = () => {
             onConfirm={(selectedRows) => {
               const orgNames = selectedRows.map(row => row.ORGNM).join(', ');
               setSelectedOrg(selectedRows.length > 0 ? selectedRows[0].ORGCD : '');
-              setFilters((prev) => ({ ...prev, orgText: orgNames || '' }));
-              console.log('Selected Organizations in TabulatorDirect:', selectedRows); // 추가된 디버깅 로그
+              setSelectedOrgNm(selectedRows.length > 0 ? orgNames : '');
             }}
             pGUBUN="CAREMPNO" //차량용 트리 시(_fix 테이블 사용)
+            initialSelectedOrgs={selectedOrgRef.current} //초기 선택된 조직
+            isChecked={true} //체크박스 사용 여부
           />
         </div>
       );

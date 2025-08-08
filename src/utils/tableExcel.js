@@ -95,7 +95,6 @@ export const handleDownloadExcel2 = (
       if (isVisible) {
         tableInstance.showColumn(columnName);
       } else {
-        alert(`숨김 컬럼: ${columnName}`);
         tableInstance.hideColumn(columnName);
       } 
     });
@@ -133,7 +132,6 @@ export const handleDownloadExcel2 = (
       if (isVisible) {
         tableInstance.hideColumn(columnName);
       } else {
-        alert(columnName);
         tableInstance.showColumn(columnName);
       } 
     });
