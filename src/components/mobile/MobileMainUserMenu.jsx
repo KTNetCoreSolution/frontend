@@ -1,20 +1,23 @@
 import React, { useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import useStore from '../../store/store';
+import { fetchDataGet } from '../../utils/dataUtils';
 import mobileUserMenu from '../../data/mobileUserMenu.json';
 import './MobileMainUserMenu.css';
 
 const MobileMainUserMenu = ({ show, handleClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { setUser } = useStore();
   const offcanvasRef = useRef(null);
 
-  // Validate props and log error without returning early
+  // Validate props
   const isValidProps = typeof show === 'boolean' && typeof handleClose === 'function';
   if (!isValidProps) {
     console.error('Invalid props passed to MobileMainUserMenu:', { show, handleClose });
   }
 
-  // Handle outside clicks to close offcanvas
+  // Handle outside clicks
   useEffect(() => {
     if (!isValidProps) return;
 
@@ -34,12 +37,24 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
   }, [show, handleClose, isValidProps]);
 
   // Handle menu item click
-  const handleMenuClick = (path) => {
+  const handleMenuClick = async (path) => {
+    try {
+      // JWT 토큰 갱신
+      const response = await fetchDataGet('auth/live?extend=true', {}, { withCredentials: true });
+      if (response.success && response.data) {
+        setUser({
+          ...response.data.user,
+          expiresAt: response.data.expiresAt * 1000, // 초를 밀리초로 변환
+        });
+      }
+    } catch (error) {
+      console.error('Failed to extend token:', error);
+    }
+
     navigate(path);
     handleClose();
   };
 
-  // Render nothing if props are invalid
   if (!isValidProps) {
     return null;
   }
@@ -81,7 +96,6 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
 MobileMainUserMenu.defaultProps = {
   show: false,
   handleClose: () => console.warn('handleClose not provided'),
-  onLogout: () => console.warn('onLogout not provided'),
 };
 
 export default MobileMainUserMenu;

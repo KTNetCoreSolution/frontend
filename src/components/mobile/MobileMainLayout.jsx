@@ -14,22 +14,46 @@ const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
 
 const MobileMainLayout = () => {
   const navigate = useNavigate();
-  const { user, clearUser, loading } = useStore();
+  const { user, clearUser, clearMenu, loading } = useStore();
   const [isChecking, setIsChecking] = useState(true);
 
   const isMobileDomain = window.location.host === MOBILE_DOMAIN;
 
+  // 60분 자동 로그아웃 (UI 없이 백그라운드 처리)
+  useEffect(() => {
+    if (!user || !user.expiresAt) {
+      return;
+    }
+
+    const updateTime = () => {
+      if (!user || !user.expiresAt) {
+        return;
+      }
+      const now = new Date().getTime();
+      const timeLeft = user.expiresAt - now;
+      if (timeLeft <= 0) {
+        handleLogout();
+      }
+    };
+
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
+
+    return () => clearInterval(timer);
+  }, [user]);
+
   useEffect(() => {
     const verifyUser = async () => {
-      // 로그아웃 상태(user가 null 또는 undefined)면 토큰 검증 생략
       if (!user) {
         setIsChecking(false);
+        sessionStorage.removeItem('user-storage');
         navigate(ENV === 'local' && !isMobileDomain ? '/mobile/Login' : '/', { replace: true });
         return;
       }
 
       const isValid = await checkTokenValiditySimple(clearUser);
       if (!isValid) {
+        sessionStorage.removeItem('user-storage');
         navigate(ENV === 'local' && !isMobileDomain ? '/mobile/Login' : '/', { replace: true });
       }
       setIsChecking(false);
@@ -39,11 +63,16 @@ const MobileMainLayout = () => {
 
   const handleLogout = async () => {
     try {
-      await fetchData('auth/logout', {});
+      await fetchData('auth/logout', {}, { withCredentials: true });
       clearUser();
+      clearMenu();
+      sessionStorage.removeItem('user-storage');
       navigate(ENV === 'local' && !isMobileDomain ? '/mobile/Login' : '/', { replace: true });
     } catch (error) {
       console.error('Logout error:', error);
+      clearUser();
+      clearMenu();
+      sessionStorage.removeItem('user-storage');
       navigate(ENV === 'local' && !isMobileDomain ? '/mobile/Login' : '/', { replace: true });
     }
   };

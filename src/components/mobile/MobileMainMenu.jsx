@@ -1,12 +1,28 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import useStore from '../../store/store';
+import { fetchDataGet } from '../../utils/dataUtils';
 import mobileMenu from '../../data/mobileMenu.json';
 
 const MobileMainMenu = () => {
   const navigate = useNavigate();
+  const { setUser } = useStore();
 
-  const handleMenuClick = (path) => {
-    // Ensure path starts with /mobile/
+  const handleMenuClick = async (path) => {
+    try {
+      // JWT 토큰 갱신
+      const response = await fetchDataGet('auth/live?extend=true', {}, { withCredentials: true });
+      if (response.success && response.data) {
+        setUser({
+          ...response.data.user,
+          expiresAt: response.data.expiresAt * 1000, // 초를 밀리초로 변환
+        });
+      }
+    } catch (error) {
+      console.error('Failed to extend token:', error);
+    }
+
+    // 메뉴 이동
     const normalizedPath = path.toLowerCase().startsWith('/mobile/')
       ? path
       : `/mobile/${path.replace(/^\//, '').charAt(0).toUpperCase() + path.replace(/^\//, '').slice(1)}`;
