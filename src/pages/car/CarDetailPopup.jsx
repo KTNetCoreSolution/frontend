@@ -116,6 +116,8 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
     const noticeValidation = commonUtils.validateVarcharLength(carInfo.NOTICE, 1500, '기타사항');
     if (!noticeValidation.valid) return noticeValidation.error;
 
+    const notice2Validation = commonUtils.validateVarcharLength(carInfo.NOTICE2, 1500, '비고');
+    if (!noticeValidation.valid) return noticeValidation.error;
     return '';
   };
   
@@ -339,157 +341,162 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   if (!show) return null;
 
   return (
-    <Modal show={show} onHide={onHide} onParentSearch={onParentSearch} centered>
+    <Modal size='xl' show={show} onHide={onHide} onParentSearch={onParentSearch} centered>
       <Modal.Header closeButton>
         <Modal.Title>기동장비정보 관리</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="mb-2">
-          
-        </div>
-        <div className="mb-2">
-          <label className="form-label">차대번호 <font color='red'>*</font></label><label className="form-label" style={{float:'right'}}><font color='red'>*</font>은 필수 입력 항목입니다.</label>
-          <input type="text" className={`form-control ${styles.formControl}`} id="carId" value={carInfo.CARID} style={{width:47 +'%'}} disabled={`${vStyle.vDISABLED}`} placeholder="차대번호를 입력하세요" onInput={(e) => {handleMaxLength(e, 30)}} onChange={(e) => {setCarInfo({ ...carInfo, CARID: e.target.value })}} />
-          <button id="btnCarId" type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 +'px', float:'right', marginTop:-30+'px', marginRight:163+'px', display:`${vStyle.vDISPLAY}`}} disabled={`${vStyle.vDISABLED}`} onClick={(e) => handleSearchCarInfo(carInfo.CARID)}>확인</button>
-          <button className={`btn btn-sm btn-danger ${styles.deleteButton}`} style={{width:60 +'px', float:'right', marginTop:-30+'px', marginRight:0+'px', display:`${vStyle.vBTNDEL}`}} onClick={handleDelete}>삭제</button>
+        <div className="mb-2 d-flex">
+          <label className="form-label flex-shrink-0 me-2" style={{width:60 +'px', paddingTop:6 + 'px'}} htmlFor="carId">차대번호<font color='red'>*</font></label>
+          <input type="text" className={`form-control ${styles.formControl} flex-shrink-0 me-2`} id="carId" value={carInfo.CARID} style={{width:185 + 'px'}} disabled={`${vStyle.vDISABLED}`} placeholder="차대번호를 입력하세요" onInput={(e) => {handleMaxLength(e, 30)}} onChange={(e) => {setCarInfo({ ...carInfo, CARID: e.target.value })}} />
+          <button id="btnCarId" type="button" className={`btn btn-secondary ${styles.btn} flex-shrink-0 me-2`} style={{width:60 + 'px', height: 28 + 'px', display:`${vStyle.vDISPLAY}`}} disabled={`${vStyle.vDISABLED}`} onClick={(e) => handleSearchCarInfo(carInfo.CARID)}>확인</button>
+          <button className={`btn btn-sm btn-danger ${styles.deleteButton} flex-shrink-0 me-2`} style={{width:60 +'px', height: 28 + 'px', display:`${vStyle.vBTNDEL}`}} onClick={handleDelete}>삭제</button>
+          <label className="form-label flex-shrink-0 ms-auto" style={{paddingTop:6 + 'px'}}><font color='red'>*</font>은 필수 입력 항목입니다.</label>
         </div>
         <div className="mb-2 row">
-          <div className="col">
-          <label className="form-label">차량번호 <font color='red'>*</font></label>
-          <input type="text" value={carInfo.CARNO} className={`form-control ${styles.formControl}`} id="carNo" placeholder="차량번호을 입력하세요" onInput={(e) => {handleMaxLength(e, 20)}} onChange={(e) => {setCarInfo({ ...carInfo, CARNO: e.target.value })}} />
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="carNo" style={{width:60 +'px', paddingTop:6 + 'px'}}>차량번호<font color='red'>*</font></label>
+            <input type="text" value={carInfo.CARNO} className={`form-control ${styles.formControl}`} id="carNo" placeholder="차량번호을 입력하세요" onInput={(e) => {handleMaxLength(e, 20)}} onChange={(e) => {setCarInfo({ ...carInfo, CARNO: e.target.value })}} />
           </div>
-          <div className="col">
-            <label className="form-label">운용관리상태 <font color='red'>*</font></label>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="mgmtStatus" style={{width:85 +'px', paddingTop:6 + 'px'}}>운용관리상태<font color='red'>*</font></label>
             <select id="mgmtStatus" className={`form-select ${styles.formSelect}`} value={carInfo.MGMTSTATUS} onChange={(e) => {setCarInfo({ ...carInfo, MGMTSTATUS: e.target.value })}}>
               <option value="">선택하세요</option>
               {['운행', '유휴', '반납'].map((type) => (<option key={type} value={type}>{type}</option>))}
             </select>
           </div>
+          <div className="col">
+          </div>
+          <div className="col">
+          </div>
         </div>
         <div className="mb-2 row">
-          <div className="col">
-            <label className="form-label">임대구분 <font color='red'>*</font></label>
-            <select id="rentalType" className={`form-select ${styles.formSelect}`} value={carInfo.RENTALTYPE} onChange={(e) => {setCarInfo({ ...carInfo, RENTALTYPE: e.target.value })}}>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="rentalType" style={{width:60 +'px', paddingTop:6 + 'px'}}>임대구분<font color='red'>*</font></label>
+            <select id="rentalType" className={`form-select ${styles.formSelect}`} value={carInfo.RENTALTYPE} style={{width:185 +'px'}} onChange={(e) => {setCarInfo({ ...carInfo, RENTALTYPE: e.target.value })}}>
               <option value="">선택하세요</option>
               {['렌탈', '리스'].map((type) => (<option key={type} value={type}>{type}</option>))}
             </select>
           </div>
-          <div className="col">
-            <label className="form-label">사용연료 <font color='red'>*</font></label>
-            <select id="rentalType" className={`form-select ${styles.formSelect}`} value={carInfo.USEFUEL} onChange={(e) => {setCarInfo({ ...carInfo, USEFUEL: e.target.value })}}>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="useFuel" style={{width:85 +'px', paddingTop:6 + 'px'}}>사용연료<font color='red'>*</font></label>
+            <select id="useFuel" className={`form-select ${styles.formSelect}`} value={carInfo.USEFUEL} style={{width:158 +'px'}} onChange={(e) => {setCarInfo({ ...carInfo, USEFUEL: e.target.value })}}>
               <option value="">선택하세요</option>
               {['LPG', '휘발유', '경유'].map((type) => (<option key={type} value={type}>{type}</option>))}
             </select>
           </div>
-        </div>
-        <div className="mb-2">
-          <label className="form-label">차량 <font color='red'>*</font></label>
-          <select id="carcd" className={`form-select ${styles.formSelect}`} value={carInfo.CARCD} onChange={(e) => {setCarInfo({ ...carInfo, CARCD: e.target.value })}}>
-            <option value="">선택하세요</option>
-            {carList.map((item) => <option key={item.CARCD} value={item.CARCD}>{item.CARNM}</option>)}
-          </select>
-        </div>
-        <div className="mb-2">
-          <label className="form-label">대표번호</label>
-          <input type="text" id="mainCompPhone" value={carInfo.MAINCOMPPHONE} className={`form-control ${styles.formControl}`} placeholder="대표번호를 입력하세요" onChange={(e) => {setCarInfo({ ...carInfo, MAINCOMPPHONE: e.target.value })}} />
-        </div>
-        <div className="mb-2 row">
-          <div className="col">
-            <label className="form-label">차량취득일</label>
-            <input type="date" id="carAquireddt" className={`form-control ${styles.formControl}`} value={carInfo.CARACQUIREDDT} onChange={(e) => {setCarInfo({ ...carInfo, CARACQUIREDDT: e.target.value })}} />
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="carcd" style={{width:63 +'px', paddingTop:6 + 'px'}}>차량<font color='red'>*</font></label>
+            <select id="carcd" className={`form-select ${styles.formSelect}`} value={carInfo.CARCD} style={{width:250 +'px'}} onChange={(e) => {setCarInfo({ ...carInfo, CARCD: e.target.value })}}>
+              <option value="">선택하세요</option>
+              {carList.map((item) => <option key={item.CARCD} value={item.CARCD}>{item.CARNM}</option>)}
+            </select>
           </div>
-          <div className="col">
-            <label className="form-label">계약만료일</label>
-            <input type="date" id="rentalExfiredDt" className={`form-control ${styles.formControl}`} value={carInfo.RENTALEXFIREDDT} onChange={(e) => {setCarInfo({ ...carInfo, RENTALEXFIREDDT: e.target.value })}} />
-          </div>
-        </div>
-        <div className="mb-2">
-          <label className="form-label">최초등록일</label>
-          <input type="date" id="carRegDate" style={{width:47 +'%'}} className={`form-control ${styles.formControl}`} value={carInfo.CARREGDATE} onChange={(e) => {setCarInfo({ ...carInfo, CARREGDATE: e.target.value })}} />
-        </div>
-        <div className="mb-2 row">
-          <div className="col">
-            <label className="form-label">차량가</label>
-            <input type="number" id="carPrice" value={carInfo.CARPRICE} className={`form-control ${styles.formControl}`} onChange={(e) => {setCarInfo({ ...carInfo, CARPRICE: e.target.value })}} />
-          </div>
-          <div className="col">
-            <label className="form-label">월납부액</label>
-            <input type="number" id="rentalPrice" value={carInfo.RENTALPRICE} className={`form-control ${styles.formControl}`} onChange={(e) => {setCarInfo({ ...carInfo, RENTALPRICE: e.target.value })}} />
+          <div className="col d-flex" style={{width:10 +'px'}}>
           </div>
         </div>
         <div className="mb-2 row">
-          <div className="col">
-            <label className="form-label">보험료</label>
-            <input type="number" id="insurance" value={carInfo.INSURANCE} className={`form-control ${styles.formControl}`} onChange={(e) => {setCarInfo({ ...carInfo, INSURANCE: e.target.value })}} />
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="mainCompPhone" style={{width:60 +'px', paddingTop:6 + 'px'}}>대표번호</label>
+            <input type="text" id="mainCompPhone" value={carInfo.MAINCOMPPHONE} className={`form-control ${styles.formControl}`} placeholder="대표번호를 입력하세요" onChange={(e) => {setCarInfo({ ...carInfo, MAINCOMPPHONE: e.target.value })}} />
           </div>
-          <div className="col">
-            <label className="form-label">공제여부</label>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="carAquireddt" style={{width:85 +'px', paddingTop:6 + 'px'}}>차량취득일</label>
+            <input type="date" id="carAquireddt" className={`form-control ${styles.formControl}`} value={carInfo.CARACQUIREDDT} style={{width:115 +'px'}} onChange={(e) => {setCarInfo({ ...carInfo, CARACQUIREDDT: e.target.value })}} />
+          </div>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="rentalExfiredDt" style={{width:63 +'px', paddingTop:6 + 'px'}}>계약만료일</label>
+            <input type="date" id="rentalExfiredDt" className={`form-control ${styles.formControl}`} value={carInfo.RENTALEXFIREDDT} style={{width:115 +'px'}} onChange={(e) => {setCarInfo({ ...carInfo, RENTALEXFIREDDT: e.target.value })}} />
+          </div>
+          <div className="col d-flex">
+          <label className="form-label flex-shrink-0 me-2" htmlFor="carRegDate" style={{width:63 +'px', paddingTop:6 + 'px'}}>최초등록일</label>
+          <input type="date" id="carRegDate" className={`form-control ${styles.formControl}`} value={carInfo.CARREGDATE} style={{width:115 +'px'}} onChange={(e) => {setCarInfo({ ...carInfo, CARREGDATE: e.target.value })}} />
+          </div>
+        </div>
+        <div className="mb-2 row">
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="carPrice" style={{width:60 +'px', paddingTop:6 + 'px'}}>차량가</label>
+            <input type="number" id="carPrice" value={carInfo.CARPRICE} className={`form-control ${styles.formControl}`} style={{width:140 +'px'}} onChange={(e) => {setCarInfo({ ...carInfo, CARPRICE: e.target.value })}} />
+          </div>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="rentalPrice" style={{width:85 +'px', paddingTop:6 + 'px'}}>월납부액</label>
+            <input type="number" id="rentalPrice" value={carInfo.RENTALPRICE} className={`form-control ${styles.formControl}`} style={{width:140 +'px'}} onChange={(e) => {setCarInfo({ ...carInfo, RENTALPRICE: e.target.value })}} />
+          </div>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="insurance" style={{width:63 +'px', paddingTop:6 + 'px'}}>보험료</label>
+            <input type="number" id="insurance" value={carInfo.INSURANCE} className={`form-control ${styles.formControl}`} style={{width:140 +'px'}} onChange={(e) => {setCarInfo({ ...carInfo, INSURANCE: e.target.value })}} />
+          </div>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="deductionYn" style={{width:63 +'px', paddingTop:6 + 'px'}}>공제여부</label>
             <select id="deductionYn" value={carInfo.DEDUCTIONYN} className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, DEDUCTIONYN: e.target.value })}}>
               <option value="">선택하세요</option>
               {['공제', '불공제'].map((type) => (<option key={type} value={type}>{type}</option>))}
             </select>
           </div>
         </div>
-        <div className="mb-2">
-          <label className="form-label">본부 <font color='red'>*</font></label>
-          <select id="orgGroup" value={carInfo.ORGGROUP} style={{width:47 +'%'}} className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, ORGGROUP: e.target.value })}}>
-            <option value="">선택하세요</option>
-            {['본사', 'Biz', '선로', '설계', '인프라운용본부', '재배치'].map((type) => (<option key={type} value={type}>{type}</option>))}
-          </select>
-        </div>
-        <div className="mb-2">
-          <label className="form-label">조직 <font color='red'>*</font></label>
-          <CommonPopup show={showOrgPopup} onHide={() => setShowOrgPopup(false)} title={'조직 선택'}>
-            <div>
-              <OrgSearchPopup
-                onClose={() => setShowOrgPopup(false)}
-                onConfirm={(selectedRows) => {
-                  const orgNm = selectedRows.length > 0 ? selectedRows[0].ORGNM : ''
-                  const orgCd = selectedRows.length > 0 ? selectedRows[0].ORGCD : ''
-                  setCarInfo({ ...carInfo, ORGCD: orgCd, ORGNM: orgNm });
-                }}
-                pGUBUN="CAREMPNO" //차량용 트리 시(_fix 테이블 사용)
-              />
-            </div>
-          </CommonPopup>
-          <input type="text" style={{width:47 +'%'}} className={`form-control ${styles.formControl}`} id="orgNm" value={carInfo.ORGNM} disabled="disabled"/>
-          <button type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 +'px', float:'right', marginTop:-30+'px', marginRight:163+'px'}} onClick={(e) => {setShowOrgPopup(true)}}>선택</button>
-        </div>
-        <div className="mb-2">
-          <label className="form-label">운전자(정) <font color='red'>*</font></label>
-          <CommonPopup show={showMngUserPopup} onHide={() => setShowMngUserPopup(false)} title={'운전자 선택'}>
-            <div>
-              <MngUserSearchPopup
-                onClose={() => setShowMngUserPopup(false)}
-                onConfirm={(selectedRows) => {
-                  const userEmpNo = selectedRows.length > 0 ? selectedRows[0].PRIMARYMNGEMPNO : '';
-                  const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';
-                  const userMobile = selectedRows.length > 0 ? selectedRows[0].MOBILE : '';
-                  setCarInfo({ ...carInfo, PRIMARYMNGEMPNO: userEmpNo, PRIMARYMNGEMPNM: userEmpNm, PRIMARYMNGMOBILE: userMobile });
-                }}
-              />
-            </div>
-          </CommonPopup>
-          <input type="text" value={carInfo.PRIMARYMNGEMPNM} style={{width:47 +'%'}} className={`form-control ${styles.formControl}`} id="primaryMngEmpNm" disabled="disabled"/>
-          <button type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 +'px', float:'right', marginTop:-30+'px', marginRight:163+'px'}} onClick={(e) => {setShowMngUserPopup(true)}}>선택</button>
-        </div>
-        <div className="mb-2">
-          <input type="text" value={carInfo.PRIMARYMNGMOBILE} className={`form-control ${styles.formControl}`} id="primaryMngMobile" disabled="disabled"/>
-        </div>
-        <div className="mb-2">
-          <label className="form-label">차고지주소</label>
-          <input type="text" value={carInfo.PRIMARYGARAGEADDR} className={`form-control ${styles.formControl}`} id="primaryGarageAddr" onChange={(e) => {setCarInfo({ ...carInfo, PRIMARYGARAGEADDR: e.target.value })}}/>
+        <div className="mb-2 row">
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="orgGroup" style={{width:60 +'px', paddingTop:6 + 'px'}}>본부<font color='red'>*</font></label>
+            <select id="orgGroup" value={carInfo.ORGGROUP} className={`form-select ${styles.formSelect}`} style={{width:185 +'px'}} onChange={(e) => {setCarInfo({ ...carInfo, ORGGROUP: e.target.value })}}>
+              <option value="">선택하세요</option>
+              {['본사', 'Biz', '선로', '설계', '인프라운용본부', '재배치'].map((type) => (<option key={type} value={type}>{type}</option>))}
+            </select>
+          </div>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="orgNm" style={{width:85 +'px', paddingTop:6 + 'px'}}>조직<font color='red'>*</font></label>
+            <CommonPopup show={showOrgPopup} onHide={() => setShowOrgPopup(false)} title={'조직 선택'}>
+              <div>
+                <OrgSearchPopup
+                  onClose={() => setShowOrgPopup(false)}
+                  onConfirm={(selectedRows) => {
+                    const orgNm = selectedRows.length > 0 ? selectedRows[0].ORGNM : ''
+                    const orgCd = selectedRows.length > 0 ? selectedRows[0].ORGCD : ''
+                    setCarInfo({ ...carInfo, ORGCD: orgCd, ORGNM: orgNm });
+                  }}
+                  pGUBUN="CAREMPNO" //차량용 트리 시(_fix 테이블 사용)
+                />
+              </div>
+            </CommonPopup>
+            <input type="text" className={`form-control ${styles.formControl}`} id="orgNm" style={{width:158 +'px'}} value={carInfo.ORGNM} disabled="disabled"/>
+            <button type="button" className={`btn btn-secondary ${styles.btn} flex-shrink-0 me-2`} style={{width:60 + 'px', height:28 + 'px', marginLeft:10 + 'px'}} onClick={(e) => {setShowOrgPopup(true)}}>선택</button>
+          </div>
+          <div className="col d-flex">
+          </div>
+          <div className="col d-flex">
+          </div>
         </div>
         <div className="mb-2 row">
-          <div className="col">
-            <label className="form-label">안전관리자여부</label>
-            <select id="inverter" value={carInfo.SAFETYMANAGER} className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, SAFETYMANAGER: e.target.value })}}>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="primaryMngEmpNm" style={{width:69 +'px', paddingTop:6 + 'px'}}>운전자(정)<font color='red'>*</font></label>
+            <CommonPopup show={showMngUserPopup} onHide={() => setShowMngUserPopup(false)} title={'운전자 선택'}>
+              <div>
+                <MngUserSearchPopup
+                  onClose={() => setShowMngUserPopup(false)}
+                  onConfirm={(selectedRows) => {
+                    const userEmpNo = selectedRows.length > 0 ? selectedRows[0].PRIMARYMNGEMPNO : '';
+                    const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';
+                    const userMobile = selectedRows.length > 0 ? selectedRows[0].MOBILE : '';
+                    setCarInfo({ ...carInfo, PRIMARYMNGEMPNO: userEmpNo, PRIMARYMNGEMPNM: userEmpNm, PRIMARYMNGMOBILE: userMobile });
+                  }}
+                />
+              </div>
+            </CommonPopup>
+            <input type="text" value={carInfo.PRIMARYMNGEMPNM} className={`form-control ${styles.formControl}`} style={{marginLeft:-9 + 'px'}} id="primaryMngEmpNm" disabled="disabled"/>
+            <button type="button" className={`btn btn-secondary ${styles.btn} flex-shrink-0 me-2`} style={{width:60 + 'px', height:28 + 'px', marginLeft:10 + 'px'}} onClick={(e) => {setShowMngUserPopup(true)}}>선택</button>
+          </div>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="primaryMngMobile" style={{width:85 +'px', paddingTop:6 + 'px'}}>연락처 </label>
+            <input type="text" value={carInfo.PRIMARYMNGMOBILE} className={`form-control ${styles.formControl}`} id="primaryMngMobile" disabled="disabled"/>
+          </div>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="safetyManager" style={{width:63 +'px', paddingTop:6 + 'px'}}>안전관리자</label>
+            <select id="safetyManager" value={carInfo.SAFETYMANAGER} className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, SAFETYMANAGER: e.target.value })}}>
               <option value="">선택하세요</option>
               {['Y', 'N'].map((type) => (<option key={type} value={type}>{type}</option>))}
             </select>
           </div>
-          <div className="col">
-            <label className="form-label">인버터</label>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="inverter" style={{width:63 +'px', paddingTop:6 + 'px'}}>인버터</label>
             <select id="inverter" value={carInfo.INVERTER} className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, INVERTER: e.target.value })}}>
               <option value="">선택하세요</option>
               {['정상', '수리', '폐기'].map((type) => (<option key={type} value={type}>{type}</option>))}
@@ -497,51 +504,71 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
           </div>
         </div>
         <div className="mb-2">
-          <label className="form-label">기타사항</label>
-          <input type="text" value={carInfo.NOTICE} className={`form-control ${styles.formControl}`} id="notice" onChange={(e) => {setCarInfo({ ...carInfo, NOTICE: e.target.value })}}/>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="primaryGarageAddr" style={{width:61 +'px', paddingTop:6 + 'px'}}>차고지주소</label>
+            <input type="text" value={carInfo.PRIMARYGARAGEADDR} className={`form-control ${styles.formControl}`} style={{marginLeft:-1 + 'px'}} id="primaryGarageAddr" onChange={(e) => {setCarInfo({ ...carInfo, PRIMARYGARAGEADDR: e.target.value })}}/>
+          </div>
+        </div>
+        <div className="mb-2">
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="notice" style={{width:60 +'px', paddingTop:6 + 'px'}}>기타사항</label>
+            <input type="text" value={carInfo.NOTICE} className={`form-control ${styles.formControl}`} id="notice" onChange={(e) => {setCarInfo({ ...carInfo, NOTICE: e.target.value })}}/>
+          </div>
         </div>
         <div className="mb-2">
             <label className="form-label" style={{marginRight:10+'px'}}>만26세미만운전자</label>
-          <CommonPopup show={showUnder26UserPopup} onHide={() => setShowUnder26UserPopup(false)} title={'만26세미만운전자 선택'}>
-            <div>
-              <Under26UserSearchPopup
-                onClose={() => setShowUnder26UserPopup(false)}
-                onConfirm={(selectedRows) => {
-                  const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';
-                  const userEmpNo = selectedRows.length > 0 ? selectedRows[0].EMPNO : '';
-                  setCarInfo({ ...carInfo, UNDER26AGEEMPNO: userEmpNo, UNDER26AGEEMPNM: userEmpNm });
-                }}
-              />
-            </div>
+            <CommonPopup show={showUnder26UserPopup} onHide={() => setShowUnder26UserPopup(false)} title={'만26세미만운전자 선택'}>
+              <div>
+                <Under26UserSearchPopup
+                  onClose={() => setShowUnder26UserPopup(false)}
+                  onConfirm={(selectedRows) => {
+                    const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';
+                    const userEmpNo = selectedRows.length > 0 ? selectedRows[0].EMPNO : '';
+                    setCarInfo({ ...carInfo, UNDER26AGEEMPNO: userEmpNo, UNDER26AGEEMPNM: userEmpNm });
+                  }}
+                />
+              </div>
           </CommonPopup>
-            <button type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 +'px', marginleft:20+'px'}} onClick={(e) => {setShowUnder26UserPopup(true)}}>선택</button>
+          <button type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 + 'px', height:28 + 'px'}} onClick={(e) => {setShowUnder26UserPopup(true)}}>선택</button>
         </div>
         <div className="mb-2 row">
-          <div className="col">
-            <input type="text" value={carInfo.UNDER26AGEEMPNO} className={`form-control ${styles.formControl}`} id="under26AgeEmpNo" disabled="disabled"/>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="under26AgeEmpNo" style={{width:60 +'px', paddingTop:6 + 'px'}}>사번 </label>
+            <input type="text" value={carInfo.UNDER26AGEEMPNO} className={`form-control ${styles.formControl}`} style={{width:115 +'px'}} id="under26AgeEmpNo" disabled="disabled"/>
           </div>
-          <div className="col"> 
-            <input type="text" value={carInfo.UNDER26AGEEMPNM} className={`form-control ${styles.formControl}`} id="under26AgeEmpNm" disabled="disabled"/>
+          <div className="col d-flex"> 
+            <label className="form-label flex-shrink-0 me-2" htmlFor="under26AgeEmpNm" style={{width:85 +'px', paddingTop:6 + 'px'}}>성명 </label>
+            <input type="text" value={carInfo.UNDER26AGEEMPNM} className={`form-control ${styles.formControl}`} style={{width:115 +'px'}} id="under26AgeEmpNm" disabled="disabled"/>
+          </div>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="under26AgeJuminBirthNo" style={{width:63 +'px', paddingTop:6 + 'px'}}>생년월일 </label>
+            <input type="number" value={carInfo.UNDER26AGEJUMINBTRTHNO} className={`form-control ${styles.formControl}`} style={{width:130 +'px'}} id="under26AgeJuminBirthNo" placeholder="주민번호 앞자리" onInput={(e) => {handleMaxLength(e, 6)}} onChange={(e) => {setCarInfo({ ...carInfo, UNDER26AGEJUMINBTRTHNO: e.target.value })}}/>
+          </div>
+          <div className="col d-flex"> 
+            <label className="form-label flex-shrink-0 me-2" htmlFor="primaryMngMobile" style={{width:63 +'px', paddingTop:6 + 'px'}}>변경기준일 </label>
+            <input type="date" className={`form-control ${styles.formControl}`} id="under26AgeChgDt" value={carInfo.UNDER26AGECHGDT} style={{width:115 +'px'}} onChange={(e) => {setCarInfo({ ...carInfo, UNDER26AGECHGDT: e.target.value })}}/>
           </div>
         </div>
         <div className="mb-2 row">
-          <div className="col">
-            <input type="number" value={carInfo.UNDER26AGEJUMINBTRTHNO} className={`form-control ${styles.formControl}`} id="under26AgeJuminBirthNo" onInput={(e) => {handleMaxLength(e, 6)}} onChange={(e) => {setCarInfo({ ...carInfo, UNDER26AGEJUMINBTRTHNO: e.target.value })}}/>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="cardNo" style={{width:60 +'px', paddingTop:6 + 'px'}}>주유카드</label>
+            <input type="text" value={carInfo.CARDNO} className={`form-control ${styles.formControl}`} id="cardNo" style={{width:200 +'px'}} disabled="disabled" onChange={(e) => {setCarInfo({ ...carInfo, CARDNO: e.target.value })}}/>
+            <button type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 + 'px', height:28 + 'px', marginLeft:10 + 'px'}} onClick={(e) => {alert('작업중')}}>선택</button>
           </div>
-          <div className="col"> 
-            <input type="date" className={`form-control ${styles.formControl}`} id="under26AgeChgDt" value={carInfo.UNDER26AGECHGDT} onChange={(e) => {setCarInfo({ ...carInfo, UNDER26AGECHGDT: e.target.value })}}/>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="exfireDt" style={{width:60 +'px', paddingTop:6 + 'px'}}>유효기간</label>
+            <input type="text" value={carInfo.EXFIREDT} className={`form-control ${styles.formControl}`} id="exfireDt" style={{width:47 +'%'}} disabled="disabled" onChange={(e) => {setCarInfo({ ...carInfo, EXFIREDT: e.target.value })}}/>
+          </div>
+          <div className="col d-flex">
+          </div>
+          <div className="col d-flex">
           </div>
         </div>
         <div className="mb-2">
-          <label className="form-label">주유카드</label>
-          <input type="text" value={carInfo.CARDNO} className={`form-control ${styles.formControl}`} id="cardNo" style={{width:280 +'px'}} disabled="disabled" onChange={(e) => {setCarInfo({ ...carInfo, CARDNO: e.target.value })}}/>
-          <button type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 +'px', float:'right', marginTop:-30+'px', marginRight:90+'px'}} onClick={(e) => {alert('작업중')}}>선택</button>
-        </div>
-        <div className="mb-2">
-          <input type="text" value={carInfo.EXFIREDT} className={`form-control ${styles.formControl}`} id="exfireDt" style={{width:47 +'%'}} disabled="disabled" onChange={(e) => {setCarInfo({ ...carInfo, EXFIREDT: e.target.value })}}/>
-        </div>
-        <div className="mb-2">
-          <input type="text" value={carInfo.NOTICE2} className={`form-control ${styles.formControl}`} id="notice2" disabled="disabled" onChange={(e) => {setCarInfo({ ...carInfo, NOTICE2: e.target.value })}}/>
+          <div className="col d-flex">
+            <label className="form-label flex-shrink-0 me-2" htmlFor="notice2" style={{width:60 +'px', paddingTop:6 + 'px'}}>비고</label>
+            <input type="text" value={carInfo.NOTICE2} className={`form-control ${styles.formControl}`} id="notice2" onChange={(e) => {setCarInfo({ ...carInfo, NOTICE2: e.target.value })}}/>
+          </div>
         </div>
       </Modal.Body>
       <Modal.Footer>
