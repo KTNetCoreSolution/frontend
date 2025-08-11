@@ -125,6 +125,7 @@ const TabulatorDirect = () => {
       {
         type: 'search',
         fields: [
+          { id: 'defaultValueText', type: 'text', row: 1, label: '텍스트박스디폴트값넣기(textarea 도 같음)', defaultValue:'디폴트값', labelVisible: true, placeholder: '', maxLength: 50, width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
           { id: 'name', type: 'text', row: 1, label: '이름', labelVisible: true, placeholder: '이름 검색', maxLength: 50, width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
           { id: 'status', type: 'select', row: 1, label: '상태', labelVisible: true, options: getFieldOptions('status'), width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
           { id: 'orgText', type: 'text', row: 2, label: '조직예제', labelVisible: true, placeholder: '조직 선택', width: '150px', height: '30px', backgroundColor: '#f0f0f0', color: '#000000', enabled: false },

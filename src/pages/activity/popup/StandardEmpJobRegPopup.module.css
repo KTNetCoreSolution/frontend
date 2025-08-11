@@ -1,19 +1,102 @@
-.formSelect {
-  width: 100%;
-  padding: 8px;
-  font-size: 14px;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  background-color: #fff;
+.customModal {
+  width: 1024px !important; /* 원하는 너비 설정 */
+  max-width: 90vw !important; /* 뷰포트 기준 최대 너비 제한 */
+  margin: 0 auto;
 }
 
-.formControl {
+/* 나머지 기존 CSS 유지 */
+.formTable {
   width: 100%;
+  border-collapse: collapse;
+}
+
+.formTable td {
   padding: 8px;
-  font-size: 14px;
+  border: 1px solid #ced4da;
+  vertical-align: middle;
+}
+
+.td1, .td3 {
+  width: 140px;
+}
+
+.td2 {
+  width: 400px;
+}
+
+.select {
+  width: 100%;
+  padding: 6px;
   border: 1px solid #ced4da;
   border-radius: 4px;
   background-color: #fff;
+  font-size: 14px;
+}
+
+.dateInput {
+  width: 120px;
+  padding: 6px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 14px;
+}
+
+.input, .timeSelect {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 14px;
+}
+
+.inputFull {
+  width: 100%;
+}
+
+.timeSelect {
+  width: auto;
+  margin: 0 5px;
+}
+
+.selectBtn {
+  margin-left: 5px;
+  padding: 6px 12px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.selectBtn:hover {
+  opacity: 0.9;
+}
+
+.listTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.listTable th, .listTable td {
+  padding: 8px;
+  border: 1px solid #ced4da;
+  text-align: center;
+}
+
+.deleteBtn {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.deleteBtn:hover {
+  opacity: 0.9;
 }
 
 .btn {
@@ -28,12 +111,21 @@
   opacity: 0.9;
 }
 
-.btn-secondary {
+.btnSecondary {
   background-color: #6c757d;
   color: #fff;
 }
 
-.btn-primary {
+.btnPrimary {
   background-color: #007bff;
   color: #fff;
+}
+
+.noteSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #6c757d;
 }

@@ -8,14 +8,10 @@ import TableSearch from '../../components/table/TableSearch';
 import { createTable } from '../../utils/tableConfig';
 import { initialFilters } from '../../utils/tableEvent';
 import { handleDownloadExcel } from '../../utils/tableExcel';
-import { fetchJsonData } from '../../utils/dataUtils';
-import CommonPopup from '../../components/popup/CommonPopup';
+import { fetchData } from '../../utils/dataUtils';
 import StandardEmpJobRegPopup from './popup/StandardEmpJobRegPopup';
 import styles from '../../components/table/TableSearch.module.css';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
-import { msgPopup } from '../../utils/msgPopup';
-import standardActivityClass from '../../data/standardactivity_class.json';
-import standardActivityEmpData from '../../data/standardactivity_emp_data.json';
 
 const fn_CellNumber = { editor: 'number', editorParams: { min: 0 }, editable: true };
 const fn_CellSelect = (values) => ({ editor: 'list', editorParams: { values, autocomplete: true }, editable: true });
@@ -129,7 +125,7 @@ const StandardEmpJobManage = () => {
   const [_class2Options, setClass2Options] = useState([]);
   const [_class3Options, setClass3Options] = useState([]);
   const [classData, setClassData] = useState([]);
-  const [filters, setFilters] = useState({ CLASSACD: '', CLASSBCD: '', CLASSCCD: '', dayGubun: 'M' });
+  const [filters, setFilters] = useState({ CLASSACD: '', CLASSBCD: '', CLASSCCD: '', dayGubun: 'M', classGubun: 'LINE', classGubunTxt: '선로' });
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -142,12 +138,12 @@ const StandardEmpJobManage = () => {
 
   // useMemo로 옵션 최적화
   const updatedClass2Options = useMemo(
-    () => getFieldOptions('CLASSBCD', filters.CLASSACD, standardActivityClass),
-    [filters.CLASSACD]
+    () => getFieldOptions('CLASSBCD', filters.CLASSACD, classData),
+    [filters.CLASSACD, classData]
   );
   const updatedClass3Options = useMemo(
-    () => getFieldOptions('CLASSCCD', filters.CLASSBCD, standardActivityClass),
-    [filters.CLASSBCD]
+    () => getFieldOptions('CLASSCCD', filters.CLASSBCD, classData),
+    [filters.CLASSBCD, classData]
   );
 
   // 초기 searchConfig 설정
@@ -156,11 +152,23 @@ const StandardEmpJobManage = () => {
       {
         type: 'search',
         fields: [
+          { id: 'classGubunLbl', type: 'label', row: 1, label: '분야', labelVisible: false, width: '25px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
+          ...(
+            hasPermission(user?.auth, 'oper')
+              ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', width: '60px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }]
+              : user?.standardSectionCd === 'LINE'
+                ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, width: '60px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }]
+                : user?.standardSectionCd === 'DESIGN'
+                  ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '설계', labelVisible: false, width: '60px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }]
+                  : user?.standardSectionCd === 'BIZ'
+                    ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, width: '60px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }]
+                    : []
+          ),
           { id: 'selectBtn', type: 'button', label: '선택', labelVisible: false, eventType: 'showClassPopup', width: '60px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true }, // 분류 선택 버튼
           { id: 'CLASSACD', type: 'select', row: 1, label: '대분류', labelVisible: true, options: [], width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 대분류 드롭다운
           { id: 'CLASSBCD', type: 'select', row: 1, label: '중분류', labelVisible: true, options: [], width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 중분류 드롭다운
           { id: 'CLASSCCD', type: 'select', row: 1, label: '소분류', labelVisible: true, options: [], width: '250px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 소분류 드롭다운
-          { id: 'dayGubunLbl', type: 'label', row: 2, label: '작업', labelVisible: false, width: '26px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 작업 라벨
+          { id: 'dayGubunLbl', type: 'label', row: 2, label: '작업', labelVisible: false, width: '25px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 작업 라벨
           { id: 'dayGubun', type: 'select', row: 2, label: '', labelVisible: false, options: [{ value: 'M', label: '월' }, { value: 'D', label: '일' }], defaultValue: 'M', width: '50px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 월/일 선택 드롭다운
           { id: 'monthDate', type: 'month', row: 2, label: '', labelVisible: true, placeholder: '월 선택', width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: today }, // 월 선택 입력 (dayGubun: 'M'일 때 표시)
           { id: 'rangeStartDate', type: 'startday', row: 2, label: '', labelVisible: true, placeholder: '시작일 선택', width: '120px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: today }, // 시작일 입력 (dayGubun: 'D'일 때 표시)
@@ -208,42 +216,69 @@ const StandardEmpJobManage = () => {
     });
   }, [filters.dayGubun]);
 
-  // useEffect에서 class1Options, class2Options, class3Options 초기화 및 searchConfig 설정
+  // classData API 호출
   useEffect(() => {
-    if (standardActivityClass && standardActivityClass.length > 0) {
-      setClassData(standardActivityClass);
+    const fetchClassData = async () => {
+      if (!filters.classGubun) return; // 빈 값이면 호출하지 않음
+      try {
+        const params = {
+          pGUBUN:
+            hasPermission(user?.auth, 'oper')
+              ? filters.classGubun
+              : user?.standardSectionCd === 'LINE'
+                ? 'LINE'
+                : user?.standardSectionCd === 'DESIGN'
+                  ? 'DESIGN'
+                  : user?.standardSectionCd === 'BIZ'
+                    ? 'BIZ'
+                    : 'LINE',
+          pDEBUG: 'F',
+        };
 
-      const initialClass1Options = getFieldOptions('CLASSACD', '', standardActivityClass);
-      const initialClass2Options = getFieldOptions('CLASSBCD', '', standardActivityClass);
-      const initialClass3Options = getFieldOptions('CLASSCCD', '', standardActivityClass);
+        const response = await fetchData('standard/classinfoList', params);
+        if (!response.success) {
+          errorMsgPopup(response.message || '분류 목록을 가져오는 중 오류가 발생했습니다.');
+          return;
+        }
+        const fetchedClassData = Array.isArray(response.data) ? response.data : [];
+        setClassData(fetchedClassData);
 
-      setClass1Options(initialClass1Options);
-      setClass2Options(initialClass2Options);
-      setClass3Options(initialClass3Options);
+        const initialClass1Options = getFieldOptions('CLASSACD', '', fetchedClassData);
+        const initialClass2Options = getFieldOptions('CLASSBCD', '', fetchedClassData);
+        const initialClass3Options = getFieldOptions('CLASSCCD', '', fetchedClassData);
 
-      setSearchConfig((prev) => {
-        const newAreas = prev.areas.map((area) => {
-          if (area.type !== 'search') return area;
-          const newFields = area.fields.map((field) => {
-            if (field.id === 'CLASSACD') return { ...field, options: initialClass1Options };
-            if (field.id === 'CLASSBCD') return { ...field, options: initialClass2Options };
-            if (field.id === 'CLASSCCD') return { ...field, options: initialClass3Options };
-            return field;
+        setClass1Options(initialClass1Options);
+        setClass2Options(initialClass2Options);
+        setClass3Options(initialClass3Options);
+
+        setSearchConfig((prev) => {
+          const newAreas = prev.areas.map((area) => {
+            if (area.type !== 'search') return area;
+            const newFields = area.fields.map((field) => {
+              if (field.id === 'CLASSACD') return { ...field, options: initialClass1Options };
+              if (field.id === 'CLASSBCD') return { ...field, options: initialClass2Options };
+              if (field.id === 'CLASSCCD') return { ...field, options: initialClass3Options };
+              return field;
+            });
+            return { ...area, fields: newFields };
           });
-          return { ...area, fields: newFields };
+          return { ...prev, areas: newAreas };
         });
-        return { ...prev, areas: newAreas };
-      });
 
-      // 초기 filters 설정
-      setFilters((prev) => ({
-        ...prev,
-        CLASSACD: prev.CLASSACD || 'all',
-        CLASSBCD: prev.CLASSBCD || 'all',
-        CLASSCCD: prev.CLASSCCD || 'all',
-      }));
-    }
-  }, []);
+        // 초기 filters 설정
+        setFilters((prev) => ({
+          ...prev,
+          CLASSACD: prev.CLASSACD || 'all',
+          CLASSBCD: prev.CLASSBCD || 'all',
+          CLASSCCD: prev.CLASSCCD || 'all',
+        }));
+      } catch (err) {
+        console.error('분류 목록 로드 실패:', err);
+        errorMsgPopup(err.response?.data?.message || '분류 목록을 가져오는 중 오류가 발생했습니다.');
+      }
+    };
+    fetchClassData();
+  }, [filters.classGubun]);
 
   // filters 초기화, CLASSACD, CLASSBCD, CLASSCCD, dayGubun, monthDate 초기값 설정
   useEffect(() => {
@@ -303,17 +338,15 @@ const StandardEmpJobManage = () => {
       });
       return { ...prev, areas: newAreas };
     });
-  }, [filters.CLASSACD, filters.CLASSBCD, updatedClass2Options, updatedClass3Options]);
+  }, [filters.CLASSACD, filters.CLASSBCD, updatedClass2Options, updatedClass3Options, classData]);
 
   const columns = [
-    { frozen: true, headerHozAlign: 'center', hozAlign: 'center', title: '작업', field: 'actions', width: 80, formatter: (cell) => { const button = document.createElement('button'); button.className = `btn btn-sm btn-danger ${styles.deleteButton}`; button.innerText = '삭제'; button.onclick = () => handleDelete(cell.getData()); return button; } },
-    { frozen: true, headerHozAlign: 'center', hozAlign: 'center', title: '작업대상', field: 'applyTarget', sorter: 'string', width: 100, formatter: (cell) => { const rowData = cell.getRow().getData(); let label = ''; let stateField = ''; if (rowData.isDeleted === 'Y') { label = '삭제'; stateField = 'isDeleted'; } else if (rowData.isAdded === 'Y') { label = '추가'; stateField = 'isAdded'; } else if (rowData.isChanged === 'Y') { label = '변경'; stateField = 'isChanged'; } if (!label) return ''; const div = document.createElement('div'); div.style.display = 'flex'; div.style.alignItems = 'center'; div.style.justifyContent = 'center'; div.style.gap = '5px'; const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = rowData[stateField] === 'Y'; checkbox.onclick = () => { setTimeout(() => { setData((prevData) => prevData.map((row) => { if (row.ID === rowData.ID) { const updatedRow = { ...row, [stateField]: checkbox.checked ? 'Y' : 'N' }; if (stateField === 'isDeleted' && !checkbox.checked) { updatedRow.isChanged = 'N'; } if (stateField === 'isAdded' && !checkbox.checked) { return null; } return updatedRow; } return row; }).filter(Boolean)); }, 0); }; const span = document.createElement('span'); span.innerText = label; div.appendChild(checkbox); div.appendChild(span); return div; } },
     { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 80 },
     { headerHozAlign: 'center', hozAlign: 'left', title: '대분류', field: 'CLASSANM', sorter: 'string', width: 150 },
     { headerHozAlign: 'center', hozAlign: 'left', title: '중분류', field: 'CLASSBNM', sorter: 'string', width: 150 },
     { headerHozAlign: 'center', hozAlign: 'left', title: '소분류', field: 'CLASSCNM', sorter: 'string', width: 250 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '이름', field: 'NAME', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKTYPE', sorter: 'string', width: 100, ...fn_CellSelect(getFieldOptions('WORKTYPE', '', standardActivityClass).map((item) => item.value)), cellEdited: (cell) => fn_HandleCellEdit(cell, 'WORKTYPE', setData, tableInstance) },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKTYPE', sorter: 'string', width: 100, ...fn_CellSelect(getFieldOptions('WORKTYPE', '', classData).map((item) => item.value)), cellEdited: (cell) => fn_HandleCellEdit(cell, 'WORKTYPE', setData, tableInstance) },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업일시', field: 'WORKDATETIME', sorter: 'string', width: 180, formatter: (cell) => `${cell.getData().WORKDATE} ${cell.getData().STARTTIME} ~ ${cell.getData().ENDTIME}` },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKHOURS', sorter: 'number', width: 100, ...fn_CellNumber, cellEdited: (cell) => fn_HandleCellEdit(cell, 'WORKHOURS', setData, tableInstance) },
     { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'QUANTITY', sorter: 'number', width: 150, ...fn_CellNumber, cellEdited: (cell) => fn_HandleCellEdit(cell, 'QUANTITY', setData, tableInstance) },
@@ -324,20 +357,26 @@ const StandardEmpJobManage = () => {
     setIsSearched(true);
     try {
       const params = {
-        CLASSACD: filters.CLASSACD === 'all' ? '' : filters.CLASSACD,
-        CLASSBCD: filters.CLASSBCD === 'all' ? '' : filters.CLASSBCD,
-        CLASSCCD: filters.CLASSCCD === 'all' ? '' : filters.CLASSCCD,
-        dayGubun: filters.dayGubun,
-        monthDate: filters.dayGubun === 'M' ? filters.monthDate : undefined,
-        rangeStartDate: filters.dayGubun === 'D' ? filters.rangeStartDate : undefined,
-        rangeEndDate: filters.dayGubun === 'D' ? filters.rangeEndDate : undefined,
+        pGUBUN: filters.classGubun,
+        pDEBUG: 'F',
+        pCLASSACD: filters.CLASSACD === 'all' ? '' : filters.CLASSACD,
+        pCLASSBCD: filters.CLASSBCD === 'all' ? '' : filters.CLASSBCD,
+        pCLASSCCD: filters.CLASSCCD === 'all' ? '' : filters.CLASSCCD,
+        pDAYGUBUN: filters.dayGubun,
+        pMONTHDATE: filters.dayGubun === 'M' ? filters.monthDate : '',
+        pSTARTDATE: filters.dayGubun === 'D' ? filters.rangeStartDate : '',
+        pENDDATE: filters.dayGubun === 'D' ? filters.rangeEndDate : '',
       };
 
-      const result = await fetchJsonData(standardActivityEmpData, params);
-      const responseData = Array.isArray(result) ? result : (Array.isArray(standardActivityEmpData) ? standardActivityEmpData : []);
+      const response = await fetchData('standard/empjoblist', params);
+      if (!response.success) {
+        errorMsgPopup(response.message || '데이터를 가져오는 중 오류가 발생했습니다.');
+        return;
+      }
+      const responseData = Array.isArray(response.data) ? response.data : [];
 
       const mappedData = responseData.map((row, index) => {
-        const classInfo = standardActivityClass.find(
+        const classInfo = classData.find(
           (item) =>
             item.CLASSACD === row.CLASSACD &&
             item.CLASSBCD === row.CLASSBCD &&
@@ -370,17 +409,7 @@ const StandardEmpJobManage = () => {
         const key = `${row.CLASSACD}-${row.CLASSBCD}-${row.CLASSCCD}-${row.NAME}-${row.WORKDATE}-${row.STARTTIME}`;
         if (seen.has(key)) return false;
         seen.add(key);
-
-        return (
-          (!params.CLASSACD || params.CLASSACD === 'all' || row.CLASSACD === params.CLASSACD) &&
-          (!params.CLASSBCD || params.CLASSBCD === 'all' || row.CLASSBCD === params.CLASSBCD) &&
-          (!params.CLASSCCD || params.CLASSCCD === 'all' || row.CLASSCCD === params.CLASSCCD) &&
-          (!params.dayGubun || params.dayGubun === 'D' || row.WORKDATE.startsWith(params.monthDate)) &&
-          (!params.dayGubun || params.dayGubun === 'M' || (
-            (!params.rangeStartDate || row.WORKDATE >= params.rangeStartDate) &&
-            (!params.rangeEndDate || row.WORKDATE <= params.rangeEndDate)
-          ))
-        );
+        return true; // 추가 필터링 조건이 필요하면 여기에 추가
       });
 
       setData(filteredData);
@@ -394,7 +423,7 @@ const StandardEmpJobManage = () => {
   };
 
   useEffect(() => {
-    if (!user || !hasPermission(user.auth, 'standardactivity')) navigate('/');
+    if (!user) navigate('/');
   }, [user, navigate]);
 
   useEffect(() => {
@@ -542,45 +571,8 @@ const StandardEmpJobManage = () => {
     setShowClassPopup(false);
   };
 
-  const handleAddConfirm = (newData) => {
-    setShowAddPopup(false);
-    if (newData) {
-      setData((prevData) => [...prevData, { ...newData, ID: String(prevData.length + 1), isAdded: 'Y', isDeleted: 'N', isChanged: 'N' }]);
-    }
-  };
-
   const handleAddCancel = () => {
     setShowAddPopup(false);
-  };
-
-  const handleDelete = (rowData) => {
-    setTimeout(() => {
-      if (rowData.isAdded === 'Y') {
-        setData((prevData) => prevData.filter((r) => r.ID !== rowData.ID));
-      } else {
-        const newIsDeleted = rowData.isDeleted === 'Y' ? 'N' : 'Y';
-        setData((prevData) => prevData.map((r) => r.ID === rowData.ID ? { ...r, isDeleted: newIsDeleted, isChanged: newIsDeleted === 'Y' ? 'N' : r.isChanged } : r));
-      }
-    }, 0);
-  };
-
-  const handleSave = async (e) => {
-    e.preventDefault();
-    const changedRows = data.filter((row) => (row.isDeleted === 'Y' && row.isAdded !== 'Y') || (row.isAdded === 'Y') || (row.isChanged === 'Y' && row.isDeleted === 'N'));
-    if (changedRows.length === 0) {
-      errorMsgPopup('변경된 데이터가 없습니다.');
-      return;
-    }
-    setLoading(true);
-    try {
-      msgPopup('모든 변경사항이 성공적으로 저장되었습니다.');
-      setData((prevData) => prevData.map((row) => ({ ...row, isDeleted: row.isDeleted === 'Y' && row.isAdded !== 'Y' ? 'Y' : 'N', isAdded: 'N', isChanged: 'N' })));
-    } catch (err) {
-      console.error('Save operation failed:', err);
-      errorMsgPopup('저장 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
@@ -599,9 +591,6 @@ const StandardEmpJobManage = () => {
         onDownloadExcel={() => handleDownloadExcel(tableInstance.current, tableStatus, '개별업무관리.xlsx')}
         buttonStyles={styles}
       >
-        <div className={styles.btnGroupCustom}>
-          <button className={`${styles.btn} text-bg-success`} onClick={handleSave}>저장</button>
-        </div>
       </TableSearch>
       <div className={styles.tableWrapper}>
         {tableStatus === 'initializing' && <div>초기화 중...</div>}
@@ -609,7 +598,7 @@ const StandardEmpJobManage = () => {
         <div ref={tableRef} className={styles.tableSection} style={{ visibility: loading || tableStatus !== 'ready' ? 'hidden' : 'visible' }} />
       </div>
       <StandardClassSelectPopup show={showClassPopup} onHide={() => setShowClassPopup(false)} onSelect={handleClassSelect} data={classData} />
-      <StandardEmpJobRegPopup show={showAddPopup} onHide={handleAddCancel} onConfirm={handleAddConfirm} filters={filters} data={classData} />
+      <StandardEmpJobRegPopup show={showAddPopup} onHide={handleAddCancel} filters={filters} data={classData} />
     </div>
   );
 };

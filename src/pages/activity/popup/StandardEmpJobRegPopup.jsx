@@ -1,144 +1,304 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import styles from './StandardEmpJobRegPopup.module.css';
+import StandardClassSelectPopup from './StandardClassSelectPopup';
 
-const StandardEmpJobRegPopup = ({ show, onHide, onConfirm, filters, data }) => {
+const getFieldOptions = (fieldId, dependentValue = '', classData) => {
+  if (!Array.isArray(classData)) return [];
+
+  const uniqueMap = new Map();
+
+  if (fieldId === 'CLASSACD') {
+    classData.forEach((item) => {
+      if (item.CLASSACD && item.CLASSANM && !uniqueMap.has(item.CLASSACD)) {
+        uniqueMap.set(item.CLASSACD, { value: item.CLASSACD, label: item.CLASSANM });
+      }
+    });
+    return [{ value: 'all', label: '==대분류==' }, ...Array.from(uniqueMap.values())];
+  }
+
+  if (fieldId === 'CLASSBCD') {
+    if (!dependentValue || dependentValue === 'all') {
+      return [{ value: 'all', label: '==중분류==' }];
+    }
+    classData
+      .filter((item) => item.CLASSACD === dependentValue)
+      .forEach((item) => {
+        if (item.CLASSBCD && item.CLASSBNM && !uniqueMap.has(item.CLASSBCD)) {
+          uniqueMap.set(item.CLASSBCD, { value: item.CLASSBCD, label: item.CLASSBNM });
+        }
+      });
+    return [{ value: 'all', label: '==중분류==' }, ...Array.from(uniqueMap.values())];
+  }
+
+  if (fieldId === 'CLASSCCD') {
+    if (!dependentValue || dependentValue === 'all') {
+      return [{ value: 'all', label: '==소분류==' }];
+    }
+    classData
+      .filter((item) => item.CLASSBCD === dependentValue)
+      .forEach((item) => {
+        if (item.CLASSCCD && item.CLASSCNM && !uniqueMap.has(item.CLASSCCD)) {
+          uniqueMap.set(item.CLASSCCD, { value: item.CLASSCCD, label: item.CLASSCNM });
+        }
+      });
+    return [{ value: 'all', label: '==소분류==' }, ...Array.from(uniqueMap.values())];
+  }
+
+  return [];
+};
+
+const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
   const today = new Date().toISOString().split('T')[0];
   const [formData, setFormData] = useState({
-    CLASSACD: filters.CLASSACD || 'all',
-    CLASSBCD: filters.CLASSBCD || 'all',
-    CLASSCCD: filters.CLASSCCD || 'all',
-    NAME: '',
+    CLASSACD: 'all',
+    CLASSBCD: 'all',
+    CLASSCCD: 'all',
+    NAME: '', // 사용 안 함 (고정 span으로 대체)
     WORKTYPE: '',
     WORKDATE: today,
-    WORKHOURS: '',
+    STARTTIME: '09:00',
+    ENDTIME: '18:00',
     QUANTITY: '',
+    isWeekly: false,
   });
+  const [registeredList, setRegisteredList] = useState([]);
+  const [class2Options, setClass2Options] = useState([]);
+  const [class3Options, setClass3Options] = useState([]);
+  const [showClassPopup, setShowClassPopup] = useState(false);
 
-  // 중분류 및 소분류 옵션 동적 생성
-  const [classBOptions, setClassBOptions] = useState([]);
-  const [classCOptions, setClassCOptions] = useState([]);
-
-  useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      CLASSACD: filters.CLASSACD || 'all',
-      CLASSBCD: filters.CLASSBCD || 'all',
-      CLASSCCD: filters.CLASSCCD || 'all',
-    }));
-  }, [filters.CLASSACD, filters.CLASSBCD, filters.CLASSCCD]);
-
-  useEffect(() => {
-    // 대분류 변경 시 중분류 필터링
-    const filteredB = data
-      .filter((item) => item.CLASSACD === formData.CLASSACD || formData.CLASSACD === 'all')
-      .map((item) => ({ value: item.CLASSBCD, label: item.CLASSBNM }))
-      .filter((item, index, self) => index === self.findIndex((t) => t.value === item.value));
-    setClassBOptions(filteredB);
-    setFormData((prev) => ({ ...prev, CLASSBCD: 'all' })); // 중분류 초기화
-  }, [formData.CLASSACD, data]);
-
-  useEffect(() => {
-    // 중분류 변경 시 소분류 필터링
-    const filteredC = data
-      .filter((item) => item.CLASSBCD === formData.CLASSBCD || formData.CLASSBCD === 'all')
-      .map((item) => ({ value: item.CLASSCCD, label: item.CLASSCNM }))
-      .filter((item, index, self) => index === self.findIndex((t) => t.value === item.value));
-    setClassCOptions(filteredC);
-    setFormData((prev) => ({ ...prev, CLASSCCD: 'all' })); // 소분류 초기화
-  }, [formData.CLASSBCD, data]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const generateTimeOptions = (isWeekly) => {
+    const options = [];
+    const startHour = isWeekly ? 9 : 0;
+    const endHour = isWeekly ? 18 : 23;
+    for (let h = startHour; h <= endHour; h++) {
+      options.push(`${h.toString().padStart(2, '0')}:00`);
+      if (h < endHour || (h === endHour && !isWeekly)) {
+        options.push(`${h.toString().padStart(2, '0')}:30`);
+      }
+    }
+    return options;
   };
 
-  const handleSubmit = () => {
+  const timeOptions = generateTimeOptions(formData.isWeekly);
+
+  
+  // useMemo로 옵션 최적화
+  const updatedClass2Options = useMemo(
+    () => getFieldOptions('CLASSBCD', formData.CLASSACD, data),
+    [formData.CLASSACD, data]
+  );
+  const updatedClass3Options = useMemo(
+    () => getFieldOptions('CLASSCCD', formData.CLASSBCD, data),
+    [formData.CLASSBCD, data]
+  );
+
+  useEffect(() => {
+    setClass2Options(updatedClass2Options);
+  }, [updatedClass2Options]);
+
+  useEffect(() => {
+    setClass3Options(updatedClass3Options);
+  }, [updatedClass3Options]);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => {
+      if (name === 'CLASSACD') {
+        return {
+          ...prev,
+          CLASSACD: value,
+          CLASSBCD: 'all',
+          CLASSCCD: 'all',
+        };
+      } else if (name === 'CLASSBCD') {
+        return {
+          ...prev,
+          CLASSBCD: value,
+          CLASSCCD: 'all',
+        };
+      } else {
+        return {
+          ...prev,
+          [name]: type === 'checkbox' ? checked : value,
+        };
+      }
+    });
+  };
+
+  const checkTimeOverlap = (newStart, newEnd) => {
+    const newStartMin = parseInt(newStart.split(':')[0]) * 60 + parseInt(newStart.split(':')[1]);
+    const newEndMin = parseInt(newEnd.split(':')[0]) * 60 + parseInt(newEnd.split(':')[1]);
+
+    return registeredList.some((item) => {
+      if (item.CLASSCNM !== formData.CLASSCNM || item.WORKDATE !== formData.WORKDATE) return false;
+      const itemStartMin = parseInt(item.STARTTIME.split(':')[0]) * 60 + parseInt(item.STARTTIME.split(':')[1]);
+      const itemEndMin = parseInt(item.ENDTIME.split(':')[0]) * 60 + parseInt(item.ENDTIME.split(':')[1]);
+      return (
+        (newStartMin < itemEndMin && newEndMin > itemStartMin) ||
+        (newStartMin >= itemStartMin && newEndMin <= itemEndMin)
+      );
+    });
+  };
+
+  const handleRegister = () => {
+    if (checkTimeOverlap(formData.STARTTIME, formData.ENDTIME)) {
+      alert('오류!\n이미 입력한 업무시간입니다.!!');
+      return;
+    }
+
     const selectedMajor = data.find((item) => item.CLASSACD === formData.CLASSACD);
     const selectedMiddle = data.find((item) => item.CLASSBCD === formData.CLASSBCD);
     const selectedMinor = data.find((item) => item.CLASSCCD === formData.CLASSCCD);
-    const newData = {
+
+    const startMin = parseInt(formData.STARTTIME.split(':')[0]) * 60 + parseInt(formData.STARTTIME.split(':')[1]);
+    const endMin = parseInt(formData.ENDTIME.split(':')[0]) * 60 + parseInt(formData.ENDTIME.split(':')[1]);
+    const workHours = (endMin - startMin) / 60;
+
+    const newItem = {
       CLASSACD: formData.CLASSACD,
       CLASSBCD: formData.CLASSBCD,
       CLASSCCD: formData.CLASSCCD,
       CLASSANM: selectedMajor ? selectedMajor.CLASSANM : '',
       CLASSBNM: selectedMiddle ? selectedMiddle.CLASSBNM : '',
       CLASSCNM: selectedMinor ? selectedMinor.CLASSCNM : '',
-      NAME: formData.NAME,
+      NAME: '긴급민원',
       WORKTYPE: formData.WORKTYPE,
       WORKDATE: formData.WORKDATE,
-      STARTTIME: '09:00',
-      ENDTIME: '18:00',
-      WORKHOURS: formData.WORKHOURS || 8,
+      STARTTIME: formData.STARTTIME,
+      ENDTIME: formData.ENDTIME,
+      WORKHOURS: workHours,
       QUANTITY: formData.QUANTITY || 1,
-      WORKDATETIME: `${formData.WORKDATE} 09:00 ~ 18:00`,
+      WORKDATETIME: `${formData.WORKDATE} ${formData.STARTTIME} ~ ${formData.ENDTIME}`,
     };
-    onConfirm(newData);
+
+    setRegisteredList((prev) => [...prev, newItem]);
+  };
+
+  const handleDelete = (index) => {
+    setRegisteredList((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleClassSelect = ({ major, middle, minor }) => {
+    setClass2Options(getFieldOptions('CLASSBCD', major, data));
+    setClass3Options(getFieldOptions('CLASSCCD', middle, data));
+
+    setFormData((prev) => ({
+      ...prev,
+      CLASSACD: major,
+      CLASSBCD: middle,
+      CLASSCCD: minor,
+    }));
+
+    setShowClassPopup(false);
   };
 
   return (
-    <Modal show={show} onHide={onHide} centered>
+    <Modal show={show} onHide={onHide} centered dialogClassName={styles.customModal}>
       <Modal.Header closeButton>
         <Modal.Title>개별업무 등록</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="mb-3">
-          <label className="form-label">대분류</label>
-          <select className={`form-select ${styles.formSelect}`} name="CLASSACD" value={formData.CLASSACD} onChange={handleChange}>
-            <option value="all">==대분류==</option>
-            {[...new Set(data.map((item) => item.CLASSANM))].map((name) => (
-              <option key={name} value={data.find((item) => item.CLASSANM === name).CLASSACD}>{name}</option>
-            ))}
-          </select>
+        <div className={styles.noteSection}>
+          <span>* 익월 10일 지나면 전월자료 수정 불가 합니다.</span>
+          <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleRegister}>등록</button>
         </div>
-        <div className="mb-3">
-          <label className="form-label">중분류</label>
-          <select className={`form-select ${styles.formSelect}`} name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange}>
-            <option value="all">==중분류==</option>
-            {classBOptions.map((option) => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label className="form-label">소분류</label>
-          <select className={`form-select ${styles.formSelect}`} name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange}>
-            <option value="all">==소분류==</option>
-            {classCOptions.map((option) => (
-              <option key={option.value} value={option.value}>{option.label}</option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label className="form-label">이름</label>
-          <input type="text" className={`form-control ${styles.formControl}`} name="NAME" value={formData.NAME} onChange={handleChange} placeholder="이름 입력" />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">근무형태</label>
-          <select className={`form-select ${styles.formSelect}`} name="WORKTYPE" value={formData.WORKTYPE} onChange={handleChange}>
-            <option value="">선택</option>
-            {['정규', '계약', '파견'].map((type) => (
-              <option key={type} value={type}>{type}</option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label className="form-label">작업일시</label>
-          <input type="date" className={`form-control ${styles.formControl}`} name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">작업시간</label>
-          <input type="number" className={`form-control ${styles.formControl}`} name="WORKHOURS" value={formData.WORKHOURS} onChange={handleChange} placeholder="시간 입력" step="0.5" min="0" />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">건(구간/본/개소)</label>
-          <input type="number" className={`form-control ${styles.formControl}`} name="QUANTITY" value={formData.QUANTITY} onChange={handleChange} placeholder="건수 입력" min="0" />
-        </div>
+        <table className={styles.formTable}>
+          <tbody>
+            <tr>
+              <td className={styles.td1}>대분류:<button onClick={() => setShowClassPopup(true)} onSelect={handleClassSelect} className={styles.selectBtn}>선택</button></td>
+              <td className={styles.td2}>
+                <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange} className={styles.select}>
+                  <option value="all">==대분류==</option>
+                  {getFieldOptions('CLASSACD', '', data).slice(1).map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+              </td>
+              <td className={styles.td3}>중분류:</td>
+              <td>
+                <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange} className={styles.select}>
+                  <option value="all">==중분류==</option>
+                  {class2Options.slice(1).map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>소분류:</td>
+              <td>
+                <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange} className={styles.select}>
+                  <option value="all">==소분류==</option>
+                  {class3Options.slice(1).map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+              </td>
+              <td>건(구간/본/개소):</td>
+              <td>
+                <input type="number" name="QUANTITY" value={formData.QUANTITY} onChange={handleChange} placeholder="건수 입력" min="0" className={styles.input} />
+              </td>
+            </tr>
+            <tr>
+              <td>업무 부가 설명:</td>
+              <td colSpan="3">
+                <span>긴급민원</span>
+              </td>
+            </tr>
+            <tr>
+              <td>작업일시 (주간:<input type="checkbox" name="isWeekly" checked={formData.isWeekly} onChange={handleChange} /> )</td>
+              <td>
+                <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.dateInput} />
+                <select name="STARTTIME" value={formData.STARTTIME} onChange={handleChange} className={styles.timeSelect}>
+                  {timeOptions.map((time) => <option key={time} value={time}>{time}</option>)}
+                </select>
+                ~
+                <select name="ENDTIME" value={formData.ENDTIME} onChange={handleChange} className={styles.timeSelect}>
+                  {timeOptions.map((time) => <option key={time} value={time}>{time}</option>)}
+                </select>
+              </td>
+              <td>근무형태:</td>
+              <td>
+                <select name="WORKTYPE" value={formData.WORKTYPE} onChange={handleChange} className={styles.select}>
+                  <option value="">선택</option>
+                  {['정규', '계약', '파견', '일근', '긴급출동'].map((type) => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td colSpan="4">
+                <h5>※ 등록 리스트 ({formData.WORKDATE})</h5>
+                <table className={styles.listTable}>
+                  <thead>
+                    <tr>
+                      <th>소분류</th>
+                      <th>날짜</th>
+                      <th>시간</th>
+                      <th>건(구간/본/개소)</th>
+                      <th>삭제</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {registeredList.map((item, index) => (
+                      <tr key={index}>
+                        <td>{item.CLASSCNM}</td>
+                        <td>{item.WORKDATE}</td>
+                        <td>{item.STARTTIME}~{item.ENDTIME}</td>
+                        <td>{item.QUANTITY}</td>
+                        <td><button onClick={() => handleDelete(index)} className={styles.deleteBtn}>삭제</button></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </Modal.Body>
-      <Modal.Footer>
-        <button className={`btn btn-secondary ${styles.btn}`} onClick={onHide}>취소</button>
-        <button className={`btn btn-primary ${styles.btn}`} onClick={handleSubmit}>확인</button>
-      </Modal.Footer>
+      <StandardClassSelectPopup show={showClassPopup} onHide={() => setShowClassPopup(false)} onSelect={handleClassSelect} data={data} />
     </Modal>
   );
 };

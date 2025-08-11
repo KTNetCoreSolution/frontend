@@ -28,27 +28,33 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
 
   const getStyleValue = (value, defaultValue) => value === 'default' || !value ? defaultValue : value;
 
-  // 필터 초기화: 날짜 및 월 관련 필드의 기본값 설정
+  // 필터 초기화: 모든 필드의 defaultValue 설정, 날짜 및 월 관련 필드의 기본값 설정
   useEffect(() => {
     const searchFields = config.areas.find((area) => area.type === 'search')?.fields || [];
-    const initialDateFilters = {};
+    const initialFilters = {};
     searchFields.forEach((field) => {
-      if (['day', 'startday', 'endday'].includes(field.type) && filters[field.id] === undefined) {
-        initialDateFilters[field.id] = field.defaultValue || todayDate;
-      } else if (['startmonth', 'endmonth', 'month'].includes(field.type) && filters[field.id] === undefined) {
-        initialDateFilters[field.id] = field.defaultValue ? 
-          (field.defaultValue.includes('-') ? field.defaultValue.substring(0, 7) : todayMonth) : todayMonth;
-      } else if (['dayperiod', 'monthperiod'].includes(field.type) && filters[field.id] === undefined) {
-        initialDateFilters[field.id] = field.defaultValue || {
-          start: field.type === 'dayperiod' ? todayDate : todayMonth,
-          end: field.type === 'dayperiod' ? todayDate : todayMonth,
-        };
+      if (filters[field.id] === undefined) {
+        if (['day', 'startday', 'endday'].includes(field.type)) {
+          initialFilters[field.id] = field.defaultValue || todayDate;
+        } else if (['startmonth', 'endmonth', 'month'].includes(field.type)) {
+          initialFilters[field.id] = field.defaultValue 
+            ? (field.defaultValue.includes('-') ? field.defaultValue.substring(0, 7) : todayMonth) 
+            : todayMonth;
+        } else if (['dayperiod', 'monthperiod'].includes(field.type)) {
+          initialFilters[field.id] = field.defaultValue || {
+            start: field.type === 'dayperiod' ? todayDate : todayMonth,
+            end: field.type === 'dayperiod' ? todayDate : todayMonth,
+          };
+        } else if (field.defaultValue !== undefined) {
+          // text, textarea, select, radio, checkbox, popupIcon, button, label 등 다른 필드에 대한 defaultValue 적용
+          initialFilters[field.id] = field.defaultValue;
+        }
       }
     });
-    if (Object.keys(initialDateFilters).length > 0) {
+    if (Object.keys(initialFilters).length > 0) {
       setFilters((prevFilters) => ({
         ...prevFilters,
-        ...initialDateFilters,
+        ...initialFilters,
       }));
     }
   }, [config, filters, setFilters]);
