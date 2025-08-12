@@ -357,18 +357,25 @@ const StandardEmpJobManage = () => {
     setIsSearched(true);
     try {
       const params = {
-        pGUBUN: filters.classGubun,
+        pGUBUN: 'LIST',
+        pSECTIONCD: hasPermission(user?.auth, 'oper')
+              ? filters.classGubun
+              : user?.standardSectionCd === 'LINE'
+                ? 'LINE'
+                : user?.standardSectionCd === 'DESIGN'
+                  ? 'DESIGN'
+                  : user?.standardSectionCd === 'BIZ'
+                    ? 'BIZ'
+                    : 'LINE',
+        pEMPNO: user?.empNo || '',
+        pCLASSCD: filters.CLASSCCD === 'all' ? '' : filters.CLASSCCD,
+        pDATEGUBUN: filters.dayGubun,
+        pDATE1: (filters.dayGubun === 'D') ? filters.rangeStartDate : (filters.dayGubun === 'M' ? filters.monthDate : ''),
+        pDATE2: (filters.dayGubun === 'D') ? filters.rangeEndDate : (filters.dayGubun === 'M' ? filters.monthDate : ''),
         pDEBUG: 'F',
-        pCLASSACD: filters.CLASSACD === 'all' ? '' : filters.CLASSACD,
-        pCLASSBCD: filters.CLASSBCD === 'all' ? '' : filters.CLASSBCD,
-        pCLASSCCD: filters.CLASSCCD === 'all' ? '' : filters.CLASSCCD,
-        pDAYGUBUN: filters.dayGubun,
-        pMONTHDATE: filters.dayGubun === 'M' ? filters.monthDate : '',
-        pSTARTDATE: filters.dayGubun === 'D' ? filters.rangeStartDate : '',
-        pENDDATE: filters.dayGubun === 'D' ? filters.rangeEndDate : '',
       };
 
-      const response = await fetchData('standard/empjoblist', params);
+      const response = await fetchData('standard/empJob/list', params);
       if (!response.success) {
         errorMsgPopup(response.message || '데이터를 가져오는 중 오류가 발생했습니다.');
         return;

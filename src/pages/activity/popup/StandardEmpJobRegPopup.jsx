@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import styles from './StandardEmpJobRegPopup.module.css';
 import StandardClassSelectPopup from './StandardClassSelectPopup';
+import { fetchData } from '../../../utils/dataUtils';
 
 const getFieldOptions = (fieldId, dependentValue = '', classData) => {
   if (!Array.isArray(classData)) return [];
@@ -66,6 +67,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
   const [class2Options, setClass2Options] = useState([]);
   const [class3Options, setClass3Options] = useState([]);
   const [showClassPopup, setShowClassPopup] = useState(false);
+  const [workTypeOptions, setWorkTypeOptions] = useState([]); // 추가: WORKTYPE 옵션 상태
 
   const generateTimeOptions = (isWeekly) => {
     const options = [];
@@ -100,6 +102,33 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
   useEffect(() => {
     setClass3Options(updatedClass3Options);
   }, [updatedClass3Options]);
+
+  // 추가: WORKTYPE 옵션을 API로 불러오는 useEffect
+  useEffect(() => {
+    const fetchWorkTypeOptions = async () => {
+      try {
+        const params = {
+          pGUBUN: 'WORKTYPE',
+          pDEBUG: 'F',
+        };
+
+        const response = await fetchData('standard/ddlList', params);
+        if (!response.success) {
+          console.error('WORKTYPE 옵션 로드 실패:', response.message);
+          alert(response.message || 'WORKTYPE 옵션을 가져오는 중 오류가 발생했습니다.');
+          return;
+        }
+        const fetchedOptions = Array.isArray(response.data) ? response.data : [];
+        // API 응답을 {value: DDLCD, label: DDLNM} 형식으로 매핑
+        setWorkTypeOptions(fetchedOptions.map(item => ({ value: item.DDLCD, label: item.DDLNM })));
+      } catch (err) {
+        console.error('WORKTYPE 옵션 로드 실패:', err);
+        alert(err.response?.data?.message || 'WORKTYPE 옵션을 가져오는 중 오류가 발생했습니다.');
+      }
+    };
+
+    fetchWorkTypeOptions();
+  }, []); // 컴포넌트 마운트 시 한 번 호출
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -262,8 +291,8 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
               <td>
                 <select name="WORKTYPE" value={formData.WORKTYPE} onChange={handleChange} className={styles.select}>
                   <option value="">선택</option>
-                  {['정규', '계약', '파견', '일근', '긴급출동'].map((type) => (
-                    <option key={type} value={type}>{type}</option>
+                  {workTypeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
                   ))}
                 </select>
               </td>
