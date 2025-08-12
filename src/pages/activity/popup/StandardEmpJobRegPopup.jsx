@@ -3,6 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import styles from './StandardEmpJobRegPopup.module.css';
 import StandardClassSelectPopup from './StandardClassSelectPopup';
 import { fetchData } from '../../../utils/dataUtils';
+import { errorMsgPopup } from '../../../utils/errorMsgPopup';
 
 const getFieldOptions = (fieldId, dependentValue = '', classData) => {
   if (!Array.isArray(classData)) return [];
@@ -60,16 +61,17 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
     WORKDATE: today,
     STARTTIME: '09:00',
     ENDTIME: '18:00',
-    QUANTITY: '',
+    QUANTITY: '1',
     isWeekly: false,
+    isDuplicate: false,
   });
   const [registeredList, setRegisteredList] = useState([]);
   const [class2Options, setClass2Options] = useState([]);
   const [class3Options, setClass3Options] = useState([]);
-  const [showClassPopup, setShowClassPopup] = useState(false);
+  const [classPopupState, setClassPopupState] = useState({ show: false, editingIndex: -1 });
   const [workTypeOptions, setWorkTypeOptions] = useState([]); // 추가: WORKTYPE 옵션 상태
 
-  const generateTimeOptions = (isWeekly) => {
+  const generateTimeOptions = (isWeekly = false, startTime = null, isEnd = false) => {
     const options = [];
     const startHour = isWeekly ? 9 : 0;
     const endHour = isWeekly ? 18 : 23;
@@ -79,10 +81,22 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
         options.push(`${h.toString().padStart(2, '0')}:30`);
       }
     }
+    options.push('24:00');
+    if (isEnd && startTime) {
+      const startMin = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
+      return options.filter(time => {
+        const [h, m] = time.split(':').map(Number);
+        const timeMin = (h === 24 ? 24 : h) * 60 + m;
+        return timeMin > startMin;
+      });
+    }
     return options;
   };
 
-  const timeOptions = generateTimeOptions(formData.isWeekly);
+  const formTimeOptions = useMemo(() => generateTimeOptions(formData.isWeekly), [formData.isWeekly]);
+  const formEndTimeOptions = useMemo(() => generateTimeOptions(formData.isWeekly, formData.STARTTIME, true), [formData.isWeekly, formData.STARTTIME]);
+
+  const listTimeOptions = generateTimeOptions(false); // 리스트는 항상 전체 시간대
 
   
   // useMemo로 옵션 최적화
@@ -115,7 +129,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
         const response = await fetchData('standard/ddlList', params);
         if (!response.success) {
           console.error('WORKTYPE 옵션 로드 실패:', response.message);
-          alert(response.message || 'WORKTYPE 옵션을 가져오는 중 오류가 발생했습니다.');
+          errorMsgPopup(response.message || 'WORKTYPE 옵션을 가져오는 중 오류가 발생했습니다.');
           return;
         }
         const fetchedOptions = Array.isArray(response.data) ? response.data : [];
@@ -123,7 +137,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
         setWorkTypeOptions(fetchedOptions.map(item => ({ value: item.DDLCD, label: item.DDLNM })));
       } catch (err) {
         console.error('WORKTYPE 옵션 로드 실패:', err);
-        alert(err.response?.data?.message || 'WORKTYPE 옵션을 가져오는 중 오류가 발생했습니다.');
+        errorMsgPopup(err.response?.data?.message || 'WORKTYPE 옵션을 가져오는 중 오류가 발생했습니다.');
       }
     };
 
@@ -133,36 +147,59 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => {
+      let newData = { ...prev };
       if (name === 'CLASSACD') {
-        return {
-          ...prev,
-          CLASSACD: value,
-          CLASSBCD: 'all',
-          CLASSCCD: 'all',
-        };
+        newData.CLASSACD = value;
+        newData.CLASSBCD = 'all';
+        newData.CLASSCCD = 'all';
       } else if (name === 'CLASSBCD') {
-        return {
-          ...prev,
-          CLASSBCD: value,
-          CLASSCCD: 'all',
-        };
+        newData.CLASSBCD = value;
+        newData.CLASSCCD = 'all';
+      } else if (name === 'STARTTIME') {
+        newData.STARTTIME = value;
+        // 종료시간이 시작시간 이후인지 확인하고 조정
+        const startMin = parseInt(value.split(':')[0]) * 60 + parseInt(value.split(':')[1]);
+        const endMin = parseInt(prev.ENDTIME.split(':')[0]) * 60 + parseInt(prev.ENDTIME.split(':')[1]);
+        if (endMin <= startMin) {
+          newData.ENDTIME = formEndTimeOptions[0] || prev.ENDTIME;
+        }
+      } else if (name === 'isDuplicate') {
+        newData.isDuplicate = checked;
+        if (checked) {
+          newData.QUANTITY = '0';
+        }
+        else{
+          newData.QUANTITY = '1';
+        }
       } else {
-        return {
-          ...prev,
-          [name]: type === 'checkbox' ? checked : value,
-        };
+        newData[name] = type === 'checkbox' ? checked : value;
       }
+      return newData;
     });
   };
 
-  const checkTimeOverlap = (newStart, newEnd) => {
-    const newStartMin = parseInt(newStart.split(':')[0]) * 60 + parseInt(newStart.split(':')[1]);
-    const newEndMin = parseInt(newEnd.split(':')[0]) * 60 + parseInt(newEnd.split(':')[1]);
+  const timeToMinutes = (time) => {
+    const [h, m] = time.split(':').map(Number);
+    return (h === 24 ? 24 : h) * 60 + m;
+  };
 
-    return registeredList.some((item) => {
+  const isInvalidTimeRange = (start, end) => {
+    const startMin = timeToMinutes(start);
+    const endMin = timeToMinutes(end);
+    const lunchStart = 12 * 60;
+    const lunchEnd = 13 * 60;
+    return startMin < lunchEnd && endMin > lunchStart;
+  };
+
+  const checkTimeOverlap = (newStart, newEnd, excludeIndex = -1) => {
+    const newStartMin = timeToMinutes(newStart);
+    const newEndMin = timeToMinutes(newEnd);
+
+    return registeredList.some((item, i) => {
+      if (i === excludeIndex) return false;
       if (item.CLASSCNM !== formData.CLASSCNM || item.WORKDATE !== formData.WORKDATE) return false;
-      const itemStartMin = parseInt(item.STARTTIME.split(':')[0]) * 60 + parseInt(item.STARTTIME.split(':')[1]);
-      const itemEndMin = parseInt(item.ENDTIME.split(':')[0]) * 60 + parseInt(item.ENDTIME.split(':')[1]);
+      const itemStartMin = timeToMinutes(item.STARTTIME);
+      const itemEndMin = timeToMinutes(item.ENDTIME);
       return (
         (newStartMin < itemEndMin && newEndMin > itemStartMin) ||
         (newStartMin >= itemStartMin && newEndMin <= itemEndMin)
@@ -170,9 +207,25 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
     });
   };
 
+  const calculateWorkHours = (start, end) => {
+    const startMin = timeToMinutes(start);
+    const endMin = timeToMinutes(end);
+    return (endMin - startMin) / 60;
+  };
+
   const handleRegister = () => {
+    if (formData.CLASSCCD === 'all' || formData.WORKTYPE === '' || (!formData.isDuplicate && !formData.QUANTITY)) {
+      errorMsgPopup('소분류, 건수, 근무형태를 확인해주세요.');
+      return;
+    }
+
+    if (isInvalidTimeRange(formData.STARTTIME, formData.ENDTIME)) {
+      errorMsgPopup('입력 불가 시간입니다.');
+      return;
+    }
+
     if (checkTimeOverlap(formData.STARTTIME, formData.ENDTIME)) {
-      alert('오류!\n이미 입력한 업무시간입니다.!!');
+      errorMsgPopup('오류!\n이미 입력한 업무시간입니다.!!');
       return;
     }
 
@@ -180,9 +233,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
     const selectedMiddle = data.find((item) => item.CLASSBCD === formData.CLASSBCD);
     const selectedMinor = data.find((item) => item.CLASSCCD === formData.CLASSCCD);
 
-    const startMin = parseInt(formData.STARTTIME.split(':')[0]) * 60 + parseInt(formData.STARTTIME.split(':')[1]);
-    const endMin = parseInt(formData.ENDTIME.split(':')[0]) * 60 + parseInt(formData.ENDTIME.split(':')[1]);
-    const workHours = (endMin - startMin) / 60;
+    const workHours = calculateWorkHours(formData.STARTTIME, formData.ENDTIME);
 
     const newItem = {
       CLASSACD: formData.CLASSACD,
@@ -197,8 +248,9 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
       STARTTIME: formData.STARTTIME,
       ENDTIME: formData.ENDTIME,
       WORKHOURS: workHours,
-      QUANTITY: formData.QUANTITY || 1,
+      QUANTITY: formData.isDuplicate ? 0 : (formData.QUANTITY || 1),
       WORKDATETIME: `${formData.WORKDATE} ${formData.STARTTIME} ~ ${formData.ENDTIME}`,
+      isDuplicate: formData.isDuplicate,
     };
 
     setRegisteredList((prev) => [...prev, newItem]);
@@ -208,18 +260,75 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
     setRegisteredList((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleUpdate = (index) => {
+    const item = registeredList[index];
+    if (isInvalidTimeRange(item.STARTTIME, item.ENDTIME)) {
+      errorMsgPopup('입력 불가 시간입니다.');
+      return;
+    }
+    if (checkTimeOverlap(item.STARTTIME, item.ENDTIME, index)) {
+      errorMsgPopup('오류!\n이미 입력한 업무시간입니다.!!');
+      return;
+    }
+    // 추가적인 업데이트 로직이 필요 없음 (이미 onChange로 업데이트됨), 하지만 overlap 체크 후 알림
+    errorMsgPopup('수정 완료!');
+  };
+
+  const handleRowChange = (index, field, value) => {
+    setRegisteredList((prev) =>
+      prev.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              [field]: value,
+              ...(field === 'STARTTIME' || field === 'ENDTIME'
+                ? { WORKHOURS: calculateWorkHours(field === 'STARTTIME' ? value : item.STARTTIME, field === 'ENDTIME' ? value : item.ENDTIME) }
+                : {}),
+              ...(field === 'isDuplicate' 
+                ? { QUANTITY: value ? 0 : 1 }
+                : {}),
+            }
+          : item
+      )
+    );
+  };
+
   const handleClassSelect = ({ major, middle, minor }) => {
-    setClass2Options(getFieldOptions('CLASSBCD', major, data));
-    setClass3Options(getFieldOptions('CLASSCCD', middle, data));
+    const editingIndex = classPopupState.editingIndex;
+    if (editingIndex === -1) {
+      // 새 등록용 formData 업데이트
+      setClass2Options(getFieldOptions('CLASSBCD', major, data));
+      setClass3Options(getFieldOptions('CLASSCCD', middle, data));
 
-    setFormData((prev) => ({
-      ...prev,
-      CLASSACD: major,
-      CLASSBCD: middle,
-      CLASSCCD: minor,
-    }));
+      setFormData((prev) => ({
+        ...prev,
+        CLASSACD: major,
+        CLASSBCD: middle,
+        CLASSCCD: minor,
+      }));
+    } else {
+      // 리스트 row 업데이트
+      const selectedMajor = data.find((item) => item.CLASSACD === major);
+      const selectedMiddle = data.find((item) => item.CLASSBCD === middle);
+      const selectedMinor = data.find((item) => item.CLASSCCD === minor);
 
-    setShowClassPopup(false);
+      setRegisteredList((prev) =>
+        prev.map((item, i) =>
+          i === editingIndex
+            ? {
+                ...item,
+                CLASSACD: major,
+                CLASSBCD: middle,
+                CLASSCCD: minor,
+                CLASSANM: selectedMajor ? selectedMajor.CLASSANM : '',
+                CLASSBNM: selectedMiddle ? selectedMiddle.CLASSBNM : '',
+                CLASSCNM: selectedMinor ? selectedMinor.CLASSCNM : '',
+              }
+            : item
+        )
+      );
+    }
+    setClassPopupState({ show: false, editingIndex: -1 });
   };
 
   return (
@@ -235,7 +344,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
         <table className={styles.formTable}>
           <tbody>
             <tr>
-              <td className={styles.td1}>대분류:<button onClick={() => setShowClassPopup(true)} onSelect={handleClassSelect} className={styles.selectBtn}>선택</button></td>
+              <td className={styles.td1}>대분류:<button onClick={() => setClassPopupState({ show: true, editingIndex: -1 })} className={styles.selectBtn}>선택</button></td>
               <td className={styles.td2}>
                 <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange} className={styles.select}>
                   <option value="all">==대분류==</option>
@@ -266,7 +375,13 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
               </td>
               <td>건(구간/본/개소):</td>
               <td>
-                <input type="number" name="QUANTITY" value={formData.QUANTITY} onChange={handleChange} placeholder="건수 입력" min="0" className={styles.input} />
+                {formData.isDuplicate ? (
+                  <span>건(구간/본/개소)의 값이 0 으로 설정 됩니다.</span>
+                ) : (
+                  <input type="number" name="QUANTITY" value={formData.QUANTITY} onChange={handleChange} placeholder="건수 입력" min="0" className={styles.input} />
+                )}
+                <input type="checkbox" name="isDuplicate" checked={formData.isDuplicate} onChange={handleChange} />
+                <span className={styles.duplicateSpan}>중복건</span>
               </td>
             </tr>
             <tr>
@@ -280,11 +395,11 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
               <td>
                 <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.dateInput} />
                 <select name="STARTTIME" value={formData.STARTTIME} onChange={handleChange} className={styles.timeSelect}>
-                  {timeOptions.map((time) => <option key={time} value={time}>{time}</option>)}
+                  {formTimeOptions.map((time) => <option key={time} value={time}>{time}</option>)}
                 </select>
                 ~
                 <select name="ENDTIME" value={formData.ENDTIME} onChange={handleChange} className={styles.timeSelect}>
-                  {timeOptions.map((time) => <option key={time} value={time}>{time}</option>)}
+                  {formEndTimeOptions.map((time) => <option key={time} value={time}>{time}</option>)}
                 </select>
               </td>
               <td>근무형태:</td>
@@ -303,21 +418,79 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
                 <table className={styles.listTable}>
                   <thead>
                     <tr>
-                      <th>소분류</th>
                       <th>날짜</th>
-                      <th>시간</th>
+                      <th style={{width: '194px'}}>시간</th>
+                      <th style={{width: '200px'}}>소분류</th>
                       <th>건(구간/본/개소)</th>
-                      <th>삭제</th>
+                      <th style={{width: '110px'}}>근무형태</th>
+                      <th style={{width: '110px'}}>작업</th>
                     </tr>
                   </thead>
                   <tbody>
                     {registeredList.map((item, index) => (
                       <tr key={index}>
-                        <td>{item.CLASSCNM}</td>
                         <td>{item.WORKDATE}</td>
-                        <td>{item.STARTTIME}~{item.ENDTIME}</td>
-                        <td>{item.QUANTITY}</td>
-                        <td><button onClick={() => handleDelete(index)} className={styles.deleteBtn}>삭제</button></td>
+                        <td>
+                          <select
+                            value={item.STARTTIME}
+                            onChange={(e) => handleRowChange(index, 'STARTTIME', e.target.value)}
+                            className={styles.timeSelect}
+                          >
+                            {listTimeOptions.map((time) => <option key={time} value={time}>{time}</option>)}
+                          </select>
+                          ~
+                          <select
+                            value={item.ENDTIME}
+                            onChange={(e) => handleRowChange(index, 'ENDTIME', e.target.value)}
+                            className={styles.timeSelect}
+                          >
+                            {listTimeOptions.map((time) => <option key={time} value={time}>{time}</option>)}
+                          </select>
+                        </td>
+                        <td>
+                          {item.CLASSCNM}
+                          <button
+                            onClick={() => setClassPopupState({ show: true, editingIndex: index })}
+                            className={styles.selectBtn}
+                          >
+                            선택
+                          </button>
+                        </td>
+                        <td>
+                          {item.isDuplicate ? (
+                            <span>건(구간/본/개소)의 값이 0 으로 설정 됩니다.</span>
+                          ) : (
+                            <input
+                              type="number"
+                              value={item.QUANTITY}
+                              onChange={(e) => handleRowChange(index, 'QUANTITY', e.target.value)}
+                              min="0"
+                              className={styles.rowInput}
+                            />
+                          )}
+                          <input
+                            type="checkbox"
+                            checked={item.isDuplicate}
+                            onChange={(e) => handleRowChange(index, 'isDuplicate', e.target.checked)}
+                          />
+                          <span className={styles.duplicateSpan}>중복건</span>
+                        </td>
+                        <td>
+                          <select
+                            value={item.WORKTYPE}
+                            onChange={(e) => handleRowChange(index, 'WORKTYPE', e.target.value)}
+                            className={styles.select}
+                          >
+                            <option value="">선택</option>
+                            {workTypeOptions.map((option) => (
+                              <option key={option.value} value={option.value}>{option.label}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td>
+                          <button onClick={() => handleUpdate(index)} className={styles.updateBtn}>수정</button>
+                          <button onClick={() => handleDelete(index)} className={styles.deleteBtn}>삭제</button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -327,7 +500,12 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
           </tbody>
         </table>
       </Modal.Body>
-      <StandardClassSelectPopup show={showClassPopup} onHide={() => setShowClassPopup(false)} onSelect={handleClassSelect} data={data} />
+      <StandardClassSelectPopup
+        show={classPopupState.show}
+        onHide={() => setClassPopupState({ show: false, editingIndex: -1 })}
+        onSelect={handleClassSelect}
+        data={data}
+      />
     </Modal>
   );
 };
