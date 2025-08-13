@@ -3,7 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import styles from './StandardEmpJobRegPopup.module.css';
 import StandardClassSelectPopup from './StandardClassSelectPopup';
 import { fetchData } from '../../../utils/dataUtils';
-import { errorMsgPopup } from '../../../utils/errorMsgPopup';
+import { msgPopup } from '../../../utils/msgPopup';
 
 const getFieldOptions = (fieldId, dependentValue = '', classData) => {
   if (!Array.isArray(classData)) return [];
@@ -129,7 +129,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
         const response = await fetchData('standard/ddlList', params);
         if (!response.success) {
           console.error('WORKTYPE 옵션 로드 실패:', response.message);
-          errorMsgPopup(response.message || 'WORKTYPE 옵션을 가져오는 중 오류가 발생했습니다.');
+          msgPopup(response.message || 'WORKTYPE 옵션을 가져오는 중 오류가 발생했습니다.');
           return;
         }
         const fetchedOptions = Array.isArray(response.data) ? response.data : [];
@@ -137,7 +137,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
         setWorkTypeOptions(fetchedOptions.map(item => ({ value: item.DDLCD, label: item.DDLNM })));
       } catch (err) {
         console.error('WORKTYPE 옵션 로드 실패:', err);
-        errorMsgPopup(err.response?.data?.message || 'WORKTYPE 옵션을 가져오는 중 오류가 발생했습니다.');
+        msgPopup(err.response?.data?.message || 'WORKTYPE 옵션을 가져오는 중 오류가 발생했습니다.');
       }
     };
 
@@ -215,17 +215,17 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
 
   const handleRegister = () => {
     if (formData.CLASSCCD === 'all' || formData.WORKTYPE === '' || (!formData.isDuplicate && !formData.QUANTITY)) {
-      errorMsgPopup('소분류, 건수, 근무형태를 확인해주세요.');
+      msgPopup('소분류, 건수, 근무형태를 확인해주세요.');
       return;
     }
 
     if (isInvalidTimeRange(formData.STARTTIME, formData.ENDTIME)) {
-      errorMsgPopup('입력 불가 시간입니다.');
+      msgPopup('12:00 ~ 13:00 입력 불가 시간입니다.');
       return;
     }
 
     if (checkTimeOverlap(formData.STARTTIME, formData.ENDTIME)) {
-      errorMsgPopup('오류!\n이미 입력한 업무시간입니다.!!');
+      msgPopup('오류!\n이미 입력한 업무시간입니다.!!');
       return;
     }
 
@@ -263,15 +263,15 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
   const handleUpdate = (index) => {
     const item = registeredList[index];
     if (isInvalidTimeRange(item.STARTTIME, item.ENDTIME)) {
-      errorMsgPopup('입력 불가 시간입니다.');
+      msgPopup('입력 불가 시간입니다.');
       return;
     }
     if (checkTimeOverlap(item.STARTTIME, item.ENDTIME, index)) {
-      errorMsgPopup('오류!\n이미 입력한 업무시간입니다.!!');
+      msgPopup('오류!\n이미 입력한 업무시간입니다.!!');
       return;
     }
     // 추가적인 업데이트 로직이 필요 없음 (이미 onChange로 업데이트됨), 하지만 overlap 체크 후 알림
-    errorMsgPopup('수정 완료!');
+    msgPopup('수정 완료!');
   };
 
   const handleRowChange = (index, field, value) => {

@@ -65,14 +65,17 @@ export async function fetchJsonData(jsonData, filters = {}) {
  * @param {string} url - 데이터를 요청할 엔드포인트 URL
  * @param {Object} [filters={}] - 필터링 조건 (예: { name: 'john', status: 'active' })
  * @param {Object} [config={}] - 추가 axios 설정 (예: headers)
+ * @param {Object} [directYn] - 지정 URL 사용유무
  * @returns {Promise<any|Error>} 응답 데이터 (배열 또는 객체) 또는 오류 객체
  */
-export async function fetchData(url, filters = {}, config = {}) {
+export async function fetchData(url, filters = {}, config = {}, directYn = 'N') {
   const { setLoading } = useStore.getState();
+  url = (directYn != 'Y') ? common.getServerUrl(url) : url;
+
   try {
     setLoading({ isLoading: true, progress: 0 });
     await simulateProgress(setLoading, 200);
-    const response = await api.post(`${common.getServerUrl(url)}`, filters, config);
+    const response = await api.post(`${url}`, filters, config);
     return response.data;
   } catch (error) {
     console.error('데이터 가져오기 실패:', error.message, error.response?.data);
@@ -87,15 +90,18 @@ export async function fetchData(url, filters = {}, config = {}) {
  * @param {string} url - 데이터를 요청할 엔드포인트 URL
  * @param {Object} [filters={}] - 쿼리 파라미터로 보낼 필터링 조건
  * @param {Object} [config={}] - 추가 axios 설정 (예: headers)
+ * @param {Object} [directYn] - 지정 URL 사용유무
  * @returns {Promise<any|Error>} 응답 데이터 (배열 또는 객체) 또는 오류 객체
  */
-export async function fetchDataGet(url, filters = {}, config = {}) {
+export async function fetchDataGet(url, filters = {}, config = {}, directYn = 'N') {
   const { setLoading } = useStore.getState();
+  url = (directYn != 'Y') ? common.getServerUrl(url) : url;
+    
   try {
     setLoading({ isLoading: true, progress: 0 });
     await simulateProgress(setLoading, 200);
     const queryParams = new URLSearchParams(filters).toString();
-    const fullUrl = queryParams ? `${common.getServerUrl(url)}?${queryParams}` : `${common.getServerUrl(url)}`;
+    const fullUrl = queryParams ? `${url}?${queryParams}` : `${url}`;
     const response = await api.get(fullUrl, config);
     return response.data;
   } catch (error) {
@@ -111,14 +117,17 @@ export async function fetchDataGet(url, filters = {}, config = {}) {
  * @param {string} url - 데이터를 요청할 엔드포인트 URL
  * @param {Object} params - 요청 파라미터
  * @param {Object} [config={}] - 추가 axios 설정 (예: headers)
+ * @param {Object} [directYn] - 지정 URL 사용유무
  * @returns {Promise<Object>} 응답 데이터 또는 오류 메시지
  */
-export const fetchFileData = async (url, params, config = {}) => {
+export const fetchFileData = async (url, params, config = {}, directYn = 'N') => {
   const { setLoading } = useStore.getState();
+  url = (directYn != 'Y') ? common.getServerUrl(url) : url;
+
   try {
     setLoading({ isLoading: true, progress: 0 });
     await simulateProgress(setLoading, 200);
-    const response = await api.post(`${common.getServerUrl(url)}`, params, config);
+    const response = await api.post(`${url}`, params, config);
     return response.data || { success: false, message: "No data returned" };
   } catch (error) {
     return {
@@ -135,13 +144,16 @@ export const fetchFileData = async (url, params, config = {}) => {
  * @param {string} url - 업로드할 엔드포인트 URL
  * @param {FormData} formData - 업로드할 파일 데이터
  * @param {Object} [config={}] - 추가 axios 설정 (예: headers)
+ * @param {Object} [directYn] - 지정 URL 사용유무
  * @returns {Promise<Object>} 응답 데이터 또는 오류 메시지
  */
-export const fetchFileUpload = async (url, formData, config = {}) => {
+export const fetchFileUpload = async (url, formData, config = {}, directYn = 'N') => {
   const { setLoading } = useStore.getState();
+  url = (directYn != 'Y') ? common.getServerUrl(url) : url;
+
   try {
     setLoading({ isLoading: true, progress: 0 });
-    const response = await api.post(`${common.getServerUrl(url)}`, formData, {
+    const response = await api.post(`${url}`, formData, {
       ...config,
       headers: { "Content-Type": "multipart/form-data" },
       onUploadProgress: (progressEvent) => {

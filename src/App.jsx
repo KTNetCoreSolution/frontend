@@ -9,6 +9,7 @@ import { ErrorMsgPopupProvider } from './components/popup/context/ErrorMsgPopupC
 // 로그인 컴포넌트 직접 import
 import Login from './pages/Login';
 import MobileLogin from './pages/mobile/MobileLogin';
+import SsoMobileLogin from './pages/sso/SsoMobileLogin';
 
 const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
 const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
@@ -87,7 +88,7 @@ const App = () => {
               }
             />
 
-            {/* Public routes (e.g., /join) */}
+            {/* Public routes */}
             {routes.map(({ path, component: Component, public: isPublic }) => {
               if (!Component || !isPublic) return null;
               return (
@@ -105,7 +106,19 @@ const App = () => {
               );
             })}
 
-            {/* Local environment: Allow /mobile/Login for non-mobile domain */}
+            {/* SSO Mobile Login route */}
+            <Route
+              path="/mobile/ssoMLogin"
+              element={
+                user ? (
+                  <Navigate to="/mobile/Main" replace />
+                ) : (
+                  <SsoMobileLogin />
+                )
+              }
+            />
+
+            {/* Local env mobile login */}
             {isLocal && !isMobileDomain && (
               <Route
                 path="/mobile/Login"
@@ -119,7 +132,6 @@ const App = () => {
               />
             )}
 
-            {/* Development server: Redirect /Login and /mobile/Login to root */}
             {!isLocal && (
               <>
                 <Route path="/Login" element={<Navigate to="/" replace />} />
