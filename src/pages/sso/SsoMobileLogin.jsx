@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { performSsoLogin } from '../../service/login';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
-import { fetchData } from '../../utils/dataUtils';
+import { fetchDataGet } from '../../utils/dataUtils';
 
 const MKATE_URL = import.meta.env.VITE_MKATE_URL || '';
 let msg = '';
@@ -27,14 +27,12 @@ const SsoMobileLogin = () => {
           token: token
         };
 
-        const res = await fetchData(MKATE_URL, params, { withCredentials: true }, 'Y');
+        const res = await fetchDataGet(MKATE_URL, params, { withCredentials: true }, 'Y');
         if (!res || !res.result) {
           msg = 'SSO 응답 형식 오류';
           errorMsgPopup(msg);
           throw new Error(msg);
         }
-
-        console.log(res);
 
         if (res.result.code !== '0') {
           msg = res.result.errdesc || '응답 결과 오류';
