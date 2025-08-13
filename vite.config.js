@@ -2,7 +2,6 @@ import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, path.resolve(fileURLToPath(new URL('.', import.meta.url)), '.'));
@@ -21,11 +20,6 @@ export default defineConfig(({ mode, command }) => {
   const baseConfig = {
     plugins: [
       react(),
-      VitePWA({
-        registerType: 'autoUpdate', // 업데이트 자동 적용, 필요시 'prompt'로 변경 가능
-        srcDir: 'public',           // 서비스 워커 파일이 위치하는 디렉터리
-        filename: 'sw.js',          // 서비스 워커 파일 이름
-    }),
     ],
     css: {
       modules: {
@@ -44,6 +38,9 @@ export default defineConfig(({ mode, command }) => {
       sourcemap: env.VITE_DEBUG === 'true',
       minify: 'esbuild',
       chunkSizeWarningLimit: 1000,
+    },
+    define: {
+      __BUILD_HASH__: `'${Date.now()}'`, // 또는 보다 정교한 해시 생성 방법
     },
   };
 

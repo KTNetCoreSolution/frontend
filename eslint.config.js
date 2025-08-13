@@ -29,5 +29,8 @@ export default [
         { allowConstantExport: true },
       ],
     },
+    globals: {
+      __BUILD_HASH__: 'readonly', // 또는 'writable' 가능
+    },
   },
 ]
