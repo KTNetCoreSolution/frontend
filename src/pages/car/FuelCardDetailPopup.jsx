@@ -242,9 +242,9 @@ const FuelCardInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         </div>
         <div className="mb-2 d-flex">
           <label className="form-label flex-shrink-0 me-2" htmlFor="exfireMonth" style={{width:60 +'px', paddingTop:6 + 'px'}}>유효기간</label>
-          <input type="text" className={`form-control ${styles.formControl} flex-shrink-0 me-2`} id="exfireMonth" value={cardInfo.EXFIREMONTH || ''} style={{width:42 + 'px', textAlign:'center'}} placeholder="mm" disabled={`${vStyle.vDISABLED}`} onInput={(e) => {handleMaxLength(e, 2)}} onChange={(e) => {setCardInfo({ ...cardInfo, EXFIREMONTH: e.target.value, EXFIREDT: e.target.value + '/' + cardInfo.EXFIREDAY })}} />
+          <input type="text" className={`form-control ${styles.formControl} flex-shrink-0 me-2`} id="exfireMonth" value={cardInfo.EXFIREMONTH || ''} style={{width:42 + 'px', textAlign:'center'}} placeholder="mm" onInput={(e) => {handleMaxLength(e, 2)}} onChange={(e) => {setCardInfo({ ...cardInfo, EXFIREMONTH: e.target.value, EXFIREDT: e.target.value + '/' + cardInfo.EXFIREDAY })}} />
           <label className="form-label flex-shrink-0 me-2" htmlFor="exfireDay" style={{width:5 +'px', paddingTop:6 + 'px'}}>/</label>
-          <input type="text" className={`form-control ${styles.formControl} flex-shrink-0 me-2`} id="exfireDay" value={cardInfo.EXFIREDAY || ''} style={{width:42 + 'px', textAlign:'center'}} placeholder="dd" disabled={`${vStyle.vDISABLED}`} onInput={(e) => {handleMaxLength(e, 2)}} onChange={(e) => {setCardInfo({ ...cardInfo, EXFIREDAY: e.target.value, EXFIREDT: cardInfo.EXFIREMONTH + '/' + e.target.value })}} />
+          <input type="text" className={`form-control ${styles.formControl} flex-shrink-0 me-2`} id="exfireDay" value={cardInfo.EXFIREDAY || ''} style={{width:42 + 'px', textAlign:'center'}} placeholder="dd" onInput={(e) => {handleMaxLength(e, 2)}} onChange={(e) => {setCardInfo({ ...cardInfo, EXFIREDAY: e.target.value, EXFIREDT: cardInfo.EXFIREMONTH + '/' + e.target.value })}} />
         </div>
         <div className="mb-2 d-flex">
           <label className="form-label flex-shrink-0 me-2" htmlFor="carNo" style={{width:60 +'px', paddingTop:6 + 'px'}}>차량번호</label>
