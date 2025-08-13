@@ -816,6 +816,15 @@ const ModuleOrgAuthInfo = () => {
       if (moduleType === "CAR") {
         return "CAROPEREMPNO";
       }
+      else if (moduleType === "STABIZ") {
+        return "STABIZEMPNO";
+      }
+      else if (moduleType === "STADESIGN") {
+        return "STADESIGNEMPNO";
+      }
+      else if (moduleType === "STALINE") {
+        return "STALINEEMPNO";
+      }
       return "OPEREMPNO";
     }
     return "OPEREMPNO";
@@ -916,6 +925,10 @@ const ModuleOrgAuthInfo = () => {
               <button
                 className={`btn btn-sm ${styles.popupIcon}`}
                 onClick={() => {
+                  if (!newAuth.MODULETYPE) {
+                    errorMsgPopup("업무를 먼저 선택해주세요.");
+                    return;
+                  }
                   setTimeout(() => setShowEmpOrgPopup(true), 0);
                 }}
                 style={{ width: "30px", height: "30px", padding: "0", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f0f0f0", color: "#000000" }}
@@ -956,6 +969,10 @@ const ModuleOrgAuthInfo = () => {
             <button
               className={`btn btn-sm ${styles.popupIcon}`}
               onClick={() => {
+                if (!newAuth.MODULETYPE) {
+                    errorMsgPopup("업무를 먼저 선택해주세요.");
+                    return;
+                }
                 setShowOrgPopup(true);
               }}
               style={{ width: "30px", height: "30px", padding: "0", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f0f0f0", color: "#000000" }}
