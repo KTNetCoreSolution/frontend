@@ -84,3 +84,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <Main />
   </BrowserRouter>
 );
+
+// Service Worker 업데이트 적용하기 위해 추가
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.ready.then((registration) => {
+    if (registration.waiting) {
+      // 대기 중인 Service Worker가 있으면 활성화 요청
+      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }
+  });
+}

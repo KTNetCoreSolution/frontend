@@ -113,10 +113,17 @@
     "repository": "https://github.com/pmndrs/zustand"
   },
   {
-      "name": "react-circular-progressbar",
-      "license": "MIT License",
-      "copyright": "2017-present Kevin Ngo",
-      "repository": "https://github.com/kevinsqi/react-circular-progressbar"
+    "name": "react-circular-progressbar",
+    "license": "MIT License",
+    "copyright": "2017-present Kevin Ngo",
+    "repository": "https://github.com/kevinsqi/react-circular-progressbar"
+  },
+  {
+    "name": "vite-plugin-pwa",
+    "version": "^1.0.2",
+    "license": "MIT License",
+    "copyright": "2021-present Anthony Fu",
+    "repository": "https://github.com/antfu/vite-plugin-pwa"
   },
   {
     "name": "Spring Boot",
