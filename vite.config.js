@@ -22,9 +22,9 @@ export default defineConfig(({ mode, command }) => {
     plugins: [
       react(),
       VitePWA({
-      registerType: 'autoUpdate', // 또는 'prompt' 등
-      srcDir: 'public',
-      filename: 'sw.js',
+        registerType: 'autoUpdate', // 업데이트 자동 적용, 필요시 'prompt'로 변경 가능
+        srcDir: 'public',           // 서비스 워커 파일이 위치하는 디렉터리
+        filename: 'sw.js',          // 서비스 워커 파일 이름
     }),
     ],
     css: {
