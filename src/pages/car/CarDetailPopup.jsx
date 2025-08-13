@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useStore from '../../store/store';
-import { useNavigate } from 'react-router-dom';
 import commonUtils from '../../utils/common.js';
 import { fetchData } from '../../utils/dataUtils.js';
 import CommonPopup from '../../components/popup/CommonPopup';
 import OrgSearchPopup from '../../components/popup/OrgSearchPopup';
 import MngUserSearchPopup from '../../components/popup/UserSearchPopup';
 import Under26UserSearchPopup from '../../components/popup/UserSearchPopup';
+import FuelCardPopup from '../car/FuelCardPopup';
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import Modal from 'react-bootstrap/Modal';
@@ -18,15 +18,15 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   const [vStyle, setVStyle] = useState({vDISPLAY: 'show', vBTNDEL: 'show', vDISABLED: ''});  
   const [showOrgPopup, setShowOrgPopup] = useState(false);
   const [showMngUserPopup, setShowMngUserPopup] = useState(false);
+  const [showFuelCardPopup, setShowFuelCardPopup] = useState(false);  
   const [showUnder26UserPopup, setShowUnder26UserPopup] = useState(false);
   const [carList, setCarList] = useState({});
   const initialCarInfo = {GUBUN: '', PRECARID: '', CARID: '', CARNO: '', RENTALTYPE: '', MGMTSTATUS: '', CARCD: '', USEFUEL: '', MAINCOMPPHONE: '', CARACQUIREDDT: today, RENTALEXFIREDDT: today, CARREGDATE: today
                                           , CARPRICE: '', RENTALPRICE: '', INSURANCE: '', DEDUCTIONYN: '', ORGGROUP: '', ORGCD: '', ORGNM: '', PRIMARYMNGEMPNO: '', PRIMARYMNGEMPNM: '', PRIMARYMNGMOBILE: '', PRIMARYGARAGEADDR: '', SAFETYMANAGER: ''
                                           , INVERTER: '', NOTICE: '', UNDER26AGEEMPNO: '', UNDER26AGEEMPNM: '', UNDER26AGEJUMINBTRTHNO: '', UNDER26AGECHGDT: '', CARDNO: '', EXFIREDT: '', NOTICE2: ''};
   const [carInfo, setCarInfo] = useState(initialCarInfo);
-  const [chkCarId, setChkCarId] = useState('');      
-                              
-  const navigate = useNavigate();
+  const [chkCarId, setChkCarId] = useState('');
+  
   useEffect(() => {
     // 컴포넌트 언마운트 시 테이블 정리
     const initializeComponent = async () => {
@@ -123,7 +123,6 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   
   const validateDelForm = () => {
     if (!carInfo.CARID || carInfo.CARID === '') {
-      alert(1);
       return "잘못된 접근입니다.";
     }
 
@@ -333,9 +332,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   const handleMaxLength = (e, maxlength) => {
     const value = e.target.value;
     
-    if (value > maxlength) {
-      e.target.value = value.substring(0, maxlength);
-    }
+    e.target.value = value.substring(0, maxlength);
   }
 
   if (!show) return null;
@@ -555,8 +552,21 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         <div className="mb-2 row">
           <div className="col d-flex">
             <label className="form-label flex-shrink-0 me-2" htmlFor="cardNo" style={{width:60 +'px', paddingTop:6 + 'px'}}>주유카드</label>
+            <CommonPopup show={showFuelCardPopup} onHide={() => setShowFuelCardPopup(false)} title={'주유카드 선택'}>
+              <div>
+                <FuelCardPopup
+                  onClose={() => setShowFuelCardPopup(false)}
+                  onConfirm={(selectedRows) => {
+                    const cardNo = selectedRows.length > 0 ? selectedRows[0].CARDNO : '';
+                    const exfireDt = selectedRows.length > 0 ? selectedRows[0].EXFIREDT : '';
+                    setCarInfo({ ...carInfo, CARDNO: cardNo, EXFIREDT: exfireDt });
+                  }}
+                  checkCarNo={carInfo.CARNO} //차량번호를 넘겨서 주유카드 조회
+                />
+              </div>
+            </CommonPopup>
             <input type="text" value={carInfo.CARDNO} className={`form-control ${styles.formControl}`} id="cardNo" style={{width:200 +'px'}} disabled="disabled" onChange={(e) => {setCarInfo({ ...carInfo, CARDNO: e.target.value })}}/>
-            <button type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 + 'px', height:28 + 'px', marginLeft:10 + 'px'}} onClick={(e) => {alert('작업중')}}>선택</button>
+            <button type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 + 'px', height:28 + 'px', marginLeft:10 + 'px'}} onClick={(e) => {setShowFuelCardPopup(true)}}>선택</button>
           </div>
           <div className="col d-flex">
             <label className="form-label flex-shrink-0 me-2" htmlFor="exfireDt" style={{width:60 +'px', paddingTop:6 + 'px'}}>유효기간</label>
