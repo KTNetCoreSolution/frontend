@@ -25,7 +25,7 @@ const CarListPopup = ({ onClose, onConfirm, checkCardNo}) => {
   const [isOpen, setIsOpen] = useState(false);
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
-  const [filters, setFilters] = useState({ searchField: "ORG", searchText: "" });
+  const [filters, setFilters] = useState({ searchField: "CARNO", searchText: "" });
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [tableStatus, setTableStatus] = useState("initializing");
@@ -217,7 +217,7 @@ const CarListPopup = ({ onClose, onConfirm, checkCardNo}) => {
     <div className={styles.overlay}>
       <div className={styles.popupContainer}>
         <div className={styles.header}>
-          <h3>주유카드 검색</h3>
+          <h3>차량검색</h3>
           <button className={styles.closeButton} onClick={handleClose}>
             ×
           </button>
