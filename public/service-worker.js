@@ -1,5 +1,5 @@
 // 빌드 시에 해당 코드 내의 __BUILD_HASH__는 Vite의 define 옵션에 의해 문자열로 치환됩니다.
-const CACHE_NAME = `my-cache-${__BUILD_HASH__}`;
+const CACHE_NAME = `my-cache-test12`;
 
 // 기타 워커 이벤트
 self.addEventListener('install', event => {
