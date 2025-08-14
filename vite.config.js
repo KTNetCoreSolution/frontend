@@ -38,17 +38,17 @@ export default defineConfig(({ mode, command }) => {
       sourcemap: env.VITE_DEBUG === 'true',    // 디버그용 sourcemap 생성 여부
       minify: 'esbuild',                       // 코드 압축 방식
       chunkSizeWarningLimit: 1000,              // 청크 크기 경고 기준
-      rollupOptions: {
-        output: {
-          entryFileNames: 'assets/[name].[hash].js',     // 엔트리 자원명에 해시
-          chunkFileNames: 'assets/[name].[hash].js',     // 코드 분할 청크에 해시
-          assetFileNames: 'assets/[name].[hash][extname]', // 기타 자원에 해시
-        },
-      },
+      // rollupOptions: {
+      //   output: {
+      //     entryFileNames: 'assets/[name].[hash].js',     // 엔트리 자원명에 해시
+      //     chunkFileNames: 'assets/[name].[hash].js',     // 코드 분할 청크에 해시
+      //     assetFileNames: 'assets/[name].[hash][extname]', // 기타 자원에 해시
+      //   },
+      // },
     },
-    define: {
-      __BUILD_HASH__: `'${Date.now()}'`, // 또는 보다 정교한 해시 생성 방법
-    },
+    // define: {
+    //   __BUILD_HASH__: `'${Date.now()}'`, // 또는 보다 정교한 해시 생성 방법
+    // },
   };
 
   let envConfig = {};
