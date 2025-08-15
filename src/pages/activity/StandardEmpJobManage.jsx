@@ -10,31 +10,11 @@ import { initialFilters } from '../../utils/tableEvent';
 import { handleDownloadExcel } from '../../utils/tableExcel';
 import { fetchData } from '../../utils/dataUtils';
 import StandardEmpJobRegPopup from './popup/StandardEmpJobRegPopup';
+import StandardBizEmpJobRegPopup from './popup/StandardBizEmpJobRegPopup';
 import styles from '../../components/table/TableSearch.module.css';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 
 const fn_CellNumber = { editor: 'number', editorParams: { min: 0 }, editable: true };
-const fn_CellSelect = (values) => ({ editor: 'list', editorParams: { values, autocomplete: true }, editable: true });
-
-const fn_HandleCellEdit = (cell, field, setData, tableInstance) => {
-  const rowId = cell.getRow().getData().ID;
-  const newValue = cell.getValue();
-  setTimeout(() => {
-    setData((prevData) =>
-      prevData.map((row) => {
-        if (String(row.ID) === String(rowId)) {
-          const updatedRow = { ...row, [field]: newValue };
-          if (updatedRow.isDeleted === 'N' && updatedRow.isAdded === 'N') {
-            updatedRow.isChanged = 'Y';
-          }
-          return updatedRow;
-        }
-        return row;
-      })
-    );
-    if (tableInstance.current) tableInstance.current.redraw();
-  }, 0);
-};
 
 // getFieldOptions 함수
 const getFieldOptions = (fieldId, dependentValue = '', classData) => {
@@ -79,24 +59,14 @@ const getFieldOptions = (fieldId, dependentValue = '', classData) => {
     return [{ value: 'all', label: '==소분류==' }, ...Array.from(uniqueMap.values())];
   }
 
-  if (fieldId === 'WORKTYPE') {
-    return [
-      { value: '', label: '선택' },
-      { value: '정규', label: '정규' },
-      { value: '계약', label: '계약' },
-      { value: '파견', label: '파견' },
-      { value: '일근', label: '일근' },
-    ];
-  }
-
   if (fieldId === 'filterSelect') {
     return [
       { value: '', label: '선택' },
       { value: 'CLASSANM', label: '대분류' },
       { value: 'CLASSBNM', label: '중분류' },
       { value: 'CLASSCNM', label: '소분류' },
-      { value: 'NAME', label: '이름' },
-      { value: 'WORKTYPE', label: '근무형태' },
+      { value: 'EMPNM', label: '이름' },
+      { value: 'WORKNM', label: '근무형태' },
     ];
   }
 
@@ -345,11 +315,12 @@ const StandardEmpJobManage = () => {
     { headerHozAlign: 'center', hozAlign: 'left', title: '대분류', field: 'CLASSANM', sorter: 'string', width: 150 },
     { headerHozAlign: 'center', hozAlign: 'left', title: '중분류', field: 'CLASSBNM', sorter: 'string', width: 150 },
     { headerHozAlign: 'center', hozAlign: 'left', title: '소분류', field: 'CLASSCNM', sorter: 'string', width: 250 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '이름', field: 'NAME', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKTYPE', sorter: 'string', width: 100, ...fn_CellSelect(getFieldOptions('WORKTYPE', '', classData).map((item) => item.value)), cellEdited: (cell) => fn_HandleCellEdit(cell, 'WORKTYPE', setData, tableInstance) },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업일시', field: 'WORKDATETIME', sorter: 'string', width: 180, formatter: (cell) => `${cell.getData().WORKDATE} ${cell.getData().STARTTIME} ~ ${cell.getData().ENDTIME}` },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKHOURS', sorter: 'number', width: 100, ...fn_CellNumber, cellEdited: (cell) => fn_HandleCellEdit(cell, 'WORKHOURS', setData, tableInstance) },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'QUANTITY', sorter: 'number', width: 150, ...fn_CellNumber, cellEdited: (cell) => fn_HandleCellEdit(cell, 'QUANTITY', setData, tableInstance) },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '이름', field: 'EMPNM', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible:false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업일시', field: 'WORKDATETIME', sorter: 'string', width: 180 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKH', sorter: 'number', width: 100, ...fn_CellNumber },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'QUANTITY', sorter: 'number', width: 150, ...fn_CellNumber },
   ];
 
   const loadData = async () => {
@@ -381,45 +352,7 @@ const StandardEmpJobManage = () => {
         return;
       }
       const responseData = Array.isArray(response.data) ? response.data : [];
-
-      const mappedData = responseData.map((row, index) => {
-        const classInfo = classData.find(
-          (item) =>
-            item.CLASSACD === row.CLASSACD &&
-            item.CLASSBCD === row.CLASSBCD &&
-            item.CLASSCCD === row.CLASSCCD
-        );
-        return {
-          ID: String(row.ID || index + 1),
-          CLASSACD: row.CLASSACD || '',
-          CLASSBCD: row.CLASSBCD || '',
-          CLASSCCD: row.CLASSCCD || '',
-          CLASSANM: classInfo ? classInfo.CLASSANM : '',
-          CLASSBNM: classInfo ? classInfo.CLASSBNM : '',
-          CLASSCNM: classInfo ? classInfo.CLASSCNM : '',
-          NAME: row.NAME || `Employee ${index + 1}`,
-          WORKTYPE: row.WORKTYPE || '',
-          WORKDATE: row.WORKDATE || today,
-          STARTTIME: row.STARTTIME || '09:00',
-          ENDTIME: row.ENDTIME || '18:00',
-          WORKHOURS: row.WORKHOURS || 8,
-          QUANTITY: row.QUANTITY || 1,
-          WORKDATETIME: `${row.WORKDATE || today} ${row.STARTTIME || '09:00'} ~ ${row.ENDTIME || '18:00'}`,
-          isDeleted: 'N',
-          isAdded: 'N',
-          isChanged: 'N',
-        };
-      });
-
-      const seen = new Set();
-      const filteredData = mappedData.filter((row) => {
-        const key = `${row.CLASSACD}-${row.CLASSBCD}-${row.CLASSCCD}-${row.NAME}-${row.WORKDATE}-${row.STARTTIME}`;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true; // 추가 필터링 조건이 필요하면 여기에 추가
-      });
-
-      setData(filteredData);
+      setData(responseData);
     } catch (err) {
       console.error('데이터 로드 실패:', err);
       errorMsgPopup('데이터를 가져오는 중 오류가 발생했습니다.');
@@ -444,14 +377,6 @@ const StandardEmpJobManage = () => {
         tableInstance.current = createTable(tableRef.current, columns, [], {
           headerHozAlign: 'center',
           layout: 'fitColumns',
-          rowFormatter: (row) => {
-            const data = row.getData();
-            const el = row.getElement();
-            el.classList.remove(styles.deletedRow, styles.addedRow, styles.editedRow);
-            if (data.isDeleted === 'Y') el.classList.add(styles.deletedRow);
-            else if (data.isAdded === 'Y') el.classList.add(styles.addedRow);
-            else if (data.isChanged === 'Y') el.classList.add(styles.editedRow);
-          },
         });
         if (!tableInstance.current) throw new Error('createTable returned undefined or null');
         setTableStatus('ready');
@@ -501,8 +426,8 @@ const StandardEmpJobManage = () => {
           { field: 'CLASSANM', type: 'like', value: filterText },
           { field: 'CLASSBNM', type: 'like', value: filterText },
           { field: 'CLASSCNM', type: 'like', value: filterText },
-          { field: 'NAME', type: 'like', value: filterText },
-          { field: 'WORKTYPE', type: 'like', value: filterText },
+          { field: 'EMPNM', type: 'like', value: filterText },
+          { field: 'WORKNM', type: 'like', value: filterText },
         ], 'or');
       } else {
         tableInstance.current.clearFilter();
@@ -605,7 +530,11 @@ const StandardEmpJobManage = () => {
         <div ref={tableRef} className={styles.tableSection} style={{ visibility: loading || tableStatus !== 'ready' ? 'hidden' : 'visible' }} />
       </div>
       <StandardClassSelectPopup show={showClassPopup} onHide={() => setShowClassPopup(false)} onSelect={handleClassSelect} data={classData} />
-      <StandardEmpJobRegPopup show={showAddPopup} onHide={handleAddCancel} filters={filters} data={classData} />
+      {filters.classGubun === 'BIZ' ? (
+        <StandardBizEmpJobRegPopup show={showAddPopup} onHide={handleAddCancel} filters={filters} data={classData} />
+      ) : (
+        <StandardEmpJobRegPopup show={showAddPopup} onHide={handleAddCancel} filters={filters} data={classData} />
+      )}
     </div>
   );
 };

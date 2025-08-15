@@ -1,0 +1,267 @@
+.customModal {
+  max-width: 95vw !important; /* Responsive max-width */
+  max-height: 95vw !important; /* Responsive max-width */
+  margin: 0 auto;
+}
+
+.formTable {
+  width: 100%;
+  border-collapse: collapse;
+  box-sizing: border-box; /* padding과 border 포함 */
+}
+
+.formTable td {
+  padding: 8px;
+  border: 1px solid #ced4da;
+  vertical-align: middle;
+  box-sizing: border-box; /* padding과 border 포함 */
+  overflow: hidden; /* 내용 오버플로우 방지 */
+}
+
+.td1 {
+  width: 114px !important;
+}
+
+.td3, .td5, .td7, .td9 {
+  width: 80px !important;
+}
+
+.td2, .td4, .td6 {
+  width: 160px !important;
+}
+
+
+.select {
+  width: 100%; /* 부모 td에 맞춰 조정 */
+  max-width: 200px; /* 최대 너비 제한 */
+  padding: 6px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 14px;
+  box-sizing: border-box; /* padding 포함 계산 */
+}
+
+.input {
+  width: 100%; /* 부모 td에 맞춰 조정 */
+  max-width: 200px; /* 최대 너비 제한 */
+  padding: 6px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 14px;
+  box-sizing: border-box; /* padding 포함 계산 */
+}
+
+.rowInput {
+  width: 60px;
+  padding: 4px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 12px;
+  margin-right: 5px;
+}
+
+.timeSelect {
+  width: auto;
+  margin: 0 5px;
+}
+
+.selectBtn {
+  margin-left: 5px;
+  padding: 6px 12px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.selectBtn:hover {
+  opacity: 0.9;
+}
+
+.listTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.listTable thead {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.listTable tbody {
+  display: block;
+  max-height: 250px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.listTable th, .listTable td {
+  padding: 8px;
+  border: 1px solid #ced4da;
+  text-align: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listTable th {
+  background-color: #f8f9fa;
+}
+
+.deleteBtn {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.deleteBtn:hover {
+  opacity: 0.9;
+}
+
+.btn {
+  padding: 6px 12px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.btnSecondary {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.btnPrimary {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.noteSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.processTableContainer {
+  width: 100%;
+  max-height: 160px;
+  overflow-y: auto;
+  display: block;
+}
+
+.processTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.processTable td {
+  padding: 4px;
+  border: 1px solid #ced4da;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.processTable th {
+  padding: 4px;
+  border: 1px solid #ced4da;
+  text-align: center;
+  background-color: #f8f9fa;
+  white-space: nowrap;
+}
+
+.processTable td, .processTable th {
+  width: calc(100% / 9);
+  max-width: calc(100% / 9);
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  table-layout: fixed; /* 열 너비 고정 */
+  box-sizing: border-box;
+}
+
+.listTable thead {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.listTable tbody {
+  display: block;
+  max-height: 250px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.listTable th, .listTable td {
+  padding: 8px;
+  border: 1px solid #ced4da;
+  text-align: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.thNo, .thWorkDate, .thClassA, .thClassB, .thClassC, .thCustomer, .thDispatch, .thWorkers, .thWorkTime, .thLines, .thProcess, .thProcessTime, .thAction {
+  /* 열 너비 지정 (총 1200px에 맞춰 조정) */
+  box-sizing: border-box;
+}
+
+.thNo { width: 50px; }
+.thWorkDate { width: 94px; }
+.thClassA { width: 120px; }
+.thClassB { width: 120px; }
+.thClassC { width: 120px; }
+.thCustomer { width: 80px; }
+.thDispatch { width: 100px; }
+.thWorkers { width: 90px; }
+.thWorkTime { width: 80px; }
+.thLines { width: 60px; }
+.thProcess { width: 100px; }
+.thProcessTime { width: 100px; }
+.thAction { width: 60px; }
+
+.listTable th {
+  background-color: #f8f9fa;
+}
+
+.deleteBtn {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.deleteBtn:hover {
+  opacity: 0.9;
+}
+
+/* 기존 스타일 유지 */
+.listTableContainer {
+  width: 100%;
+  display: block;
+}
