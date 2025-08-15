@@ -164,7 +164,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   border: unset !important;
   min-height: 95px;
   cursor: pointer;
-  justify-content: center;
+  justify-content: center;npm 
   align-items: center;
   padding: 1rem;
   gap: 6px;
@@ -178,4 +178,5 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   font-weight: 700;
   text-align: center;
   margin-bottom: 0;
+  
 }
