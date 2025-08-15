@@ -7,6 +7,7 @@ import { checkTokenValiditySimple } from '../../utils/authUtils';
 import { fetchData } from '../../utils/dataUtils';
 import logo from '../../assets/images/logo.png';
 import styles from './MobileMainLayout.module.css';
+import '../../assets/css/globalMobile.css';
 
 const ENV = import.meta.env.VITE_ENV || 'local';
 const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
@@ -83,9 +84,9 @@ const MobileMainLayout = () => {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <div className={styles.logo} onClick={() => navigate('/mobile/Main')}>
-          <img src={logo} alt="Logo" className={styles.logoImage} />
+      <header className="header">
+        <div className="logo" onClick={() => navigate('/mobile/Main')}>
+          <img src={logo} alt="Logo" className="logoImage" />
         </div>
         <button className={styles.logoutButton} onClick={handleLogout}>
           Logout
@@ -105,14 +106,14 @@ const MobileMainLayout = () => {
           />
         </div>
       )}
-      <section className={styles.main}>
+      <section className="main">
         <Suspense fallback={<div>Loading...</div>}>
           <Outlet />
         </Suspense>
       </section>
-      <footer className={styles.footer}>
+      {/* <footer className={styles.footer}>
         <p>© 2025 xAI. All rights reserved.</p>
-      </footer>
+      </footer> */}
     </div>
   );
 };
