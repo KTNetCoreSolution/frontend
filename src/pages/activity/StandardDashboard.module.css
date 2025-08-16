@@ -1,0 +1,92 @@
+.container {
+  width: 90em;
+  padding: 15px;
+  margin: 0 auto;
+  background-color: #e9ecef;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.inputSection {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.chartsContainer {
+  display: flex;
+  flex: 3;
+  gap: 15px;
+}
+
+.rightInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rightHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.monthInput {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.refreshButton {
+  padding: 5px 10px;
+  background-color: #d6dfdf;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.gridTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border: 1px solid #ccc;
+}
+
+.gridTable th, .gridTable td {
+  padding: 8px;
+  text-align: center;
+  border: 1px solid #ccc;
+}
+
+.headquarterSection {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.fieldSection {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.subSection {
+  flex: 1;
+  text-align: center;
+}
+
+.chart {
+  height: 250px;
+  border: 1px solid gray; /* 회색 외각선 */
+  border-radius: 5px;
+  background-color: #fff;
+}
