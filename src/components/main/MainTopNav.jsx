@@ -11,7 +11,7 @@ const MainTopNav = () => {
   }
 
   return (
-    <ul className={styles.navList}>
+    <ul className="navList">
       {menu.map((item) => (
         <MenuItem key={item.MENUID} item={item} />
       ))}

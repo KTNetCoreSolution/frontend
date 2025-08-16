@@ -18,7 +18,11 @@ const Main = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const isMobileRoute = window.location.host === MOBILE_DOMAIN || location.pathname.startsWith(`${BASE_NAME}/mobile`);
+    // const isMobileRoute = window.location.host === MOBILE_DOMAIN || location.pathname.startsWith(`${BASE_NAME}/mobile`);
+    const isMobileRoute = location.pathname.startsWith('/mobile') || window.location.host === MOBILE_DOMAIN;
+
+    document.body.classList.remove('web', 'mobile');
+    document.body.classList.add(isMobileRoute ? 'mobile' : 'web');
     
     // 디버깅 로그
     if (import.meta.env.VITE_DEBUG === 'true') {

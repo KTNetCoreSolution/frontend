@@ -10,11 +10,11 @@
 
 /* Set smaller font size and scaling factor */
 :root {
-  --bs-body-font-size: 0.8rem; /* 20% reduction from 1rem */
-  --bs-body-line-height: 1.4; /* Adjusted for smaller font */
-  --bs-body-line-height: 1.4; /* Adjusted for smaller font */
-  --bs-scaling: 0.8; /* Scaling factor for sizes and padding */
+  --bs-body-font-size: 1rem; /* 16px */
+  --bs-body-line-height: 1.4;
   --bs-body-bg: #ffffff;
+  --bs-gutter-x: 0;
+  --bs-font-color: #1E2124;
 }
 
 /* Apply to body */
@@ -90,12 +90,12 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 
 /* Navbars and navs */
-.nav-link, .navbar-brand, .navbar-text {
+/* .nav-link, .navbar-brand, .navbar-text {
   font-size: var(--bs-body-font-size);
 }
 .nav-link {
   padding: calc(0.5rem * var(--bs-scaling)) calc(1rem * var(--bs-scaling));
-}
+} */
 
 /* Alerts */
 .alert {
@@ -123,11 +123,125 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 /* Responsive adjustments */
 @media (max-width: 576px) {
   :root {
-    --bs-body-font-size: 0.75rem; /* 12px for mobile */
-    --bs-scaling: 0.75;
+    /* --bs-body-font-size: 0.75rem;
+    --bs-scaling: 0.75; */
   }
 }
 
 .tabulator {
     overflow-x: auto; /* 가로 스크롤 활성화 */
+}
+
+/* 250815 이후 추가 */
+.header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  background: linear-gradient(90deg, #2CBBB7 0%, #216DB2 62%);
+  padding: 24px 40px;  
+  gap: 7.5rem;
+}
+.headerNavGroup {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1;
+}
+.headerMenu {
+  display: flex;
+}
+.headerMenu ul {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 0;
+}
+.logo {
+  cursor: pointer;
+}
+.logoImage {
+  height: auto; 
+  width: 7.5rem;
+  display: block;
+  cursor: pointer;
+}
+.main {
+  padding: 2.5rem;
+}
+.nav {
+  position: relative;
+  z-index: 1000;
+  width: 100%;
+  text-align: center;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: default;
+  font-size: 1.125rem;
+}
+.navList {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  margin: 0;
+}
+.nav ul {
+  display: flex;
+  margin-bottom: 0;
+  gap: 24px;
+}
+.nav li {
+  display: inline-flex;
+  margin: 0;
+  padding: 1rem 0;
+  position: relative;
+}
+.nav li a,
+.nav li span {
+  display: flex;
+  text-decoration: none;
+  padding: 0;
+}
+
+.nav li:hover,
+.nav li.active {
+  /* top: 3px; */
+  background: none;
+}
+
+.nav li.active a,
+.nav li.active span {
+  /* background: var(--secondary-color);
+  color: var(--white); */
+}
+
+.menuItem {
+  position: relative;
+  padding: 0;
+}
+
+.menuLink {
+  display: flex;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--text-color);
+  padding: 0;
+}
+
+.menuLink:hover {
+  /* background-color: #ddd; */
+}
+
+.navLink {
+  text-decoration: none;
+  color: var(--text-color);
+  padding: 0;
+  display: flex;
+}
+
+.navLink:hover {
+  /* background-color: #7e9494; */
+}
+
+.nav .navLink.navLinkActive {
+  /* background-color: var(--primary-color) !important;
+  color: var(--white) !important; */
 }

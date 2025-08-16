@@ -10,6 +10,7 @@ import useStore from '../../store/store';
 import { fetchData } from '../../utils/dataUtils';
 import { hasPermission, checkTokenValiditySimple } from '../../utils/authUtils';
 import styles from './MainLayout.module.css';
+import '../../assets/css/global.css';
 import logo from '../../assets/images/logo.png';
 
 const MainLayout = () => {
@@ -138,24 +139,24 @@ const MainLayout = () => {
 
   return (
     <div>
-      <header id="header" className={styles.header}>
-        <div className={styles.logo} onClick={handleLogoClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && handleLogoClick(e)}>
-          <img src={logo} alt="Logo" className={styles.logoImage} />
+      <header id="header" className="header">
+        <div className="logo" onClick={handleLogoClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && handleLogoClick(e)}>
+          <img src={logo} alt="Logo" className="logoImage" />
         </div>
-        <div className={styles.headerNavGroup}>
-          <MainHeader />
-          <div className={styles.headerNav}>
-            <nav className={styles.nav}>
+        <div className="headerNavGroup">
+          <div className="headerNav">
+            <nav className="nav">
               <MainTopNav />
             </nav>
           </div>
+          <MainHeader />
         </div>
       </header>
       <div>
         <MainTopNavLoc />
       </div>
       {loading.isLoading && (
-        <div className={styles.progressBarContainer}>
+        <div className="progressBarContainer">
           <CircularProgressbar
             value={loading.progress}
             text={`${Math.round(loading.progress)}%`}
@@ -168,7 +169,7 @@ const MainLayout = () => {
           />
         </div>
       )}
-      <section className={styles.main}>
+      <section className="main">
         <Suspense fallback={<div>Loading...</div>}>
           <Outlet />
         </Suspense>

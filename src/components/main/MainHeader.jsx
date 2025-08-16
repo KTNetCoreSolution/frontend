@@ -79,22 +79,16 @@ const MainHeader = () => {
   }, [user, navigate, setUser, clearUser]);
 
   return (
-    <div className={styles.headerTop}>
-      <div className={styles.headerMenu}>
+    <div className="headerTop">
+      <div className="headerMenu">
         {user && user.empNm ? (
           <>
             <ul>
               <li>{user.empNm} 님 안녕하세요.</li>
-            </ul>
-            <ul>
               <li className={styles.time}>{timeDisplay}</li>
-            </ul>
-            <ul>
               <li onClick={handleExtend} className={styles.extendLink}>
                 연장
               </li>
-            </ul>
-            <ul>
               <li onClick={handleLogout} className={styles.logoutLink}>
                 로그아웃
               </li>

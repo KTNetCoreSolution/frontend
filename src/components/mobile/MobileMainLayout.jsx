@@ -83,7 +83,7 @@ const MobileMainLayout = () => {
   }
 
   return (
-    <div className={styles.container}>
+    <div className="container">
       <header className="header">
         <div className="logo" onClick={() => navigate('/mobile/Main')}>
           <img src={logo} alt="Logo" className="logoImage" />
@@ -93,7 +93,7 @@ const MobileMainLayout = () => {
         </button>
       </header>
       {loading.isLoading && (
-        <div className={styles.progressBarContainer}>
+        <div className="progressBarContainer">
           <CircularProgressbar
             value={loading.progress}
             text={`${Math.round(loading.progress)}%`}
