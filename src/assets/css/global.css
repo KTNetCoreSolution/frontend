@@ -1,3 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+}
+
 /* Global Bootstrap font size and size overrides */
 
 /* Set smaller font size and scaling factor */
@@ -6,7 +14,7 @@
   --bs-body-line-height: 1.4; /* Adjusted for smaller font */
   --bs-body-line-height: 1.4; /* Adjusted for smaller font */
   --bs-scaling: 0.8; /* Scaling factor for sizes and padding */
-  --bs-body-bg: #f3f3f3;
+  --bs-body-bg: #ffffff;
 }
 
 /* Apply to body */

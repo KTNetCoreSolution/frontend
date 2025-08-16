@@ -1,3 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+
+}
+
 /* Global Bootstrap font size and size overrides for mobile (global.css 기반 오버라이드) */
 
 /* global.css의 기본값을 상속받고 모바일에 맞게 조정 */
@@ -5,7 +13,6 @@
   --bs-body-font-size: 0.75rem !important; /* 12px로 조정 */
   --bs-body-line-height: 1.4 !important;
   --bs-scaling: 0.75 !important; /* 모바일 스케일링 */
-  --bs-body-bg: #f3f3f3 !important;
 }
 
 /* global.css의 body 스타일 오버라이드 */
@@ -113,11 +120,11 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 
 /* Mobile-specific adjustments */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .card {
     margin-bottom: calc(1rem * var(--bs-scaling)) !important;
   }
-}
+} */
 
 @media (max-width: 576px) {
   :root {
@@ -128,4 +135,48 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 
 .tabulator {
   overflow-x: auto !important; /* 가로 스크롤 활성화 */
+}
+
+
+/* 250815 이후 추가 */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #2CBBB7 0%, #216DB2 62%);
+  padding: 9px 0 9px 16px;  
+}
+.logo {
+  cursor: pointer;
+}
+.logoImage {
+  height: 2rem; 
+  width: auto;
+  display: block;
+  cursor: pointer;
+}
+.main {
+  padding: 1rem;
+}
+.cardMenu {
+  --bs-card-bg: #F5F7FA !important;
+  --bs-card-border-radius: 12px !important;
+  border: unset !important;
+  min-height: 95px;
+  cursor: pointer;
+  justify-content: center;npm 
+  align-items: center;
+  padding: 1rem;
+  gap: 6px;
+}
+.cardMenu img.menu {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+.cardMenu p {
+  font-size: 14px !important;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0;
+  
 }

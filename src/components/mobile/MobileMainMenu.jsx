@@ -4,6 +4,8 @@ import useStore from '../../store/store';
 import { fetchDataGet } from '../../utils/dataUtils';
 import mobileMenu from '../../data/mobileMenu.json';
 
+const images = import.meta.glob('../../assets/images/*', { eager: true, query: '?url', import: 'default' });
+
 const MobileMainMenu = () => {
   const navigate = useNavigate();
   const { setUser } = useStore();
@@ -31,21 +33,25 @@ const MobileMainMenu = () => {
 
   return (
     <div className="container-fluid p-0">
-      <div className="p-3">
-        <div className="row row-cols-2 g-3">
-          {mobileMenu.map((item) => (
-            <div key={item.MENUID} className="col">
+      <div className="row row-cols-2 g-3">
+        {mobileMenu.map((item) => {
+          const imgSrc = images[`../../assets/images/${item.ICON}`];
+          return (
+            <div key={item.MENUID}>
               <div
-                className="card text-center p-3 shadow-sm"
+                className="card cardMenu"
                 onClick={() => handleMenuClick(item.URL)}
-                style={{ cursor: 'pointer' }}
               >
-                <i className={`bi bi-${item.ICON} display-6 text-primary`}></i>
-                <p className="mt-2 mb-0">{item.MENUNM}</p>
+                <img
+                  src={imgSrc}
+                  alt={item.MENUNM}
+                  className='menu'
+                />
+                <p>{item.MENUNM}</p>
               </div>
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
     </div>
   );
