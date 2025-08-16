@@ -94,7 +94,7 @@ const StandardDashboard = () => {
               let result = `${params[0].name}<br/>`;
               params.forEach(param => {
                 if (param.seriesName === '업무량(시간)') {
-                  result += `${param.seriesName}: ${param.value} (원본: ${param.data * 100})<br/>`;
+                  result += `${param.seriesName}: ${param.data * 100}<br/>`;
                 } else {
                   result += `${param.seriesName}: ${param.value}<br/>`;
                 }
