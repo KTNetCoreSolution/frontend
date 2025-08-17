@@ -3,7 +3,10 @@ import * as echarts from 'echarts';
 import styles from './StandardDashboard.module.css';
 import chartTotalData from '../../data/standardactivity_charttotal.json';
 import chartTotalData2 from '../../data/standardactivity_charttotal2.json';
-import headquarterData from '../../data/standardactivity_headquarter_data.json';
+import headquarterLineData from '../../data/standardactivity_headquarter_line_data.json';
+import headquarterDesignData from '../../data/standardactivity_headquarter_design_data.json';
+import headquarterBizData from '../../data/standardactivity_headquarter_biz_data.json';
+
 import fieldworkData from '../../data/standardactivity_fieldwork_data2.json';
 
 const StandardDashboard = () => {
@@ -84,6 +87,12 @@ const StandardDashboard = () => {
     // 2.1-2.3 Grouped Bar Charts (업무량(시간) / 100 표시, tooltip에 원본)
     const titles2 = ['선로', '설계', 'BIZ'];
     for (let i = 0; i < 3; i++) {
+      let chartData;
+
+      if(i === 0) chartData = headquarterLineData;
+      else if(i === 1) chartData = headquarterDesignData;
+      else if(i === 2) chartData = headquarterBizData;
+      
       if (chartRefs[i + 2].current) {
         const chart = echarts.init(chartRefs[i + 2].current);
         chart.setOption({
@@ -103,14 +112,14 @@ const StandardDashboard = () => {
             }
           },
           legend: { data: ['인원', '입력수', '업무량(시간)', '평균(시간)'] },
-          xAxis: { type: 'category', data: headquarterData.map(item => item.본부) },
+          xAxis: { type: 'category', data: chartData.map(item => item.ORGNM) },
           yAxis: { type: 'value' },
           barWidth: '15%', // 바 너비 더 줄임
           series: [
-            { name: '인원', type: 'bar', data: headquarterData.map(item => item.인원) },
-            { name: '입력수', type: 'bar', data: headquarterData.map(item => item.입력수) },
-            { name: '업무량(시간)', type: 'bar', data: headquarterData.map(item => item['업무량(시간)'] / 100) },
-            { name: '평균(시간)', type: 'bar', data: headquarterData.map(item => item['평균(시간)']) },
+            { name: '인원', type: 'bar', data: chartData.map(item => item.인원) },
+            { name: '입력수', type: 'bar', data: chartData.map(item => item.입력수) },
+            { name: '업무량(시간)', type: 'bar', data: chartData.map(item => item['업무량(시간)'] / 100) },
+            { name: '평균(시간)', type: 'bar', data: chartData.map(item => item['평균(시간)']) },
           ],
         });
       }
@@ -118,9 +127,15 @@ const StandardDashboard = () => {
 
     // 3.1-3.3 Pie with Rich Text Label (검은색 배경 제거)
     for (let i = 0; i < 3; i++) {
-      if (chartRefs[i + 5]?.current && fieldworkData[i]) {
+      let chartData;
+
+      if(i === 0) chartData = fieldworkData;
+      else if(i === 1) chartData = fieldworkData;
+      else if(i === 2) chartData = fieldworkData;
+
+      if (chartRefs[i + 5]?.current && chartData[i]) {
         const chart = echarts.init(chartRefs[i + 5].current);
-        const data = fieldworkData.map(item => ({
+        const data = chartData.map(item => ({
           name: item.업무 || 'Unknown',
           value: parseFloat(item['비율(%)']) || 0,
           time: item['시간(h)'] || 0
@@ -128,7 +143,7 @@ const StandardDashboard = () => {
         chart.setOption({
           tooltip: {
             trigger: 'item',
-            formatter: '{a} <br/>{b}: {c} ({d}%)'
+            formatter: '<b>{b}</b> <br/>시간(h): {c}<br/>비율(%): {d}'
           },
           series: [{
             name: '업무 비율',
@@ -136,13 +151,13 @@ const StandardDashboard = () => {
             radius: [0, '60%'],
             label: {
               formatter: '{abg|{b}}\n{hr|}\n{per|{d}%}  {value|{c}시간}',
-              backgroundColor: 'transparent', // 검은색 배경 제거
+              backgroundColor: 'transparent',
               borderColor: '#aaa',
               borderWidth: 1,
               borderRadius: 4,
               rich: {
                 abg: {
-                  backgroundColor: 'transparent', // 검은색 배경 제거
+                  backgroundColor: 'transparent',
                   width: '100%',
                   align: 'center',
                   height: 25,
@@ -214,7 +229,7 @@ const StandardDashboard = () => {
           </table>
         </div>
       </div>
-      <h2>본부별 현황</h2>
+      <h2>조직별 현황</h2>
       <div className={styles.headquarterSection}>
         <div className={styles.subSection}>
           <h3>선로</h3>

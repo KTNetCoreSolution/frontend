@@ -9,10 +9,30 @@ import "bootstrap/dist/js/bootstrap.bundle.min.js"; // 로컬 부트스트랩 Ja
 import './index.css'; // index.css는 부트스트랩 이후 로드
 import globalCss from './assets/css/global.css?raw';
 import globalMobileCss from './assets/css/globalMobile.css?raw';
+import useStore from './store/store';
+import {fetchData} from './utils/dataUtils'
 
 // 모바일 도메인 (서버 환경에서만 사용)
 const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
 const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
+
+const initializeVersionCheck = async () => {
+  try {
+    const response = await fetchData('ver/check');
+    // response 자체가 문자열이거나 response.data 사용
+    const serverVersion = response.headers?.['x-server-version'] || response.data || response;
+
+    if (serverVersion) {
+      useStore.getState().setClientVersion(serverVersion);
+    } else {
+      console.error('main.jsx: No serverVersion in response');
+    }
+  } catch (error) {
+    console.error('main.jsx: Initial version check failed:', error);
+  }
+};
+// 초기 버전 체크 실행
+initializeVersionCheck();
 
 const Main = () => {
   const location = useLocation();

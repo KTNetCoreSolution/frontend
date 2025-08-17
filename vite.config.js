@@ -47,7 +47,8 @@ export default defineConfig(({ mode, command }) => {
       },
     },
     define: {
-      __BUILD_HASH__: `'${Date.now()}'`, // 또는 보다 정교한 해시 생성 방법
+      __BUILD_HASH__: envType === 'local' ? '"local-dev"' : `'${Date.now()}'`, // 로컬: 고정값, 그 외: 동적
+       'import.meta.env.__BUILD_HASH__': envType === 'local' ? '"local-dev"' : `'${Date.now()}'`, // 명시적 주입
     },
   };
 

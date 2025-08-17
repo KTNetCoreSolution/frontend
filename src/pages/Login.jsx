@@ -6,7 +6,9 @@ import Join from '../pages/user/Join';
 import PasswordChange from '../pages/user/PasswordChange';
 import { msgPopup } from '../utils/msgPopup';
 import { errorMsgPopup } from '../utils/errorMsgPopup';
-import LicensePopup from '../components/popup/LicensePopup';
+import LicensePopup from '../components/popup/LicensePopup'
+import useStore from '../store/store';
+import {fetchData} from '../utils/dataUtils'
 import LogoBigFVideo from '../assets/video/Logo_big_F.mp4';
 
 const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
@@ -25,6 +27,7 @@ const Login = () => {
   const [showPasswordChangePopup, setShowPasswordChangePopup] = useState(false);
   const [isManualPasswordChange, setIsManualPasswordChange] = useState(false);
   const [showLicensePopup, setShowLicensePopup] = useState(false);
+  const { setClientVersion } = useStore();
   const navigate = useNavigate();
 
   useEffect(() => {
