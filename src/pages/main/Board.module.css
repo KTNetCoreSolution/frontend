@@ -1,6 +1,6 @@
-.boardTitle {
+/* .boardTitle {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
+} */
 
 .boardTitleLine {
     border-bottom: 1px solid #e9e9e9;
@@ -31,10 +31,10 @@
     color: #fff;
 }
 
-.contentContainer {
+/* .contentContainer {
     border-radius: 6px;
     border: 1px solid #dee2e6;
-}
+} */
 
 .contentDate {
     background-color: #ededed !important;

@@ -13,8 +13,10 @@
   --bs-body-font-size: 1rem; /* 16px */
   --bs-body-line-height: 1.4;
   --bs-body-bg: #ffffff;
+  --bs-body-bg-main: #f7f7f7;
   --bs-gutter-x: 0;
   --bs-font-color: #1E2124;
+  --bs-font-secondary-color: #464C53;
 }
 
 /* Apply to body */
@@ -104,9 +106,9 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 
 /* Cards */
-.card-body {
+/* .card-body {
   padding: calc(1rem * var(--bs-scaling));
-}
+} */
 
 /* Badges */
 .badge {
@@ -138,7 +140,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   justify-content: flex-start;
   align-items: center;
   background: linear-gradient(90deg, #2CBBB7 0%, #216DB2 62%);
-  padding: 24px 40px;  
+  padding: 16px 40px;  
   gap: 7.5rem;
 }
 .headerNavGroup {
@@ -152,8 +154,21 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 .headerMenu ul {
   display: flex;
+  align-items: center;
   gap: 24px;
   margin-bottom: 0;
+}
+.headerUser {
+  font-size: 14px;
+  color: var(--white);
+}
+.headerLinkWrap {
+  display: flex;
+  gap: 8px;
+}
+.time {
+  font-size: 14px;
+  color: var(--white);
 }
 .logo {
   cursor: pointer;
@@ -166,6 +181,9 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 .main {
   padding: 2.5rem;
+}
+.mainHome {
+  background: var(--bs-body-bg-main) ;
 }
 .nav {
   position: relative;
@@ -197,7 +215,8 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .nav li a,
 .nav li span {
   display: flex;
-  text-decoration: none;
+  text-decoration: none !important;
+  white-space: nowrap;
   padding: 0;
 }
 
@@ -211,6 +230,87 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .nav li.active span {
   /* background: var(--secondary-color);
   color: var(--white); */
+}
+
+/* Secondary and tertiary menus in mobile */
+.subMenu,
+.menuItem .subMenu .subMenu {
+  position: static;
+  min-width: 100%;
+  box-shadow: none;
+  /* background: #7b8780; */
+  left: 0;
+  top: auto;
+  transform: none;
+}
+
+/* .subMenu li > a,
+.subMenu li > span {
+  padding: 0;
+} */
+
+/* Secondary menu (direct child of .menuItem) */
+.menuItem > .subMenu {
+  position: absolute;
+  top: calc(100% - 10px);
+  left: 0;
+  transform: none;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--white);
+  box-shadow: 0px 7px 29px rgba(100, 100, 111, 0.2);
+  width: 200px;
+  min-width: 200px;
+  list-style: none;
+  margin: 0;
+  padding: 16px 0;
+  opacity: 0;
+  visibility: hidden;
+  border-radius: 6px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tertiary menu (nested submenu) */
+.menuItem .subMenu .subMenu {
+  position: absolute;
+  top: -10px;
+  left: 160px;
+  transform: none;
+}
+
+/* Common submenu visibility */
+.subMenu.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.subMenu li {
+  display: flex;
+  line-height: 150%;
+  padding: 0;
+  margin: 0;
+  line-height: 100%;
+  padding: 0 16px;
+}
+.subMenu li > a,
+.subMenu li > span {
+  display: flex;
+  color: var(--bs-font-color);
+  font-size: 14px;
+  font-weight: normal;
+  text-decoration: none;
+  padding: 0;
+  /* transition: background-color 0.075s var(--transition-easing); */
+}
+
+.subMenu li:hover > a,
+.subMenu li:hover > span {
+  color: #0F9591;
+  font-weight: bold;
+  text-decoration: underline;
+  background: unset;
 }
 
 .menuItem {
@@ -244,4 +344,117 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .nav .navLink.navLinkActive {
   /* background-color: var(--primary-color) !important;
   color: var(--white) !important; */
+}
+
+.extendLink,
+.logoutLink {
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.extendLink {
+  color: var(--bs-font-color);
+  background-color: var(--white);
+  height: 2rem;
+  border-radius: 1rem;
+  padding: 6px 12px;
+}
+
+.logoutLink {
+  color: var(--white);
+  background-color: #1E2124;
+  height: 2rem;
+  border-radius: 1rem;
+  padding: 6px 12px;
+}
+
+.mainContentWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+.mainImgWrap {
+  position: relative;
+  display: flex;
+  border-radius: 12px;
+  width: 100%;
+  height: 186px;
+  overflow: hidden;
+  background: #D9F7FF url('/ktn/src/assets/images/mainImg.png') 64px 0 no-repeat;
+  background-size: 218px auto;
+}
+.mainTxtWrap {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  left: 320px;
+  justify-content: center;
+  height: 100%;
+}
+.mainTxt01 {
+  font-size: 20px;
+  color: var(--bs-font-color);
+  line-height: 150%;
+}
+.mainTxt02 {
+  font-size: 32px;
+  color: #197495;
+  font-weight: bold;
+  line-height: 150%;
+}
+
+h3.boardTitle {
+  font-size: 24px !important;
+  color: var(--bs-font-color);
+  font-weight: bold;
+}
+button.boardBtn01 {
+  font-size: 16px !important;
+  color: #464C53;
+  font-weight: normal;
+  background-color: var(--white);
+  border: 1px solid #8D959E;
+  border-radius: 1rem;
+  padding: 4px 16px;
+  height: 2rem;
+}
+
+.cardMain {
+  display: flex;
+  border-radius: 12px !important;
+  background: var(--white);
+  box-shadow: 0 5px 10px rgba(100, 100, 111, 0.1) !important;
+  padding: 2rem;
+  height: 260px;
+  min-height: 260px;
+}
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0 !important;
+  gap: 1rem;
+}
+.cardContent > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+} 
+.cardContent > div > .title {
+  font-size: 1.25rem !important;
+  color: var(--bs-font-color);
+  padding: 0 !important;
+  line-height: 150% !important;
+}
+.cardContent > div > .body {
+  font-size: 1rem !important;
+  color: var(--bs-font-secondary-color);
+  padding: 0 !important;
+  line-height: 150% !important;
+}
+.cardContent > div > .date {
+  font-size: 1rem !important;
+  color: var(--bs-font-secondary-color);
+  padding: 0 !important;
+  line-height: 150% !important;
 }

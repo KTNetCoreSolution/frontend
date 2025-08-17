@@ -61,70 +61,18 @@
 /* 메뉴 아이템 그룹 (MenuItem 관련) */
 
 
-/* Secondary menu (direct child of .menuItem) */
-.menuItem > .subMenu {
-  position: absolute;
-  top: calc(100% - 10px);
-  left: 0; /* Align to the left edge of the parent */
-  transform: none; /* Remove centering */
-  text-transform: uppercase;
-  color: var(--white);
-  background: var(--white);
-  box-shadow: 0px 7px 29px rgba(100, 100, 111, 0.2);
-  min-width: 200px;
-  list-style: none;
-  padding: 1rem;
-  margin: 0;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-  transition-delay: 0.2s;
-  border-radius: 6px;
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
 
-/* Tertiary menu (nested submenu) */
-.menuItem .subMenu .subMenu {
-  top: -10px;
-  left: 100%; /* Keep it adjacent to the right edge */
-  transform: none;
-  
-}
 
-/* Common submenu visibility */
-.subMenu.visible {
-  opacity: 1;
-  visibility: visible;
-}
-
-.subMenu li > a,
-.subMenu li > span {
-  display: flex;
-  color: var(--bs-font-color);
-  font-size: 14px;
-  text-decoration: none;
-  transition: background-color 0.075s var(--transition-easing);
-}
-
-.subMenu li:hover > a,
-.subMenu li:hover > span {
-  color: var(--white);
-  background: #7b8780;
-}
-
-.headerNavGroup {
+/* .headerNavGroup {
   width: 100%;
-}
+} */
 
 /* 네비 위치 */
-.topNavLoc {
+/* .topNavLoc {
   font-size: 12px;
   color: #6b7770;
   padding: 0 0 0 10px;
-}
+} */
 
 /* --------------------------------------------- */
 /* 헤더 그룹 (MainHeader 관련) */
@@ -182,29 +130,9 @@
   cursor: pointer;
 }
 
-.time {
-  font-weight: bold;
-  color: var(--white);
-}
 
-.extendLink,
-.logoutLink {
-  cursor: pointer;
-  transition: background-color 0.15s var(--transition-easing);
-}
 
-.extendLink {
-  background-color: #217b89;
-}
 
-.logoutLink {
-  background-color: #7b7b7b;
-}
-
-.extendLink:hover,
-.logoutLink:hover {
-  background: rgba(255, 255, 255, 0.2); /* Light hover effect */
-}
 
 /* --------------------------------------------- */
 /* 푸터 그룹 (MainFooter 관련) */
@@ -317,22 +245,7 @@
     padding: 10px;
   }
 
-  /* Secondary and tertiary menus in mobile */
-  .subMenu,
-  .menuItem .subMenu .subMenu {
-    position: static;
-    min-width: 100%;
-    box-shadow: none;
-    background: #7b8780;
-    left: 0;
-    top: auto;
-    transform: none;
-  }
 
-  .subMenu li > a,
-  .subMenu li > span {
-    padding: 10px;
-  }
 
   /* 헤더 */
   .headerTop {

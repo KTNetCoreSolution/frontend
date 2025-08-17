@@ -36,7 +36,7 @@ const MenuItem = ({ item }) => {
 
   return (
     <li
-      className={`${styles.menuItem} ${hasChildren ? styles.menu : ''}`}
+      className={`menuItem ${hasChildren ? 'menu' : ''}`}
       onMouseEnter={() => hasChildren && setShowChildren(true)}
       onMouseLeave={() => hasChildren && setShowChildren(false)}
     >
@@ -53,7 +53,7 @@ const MenuItem = ({ item }) => {
 
           {/* 하위 메뉴는 showChildren일 때만 렌더링 */}
           {showChildren && (
-            <ul className={`${styles.subMenu} ${styles.visible}`}>
+            <ul className="subMenu visible">
               {item.children
                 .filter(child => child.URL || (child.children && child.children.length > 0))
                 .map((child) => (

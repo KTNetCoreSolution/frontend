@@ -94,81 +94,55 @@ const MainHome = () => {
   }, [notices, direction]);
 
   return (
-    <div>
-      <div className="d-flex flex-column h-100 p-2" style={{ width: '98vw' }}>
-        <div className="border w-100 mb-5">
-          <Swiper
-            modules={[Pagination, Autoplay, Navigation]}
-            spaceBetween={0}
-            slidesPerView={1}
-            pagination={{ clickable: true }}
-            autoplay={{ delay: 5000, disableOnInteraction: false }} // 배너 Swiper 딜레이를 5초로 설정
-            navigation
-            loop
-            style={{ height: '200px' }}
-          >
-            {slideImages.length > 0 ? (
-              slideImages.map((image, index) => (
-                <SwiperSlide key={index}>
-                  <img
-                    src={image || 'https://via.placeholder.com/300x200'} // 플레이스홀더 크기 조정
-                    alt={`Slide ${index + 1}`}
-                    className="w-100 h-100 object-fit-cover"
-                    onError={(e) => { e.target.src = 'https://via.placeholder.com/300x200'; }}
-                  />
-                </SwiperSlide>
-              ))
-            ) : (
-              <SwiperSlide>
-                <img
-                  src="https://via.placeholder.com/300x200"
-                  alt="Default Slide"
-                  className="w-100 h-100 object-fit-cover"
-                />
-              </SwiperSlide>
-            )}
-          </Swiper>
+    <div className='mainContentWrap'>
+      <div className='mainImgWrap'>
+        <div className='mainTxtWrap'>
+          <div className='mainTxt01'>AICT 네트워크 인프라 선로 설계부터 유지/보수, 운영까지<br />대한민국 ICT 인프라 운영/관리 전문기업</div>
+          <div className='mainTxt02'>케이티넷코어</div>
         </div>
-        <div className={`w-100 ${styles.contentContainer} p-3`}>
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h3 className={`fs-5 text-dark ${styles.boardTitle}`} style={{ margin: 0 }}>
-              공지사항
-            </h3>
-            <Button
-              variant="text"
-              onClick={() => handleNavigate('/main/boardMain')}
-              style={{ color: '#000', textTransform: 'none', padding: 0 }}
-            >
-              더보기 &gt;
-            </Button>
-          </div>
-          <Swiper
-            modules={[Autoplay]}
-            spaceBetween={10}
-            slidesPerView={4}
-            slidesPerGroup={1}
-            autoplay={{
-              delay: 10000, // 공지사항 Swiper 딜레이 10초
-              disableOnInteraction: false,
-              enabled: notices.length > 4,
-            }}
-            loop={false}
-            style={{ paddingBottom: '10px', width: '100%' }}
+      </div>
+      <div className={`w-100 contentContainer`}>
+        <div className="d-flex justify-content-between align-items-center">
+          <h3 className='boardTitle'>
+            공지사항
+          </h3>
+          <Button
+            variant="text"
+            onClick={() => handleNavigate('/main/boardMain')}
+            className='boardBtn01'
           >
-            {getVisibleNotices().map((notice, index) => (
-              <SwiperSlide
-                key={index}
-                style={{ width: '25%', height: 'auto' }}
-                onClick={() => handleNavigate('/main/boardView', {
-                  noticeid: notice.noticeid,
-                  type: notice.boardgubun,
-                })}
-              >
-                <Card sx={{ minHeight: 200, height: 200, margin: '10px', cursor: 'pointer' }}>
-                  <CardContent>
+            더보기 &gt;
+          </Button>
+        </div>
+        <Swiper
+          modules={[Autoplay]}
+          spaceBetween={10}
+          slidesPerView={4}
+          slidesPerGroup={1}
+          autoplay={{
+            delay: 10000, // 공지사항 Swiper 딜레이 10초
+            disableOnInteraction: false,
+            enabled: notices.length > 4,
+          }}
+          loop={false}
+          style={{ paddingBottom: '10px', width: '100%' }}
+        >
+          {getVisibleNotices().map((notice, index) => (
+            <SwiperSlide
+              key={index}
+              style={{ width: '25%', height: 'auto' }}
+              onClick={() => handleNavigate('/main/boardView', {
+                noticeid: notice.noticeid,
+                type: notice.boardgubun,
+              })}
+            >
+              <Card className='cardMain'>
+                <CardContent className='cardContent'>
+                  <div>
                     <Typography
                       variant="h6"
                       component="div"
+                      className='title'
                       sx={{
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
@@ -181,7 +155,7 @@ const MainHome = () => {
                     </Typography>
                     <Typography
                       variant="body2"
-                      color="text.secondary"
+                      className='body'
                       sx={{
                         display: '-webkit-box',
                         WebkitLineClamp: 3,
@@ -192,15 +166,15 @@ const MainHome = () => {
                     >
                       {notice.contents}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {notice.date || new Date().toLocaleDateString()}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
+                  </div>
+                  <Typography variant="body2" className='date'>
+                    {notice.date || new Date().toLocaleDateString()}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
     </div>
   );

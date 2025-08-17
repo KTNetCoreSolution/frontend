@@ -84,13 +84,11 @@ const MainHeader = () => {
         {user && user.empNm ? (
           <>
             <ul>
-              <li>{user.empNm} 님 안녕하세요.</li>
-              <li className={styles.time}>{timeDisplay}</li>
-              <li onClick={handleExtend} className={styles.extendLink}>
-                연장
-              </li>
-              <li onClick={handleLogout} className={styles.logoutLink}>
-                로그아웃
+              <li className="headerUser">{user.empNm} 님 안녕하세요.</li>
+              <li className="time">{timeDisplay}</li>
+              <li className='headerLinkWrap'>
+                <span onClick={handleExtend} className="extendLink">연장</span>
+                <span onClick={handleLogout} className="logoutLink">로그아웃</span>
               </li>
             </ul>
           </>
