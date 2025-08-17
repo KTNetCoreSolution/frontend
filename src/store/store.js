@@ -20,7 +20,7 @@ const useStore = create(
     {
     name: 'user-storage', // 저장소 키 이름 유지
       storage: createJSONStorage(() => sessionStorage), // localStorage -> sessionStorage로 변경
-      // partialize: (state) => ({ clientVersion: state.clientVersion }),
+      partialize: (state) => ({ clientVersion: state.clientVersion }), //sessionStorage에 clientVersion 이 정보만 나오게함.
     }
   )
 );
