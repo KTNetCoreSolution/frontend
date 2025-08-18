@@ -1,4 +1,4 @@
-import { fetchData, fetchDataGet } from '../utils/dataUtils';
+import { fetchData } from '../utils/dataUtils';
 import useStore from '../store/store';
 
 export const performLogin = async (gubun, empNo, empPwd, captchaInput, navigate, setError) => {
@@ -72,7 +72,7 @@ export const fetchCaptcha = async () => {
       },
       withCredentials: true, // Include credentials for session
     };
-    const response = await fetchDataGet('auth/captcha', {}, config);
+    const response = await fetchData('auth/captcha', {}, config);
     // Check if response is an image
     if (response.type !== 'image/png') {
       // Read JSON error response

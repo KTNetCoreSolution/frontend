@@ -1,9 +1,8 @@
-import { fetchDataGet } from './dataUtils';
+import { fetchData, fetchDataGet } from './dataUtils';
+import useStore from '../store/store';
 
-// Default read permissions for all pages
 const DEFAULT_READ_PERMISSIONS = ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', 'AUTH0005', 'AUTH0006', 'AUTH0007', 'AUTH0008', 'AUTH0009', '', null];
 
-// Specific permissions for write actions or restricted routes
 const PERMISSION_MAP = {
   main: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', '', null],
   mainhome: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', 'AUTH0005', 'AUTH0006', 'AUTH0007', 'AUTH0008', 'AUTH0009', '', null],
@@ -21,8 +20,7 @@ export function hasPermission(userAuth, screen) {
 
 export async function checkTokenValidity(navigate, user, setUser, clearUser) {
   try {
-    const response = await fetchDataGet('auth/live', { extend: true } );
-
+    const response = await fetchDataGet('auth/live', { extend: true }, { withCredentials: true });
     if (response.success) {
       setUser({
         ...user,
@@ -42,18 +40,28 @@ export async function checkTokenValidity(navigate, user, setUser, clearUser) {
 
 export const checkTokenValiditySimple = async (clearUser) => {
   try {
-    const response = await fetchDataGet('auth/check', {}, { withCredentials: true });
+    const response = await fetchDataGet('auth/check', {}, { withCredentials: true }, 'N');
     if (response.success && response.data) {
       return true;
     } else {
       clearUser();
       sessionStorage.removeItem('user-storage');
+      sessionStorage.removeItem('user');
+      sessionStorage.removeItem('menu');
       return false;
     }
   } catch (error) {
-    console.error('Token validation failed:', error);
-    clearUser();
-    sessionStorage.removeItem('user-storage');
-    return false;
+    console.error('authUtils.js: checkTokenValiditySimple failed:', error.response?.status, error.response?.data);
+    if (error.response?.status === 418) {
+
+      return false;
+    } else if (error.response?.status === 401) {
+      clearUser();
+      sessionStorage.removeItem('user-storage');
+      sessionStorage.removeItem('user');
+      sessionStorage.removeItem('menu');
+      return false;
+    }
+    throw error;
   }
 };

@@ -29,7 +29,6 @@ const MainHeader = () => {
     try {
       const response = await fetchData('auth/logout', {}, { withCredentials: true });
       if (response.success) {
-        console.log('Logout successful, cookie cleared');
         clearUser();
         clearMenu();
         sessionStorage.removeItem('user-storage');
