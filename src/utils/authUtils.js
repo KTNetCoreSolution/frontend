@@ -6,7 +6,7 @@ const DEFAULT_READ_PERMISSIONS = ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004'
 // Specific permissions for write actions or restricted routes
 const PERMISSION_MAP = {
   main: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', '', null],
-  mainhome: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', '', null],
+  mainhome: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', 'AUTH0005', 'AUTH0006', 'AUTH0007', 'AUTH0008', 'AUTH0009', '', null],
   oper: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', '', null],
   mainBoard: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', '', null],
   permissions: ['AUTH0001'],
