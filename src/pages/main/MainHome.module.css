@@ -1,14 +1,46 @@
 /* .boardTitle {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
+} */
 
-.contentContainer {
+/* .contentContainer {
   background-color: #fff;
   border: 1px solid #dee2e6;
   border-radius: 6px;
+  padding: 20px;
+} */
+
+.noticeGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 10px;
+  width: 100%;
+}
+
+.gridItem {
+  width: 100%;
+  height: 100%;
+}
+
+.cardMain {
+  height: 100%;
+  min-height: 150px; /* 카드 최소 높이 설정 */
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.emptyNotice {
+  color: #999;
+  text-align: center;
+  padding: 20px;
 }
 
 .swiper-button-prev,
 .swiper-button-next {
   color: #000;
-} */
+}

@@ -60,22 +60,26 @@ const MainHome = () => {
 
   const slideImages = [banner1, banner2].filter(img => img);
 
-  // Swiper에 표시할 공지사항
+  // 항상 8개의 공지사항 슬롯을 반환 (데이터 없으면 빈 객체 추가)
   const getVisibleNotices = () => {
-    if (notices.length <= 4) return notices;
-    const maxIndex = notices.length - 4;
+    const filledNotices = [...notices];
+    while (filledNotices.length < 8) {
+      filledNotices.push({});
+    }
+    if (filledNotices.length <= 8) return filledNotices.slice(0, 8);
+    const maxIndex = filledNotices.length - 8;
     const adjustedIndex = Math.min(Math.max(currentIndex, 0), maxIndex);
-    return notices.slice(adjustedIndex, adjustedIndex + 4);
+    return filledNotices.slice(adjustedIndex, adjustedIndex + 8);
   };
 
-  // 자동 슬라이드
+  // 자동 슬라이드 (데이터가 8개 초과일 때만 동작)
   useEffect(() => {
     let interval;
-    if (notices.length > 4) {
+    if (notices.length > 8) {
       interval = setInterval(() => {
         setCurrentIndex((prev) => {
           if (direction === 'left') {
-            if (prev >= notices.length - 4) {
+            if (prev >= notices.length - 8) {
               setDirection('right');
               return prev - 1;
             }
@@ -88,7 +92,7 @@ const MainHome = () => {
             return prev - 1;
           }
         });
-      }, 10000); // 공지사항 Swiper 딜레이를 10초로 설정
+      }, 10000);
     }
     return () => clearInterval(interval);
   }, [notices, direction]);
@@ -101,9 +105,9 @@ const MainHome = () => {
           <div className='mainTxt02'>케이티넷코어</div>
         </div>
       </div>
-      <div className={`w-100 contentContainer`}>
+      <div className={`w-100 ${styles.contentContainer}`}>
         <div className="d-flex justify-content-between align-items-center">
-          <h3 className='boardTitle'>
+          <h3 className={styles.boardTitle}>
             공지사항
           </h3>
           <Button
@@ -114,67 +118,58 @@ const MainHome = () => {
             더보기 &gt;
           </Button>
         </div>
-        <Swiper
-          modules={[Autoplay]}
-          spaceBetween={10}
-          slidesPerView={4}
-          slidesPerGroup={1}
-          autoplay={{
-            delay: 10000, // 공지사항 Swiper 딜레이 10초
-            disableOnInteraction: false,
-            enabled: notices.length > 4,
-          }}
-          loop={false}
-          style={{ paddingBottom: '10px', width: '100%' }}
-        >
+        <div className={styles.noticeGrid}>
           {getVisibleNotices().map((notice, index) => (
-            <SwiperSlide
-              key={index}
-              style={{ width: '25%', height: 'auto' }}
-              onClick={() => handleNavigate('/main/boardView', {
-                noticeid: notice.noticeid,
-                type: notice.boardgubun,
-              })}
-            >
+            <div key={index} className={styles.gridItem}>
               <Card className='cardMain'>
                 <CardContent className='cardContent'>
-                  <div>
-                    <Typography
-                      variant="h6"
-                      component="div"
-                      className='title'
-                      sx={{
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {notice.title}
+                  {notice.title ? (
+                    <>
+                      <Typography
+                        variant="h6"
+                        component="div"
+                        className='title'
+                        sx={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                        onClick={() => handleNavigate('/main/boardView', {
+                          noticeid: notice.noticeid,
+                          type: notice.boardgubun,
+                        })}
+                      >
+                        {notice.title}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        className='body'
+                        sx={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {notice.contents}
+                      </Typography>
+                      <Typography variant="body2" className='date'>
+                        {notice.date || new Date().toLocaleDateString()}
+                      </Typography>
+                    </>
+                  ) : (
+                    <Typography variant="body2" className={styles.emptyNotice}>
+                      공지사항 없음
                     </Typography>
-                    <Typography
-                      variant="body2"
-                      className='body'
-                      sx={{
-                        display: '-webkit-box',
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
-                      {notice.contents}
-                    </Typography>
-                  </div>
-                  <Typography variant="body2" className='date'>
-                    {notice.date || new Date().toLocaleDateString()}
-                  </Typography>
+                  )}
                 </CardContent>
               </Card>
-            </SwiperSlide>
+            </div>
           ))}
-        </Swiper>
+        </div>
       </div>
     </div>
   );
