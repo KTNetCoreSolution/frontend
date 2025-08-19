@@ -284,7 +284,18 @@ const StandardDashboard = () => {
             value: parseFloat(item['비율(%)']) || 0,
             time: item['시간(h)'] || 0,
           }));
+          // i에 따라 제목 동적으로 설정
+          const titles = ['선로', '설계', 'BIZ'];
           chart.setOption({
+            title: {
+              show: true,
+              text: titles[i], // i=0: 선로, i=1: 설계, i=2: BIZ
+              left: 'center', // 제목을 차트 중앙에 배치
+              top: '5%', // 차트 상단에서 약간 띄움
+              textStyle: {
+                fontSize: 12,
+              },
+            },
             tooltip: {
               trigger: 'item',
               formatter: '<b>{b}</b> <br/>시간(h): {c}<br/>비율(%): {d}',
