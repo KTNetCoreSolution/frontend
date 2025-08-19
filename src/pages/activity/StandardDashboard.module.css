@@ -1,56 +1,75 @@
 .container {
-  width: 90em;
-  padding: 15px;
+  width: 100%;
+  max-width: 1920px;
+  padding: 20px;
   margin: 0 auto;
   background-color: #e9ecef;
+}
+
+.container.fullscreen {
+  padding: 0;
+  max-width: 100vw;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .inputSection {
   display: flex;
   justify-content: space-between;
-  gap: 15px;
-  margin-bottom: 30px;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .chartsContainer {
   display: flex;
   flex: 3;
-  gap: 15px;
+  gap: 10px;
 }
 
 .rightInfo {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .rightHeader {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .monthInput {
-  padding: 5px;
+  padding: 4px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 4px;
+  font-size: 12px;
 }
 
 .refreshButton {
-  padding: 5px 10px;
+  padding: 4px 8px;
   background-color: #d6dfdf;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
+}
+
+.fullScreenButton {
+  padding: 4px 8px;
+  background-color: #d6dfdf;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
 }
 
 .gridTable {
@@ -60,23 +79,25 @@
   border: 1px solid #ccc;
 }
 
-.gridTable th, .gridTable td {
-  padding: 8px;
+.gridTable th,
+.gridTable td {
+  padding: 6px;
   text-align: center;
   border: 1px solid #ccc;
+  font-size: 12px;
 }
 
 .headquarterSection {
   display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-bottom: 30px;
+  flex-direction: row;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .fieldSection {
   display: flex;
   justify-content: space-between;
-  gap: 15px;
+  gap: 10px;
 }
 
 .subSection {
@@ -85,8 +106,19 @@
 }
 
 .chart {
-  height: 250px;
-  border: 1px solid gray; /* 회색 외각선 */
-  border-radius: 5px;
+  height: 180px;
+  width: 100%;
+  border: 1px solid gray;
+  border-radius: 4px;
   background-color: #fff;
+}
+
+.container.fullscreen .chart {
+  height: 25vh; /* 전체 화면에서 차트 높이 조정 */
+}
+
+.container.fullscreen .inputSection,
+.container.fullscreen .headquarterSection,
+.container.fullscreen .fieldSection {
+  height: 33vh; /* 전체 화면에서 섹션 높이 균등 분배 */
 }
