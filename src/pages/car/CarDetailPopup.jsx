@@ -117,7 +117,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
     if (!noticeValidation.valid) return noticeValidation.error;
 
     const notice2Validation = commonUtils.validateVarcharLength(carInfo.NOTICE2, 1500, '비고');
-    if (!noticeValidation.valid) return noticeValidation.error;
+    if (!notice2Validation.valid) return notice2Validation.error;
     return '';
   };
   
