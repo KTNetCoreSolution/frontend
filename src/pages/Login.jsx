@@ -9,7 +9,8 @@ import { errorMsgPopup } from '../utils/errorMsgPopup';
 import LicensePopup from '../components/popup/LicensePopup'
 import useStore from '../store/store';
 import {fetchData} from '../utils/dataUtils'
-import LogoBigFVideo from '../assets/video/Logo_big_F.mp4';
+import logoColorImg from '../assets/images/logo_color.png';
+import loginMainImg from '../assets/images/loginmainImg.svg';
 
 const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
 const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
@@ -99,100 +100,108 @@ const Login = () => {
 
   return (
     <div className='loginWrapper'>
-      {/* <video autoPlay loop muted className={styles.videoBackground}>
-        <source src={LogoBigFVideo} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video> */}
-      <div className='loginimgWrap'>
-        <img src="../assets/images/logo_color.png" alt="Logo" className='logoImg' />
-        <div>
-          <p>대한민국<br />ICT 인프라 운영/관리 전문기업</p>
-          <p>케이티넷코어</p>
+      <div className='loginWrap'>
+        <div 
+          className='loginimgWrap'
+          style={{
+            background: `#EFFFFC url(${loginMainImg}) right 40px bottom 40px / 250px 155px no-repeat`,
+          }}
+        >
+          <p
+            className="logoImg"
+            style={{
+              background: `url(${logoColorImg}) left top / 122px 25px no-repeat`,
+            }}
+          ></p>
+          <div className='txtWrap'>
+            <p className='desc'>대한민국<br />ICT 인프라 운영/관리 전문기업</p>
+            <p className='name'>케이티넷코어</p>
+          </div>
         </div>
-      </div>
-      <div className='loginContainer'>
-        <form onSubmit={handleLogin}>
-          <div className={styles.formGroup}>
-            <label htmlFor="userid" className={styles.label}>
-              <i className="bi bi-person"></i> 아이디
-            </label>
-            <input
-              id="userid"
-              type="text"
-              value={empNo}
-              onChange={(e) => setEmpNo(e.target.value)}
-              placeholder="아이디를 입력하세요"
-              required
-              className={styles.input}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label htmlFor="password" className={styles.label}>
-              <i className="bi bi-lock"></i> 비밀번호
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={empPwd}
-              onChange={(e) => setEmpPwd(e.target.value)}
-              placeholder="비밀번호를 입력하세요"
-              required
-              className={styles.input}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <div className={styles.captchaContainer}>
-              {captchaImage ? (
-                <img src={captchaImage} alt="CAPTCHA" className={styles.captchaImage} />
-              ) : (
-                <div className={styles.captchaPlaceholder}>
-                  {isCaptchaLoading ? 'Loading CAPTCHA...' : captchaError || '캡챠 로드 실패'}
-                </div>
-              )}
-              <button type="button" className={styles.smallButton} onClick={loadCaptcha}>
-                <i className="bi bi-arrow-repeat"></i>
-              </button>
-              <span className={styles.captchaTimer}>{timer}초</span>
+        <div className='loginContainer'>
+          <form onSubmit={handleLogin}>
+            <div className={styles.formGroup}>
+              <label htmlFor="userid" className={styles.label}>
+                <i className="bi bi-person"></i> 아이디
+              </label>
+              <input
+                id="userid"
+                type="text"
+                value={empNo}
+                onChange={(e) => setEmpNo(e.target.value)}
+                placeholder="아이디를 입력하세요"
+                required
+                className={styles.input}
+              />
             </div>
-            <input
-              id="captcha"
-              type="text"
-              value={captchaInput}
-              onChange={(e) => setCaptchaInput(e.target.value.toUpperCase())}
-              placeholder="코드를 입력하세요"
-              required
-              className={styles.input}
-            />
-          </div>
-          <div className={styles.buttonGroup}>
-            <button type="submit" className={styles.loginButton}>
-              <i className="bi bi-box-arrow-in-right"></i> 로그인
-            </button>
-            <button type="button" className={styles.smallButton} onClick={handleJoinClick}>
-              <i className="bi bi-person-plus"></i>
-            </button>
-            <button type="button" className={styles.smallButton} onClick={handlePasswordChangeClick}>
-              <i className="bi bi-key"></i>
-            </button>
-            <button type="button" className={styles.smallButton} onClick={handleLicenseClick}>
-              <i className="bi bi-info-circle"></i>
-            </button>
-          </div>
-          {isLocal && (
-            <button type="button" className={styles.button} onClick={handleMobileLoginRedirect}>
-              <i className="bi bi-phone"></i> 모바일로그인으로 이동
-            </button>
-          )}
-        </form>
-        <Join show={showJoinPopup} onHide={() => setShowJoinPopup(false)} gubun="web" />
-        <PasswordChange
-          show={showPasswordChangePopup}
-          onHide={() => setShowPasswordChangePopup(false)}
-          initialEmpNo={empNo}
-          isEditable={isManualPasswordChange}
-          gubun="web"
-        />
-        <LicensePopup show={showLicensePopup} onHide={() => setShowLicensePopup(false)} />
+            <div className={styles.formGroup}>
+              <label htmlFor="password" className={styles.label}>
+                <i className="bi bi-lock"></i> 비밀번호
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={empPwd}
+                onChange={(e) => setEmpPwd(e.target.value)}
+                placeholder="비밀번호를 입력하세요"
+                required
+                className={styles.input}
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <div className={styles.captchaContainer}>
+                {captchaImage ? (
+                  <img src={captchaImage} alt="CAPTCHA" className={styles.captchaImage} />
+                ) : (
+                  <div className={styles.captchaPlaceholder}>
+                    {isCaptchaLoading ? 'Loading CAPTCHA...' : captchaError || '캡챠 로드 실패'}
+                  </div>
+                )}
+                <button type="button" className={styles.smallButton} onClick={loadCaptcha}>
+                  <i className="bi bi-arrow-repeat"></i>
+                </button>
+                <span className={styles.captchaTimer}>{timer}초</span>
+              </div>
+              <input
+                id="captcha"
+                type="text"
+                value={captchaInput}
+                onChange={(e) => setCaptchaInput(e.target.value.toUpperCase())}
+                placeholder="코드를 입력하세요"
+                required
+                className={styles.input}
+              />
+            </div>
+            <div className={styles.buttonGroup}>
+              <button type="submit" className={styles.loginButton}>
+                <i className="bi bi-box-arrow-in-right"></i> 로그인
+              </button>
+              <button type="button" className={styles.smallButton} onClick={handleJoinClick}>
+                <i className="bi bi-person-plus"></i>
+              </button>
+              <button type="button" className={styles.smallButton} onClick={handlePasswordChangeClick}>
+                <i className="bi bi-key"></i>
+              </button>
+              <button type="button" className={styles.smallButton} onClick={handleLicenseClick}>
+                <i className="bi bi-info-circle"></i>
+              </button>
+            </div>
+            {isLocal && (
+              <button type="button" className={styles.button} onClick={handleMobileLoginRedirect}>
+                <i className="bi bi-phone"></i> 모바일로그인으로 이동
+              </button>
+            )}
+          </form>
+          <Join show={showJoinPopup} onHide={() => setShowJoinPopup(false)} gubun="web" />
+          <PasswordChange
+            show={showPasswordChangePopup}
+            onHide={() => setShowPasswordChangePopup(false)}
+            initialEmpNo={empNo}
+            isEditable={isManualPasswordChange}
+            gubun="web"
+          />
+          <LicensePopup show={showLicensePopup} onHide={() => setShowLicensePopup(false)} />
+        </div>
       </div>
     </div>
   );

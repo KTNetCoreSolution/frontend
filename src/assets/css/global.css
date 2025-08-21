@@ -17,6 +17,7 @@
   --bs-gutter-x: 0;
   --bs-font-color: #1E2124;
   --bs-font-secondary-color: #464C53;
+  --bs-font-primary-dark-color: #0F9591;
 }
 
 /* Apply to body */
@@ -390,8 +391,6 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   width: 100%;
   height: 186px;
   overflow: hidden;
-  background: #D9F7FF url('/ktn/src/assets/images/mainImg.png') 64px 0 no-repeat;
-  background-size: 218px auto;
 }
 .mainTxtWrap {
   position: absolute;
@@ -477,19 +476,72 @@ button.boardBtn01 {
 /* login page */
 .loginWrapper {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.loginWrapper .loginWrap {
+  display: flex;
   width: 788px;
   min-height: 520px;
   border-radius: 24px;
   box-shadow: 0px 7px 29px 0px rgba(100, 100, 111, 0.15);
   overflow: hidden;
 }
+.loginWrapper .loginWrap .logoImg {
+  width: 122px;
+  height: 25px;
+  margin: 0;
+}
 .loginimgWrap {
   width: 360px;
   height: auto;
-  background: #EFFFFC;
   padding: 2.5rem;
+}
+.loginimgWrap .txtWrap {
+  margin-top: 60px;
+}
+.loginimgWrap .txtWrap .desc {
+  font-size: 1rem !important;
+  font-weight: bold;
+  color: #1a1a1a;
+}
+.loginimgWrap .txtWrap .name {
+  font-size: 2rem !important;
+  font-weight: bold;
+  color: var(--bs-font-primary-dark-color);
 }
 .loginContainer {
   padding: 48px;
   flex: 1;
+}
+
+
+
+
+
+
+/* search area */
+.searchSection {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background-color: #fbfcfd;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e3e7ea;
+}
+.searchLabel {
+  font-size: 50px;
+  color: #ff0000;
+}
+
+
+
+
+
+/* 공통 */
+.contentWrapper {
+  height: 100vh;
+  background: #F7F7F7;
 }

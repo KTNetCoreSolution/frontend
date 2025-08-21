@@ -138,7 +138,7 @@ const MainLayout = () => {
   }
 
   return (
-    <div>
+    <div className='contentWrapper'>
       <header id="header" className="header">
         <div className="logo" onClick={handleLogoClick} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && handleLogoClick(e)}>
           <img src={logo} alt="Logo" className="logoImage" />
