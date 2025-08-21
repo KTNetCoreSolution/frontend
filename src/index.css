@@ -90,6 +90,10 @@ footer {
 }
 
 #root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100vw;
+  min-width: 1440px;
   min-height: 100vh;
 }

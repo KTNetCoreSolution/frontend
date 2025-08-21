@@ -98,12 +98,19 @@ const Login = () => {
   };
 
   return (
-    <div className={styles.loginWrapper}>
-      <video autoPlay loop muted className={styles.videoBackground}>
+    <div className='loginWrapper'>
+      {/* <video autoPlay loop muted className={styles.videoBackground}>
         <source src={LogoBigFVideo} type="video/mp4" />
         Your browser does not support the video tag.
-      </video>
-      <div className={styles.loginContainer}>
+      </video> */}
+      <div className='loginimgWrap'>
+        <img src="../assets/images/logo_color.png" alt="Logo" className='logoImg' />
+        <div>
+          <p>대한민국<br />ICT 인프라 운영/관리 전문기업</p>
+          <p>케이티넷코어</p>
+        </div>
+      </div>
+      <div className='loginContainer'>
         <form onSubmit={handleLogin}>
           <div className={styles.formGroup}>
             <label htmlFor="userid" className={styles.label}>

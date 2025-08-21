@@ -135,12 +135,14 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 
 /* 250815 이후 추가 */
+
+/* headerArea */
 .header {
   display: flex;
   justify-content: flex-start;
   align-items: center;
   background: linear-gradient(90deg, #2CBBB7 0%, #216DB2 62%);
-  padding: 16px 40px;  
+  padding: 15px 40px;  
   gap: 7.5rem;
 }
 .headerNavGroup {
@@ -180,7 +182,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   cursor: pointer;
 }
 .main {
-  padding: 2.5rem;
+  padding: 0 2.5rem;
 }
 .mainHome {
   background: var(--bs-body-bg-main) ;
@@ -368,6 +370,14 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   padding: 6px 12px;
 }
 
+/* breadcrumb 영역 */
+.topNavLoc {
+  display: flex;
+  font-size: 13px;
+  color: #555555;
+  margin: 1rem 2.5rem;
+}
+
 .mainContentWrap {
   display: flex;
   flex-direction: column;
@@ -390,26 +400,27 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   left: 320px;
   justify-content: center;
   height: 100%;
+  gap: 0.25rem;
 }
 .mainTxt01 {
-  font-size: 20px;
+  font-size: 1.25rem;
   color: var(--bs-font-color);
   line-height: 150%;
 }
 .mainTxt02 {
-  font-size: 32px;
+  font-size: 2rem;
   color: #197495;
   font-weight: bold;
   line-height: 150%;
 }
 
 h3.boardTitle {
-  font-size: 24px !important;
+  font-size: 1.5rem !important;
   color: var(--bs-font-color);
   font-weight: bold;
 }
 button.boardBtn01 {
-  font-size: 16px !important;
+  font-size: 1rem !important;
   color: #464C53;
   font-weight: normal;
   background-color: var(--white);
@@ -457,4 +468,28 @@ button.boardBtn01 {
   color: var(--bs-font-secondary-color);
   padding: 0 !important;
   line-height: 150% !important;
+}
+
+
+
+
+
+/* login page */
+.loginWrapper {
+  display: flex;
+  width: 788px;
+  min-height: 520px;
+  border-radius: 24px;
+  box-shadow: 0px 7px 29px 0px rgba(100, 100, 111, 0.15);
+  overflow: hidden;
+}
+.loginimgWrap {
+  width: 360px;
+  height: auto;
+  background: #EFFFFC;
+  padding: 2.5rem;
+}
+.loginContainer {
+  padding: 48px;
+  flex: 1;
 }

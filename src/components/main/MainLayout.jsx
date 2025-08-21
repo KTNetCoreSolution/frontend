@@ -152,9 +152,7 @@ const MainLayout = () => {
           <MainHeader />
         </div>
       </header>
-      <div>
-        <MainTopNavLoc />
-      </div>
+      <MainTopNavLoc />
       {loading.isLoading && (
         <div className="progressBarContainer">
           <CircularProgressbar
