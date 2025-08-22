@@ -17,7 +17,7 @@ const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
 
 const Login = () => {
   const isLocal = import.meta.env.VITE_ENV === 'local';
-  const [empNo, setEmpNo] = useState(isLocal ? '91108663' : '');
+  const [empNo, setEmpNo] = useState(isLocal ? 'admin' : '');
   const [empPwd, setEmpPwd] = useState(isLocal ? 'new1234!' : '');
   const [captchaInput, setCaptchaInput] = useState('');
   const [captchaImage, setCaptchaImage] = useState(null);
