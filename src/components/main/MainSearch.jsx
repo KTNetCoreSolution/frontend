@@ -373,7 +373,7 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
   };
 
   return (
-    <div className={styles.searchSection}>
+    <div className="searchSection">
       {renderRows()}
     </div>
   );

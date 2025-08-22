@@ -53,7 +53,7 @@ const MainTopNavLoc = () => {
   }
 
   return (
-    <div className={styles.topNavLoc}>
+    <div className="topNavLoc">
       {breadcrumbTrail.map((name, index) => (
         <span key={index}>
           {name}

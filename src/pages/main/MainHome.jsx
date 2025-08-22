@@ -12,6 +12,7 @@ import { fetchData } from '../../utils/dataUtils';
 import styles from './MainHome.module.css';
 import banner1 from '../../assets/images/banner1.png';
 import banner2 from '../../assets/images/banner2.png';
+import mainImg from '../../assets/images/mainImg.png';
 
 const MainHome = () => {
   const { user } = useStore();
@@ -99,7 +100,11 @@ const MainHome = () => {
 
   return (
     <div className='mainContentWrap'>
-      <div className='mainImgWrap'>
+      <div className='mainImgWrap'
+        style={{
+          background: `#D9F7FF url(${mainImg}) left 64px bottom 0 / 218px auto no-repeat`,
+        }}
+      >
         <div className='mainTxtWrap'>
           <div className='mainTxt01'>AICT 네트워크 인프라 선로 설계부터 유지/보수, 운영까지<br />대한민국 ICT 인프라 운영/관리 전문기업</div>
           <div className='mainTxt02'>케이티넷코어</div>

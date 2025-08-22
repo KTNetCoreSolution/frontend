@@ -26,6 +26,13 @@
   box-sizing: border-box;
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   margin: 0;
   display: flex;
@@ -91,5 +98,6 @@ footer {
 
 #root {
   width: 100vw;
+  min-width: 1440px;
   min-height: 100vh;
 }
