@@ -2,22 +2,30 @@ import React, { useState, useEffect, useRef } from 'react';
 import useStore from '../../store/store';
 import commonUtils from '../../utils/common.js';
 import fileUtils from '../../utils/fileUtils';
-import { fetchData } from '../../utils/dataUtils.js';
+import { fetchData, fetchFileUpload } from "../../utils/dataUtils";
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
+import CommonPopup from '../../components/popup/CommonPopup.jsx';
 import Modal from 'react-bootstrap/Modal';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 import styles from './UserCarLogRegPopup.Module.css'; // CSS 파일을 별도로 import
 
-const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
+const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
   const today = new Date();
   const todayDate = today.toISOString().split('T')[0];
-  const timeOption = (stdTime) => {
+  const timeOption = (stdTime, gbn) => {
     const times = [];
     for (let hour = 0; hour < 24; hour++) {
       for (let minute = 0; minute < 60; minute += 30) {
         const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-        if (timeString > stdTime) {
-          times.push(timeString);
+        if (timeString >= stdTime) {
+          if(gbn === 'S' && timeString >= stdTime) {
+            times.push(timeString);
+          }
+          else if (gbn === 'E' && timeString > stdTime) {
+            times.push(timeString);
+          }
         }
       }
     }
@@ -27,10 +35,14 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
   const { user } = useStore();
   const [carId, setCarId] = useState('');
   const [carList, setCarList] = useState({});
-  const [carInfo, setCarInfo] = useState({CARNM: '', MANAGER_EMPNM: '', MANAGER_MOBILE: '', GARAGE_ADDR: '', STKM: 0, src: null, bookMark: false});
-  const [logInfo, setLogInfo] = useState({CARID: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:30', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, NOTE: ''});
+  const [carInfo, setCarInfo] = useState({CARNM: '', MANAGER_EMPNM: '', MANAGER_MOBILE: '', GARAGE_ADDR: '', STKM: 0, src: null, bookMark: false, ORGCD: ''});
+  const [logInfo, setLogInfo] = useState({CARID: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:30', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, EMPNO: ''});
+  const [lastLogInfo, setLastLogInfo] = useState({LOGDATE: '', LOGSTTIME: '', LOGENTIME: ''});
   const [vImgDisplay, setImgDisplay] = useState('none');
-  const [vDisplay, setDisplay] = useState(false);
+  const [vDisplay, setDisplay] = useState('false');
+  const [vSaveBtnDisplay, setSaveBtnDisplay] = useState('block');
+  const [vDelBtnDisplay, setDelBtnDisplay] = useState('none');
+  const [vRejectBtnDisplay, setRejectBtnDisplay] = useState('none');
   const [isFilled, setIsFilled] = useState(false);
   const [isDamage, setIsDamage] = useState(true);
   const [isOilLeak, setIsOilLeak] = useState(true);
@@ -38,49 +50,132 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
   const [isLuggage, setIsLuggage] = useState(true);
   const [isEtc1, setIsEtc1] = useState(true);
   const [isEtc2, setIsEtc2] = useState(true);
+  const [showAddPopup, setShowAddPopup] = useState(false);
+  const [imgUploadInfo, setImgUploadInfo] = useState({FILES: [] });
+  const [receiptList, setReceiptList] = useState([]);
+  const [stTime , setStTime] = useState([]);
+  const [enTime , setEnTime] = useState([]);
+  const logDateRef = useRef(null);
+  
+  const initializeComponent = async () => {
+    // Component에 들어갈 데이터 로딩
+    try {
+      const params = { pEMPNO: user?.empNo, pDEBUG: "F" };
+      const response = await fetchData('carlog/userCarList', params);
+
+      if (!response.success) {
+        throw new Error(response.errMsg || '차량목록 조회 중 오류가 발생했습니다.');
+      } else {
+        if (response.errMsg !== '' || response.data[0].errCd !== '00') {
+          let errMsg = response.errMsg;
+          if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+          errorMsgPopup(errMsg);
+        } else {
+          setCarList(response.data);
+        }
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      errorMsgPopup(error.message || '차량목록 조회 중 오류가 발생했습니다.');
+    }
+  };
   
   useEffect(() => {
     // 컴포넌트 언마운트 시 테이블 정리
-    const initializeComponent = async () => {
-      // 다른 컴포넌트 렌더링 대기
-
-      // Component에 들어갈 데이터 로딩
-      try {
-        const params = { pEMPNO: user?.empNo, pDEBUG: "F" };
-        const response = await fetchData('carlog/userCarList', params);
-
-        if (!response.success) {
-          throw new Error(response.errMsg || '차량목록 조회 중 오류가 발생했습니다.');
-        } else {
-          if (response.errMsg !== '' || response.data[0].errCd !== '00') {
-            let errMsg = response.errMsg;
-            if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
-            errorMsgPopup(errMsg);
-          } else {
-            setCarList(response.data);
-          }
-        }
-      } catch (error) {
-        console.error('Registration error:', error);
-        errorMsgPopup(error.message || '차량목록 조회 중 오류가 발생했습니다.');
-      }
-    };
-
     initializeComponent();
-
     //return () => {
     //};
   }, []);
+  
+
+  const getCarLogInfo = async () => {
+    setCarId(data.CARID);
+
+    try {
+      const params = { pLOGDATE: data.LOGDATE, pLOGSTTIME: data.LOGSTTIME, pCARID: data.CARID, pEMPNO: user?.empNo, pDEBUG: "F" };
+      const response = await fetchData('carlog/logDetail', params);
+
+      if (!response.success) {
+        throw new Error(response.errMsg || '운행일지 상세정보 중 오류가 발생했습니다.');
+      } else {
+        if (response.errMsg !== '' || response.data[0].errCd !== '00') {
+          let errMsg = response.errMsg;
+          if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+          errorMsgPopup(errMsg);
+        } else {
+          const extension = fileUtils.getFileExtension(response.data[0].IMGNM)?.toLowerCase();
+          const mimeType = fileUtils.mimeTypes[extension] || 'application/octet-stream';
+          const fileData = response.data[0].IMGDATA;
+
+          const dataUrl = `data:${mimeType};base64,${fileData}`;
+          const logEnTime = response.data[0].LOGENTIME;
+          const carNm = response.data[0].CARNM;
+          const managerEmpNm = response.data[0].PRIMARY_MANAGER_EMPNM;
+          const managerMobile = response.data[0].PRIMARY_MANAGER_MOBILE;
+          const garageAddr = response.data[0].PRIMARY_GARAGE_ADDR;
+          const safetyNote = response.data[0].SAFETYNOTE;
+          const stKm = response.data[0].STKM;
+          const enKm = response.data[0].ENKM;
+          const fuel = response.data[0].FUEL;
+          const note = response.data[0].NOTE;
+          const empNo = response.data[0].EMPNO;
+          const orgCd = response.data[0].ORGCD;
+          
+          const bBookMark = response.data[0].BOOKMARK === 'Y' ? true : false;
+          const bDamage = response.data[0].DAMAGE === 'Y' ? true : false;
+          const bOilLeak = response.data[0].OILLEAK === 'Y' ? true : false;
+          const bTire = response.data[0].TIRE === 'Y' ? true : false;
+          const bLuggage = response.data[0].LUGGAGE === 'Y' ? true : false;
+          const bEtc1 = response.data[0].ETC1 === 'Y' ? true : false;
+          const bEtc2 = response.data[0].ETC2 === 'Y' ? true : false;
+          const saveBtnDisplay = empNo === user?.empNo ? 'block' : 'none';
+          const delBtnDisplay = (response.data[0].DELYN === 'Y' && empNo === user?.empNo) ? 'block' : 'none';
+          const reJectBtnDisplay = (response.data[0].LOGSTAT === 'R' && orgCd === user?.orgCd && '41' === user?.levelCd) ? 'block' : 'none';
+          
+          setCarInfo({CARNM: carNm, MANAGER_EMPNM: managerEmpNm, MANAGER_MOBILE: managerMobile, GARAGE_ADDR: garageAddr, STKM: 0, src: dataUrl, bookMark: bBookMark, ORGCD: orgCd});
+          setLogInfo({GUBUN:'U', CARID: data.CARID, LOGDATE: data.LOGDATE, LOGSTTIME: data.LOGSTTIME, LOGENTIME: logEnTime, SAFETYNOTE: safetyNote, STKM: stKm, ENKM: enKm, FUEL: fuel, NOTE: note, EMPNO: empNo});
+          setIsDamage(bDamage);
+          setIsOilLeak(bOilLeak);
+          setIsTire(bTire);
+          setIsLuggage(bLuggage);
+          setIsEtc1(bEtc1);
+          setIsEtc2(bEtc2);
+          setIsFilled(bBookMark);
+          setImgDisplay('flex');
+          setSaveBtnDisplay(saveBtnDisplay);
+          setDelBtnDisplay(delBtnDisplay);
+          setRejectBtnDisplay(reJectBtnDisplay);
+        }
+      }
+    } catch (error) {
+      setCarId('');
+      initializing();
+      setImgDisplay('none');
+      console.error('Registration error:', error);
+      errorMsgPopup(error.message || '운행일지 상세정보 중 오류가 발생했습니다.');
+    }
+  };
     
   useEffect(() => {
     setCarId('');
+    initializing();
     setImgDisplay('none');
+
+    if(show) {
+      initializeComponent();
+      setStTime(timeOption('00:00', 'S'));
+      setEnTime(timeOption('00:00', 'E'));
+
+      if (data.CARID && data.CARID !== '') {
+        getCarLogInfo();
+      }
+    }
   }, [show]);
 
-
   const initializing = () => {
-    setCarInfo({CARNM: '', MANAGER_EMPNM: '', MANAGER_MOBILE: '', GARAGE_ADDR: '', STKM: 0, src: null, bookMark: false});
-    setLogInfo({CARID: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:30', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, NOTE: ''});
+    setCarInfo({CARNM: '', MANAGER_EMPNM: '', MANAGER_MOBILE: '', GARAGE_ADDR: '', STKM: 0, src: null, bookMark: false, ORGCD: ''});
+    setLogInfo({GUBUN:'I', CARID: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:30', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: ''});
+    setLastLogInfo({LOGDATE: '', LOGSTTIME: '', LOGENTIME: ''});
     setIsFilled(false);
     setIsDamage(true);
     setIsOilLeak(true);
@@ -90,6 +185,11 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
     setIsEtc2(true);
     setDisplay(false);
     setImgDisplay('none');
+    setImgUploadInfo({ FILES: [] });
+    setReceiptList([]);
+    setSaveBtnDisplay('block');
+    setDelBtnDisplay('none');
+    setRejectBtnDisplay('none');
   };
   
   const searchCarInfo = async (e) => {
@@ -114,12 +214,34 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
             const extension = fileUtils.getFileExtension(response.data[0].IMGNM)?.toLowerCase();
             const mimeType = fileUtils.mimeTypes[extension] || 'application/octet-stream';
             const fileData = response.data[0].IMGDATA;
+            const logDate = response.data[0].LOGDATE <= todayDate ? todayDate : response.data[0].LOGDATE;            
+            const logStTime = response.data[0].LOGDATE > todayDate ? response.data[0].LOGENTIME : '00:00';
+            
+            setStTime(timeOption(logStTime, 'S'));
+
+            const carNm = response.data[0].CARNM;
+            const managerEmpNm = response.data[0].PRIMARY_MANAGER_EMPNM;
+            const managerMobile = response.data[0].PRIMARY_MANAGER_MOBILE;
+            const garageAddr = response.data[0].PRIMARY_GARAGE_ADDR;
+            const stKm = response.data[0].STKM;
+            const orgCd = response.data[0].ORGCD;
 
             const dataUrl = `data:${mimeType};base64,${fileData}`;
             const bBookMark = response.data[0].BOOKMARK === 'Y' ? true : false;
-            
-            setCarInfo({CARNM: response.data[0].CARNM, MANAGER_EMPNM: response.data[0].PRIMARY_MANAGER_EMPNM, MANAGER_MOBILE: response.data[0].PRIMARY_MANAGER_MOBILE, GARAGE_ADDR: response.data[0].PRIMARY_GARAGE_ADDR, STKM: 0, src: dataUrl, bookMark: bBookMark});
-            setLogInfo({CARID: e.target.value, LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:30', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, NOTE: ''});
+            setEnTime(timeOption(logStTime, 'E'));
+
+            let logEnTime = '00:00';
+            timeOption(logInfo.LOGSTTIME, 'E').some(time => {
+              if (time > logStTime) {
+                logEnTime = time; 
+                return true;
+              }
+            });
+
+            setCarInfo({CARNM: carNm, MANAGER_EMPNM: managerEmpNm, MANAGER_MOBILE: managerMobile, GARAGE_ADDR: garageAddr, STKM: stKm, src: dataUrl, bookMark: bBookMark, DELYN: 'N', LOGSTAT: '', ORGCD: orgCd});
+            setLogInfo({GUBUN:'I', CARID: e.target.value, LOGDATE: logDate, LOGSTTIME: logStTime, LOGENTIME: logEnTime, SAFETYNOTE: '', STKM: stKm, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: ''});
+            setLastLogInfo({LOGDATE: response.data[0].LOGDATE, LOGSTTIME: response.data[0].LOGDATE, LOGENTIME: response.data[0].LOGENTIME});
+
             setIsDamage(true);
             setIsOilLeak(true);
             setIsTire(true);
@@ -128,6 +250,9 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
             setIsEtc2(true);
             setIsFilled(bBookMark);
             setImgDisplay('flex');
+            setSaveBtnDisplay('block');
+            setDelBtnDisplay('none');
+            setRejectBtnDisplay('none');
           }
         }
       }
@@ -169,19 +294,47 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
   };
 
   const handleSafetyCheck = (target, bResult) => {    
-    if (target === 'Damage') {
-      setIsDamage(bResult);
-    } else if (target === 'OilLeak') {
-      setIsOilLeak(bResult);
-    } else if (target === 'Tire') {
-      setIsTire(bResult);
-    } else if (target === 'Luggage') {
-      setIsLuggage(bResult);
-    } else if (target === 'Etc1') {
-      setIsEtc1(bResult);
-    } else if (target === 'Etc2') {
-      setIsEtc2(bResult);
+    
+    if (logInfo.GUBUN === 'I') {
+      if (target === 'Damage') {
+        setIsDamage(bResult);
+      } else if (target === 'OilLeak') {
+        setIsOilLeak(bResult);
+      } else if (target === 'Tire') {
+        setIsTire(bResult);
+      } else if (target === 'Luggage') {
+        setIsLuggage(bResult);
+      } else if (target === 'Etc1') {
+        setIsEtc1(bResult);
+      } else if (target === 'Etc2') {
+        setIsEtc2(bResult);
+      }
     }
+  };
+
+  const handleLogDate = (e) => {
+    let logStTime = '00:00';
+    
+    if(e.target.value < lastLogInfo.LOGDATE) {
+      logDateRef.current.value = lastLogInfo.LOGDATE;
+      setLogInfo({ ...logInfo, LOGDATE: lastLogInfo.LOGDATE });
+      logStTime = lastLogInfo.LOGENTIME;
+    }
+    else {
+      setLogInfo({ ...logInfo, LOGDATE: e.target.value });      
+      logStTime = lastLogInfo.LOGDATE >= e.target.value ? lastLogInfo.LOGENTIME : '00:00';
+    }
+
+    setStTime(timeOption(logStTime, 'S'));   
+    setEnTime(timeOption(logStTime, 'E'));
+
+    let logEnTime = '00:00';
+    timeOption(logInfo.LOGSTTIME, 'E').some(time => {
+      if (time > logStTime) {
+        logEnTime = time; 
+        return true;
+      }
+    });
   };
     
   const validateForm = () => {
@@ -193,18 +346,14 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
       return "운행일를 선택해주세요.";
     }
 
-    if(logInfo.LOGSTTIME <= logInfo.LOGENTIME) {
+    if(logInfo.LOGENTIME <= logInfo.LOGSTTIME) {
       return "운행종료 시간이 운행시작 시간보다 커야 합니다.";
     }
   
-    if (!isDamage || isOilLeak || isTire|| isLuggage || isEtc1 || isEtc2) {
+    if (!isDamage || !isOilLeak || !isTire || !isLuggage || !isEtc1 || !isEtc2) {
       if (!logInfo.SAFETYNOTE || logInfo.SAFETYNOTE === '') {
         return "차량 불량사항이 있는 경우 점검 특이사항을 입력해주세요.";
       }
-    }
-
-    if(!logInfo.STKM) {
-      return "시작km를 입력해주세요.";
     }
 
     if(!logInfo.ENKM || logInfo.ENKM === 0) {
@@ -227,7 +376,14 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
+    try {    
+      const validationError = validateForm();
+  
+      if (validationError) {
+        errorMsgPopup(validationError);
+        return;
+      }
+
       const Damage = isDamage ? 'Y' : 'N';
       const OilLeak = isOilLeak ? 'Y' : 'N';
       const Tire = isTire ? 'Y' : 'N';
@@ -237,8 +393,8 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
 
       const params = {pCARID: logInfo.CARID, pEMPNO: user?.empNo, pLOGDATE: logInfo.LOGDATE, pLOGSTTIME: logInfo.LOGSTTIME, pLOGENTIME: logInfo.LOGENTIME, pSTKM: logInfo.STKM, pENKM: logInfo.ENKM, pFUEL: logInfo.FUEL, pNOTE: logInfo.NOTE
                     , pDAMAGE: Damage, pOILLEAK: OilLeak, pTIRE: Tire, pLUGGAGE: Luggage, pETC1: Etc1, pETC2: Etc2, pSAFETYNOTE: logInfo.SAFETYNOTE};
-      /*              
-      const response = await fetchData('carlog/CarLogTransaction', params);
+
+      const response = await fetchData('carlog/carLogTransaction', params);
 
       if (!response.success) {
         throw new Error(response.errMsg || '운행일지 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
@@ -254,18 +410,233 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
           onHide();
           onParentSearch();
         }
-      }*/
+      }
     } catch (error) {
       console.error('Registration error:', error);
       errorMsgPopup(error.message || '운행일지 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
     } 
   };
 
+  const handleReject = async (e) => {
+    e.preventDefault();
+
+    if(!confirm('운행일지를 반려 하시겠습니까?')) {
+      return;
+    }
+    try {    
+      const params = { pLOGDATE: logInfo.LOGDATE, pLOGSTTIME: logInfo.LOGSTTIME, pCARID: logInfo.CARID, pLOGSTAT: 'N', pTRTEMPNO: user?.empNo };
+
+      const response = await fetchData("carlog/logConfirmTransaction", params );
+
+      if (!response.success) {
+        throw new Error(response.errMsg || '운행일지 반려 중 오류가 발생했습니다. 다시 시도해주세요.');
+      } else {
+        if (response.errMsg !== '' || response.data[0].errCd !== '00') {
+          let errMsg = response.errMsg;
+
+          if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+
+          errorMsgPopup(errMsg);
+        } else {
+          msgPopup("운행일지가 반려되었습니다.");
+          onHide();
+          onParentSearch();
+        }
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      errorMsgPopup(error.message || '운행일지 반려 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } 
+  };
+
+  const handleDelete = async(e) => {
+    e.preventDefault();
+
+    if(confirm("운행일지를 삭제하시겠습니까?")) {
+      try {
+        const params = {pLOGDATE: logInfo.LOGDATE, pLOGSTTIME: logInfo.LOGSTTIME, pCARID: logInfo.CARID, pSEQ: item.SEQ};
+
+        const response = await fetchData('carlog/carLogDel', params);
+
+        if (!response.success) {
+          throw new Error(response.errMsg || '운행일지 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+        } else {
+          if (response.errMsg !== '' || response.data[0].errCd !== '00') {
+            let errMsg = response.errMsg;
+
+            if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+
+            errorMsgPopup(errMsg);
+          } else {
+            msgPopup('운행일지가 삭제 되었습니다.');
+            onHide();
+            onParentSearch();
+          }
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        errorMsgPopup(error.message || '운행일지 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+      } 
+    }
+  };
+
   const handleMaxLength = (e, maxlength) => {
-    const value = e.target.value;
-    
+    const value = e.target.value;    
     e.target.value = value.substring(0, maxlength);
   }
+    
+  const handleUpload = async () => {
+    if (!logInfo.LOGDATE || logInfo.LOGDATE === '' || !logInfo.LOGSTTIME || logInfo.LOGSTTIME === '' || !logInfo.CARID || logInfo.CARID === '') {
+      return "잘못된 접근입니다.";
+    }
+    else if (!imgUploadInfo.FILES.length) {
+      return { error: "이미지를 선택해 주세요." };
+    }
+    const formData = new FormData();
+    formData.append("LOGDATE", logInfo.LOGDATE);
+    formData.append("LOGSTTIME", logInfo.LOGSTTIME);
+    formData.append("CARID", logInfo.CARID);
+    imgUploadInfo.FILES.forEach((file) => {
+      formData.append("files", file);
+    });
+    try {
+      const result = await fetchFileUpload("carlog/carReceiptUpload", formData);
+      if (result.errCd !== "00") {
+        return { error: result.errMsg || "이미지 업로드 실패" };
+      }
+      setShowAddPopup(false);
+      setImgUploadInfo({ FILES: [] });
+      msgPopup("이미지 업로드를 성공했습니다.");
+      await handleSearch();
+
+      return { success: "이미지 업로드를 성공했습니다." };
+    } catch (error) {
+      return { error: "이미지 업로드 중 오류가 발생했습니다: " + error.message };
+    }
+  };
+    
+  const handleUploadCancel = () => {
+    setShowAddPopup(false);
+    setImgUploadInfo({ FILES: [] });
+  };
+
+  const carLogReceiptPopup = () => {
+    setShowAddPopup(true);
+    handleReceiptSearch();
+  };
+
+  const handleReceiptSearch = async () => {
+    if (!logInfo.LOGDATE || logInfo.LOGDATE === '' || !logInfo.LOGSTTIME || logInfo.LOGSTTIME === '' || !logInfo.CARID || logInfo.CARID === '') {
+      return "잘못된 접근입니다.";
+    }
+
+    try {
+      const params = {pLOGDATE: logInfo.LOGDATE, pLOGSTTIME: logInfo.LOGSTTIME, pCARID: logInfo.CARID, pDEBUG: "F" };
+      const response = await fetchData('carlog/carLogReceiptInfo', params);
+
+      if (!response.success) {
+        throw new Error(response.errMsg || '영수증 조회 중 오류가 발생했습니다.');
+      } else {
+        if (response.data.length > 0) {
+          if (response.data[0].errCd && (response.errMsg !== '' || response.data[0].errCd !== '00')) {
+            let errMsg = response.errMsg;
+            if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+            errorMsgPopup(errMsg);
+          } else {
+            const imgList = [];
+
+            response.data.forEach((item, index) => {
+              const extension = fileUtils.getFileExtension(item.IMGNM)?.toLowerCase();
+              const mimeType = fileUtils.mimeTypes[extension] || 'application/octet-stream';
+              const fileData = item.IMGDATA;
+              const dataUrl = `data:${mimeType};base64,${fileData}`
+
+              imgList.push({SEQ: item.SEQ, IMGNM: item.IMGNM, IMGDATA: item.IMGDATA, SRC: dataUrl});
+            });
+
+            setReceiptList(imgList);
+          }
+        } else {          
+            setReceiptList([]);
+            if(vSaveBtnDisplay === 'none' ) {
+              msgPopup('등록된 영수증이 없습니다.');
+              handleUploadCancel();       
+            }
+        }
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      errorMsgPopup(error.message || '영수증 조회 중 오류가 발생했습니다.');
+    }
+  }
+
+  const handleDownload = async (item) => {
+    try {
+      if (item) {
+        const link = document.createElement('a');
+        link.href = item.SRC;
+        link.download = item.IMGNM;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        errorMsgPopup('파일을 다운로드할 수 없습니다.');
+      }
+    } catch (error) {
+      console.error('Error fetching file for download:', error);
+      errorMsgPopup('파일 다운로드 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleDownloadAll = async () => {
+    if (receiptList.length === 0) {
+      errorMsgPopup('다운로드할 파일이 없습니다.');
+      return;
+    }
+    
+    const zip = new JSZip();
+
+    try {
+      receiptList.forEach(item => {
+        zip.file(item.IMGNM, item.SRC);
+      });
+      
+      const zipFileNm = logInfo.LOGDATE + ' ' + logInfo.LOGSTTIME + ' ' + logInfo.EMPNO + '.zip';
+      zip.generateAsync({ type: 'blob' }).then(content => {
+      saveAs(content, zipFileNm);
+    });
+    } catch (error) {
+      console.error('이미지 추가 중 오류:', error);
+    }
+  };
+
+  const handleImgDelete = async (item) => {
+    if(confirm("영수증을 삭제 하시겠습니까?")) {
+      try {
+        const params = {pLOGDATE: logInfo.LOGDATE, pLOGSTTIME: logInfo.LOGSTTIME, pCARID: logInfo.CARID, pSEQ: item.SEQ};
+
+        const response = await fetchData('carlog/carLogReceiptDel', params);
+
+        if (!response.success) {
+          throw new Error(response.errMsg || '영수증 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+        } else {
+          if (response.errMsg !== '' || response.data[0].errCd !== '00') {
+            let errMsg = response.errMsg;
+
+            if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+
+            errorMsgPopup(errMsg);
+          } else {
+            msgPopup(item.IMGNM + '이 삭제 되었습니다.');
+            handleReceiptSearch();
+          }
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        errorMsgPopup(error.message || '영수증 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+      } 
+    }
+  };  
 
   if (!show) return null;
 
@@ -275,13 +646,14 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
         <Modal.Title>운행일지 관리</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className={`mb-2 ${styles.formDiv}`} style={{display: vDisplay ? 'none' : 'block'}}>
+        <div className={`mb-2 ${styles.formDiv}`} style={{display: `${vDisplay ? 'none' : 'block'}`}}>
           <div className="mb-2 d-flex">
             <label className="form-label flex-shrink-0 me-2" htmlFor="carId" style={{width:63 +'px', paddingTop:6 + 'px'}}>차량</label>
-            <select id="carId" className={`form-select ${styles.formSelect}`} style={{width:200 +'px'}} onChange={(e) => {searchCarInfo(e)}}>
+            <select id="carId" className={`form-select ${styles.formSelect}`} defaultValue={data.CARID} style={{width:200 +'px'}} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {searchCarInfo(e)}}>
               <option value="">선택하세요</option>
               {carList.map((item) => <option key={item.CARID} value={item.CARID}>{item.CARNO}</option>)}
             </select>
+            <button className={`btn btn-sm btn-danger flex-shrink-0 ms-auto`} style={{width:60 +'px', height: 36 + 'px', display:`${vDelBtnDisplay}`}} onClick={handleDelete}>삭제</button>
           </div>
           <div className="mb-2" style={{minHeight: 245 + 'px'}}>
             <div className={styles.container}>
@@ -315,21 +687,21 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
           <div className="mb-2">
             <div className="d-flex">
               <label className={`form-label flex-shrink-0 me-2 ${styles.formTitleLabel}`} htmlFor="logDate" style={{width:63 +'px'}}>운행일시</label>
-              <input type="date" id="logDate" className={`form-control ${styles.formControl}`} value={logInfo.LOGDATE} style={{width:120 +'px', marginRight:5 + 'px'}} onChange={(e) => {setLogInfo({ ...logInfo, LOGDATE: e.target.value })}} />
-              <select id="hour" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} onChange={(e) => {setLogInfo({ ...logInfo, LOGSTTIME: e.target.value })}}>
-                {timeOption('').map((time, index) => <option key={index} value={time}>{time}</option>)}
+              <input type="date" ref={logDateRef} id="logDate" className={`form-control ${styles.formControl}`} value={logInfo.LOGDATE} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} style={{width:120 +'px', marginRight:5 + 'px'}} onChange={(e) => {handleLogDate(e)}} />
+              <select id="stTime" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGSTTIME: e.target.value })}}>
+                {stTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
               </select>
               <label style={{width:16 +'px', paddingTop:8 + 'px', textAlign:'center'}}> ~ </label>
-              <select id="hour" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} onChange={(e) => {setLogInfo({ ...logInfo, LOGENTIME: e.target.value })}}>
-                {timeOption(logInfo.LOGSTTIME).map((time, index) => <option key={index} value={time}>{time}</option>)}
+              <select id="enTime" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGENTIME: e.target.value })}}>
+                {enTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
               </select>
             </div>
           </div>
           <div className="mb-2">
-              <button className={`btn ${styles.btnCheck} ${styles.btn}`} style={{ backgroundColor:vImgDisplay === 'flex' ? '#00c4b4' : '#909090'}} disabled={vImgDisplay === 'flex' ? '' : 'disabled'} onClick={(e) => setDisplay(!vDisplay)}>차량점검 및 일지작성</button>
+              <button className={`btn ${styles.btnCheck} ${styles.btn}`} style={{ backgroundColor:vImgDisplay === 'flex' ? '#00c4b4' : '#909090'}} disabled={vImgDisplay === 'flex' ? '' : 'disabled'} onClick={(e) => setDisplay(!vDisplay)}>차량점검 및 {logInfo.GUBUN === 'I' ? '일지작성' : '운행결과'}</button>
           </div>
         </div>
-        <div className={`mb-2 ${styles.formDiv}`} style={{display: vDisplay ? 'block' : 'none'}}>
+        <div className={`mb-2 ${styles.formDiv}`} style={{display: `${vDisplay ? 'block' : 'none'}`}}>
           <div className="mb-2 d-flex">
             <label className="form-label" style={{paddingTop:6 + 'px'}}>점검항목</label>
             <button className={`btn ${styles.btnCheck} ${styles.btn}`} style={{ width:40 + 'px', marginLeft:'auto'}} onClick={(e) => setDisplay(!vDisplay)}>이전</button>
@@ -383,10 +755,10 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
             </div>
           </div>
           <div className="mb-2">
-            <textarea className={`${styles.formTextArea}`} rows="5" value={logInfo.SAFETYNOTE} maxLength={1500} placeholder="점검특이사항(차량불량사항이 있는 경우/특수문자 입력불가)" onChange={(e) => {setLogInfo({ ...logInfo, SAFETYNOTE: e.target.value })}}  />
+            <textarea className={`${styles.formTextArea}`} rows="5" value={logInfo.SAFETYNOTE} maxLength={1500} placeholder="점검특이사항(차량불량사항이 있는 경우/특수문자 입력불가)" disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, SAFETYNOTE: e.target.value })}}  />
           </div>
         </div>
-        <div className={`mb-2 ${styles.formDiv}`} style={{display: vDisplay ? 'block' : 'none'}}>
+        <div className={`mb-2 ${styles.formDiv}`} style={{display: `${vDisplay ? 'block' : 'none'}`}}>
           <div className="mb-2">
             <div className="d-flex">
               <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:63 +'px'}}>운행일시</label>
@@ -402,13 +774,13 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
           <div className="mb-2">
             <div className="d-flex">
               <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:63 +'px'}}>시작km</label>
-              <input type="number" id="stKm" className={`form-control ${styles.formControl2}`} value={logInfo.STKM} disabled={carInfo.STKM === 0 ? '' : 'disabled'} style={{width:100 +'px'}} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, STKM: e.target.value })}} />
+              <input type="number" id="stKm" className={`form-control ${styles.formControl2}`} value={logInfo.STKM} disabled={logInfo.GUBUN === 'I' ? carInfo.STKM === 0 ? '' : 'disabled' : 'disabled'} style={{width:100 +'px'}} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, STKM: e.target.value })}} />
             </div>
           </div>
           <div className="mb-2">
             <div className="d-flex">
               <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:63 +'px'}}>종료km</label>
-              <input type="number" id="stKm" className={`form-control ${styles.formControl2}`} value={logInfo.ENKM} style={{width:100 +'px'}} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, ENKM: e.target.value })}} />
+              <input type="number" id="stKm" className={`form-control ${styles.formControl2}`} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} value={logInfo.ENKM} style={{width:100 +'px'}} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, ENKM: e.target.value })}} />
             </div>
           </div>
           <div className="mb-2">
@@ -426,16 +798,70 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch }) => {
           <div className="mb-2">
             <div className="d-flex">
               <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:63 +'px'}}>비고</label>
-              <input type="text" id="notice" className={`form-control ${styles.formControl2}`} style={{width:100 +'%'}} onInput={(e) => {handleMaxLength(e, 1000)}} onChange={(e) => {setLogInfo({ ...logInfo, NOTE: e.target.value })}} />
+              <input type="text" id="notice" className={`form-control ${styles.formControl2}`} value={logInfo.NOTE} style={{width:100 +'%'}} onInput={(e) => {handleMaxLength(e, 1000)}} onChange={(e) => {setLogInfo({ ...logInfo, NOTE: e.target.value })}} />
             </div>
           </div>
           <div className="mb-2">
-              <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={(e) => alert('준비중입니다')}>영수증첨부</button>
+            <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={(e) => carLogReceiptPopup()}>영수증첨부</button>
+              <CommonPopup
+                show={showAddPopup}
+                onHide={handleUploadCancel}
+                title="영수증"
+                requiresConfirm={true} // Enable confirmation for "템플릿추가"
+                confirmMessage="영수증을 추가하시겠습니까?" // Custom confirmation message                
+                buttons={vSaveBtnDisplay === 'block' ? 
+                  [ { label: "닫기", className: `${styles.btn} ${styles.btnSecondary} btn btn-secondary`, action: handleUploadCancel },
+                    {
+                      label: "영수증 추가",
+                      className: `${styles.btn} ${styles.btnPrimary} btn text-bg-success`,
+                      action: () => handleUpload().then((result) => ({ result, onSuccess: handleReceiptSearch })),
+                    }
+                  ] :
+                  [ { label: "닫기", className: `${styles.btn} ${styles.btnSecondary} btn btn-secondary`, action: handleUploadCancel }]}
+              >
+                <div className="row" style={{display: `${vSaveBtnDisplay}`}}>
+                  <div className="mb-3">
+                    <label className="form-label">이미지</label>
+                    <input
+                      type="file"
+                      className={`form-control ${styles.formControl}`}
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => {
+                        const selectedFiles = Array.from(e.target.files || []);
+                        setImgUploadInfo({ FILES: selectedFiles });
+                      }}
+                    />
+                  </div>
+                </div>
+                <div className="row" style={{display: receiptList.length > 0 ? 'block' : 'none'}} >
+                  <button className="btn btn-sm btn-outline-primary" style={{marginBottom:10 + 'px', width:100 + 'px', marginRight:12 + 'px', float:'right'}} onClick={handleDownloadAll}>전체 다운로드</button>
+                </div>
+                <div className="row" style={{display: receiptList.length > 0 ? 'block' : 'none'}} >
+                  <div style={{padding: 20 + 'px', maxHeight:500 + 'px', overflowX:'hidden', overflowY:'auto'}}>
+                    {receiptList.map((item, index) => 
+                    <div key={`imgDiv` + index} className="mb-3">
+                      <div className="d-flex">
+                        <label className={`flex-shrink-0 me-2 ${styles.formImgNm}`}>{item.IMGNM}</label>
+                        <button className="btn btn-sm btn-outline-secondary ms-2" onClick={() => handleDownload(item)}>
+                          <i className="bi bi-download"></i> 다운로드
+                        </button>
+                        <button className="btn btn-sm btn-outline-secondary ms-2" style={{display: `${vSaveBtnDisplay}`}} onClick={() => handleImgDelete(item)}>
+                          <i className="bi"></i> 삭제
+                        </button>
+                      </div>
+                      <img src={item.SRC} className={styles.carImage} />
+                    </div>
+                    )}
+                  </div>
+                </div>      
+              </CommonPopup>
           </div>
         </div>
-        <div className={`mb-2`} style={{display: vDisplay ? 'block' : 'none'}}>
-          <button className={`btn btn-secondary ${styles.btn}`} style={{ width:40 + 'px', marginLeft:'auto'}} onClick={onHide}>취소</button>
-          <button className={`btn btn-primary ${styles.btn}`} style={{ width:40 + 'px', marginLeft:'auto'}} onClick={handleSubmit}>등록</button>
+        <div className='mb-2' style={{display: `${vDisplay ? 'flex' : 'none'}`}}>
+          <button className={`btn btn-secondary ${styles.btn}`} style={{ width:40 + 'px'}} onClick={onHide}>취소</button>
+          <button className={`btn btn-primary ${styles.btn}`} style={{ width:40 + 'px', display: `${vSaveBtnDisplay}`}} onClick={handleSubmit}>저장</button>
+          <button className={`btn btn-danger ${styles.btn}`} style={{ width:40 + 'px', display: `${vRejectBtnDisplay}`}} onClick={handleReject}>반려</button>
         </div>
       </Modal.Body>
     </Modal>

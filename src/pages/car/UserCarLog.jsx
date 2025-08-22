@@ -1,38 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createTable } from '../../utils/tableConfig.js';
 import { initialFilters } from '../../utils/tableEvent.js';
-import { handleDownloadExcel2 } from '../../utils/tableExcel.js';
+import { handleDownloadExcel } from '../../utils/tableExcel.js';
 import useStore from '../../store/store.js';
 import MainSearch from '../../components/main/MainSearch.jsx';
 import TableSearch from '../../components/table/TableSearch.jsx';
 import CommonPopup from '../../components/popup/CommonPopup.jsx';
 import OrgSearchPopup from '../../components/popup/OrgSearchPopup.jsx';
+import UserSearchPopup from '../../components/popup/UserSearchPopup';
 import LogRegPopup from './UserCarLogRegPopup.jsx';
 import styles from '../../components/table/TableSearch.module.css';
 import { fetchData } from '../../utils/dataUtils.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import { msgPopup } from '../../utils/msgPopup.js';
 import { arEG, tr } from 'date-fns/locale';
-
-const fn_CellButton = (label, className, onClick) => ({
-  formatter: (cell) => {
-    const field = cell.getField();
-    const row = cell.getRow();
-    const rowData = row.getData();
-    const logStat = rowData.LOGSTAT;
-
-    if ((field === 'actions' && logStat === 'R') || field === 'DETAIL') {
-      const button = document.createElement("button");
-      button.className = `btn btn-sm ${className}`;
-      button.innerText = label;
-      button.onclick = () => onClick(cell.getData());
-      return button;
-    }
-    else {
-      return '';
-    }
-  },
-});
 
 /**
  * 필드 옵션 데이터를 반환
@@ -66,8 +47,8 @@ const UserCarLog = () => {
   const { user } = useStore();
   const [showPopup, setShowPopup] = useState(false);
   const [showRegPopup, setShowRegPopup] = useState(false);  
-  const [carId, setCarId] = useState('');
-  const [showExcelPopup, setShowExcelPopup] = useState(false); // Add this line
+  const regInitalizeData = {LOGDATE: '', LOGSTTIME: '', CARID: '', EMPNO: ''};
+  const [regData, setRegData] = useState(regInitalizeData);
   const [popupTitle, setPopupTitle] = useState('');
   const [popupContent, setPopupContent] = useState(null);
   const [popupOnConfirm, setPopupOnConfirm] = useState(null);
@@ -78,13 +59,42 @@ const UserCarLog = () => {
   const today = new Date();
   const todayDate = today.toISOString().split('T')[0];
 
-  const fn_RegPopup = (carId) => {
-    setCarId(carId);
+  const fn_CellButton = (label, className, onClick) => ({
+    formatter: (cell) => {
+      const field = cell.getField();
+      const row = cell.getRow();
+      const rowData = row.getData();
+      const confYn = rowData.CONFYN;
+      const logStat = rowData.LOGSTAT;
+
+      let bBtn = false;
+
+      if (field === 'actions' && logStat === 'R' && confYn === 'Y') {
+          bBtn = true;
+      } else if (field === 'DETAIL') {
+        bBtn = true;
+      }
+
+      if (bBtn) {
+        const button = document.createElement("button");
+        button.className = `btn btn-sm ${className}`;
+        button.innerText = label;
+        button.onclick = () => onClick(cell.getData());
+        return button;
+      }
+      else {
+        return '';
+      }
+    },
+  });
+
+  const fn_RegPopup = (data) => {
+    setRegData(data);
     setShowRegPopup(true);
   };
 
   const handleRegCancel = () => {
-    setCarId('');
+    setRegData(regInitalizeData);
     setShowRegPopup(false);
   };
 
@@ -177,9 +187,9 @@ const UserCarLog = () => {
 
   // 테이블 컬럼 정의
   const columns = [   
-    { title: "작업", field: "actions", width: 80, frozen: true, headerHozAlign: "center", hozAlign: "center", ...fn_CellButton("승인", `btn-danger ${styles.deleteButton}`, (rowData) => handleConfrim(rowData)) },
+    { title: "작업", field: "actions", width: 65, frozen: true, headerHozAlign: "center", hozAlign: "center", visible: false, ...fn_CellButton("승인", `btn-danger ${styles.deleteButton}`, (rowData) => handleIsConfrim(rowData)) },
     {
-      frozen: true, headerHozAlign: "center", hozAlign: "center", title: "작업대상", field: "applyTarget", sorter: "string", width: 100,
+      title: "작업대상", field: "applyTarget", width: 90, frozen: true, headerHozAlign: "center", hozAlign: "center", sorter: "string", visible: false,
       formatter: (cell) => {
         const rowData = cell.getRow().getData();
         let label = "";
@@ -201,10 +211,11 @@ const UserCarLog = () => {
           setTimeout(() => {
             setData((prevData) =>
               prevData.map((row) => {
+                alert(row.ID);
                 if (row.ID === rowData.ID) {
                   const updatedRow = { ...row, [stateField]: checkbox.checked ? "Y" : "N" };
                   if (stateField === "isConfirm" && !checkbox.checked) {
-                    updatedRow.isChanged = "N";
+                    updatedRow.isConfirm = "N";
                   }
                   return updatedRow;
                 }
@@ -222,16 +233,16 @@ const UserCarLog = () => {
     },
     { title: '번호', field: 'ID', width: 60, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '운행일', field: 'LOGDATE', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '운행시작시간', field: 'LOGSTTIME', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '운행종료시간', field: 'LOGENTIME', width: 80, headerHozAlign: 'center', hozAlign: 'center'},
+    { title: '시작시간', field: 'LOGSTTIME', width: 77, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '종료시간', field: 'LOGENTIME', width: 77, headerHozAlign: 'center', hozAlign: 'center'},
     { title: '조직', field: 'ORG_GROUP', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '본부', field: 'ORGNMLV1', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '설계부/운용센터', field: 'ORGNMLV2', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '본부', field: 'ORGNMLV1', width: 90, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '설계부/운용센터', field: 'ORGNMLV2', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '부', field: 'ORGNMLV3', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '팀', field: 'ORGNMLV4', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차대번호', field: 'CARID', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차량번호', field: 'CARNO', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '사번', field: 'EMPNO', headerHozAlign: 'center', hozAlign: 'center'},
+    { title: '차대번호', field: 'CARID', width: 150, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '차량번호', field: 'CARNO', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '사번', field: 'EMPNO', width: 70, headerHozAlign: 'center', hozAlign: 'center'},
     { title: '이름', field: 'EMPNM', headerHozAlign: 'center', hozAlign: 'center'},
     { title: '시작km', field: 'STKM', headerHozAlign: 'center', hozAlign: 'center' },
     { title: '종료km', field: 'ENKM', headerHozAlign: 'center', hozAlign: 'center' },
@@ -243,23 +254,98 @@ const UserCarLog = () => {
     { title: '상세', field: 'DETAIL', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('상세보기', `btn-danger ${styles.deleteButton}`, (rowData) => handleDetail(rowData)) },
   ];
 
-  const handleConfrim = (rowData) => {
+  const handleIsConfrim = (rowData) => {
     setTimeout(() => {
-      if (rowData.isConfirm === "Y") {
-        const newIsConfirm = rowData.isConfirm === "Y" ? "N" : "Y";
-        setData((prevData) =>
-          prevData.map((r) =>
-            r.ID === rowData.ID
-              ? { ...r, isConfirm: newIsConfirm }
-              : r
-          )
-        );
-      }
+      const newIsConfirm = rowData.isConfirm === "Y" ? "N" : "Y";
+      setData((prevData) =>
+        prevData.map((r) =>
+          r.ID === rowData.ID
+            ? { ...r, isConfirm: newIsConfirm }
+            : r
+        )
+      );
     }, 0);
   };
 
   const handleDetail = (rowData) => {
-    fn_RegPopup(rowData.CARID);
+    fn_RegPopup(rowData);
+  };
+
+  const handleConfrim = async (e) => {
+    e.preventDefault();
+
+    const changedRows = data.filter((row) => (row.isConfirm === 'Y'));
+    
+    if (changedRows.length === 0) {
+      errorMsgPopup("변경된 데이터가 없습니다.");
+      return;
+    }
+    
+    if(!confirm('선택한 운행일지를 승인 하시겠습니까?')) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const promises = changedRows.map(async (row) => {
+        const params = { pLOGDATE: row.LOGDATE, pLOGSTTIME: row.LOGSTTIME, pCARID: row.CARID, pLOGSTAT: 'Y', pTRTEMPNO: user?.empNo };
+
+        try {
+          const response = await fetchData("carlog/logConfirmTransaction", params );
+          if (!response.success) {
+            throw new Error(response.message || `Failed to ${row.LOGDATE} ${row.LOGSTTIME} ${row.CARID}`);
+          }
+          return { ...row, success: true };
+        } catch (error) {
+          console.error(`Error processing ${row.LOGDATE} ${row.LOGSTTIME} ${row.CARID}`, error);
+          return { ...row, success: false, error: error.message };
+        }
+      });
+
+      const results = await Promise.all(promises);
+      const errors = results.filter((result) => !result.success);
+
+      if (errors.length > 0) {
+        errorMsgPopup(`일부 작업이 실패했습니다: ${errors.map((e) => e.error).join(", ")}`);
+      } else {
+        msgPopup("선택한 대상이 성공적으로 승인되었습니다.");
+        await loadData();
+      }
+    } catch (err) {
+      setLoading(false);
+    }
+  };
+
+  const handleConfrimAll = async (e) => {
+    e.preventDefault();
+    
+    if(!confirm('승인 대기 중인 운행일지를 모두 승인하시겠습니까?')) {
+      return;
+    }
+    try {
+      const params = { pTRTEMPNO: user?.empNo };
+      
+      const response = await fetchData('carlog/logConfirmAllTransaction', params);
+
+      if (!response.success) {
+        throw new Error(response.errMsg || '운행일지 일괄승인 중 오류가 발생했습니다. 다시 시도해주세요.');
+      } else {
+        if (response.errMsg !== '' || response.data[0].errCd !== '00') {
+          let errMsg = response.errMsg;
+
+          if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+
+          errorMsgPopup(errMsg);
+        } else {
+          msgPopup("운행일지 일괄 승인 되었습니다.");
+          await loadData();
+        }
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      errorMsgPopup(error.message || '운행일지 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
   };
   
   // 데이터 로드 함수
@@ -291,9 +377,9 @@ const UserCarLog = () => {
 
     // API 로 통신할 경우 fetchData()
     try {
-      const params = {pORGCD: selectedOrgRef.current, pCARID: '', pCARNO: currentFilters.carno || '', pSTATUS: currentFilters.mgmtstatus || '', pDEBUG: "F"};
+      const params = {pSTDT: currentFilters.startDate, pENDT: currentFilters.endDate, pORGCD: selectedOrgRef.current, pCARNO: currentFilters.carno || '', pEMPNO: _selectedUsers.EMPNO || '', pSTATUS: currentFilters.mgmtstatus || '', pTRTEMPNO: user?.empNo, pDEBUG: "F"};
 
-      const response = await fetchData("car/listInfo", params);
+      const response = await fetchData("carlog/logInfoList", params);
       if (!response.success) {
         errorMsgPopup(response.message || "데이터를 가져오는 중 오류가 발생했습니다.");
         setData([]);
@@ -370,7 +456,7 @@ const UserCarLog = () => {
       });
       setShowPopup(true);
     } else if (eventType === 'showRegPopup') {
-      fn_RegPopup('');
+      fn_RegPopup(regInitalizeData);
     } 
   };
 
@@ -442,6 +528,14 @@ const UserCarLog = () => {
         const rows = tableInstance.current.getDataCount();
         setRowCount(rows);
       }
+
+      if (user?.levelCd === '41') {
+        table.showColumn('actions');
+        table.showColumn('applyTarget');
+      } else {
+        table.hideColumn('actions');
+        table.hideColumn('applyTarget');
+      } 
     } else {
       console.warn("renderer가 아직 초기화되지 않았습니다.");
     }
@@ -488,7 +582,16 @@ const UserCarLog = () => {
         onDownloadExcel={() => {handleDownloadExcel(tableInstance.current, tableStatus, '기동장비운행일지.xlsx')}}
         rowCount={rowCount}
         onEvent={handleDynamicEvent}
-      />
+      >
+      <div className={styles.btnGroupCustom} style={{display:user?.levelCd === '41' ? 'flex' : 'none'}}>
+        <button className={`${styles.btn} text-bg-success`} onClick={handleConfrim}>
+          선택승인
+        </button>
+        <button className={`${styles.btn} text-bg-success`} onClick={handleConfrimAll}>
+          일괄승인
+        </button>
+      </div>
+      </TableSearch>
       <div className={styles.tableWrapper}>
         {tableStatus === 'initializing' && <div>초기화 중...</div>}
         {loading && <div>로딩 중...</div>}
@@ -502,9 +605,9 @@ const UserCarLog = () => {
       <CommonPopup show={showPopup} onHide={() => setShowPopup(false)} onConfirm={popupOnConfirm} title={popupTitle}>
         {popupContent}
       </CommonPopup>
-      <LogRegPopup show={showRegPopup} onHide={handleRegCancel} onParentSearch={loadData} data={carId} />
+      <LogRegPopup show={showRegPopup} onHide={handleRegCancel} onParentSearch={loadData} data={regData} />
     </div>
   );
 };
 
-export default UserCarLog;
+export default UserCarLog

@@ -70,6 +70,15 @@
   color: #808080;
 }
 
+.formImgNm {
+  width: auto;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #808080;
+  margin-top: 9px !important;
+}
+
 .formDivBox {
   padding: 5px;
   display: block;
@@ -132,6 +141,7 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  text-align: center !important;
 }
 
 .btn:hover {
@@ -146,6 +156,26 @@
 .btn-primary {
   background-color: #007bff;
   color: #fff;
+}
+
+.btnGroupCustom {
+  display: flex;
+  gap: 8px; /* Reduced from 10px */
+  align-items: center;
+}
+
+.btnGroupCustom .btn {
+  font-size: 0.8rem;
+  background-color: #2cbbb7 !important;
+  color: white;
+  border: none;
+  padding: calc(0.375rem * 0.8) calc(0.75rem * 0.8);
+  border-radius: 3px;
+  cursor: pointer; /* Added for consistency */
+}
+
+.btnGroupCustom .btn:hover {
+  background-color: #317271;
 }
 
 .btnCheck {
@@ -214,4 +244,8 @@
 .formTextArea {
   width: 100%; 
   font-size: 14px;
+}
+
+.btnHide {
+  display: none;
 }
