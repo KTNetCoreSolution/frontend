@@ -425,7 +425,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
       </Modal.Header>
       <Modal.Body>
         <div className={styles.noteSection}>
-          <span>* 익월 10일 지나면 전월자료 수정 불가 합니다.</span>
+          <span>* 익월 {data[0]?.CLOSEDT || '10'}일 지나면 전월자료 수정 불가 합니다.</span>
           {isButtonVisible && (
             <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => handleSave('register')}>
               등록
@@ -476,7 +476,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
                   ))}
                 </select>
               </td>
-              <td>건<br/>(구간/본/개소):</td>
+              <td>건(구간/본/개소):</td>
               <td>
                 {formData.isDuplicate ? (
                   <span>건(구간/본/개소)의 값이 0 으로 설정 됩니다.</span>
@@ -488,7 +488,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
                     onChange={handleChange}
                     placeholder="건수 입력"
                     min="0"
-                    className={styles.input}
+                    className={styles.duplicateInput}
                   />
                 )}
                 <input type="checkbox" name="isDuplicate" checked={formData.isDuplicate} onChange={handleChange} />
@@ -498,7 +498,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
             <tr>
               <td>업무 부가 설명:</td>
               <td colSpan="3">
-                <span>긴급민원</span>
+                <span>{formData.CLASSCCD !== 'all' ? data.find(item => item.CLASSCCD === formData.CLASSCCD)?.DETAIL || '' : ''}</span>
               </td>
             </tr>
             <tr>

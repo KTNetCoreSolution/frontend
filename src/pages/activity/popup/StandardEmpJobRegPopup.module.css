@@ -37,6 +37,14 @@
   background-color: #d8d8d8;
 }
 
+.duplicateInput {
+  width: 260px;
+  padding: 6px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 14px;
+}
 
 .dateInput {
   width: 120px;
