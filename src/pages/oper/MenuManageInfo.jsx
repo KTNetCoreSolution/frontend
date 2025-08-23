@@ -501,7 +501,7 @@ const MenuManageInfo = () => {
         onDownloadExcel={() => handleDownloadExcel(tableInstance.current, tableStatus, "메뉴관리.xlsx")}
         buttonStyles={styles}
       >
-        <div className={styles.btnGroupCustom}>
+        <div className='btnGroupCustom'>
           <button className={`${styles.btn} text-bg-primary`} onClick={handleAddClick}>
             추가
           </button>

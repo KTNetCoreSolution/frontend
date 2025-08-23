@@ -224,7 +224,7 @@ const UserSearchPopup = ({ onClose, onConfirm }) => {
             style={{ visibility: loading || tableStatus !== "ready" ? "hidden" : "visible" }}
           />
         </TableWrapper>
-        <div className={styles.buttonContainer}>
+        <div className='buttonContainer'>
           <button className={`${styles.btn} ${styles.btnSecondary} btn btn-secondary`} onClick={handleClose}>
             닫기
           </button>

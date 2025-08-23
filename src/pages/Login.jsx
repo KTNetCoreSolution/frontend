@@ -120,7 +120,7 @@ const Login = () => {
         </div>
         <div className='loginContainer'>
           <form onSubmit={handleLogin}>
-            <div className={styles.formGroup}>
+            {/* <div className='formGroup'>
               <label htmlFor="userid" className={styles.label}>
                 <i className="bi bi-person"></i> 아이디
               </label>
@@ -133,8 +133,22 @@ const Login = () => {
                 required
                 className={styles.input}
               />
+            </div> */}
+            <div className='formGroup'>
+              <div className="inputWrapper">
+                <i className="bi bi-person"></i>
+                <input
+                  id="userid"
+                  type="text"
+                  value={empNo}
+                  onChange={(e) => setEmpNo(e.target.value)}
+                  placeholder="아이디를 입력하세요"
+                  required
+                  className="inputWithIcon"
+                />
+              </div>
             </div>
-            <div className={styles.formGroup}>
+            {/* <div className='formGroup'>
               <label htmlFor="password" className={styles.label}>
                 <i className="bi bi-lock"></i> 비밀번호
               </label>
@@ -147,11 +161,25 @@ const Login = () => {
                 required
                 className={styles.input}
               />
+            </div> */}
+            <div className='formGroup'>
+              <div className="inputWrapper">
+                <i className="bi bi-lock"></i>
+                <input
+                  id="password"
+                  type="password"
+                  value={empPwd}
+                  onChange={(e) => setEmpPwd(e.target.value)}
+                  placeholder="비밀번호를 입력하세요"
+                  required
+                  className="inputWithIcon"
+                />
+              </div>
             </div>
-            <div className={styles.formGroup}>
-              <div className={styles.captchaContainer}>
+            <div className='formGroup'>
+              <div className='captchaContainer'>
                 {captchaImage ? (
-                  <img src={captchaImage} alt="CAPTCHA" className={styles.captchaImage} />
+                  <img src={captchaImage} alt="CAPTCHA" className='captchaImage' />
                 ) : (
                   <div className={styles.captchaPlaceholder}>
                     {isCaptchaLoading ? 'Loading CAPTCHA...' : captchaError || '캡챠 로드 실패'}

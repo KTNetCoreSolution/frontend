@@ -111,7 +111,7 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable, gubun }) => {
             <div className={`${styles.modalBody} modal-body`}>
               <form onSubmit={handlePasswordChange}>
                 <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
+                  <div className='formGroup'>
                     <label htmlFor="empNo" className="form-label">
                       <i className="bi bi-person me-2"></i>아이디 <i className="bi bi-asterisk text-danger"></i>
                     </label>
@@ -125,7 +125,7 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable, gubun }) => {
                       placeholder="아이디를 입력하세요"
                     />
                   </div>
-                  <div className={styles.formGroup}>
+                  <div className='formGroup'>
                     <label htmlFor="currentPwd" className="form-label">
                       <i className="bi bi-lock me-2"></i>현재 비밀번호 <i className="bi bi-asterisk text-danger"></i>
                     </label>
@@ -139,7 +139,7 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable, gubun }) => {
                       placeholder="현재 비밀번호를 입력하세요"
                     />
                   </div>
-                  <div className={styles.formGroup}>
+                  <div className='formGroup'>
                     <label htmlFor="newPwd" className="form-label">
                       <i className="bi bi-lock-fill me-2"></i>새 비밀번호 <i className="bi bi-asterisk text-danger"></i>
                     </label>
@@ -153,7 +153,7 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable, gubun }) => {
                       placeholder="새 비밀번호를 입력하세요"
                     />
                   </div>
-                  <div className={styles.formGroup}>
+                  <div className='formGroup'>
                     <label htmlFor="confirmPwd" className="form-label">
                       <i className="bi bi-lock-fill me-2"></i>비밀번호 확인 <i className="bi bi-asterisk text-danger"></i>
                     </label>

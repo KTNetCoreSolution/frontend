@@ -96,7 +96,7 @@ const MobileLogin = () => {
       <div className={styles.card}>
         <h1 className={styles.title}>Login</h1>
         <form onSubmit={handleLogin}>
-          <div className={styles.formGroup}>
+          <div className='formGroup'>
             <label htmlFor="userid" className={styles.label}>
               <i className="bi bi-person"></i> 아이디
             </label>
@@ -110,7 +110,7 @@ const MobileLogin = () => {
               required
             />
           </div>
-          <div className={styles.formGroup}>
+          <div className='formGroup'>
             <label htmlFor="password" className={styles.label}>
               <i className="bi bi-lock"></i> 비밀번호
             </label>
@@ -124,8 +124,8 @@ const MobileLogin = () => {
               required
             />
           </div>
-          <div className={styles.formGroup}>
-            <div className={styles.captchaContainer}>
+          <div className='formGroup'>
+            <div className='captchaContainer'>
               {captchaImage ? (
                 <img src={captchaImage} alt="CAPTCHA" className={styles.captchaImage} />
               ) : (

@@ -1,7 +1,7 @@
 .tabulator {
     background-color: #fff;
     border: 1px solid #999;
-    font-size: 12px;
+    font-size: 0.8125rem;
 }
 
 .tabulator .tabulator-header {
@@ -53,6 +53,7 @@ button.tabulator-page {
 }
 
 .tabulator .tabulator-header .tabulator-col {
+    height: auto !important;
     background-color: #fff;
 }
 

@@ -480,8 +480,9 @@ const CarCodeManage = () => {
   };
 
   return (
-    <div className={styles.container}>
+    <div className='container'>
       <MainSearch config={searchConfig} filters={filters} setFilters={setFilters} onEvent={handleDynamicEvent} />
+      
       <TableSearch 
         filterFields={filterTableFields} 
         filters={tableFilters} 
@@ -490,15 +491,15 @@ const CarCodeManage = () => {
         buttonStyles={styles}
         excelYn={'N'}
       >
-        <div className={styles.btnGroupCustom}>
+        <div className='btnGroupCustom'>
           <button
-            className={`${styles.btn} text-bg-primary`}
+            className='btn text-bg-primary'
             onClick={() => handleDynamicEvent('showAddPopup')}
           >
             추가
           </button>
           <button 
-            className={`${styles.btn} text-bg-success`} 
+            className='btn text-bg-success'
             onClick={handleSave}
           >
             저장

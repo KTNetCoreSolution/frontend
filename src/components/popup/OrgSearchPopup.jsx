@@ -304,7 +304,7 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN, 
           )}
         </TreeWrapper>
 
-        <div className={styles.buttonContainer}>
+        <div className='buttonContainer'>
           <button
             className={`${styles.btn} ${styles.btnSecondary}`}
             onClick={handleClose}

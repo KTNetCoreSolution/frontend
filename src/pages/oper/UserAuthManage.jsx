@@ -280,7 +280,7 @@ const UserAuthManage = () => {
     <div className={styles.container}>
       <MainSearch config={searchConfig} filters={filters} setFilters={setFilters} onEvent={handleDynamicEvent} />
       <TableSearch filterFields={filterTableFields} filters={tableFilters} setFilters={setTableFilters} rowCount={rowCount} onDownloadExcel={() => handleDownloadExcel(tableInstance.current, tableStatus, "사용자권한관리.xlsx")} buttonStyles={styles}>
-        <div className={styles.btnGroupCustom}>
+        <div className='btnGroupCustom'>
           <button className={`${styles.btn} text-bg-success`} onClick={handleSave}>저장</button>
         </div>
       </TableSearch>

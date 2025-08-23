@@ -13,6 +13,7 @@ import styles from './MainHome.module.css';
 import banner1 from '../../assets/images/banner1.png';
 import banner2 from '../../assets/images/banner2.png';
 import mainImg from '../../assets/images/mainImg.png';
+import arrowRight from '../../assets/images/icon_arrow_right.svg';
 
 const MainHome = () => {
   const { user } = useStore();
@@ -111,8 +112,8 @@ const MainHome = () => {
         </div>
       </div>
       <div className={`w-100 ${styles.contentContainer}`}>
-        <div className="d-flex justify-content-between align-items-center">
-          <h3 className={styles.boardTitle}>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h3 className='boardTitle'>
             공지사항
           </h3>
           <Button
@@ -120,47 +121,51 @@ const MainHome = () => {
             onClick={() => handleNavigate('/main/boardMain')}
             className='boardBtn01'
           >
-            더보기 &gt;
+            더보기
+            <img src={arrowRight} className="arrow-icon" />
           </Button>
         </div>
         <div className={styles.noticeGrid}>
           {getVisibleNotices().map((notice, index) => (
             <div key={index} className={styles.gridItem}>
-              <Card className='cardMain'>
+              <Card 
+                className='cardMain' 
+                onClick={() => handleNavigate('/main/boardView', {
+                  noticeid: notice.noticeid,
+                  type: notice.boardgubun,
+                })}>
                 <CardContent className='cardContent'>
                   {notice.title ? (
                     <>
-                      <Typography
-                        variant="h6"
-                        component="div"
-                        className='title'
-                        sx={{
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                        onClick={() => handleNavigate('/main/boardView', {
-                          noticeid: notice.noticeid,
-                          type: notice.boardgubun,
-                        })}
-                      >
-                        {notice.title}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        className='body'
-                        sx={{
-                          display: '-webkit-box',
-                          WebkitLineClamp: 3,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {notice.contents}
-                      </Typography>
+                      <div>
+                        <Typography
+                          variant="h6"
+                          component="div"
+                          className='title'
+                          sx={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {notice.title}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          className='body'
+                          sx={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: 3,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          }}
+                        >
+                          {notice.contents}
+                        </Typography>
+                      </div>
                       <Typography variant="body2" className='date'>
                         {notice.date || new Date().toLocaleDateString()}
                       </Typography>

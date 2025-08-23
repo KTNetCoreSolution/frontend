@@ -583,7 +583,7 @@ const UserCarLog = () => {
         rowCount={rowCount}
         onEvent={handleDynamicEvent}
       >
-      <div className={styles.btnGroupCustom} style={{display:user?.levelCd === '41' ? 'flex' : 'none'}}>
+      <div className='btnGroupCustom' style={{display:user?.levelCd === '41' ? 'flex' : 'none'}}>
         <button className={`${styles.btn} text-bg-success`} onClick={handleConfrim}>
           선택승인
         </button>

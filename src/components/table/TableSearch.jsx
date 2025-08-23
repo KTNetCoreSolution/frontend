@@ -7,11 +7,11 @@ import TableTitle from './TableTitle'; // Import the new TableTitle component
 
 const TableSearch = ({ filterFields, filters, setFilters, onDownloadExcel, children, buttonStyles, rowCount, excelYn }) => {
   return (
-    <div>
-      <div className={styles.searchSection}>
-        <div className={styles.formGroupContainer}>
+    <div className='tableTopContainer'>
+      <div className='tableTopArea'>
+        <div className='formGroupContainer'>
           {filterFields.map((field) => (
-            <div id={field.divid} key={field.id} className={styles.formGroup} style={{display: field.display}}>
+            <div id={field.divid} key={field.id} className='formGroup' style={{display: field.display}}>
               <label htmlFor={field.id}>{field.label}</label>
               {field.type === 'text' ? (
                 <input
@@ -50,15 +50,13 @@ const TableSearch = ({ filterFields, filters, setFilters, onDownloadExcel, child
           ))}
           {children && <div className={buttonStyles?.btnGroupCustom}>{children}</div>}
         </div>
-        <div className={styles.buttonContainer} style={{display: excelYn === 'N' ? 'none' : 'flex'}}>
-          <button onClick={onDownloadExcel} className={styles.downloadButton}>
+        <div className='buttonContainer' style={{display: excelYn === 'N' ? 'none' : 'flex'}}>
+          <button onClick={onDownloadExcel} className='downloadButton'>
             엑셀 다운로드
           </button>
         </div>
       </div>
-      <div className={styles.tableTitleRow}>
-        <TableTitle rowCount={rowCount || 0} />
-      </div>
+      <TableTitle rowCount={rowCount || 0} />
     </div>
   );
 };

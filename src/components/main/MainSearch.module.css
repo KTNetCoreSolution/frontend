@@ -10,32 +10,32 @@
   margin-bottom: 4px;
 } */
 
-.formGroupContainer {
+/* .formGroupContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-}
+} */
 
-.searchFields {
+/* .searchFields {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
-}
+} */
 
-.formGroup {
+/* .formGroup {
   display: flex;
   flex-direction: row;
   align-items: center;
-}
+} */
 
-.formGroup label {
+/* .formGroup label {
   margin-bottom: 0;
   margin-right: 5px;
-}
+} */
 
-.formGroup input,
+/* .formGroup input,
 .formGroup select,
 .formGroup textarea {
   padding: 3px;
@@ -63,4 +63,4 @@
   border: 1px solid #dbdbdb;
   border-radius: 4px;
   cursor: pointer;
-}
+} */

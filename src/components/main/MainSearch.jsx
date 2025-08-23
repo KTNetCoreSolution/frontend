@@ -15,10 +15,10 @@ import styles from './MainSearch.module.css';
  */
 const MainSearch = ({ config, filters, setFilters, onEvent }) => {
   const defaultStyles = {
-    width: '150px',
-    height: '30px',
-    backgroundColor: '#ffffff',
-    color: '#000000',
+    // width: '150px',
+    // height: '30px',
+    // backgroundColor: '#ffffff',
+    // color: '#000000',
   };
   const defaultMaxLength = 255;
 
@@ -166,12 +166,12 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
     });
 
     return Object.keys(rows).map((rowIndex) => (
-      <div key={`row-${rowIndex}`} className={styles.formGroupContainer}>
-        <div className={styles.searchFields}>
+      <div key={`row-${rowIndex}`} className='formGroupContainer'>
+        <div className='searchFields'>
           {rows[rowIndex].search.map((field) => (
-            <div key={field.id} className={styles.formGroup}>
+            <div key={field.id} className='formGroup'>
               {(field.labelVisible !== false && field.label && field.type !== 'label') && <label htmlFor={field.id}>{field.label}</label>}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <div>
                 {(field.type === 'text' || field.type === 'textarea') && (
                   field.type === 'text' ? (
                     <input
@@ -183,11 +183,11 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
                       onChange={(e) => handleChangeWithValidation(e, field)}
                       style={{
                         width: getStyleValue(field.width, defaultStyles.width),
-                        height: getStyleValue(field.height, defaultStyles.height),
-                        backgroundColor: getStyleValue(field.backgroundColor, defaultStyles.backgroundColor),
-                        color: getStyleValue(field.color, defaultStyles.color),
-                        boxSizing: 'border-box',
-                        margin: 0,
+                        // height: getStyleValue(field.height, defaultStyles.height),
+                        // backgroundColor: getStyleValue(field.backgroundColor, defaultStyles.backgroundColor),
+                        // color: getStyleValue(field.color, defaultStyles.color),
+                        // boxSizing: 'border-box',
+                        // margin: 0,
                       }}
                       readOnly={!field.enabled}
                     />
@@ -348,18 +348,18 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
           ))}
         </div>
         {rows[rowIndex].buttons.length > 0 && (
-          <div className={styles.buttonContainer}>
+          <div className='buttonContainer'>
             {rows[rowIndex].buttons.map((button) => (
               <button
                 key={button.id}
                 onClick={() => onEvent(button.eventType, { id: button.id })}
                 style={{
                   width: getStyleValue(button.width, '80px'),
-                  height: getStyleValue(button.height, '30px'),
-                  backgroundColor: getStyleValue(button.backgroundColor, '#00c4b4'),
-                  color: getStyleValue(button.color, '#ffffff'),
-                  boxSizing: 'border-box',
-                  margin: 0,
+                  // height: getStyleValue(button.height, '30px'),
+                  // backgroundColor: getStyleValue(button.backgroundColor, '#00c4b4'),
+                  // color: getStyleValue(button.color, '#ffffff'),
+                  // boxSizing: 'border-box',
+                  // margin: 0,
                 }}
                 disabled={button.enabled === false}
               >

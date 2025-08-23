@@ -3,11 +3,11 @@ import styles from "./TableSearch.module.css";
 
 const TableTitle = ({ rowCount }) => {
   return (
-    <div className={styles.tableTitleRow}>
-      <div className={styles.tableTitle}>
-        <span className={styles.resultText}>결과 (</span>
-        <span className={styles.rowCountText}>{rowCount} Rows</span>
-        <span className={styles.resultText}>)</span>
+    <div className='tableTitleRow'>
+      <div className='tableTitle'>
+        <span className='resultText'>결과 (</span>
+        <span className='rowCountText'>{rowCount} Rows</span>
+        <span className='resultText'>)</span>
       </div>
     </div>
   );

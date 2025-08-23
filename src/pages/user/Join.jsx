@@ -121,7 +121,7 @@ const Join = ({ show, onHide, gubun }) => {
             <div className={`${styles.modalBody} modal-body`}>
               <form onSubmit={handleRegistration}>
                 <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
+                  <div className='formGroup'>
                     <label htmlFor="empNo" className="form-label">
                       <i className="bi bi-person me-2"></i>아이디 <i className="bi bi-asterisk text-danger"></i>
                     </label>
@@ -135,7 +135,7 @@ const Join = ({ show, onHide, gubun }) => {
                       placeholder="아이디를 입력하세요"
                     />
                   </div>
-                  <div className={styles.formGroup}>
+                  <div className='formGroup'>
                     <label htmlFor="empNm" className="form-label">
                       <i className="bi bi-person-fill me-2"></i>이름 <i className="bi bi-asterisk text-danger"></i>
                     </label>
@@ -151,7 +151,7 @@ const Join = ({ show, onHide, gubun }) => {
                   </div>
                 </div>
                 <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
+                  <div className='formGroup'>
                     <label htmlFor="empPwd" className="form-label">
                       <i className="bi bi-lock me-2"></i>비밀번호 <i className="bi bi-asterisk text-danger"></i>
                     </label>
@@ -165,7 +165,7 @@ const Join = ({ show, onHide, gubun }) => {
                       placeholder="비밀번호를 입력하세요"
                     />
                   </div>
-                  <div className={styles.formGroup}>
+                  <div className='formGroup'>
                     <label htmlFor="confirmPwd" className="form-label">
                       <i className="bi bi-lock-fill me-2"></i>비밀번호 확인 <i className="bi bi-asterisk text-danger"></i>
                     </label>
@@ -181,7 +181,7 @@ const Join = ({ show, onHide, gubun }) => {
                   </div>
                 </div>
                 <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
+                  <div className='formGroup'>
                     <label htmlFor="mobile" className="form-label">
                       <i className="bi bi-phone me-2"></i>핸드폰번호 <i className="bi bi-asterisk text-danger"></i>
                     </label>
@@ -195,12 +195,12 @@ const Join = ({ show, onHide, gubun }) => {
                       placeholder="(예: 010-1234-5678)"
                     />
                   </div>
-                  <div className={styles.formGroup}>
+                  <div className='formGroup'>
                     {/* Empty div to maintain layout balance */}
                   </div>
                 </div>
                 <div className={styles.formRow}>
-                  <div className={styles.formGroup}>
+                  <div className='formGroup'>
                     <label htmlFor="email" className="form-label">
                       <i className="bi bi-envelope me-2"></i>이메일 <i className="bi bi-asterisk text-danger"></i>
                     </label>
@@ -214,7 +214,7 @@ const Join = ({ show, onHide, gubun }) => {
                       placeholder="이메일을 입력하세요"
                     />
                   </div>
-                  <div className={styles.formGroup}>
+                  <div className='formGroup'>
                     {/* Empty div to maintain layout balance */}
                   </div>
                 </div>

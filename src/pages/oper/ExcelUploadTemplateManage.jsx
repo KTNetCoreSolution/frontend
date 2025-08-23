@@ -392,7 +392,7 @@ const ExcelUploadTemplateManage = () => {
         onDownloadExcel={() => handleDownloadExcel(tableInstance.current, tableStatus, "템플릿관리.xlsx")} 
         buttonStyles={styles}
       >
-        <div className={styles.btnGroupCustom}>
+        <div className='btnGroupCustom'>
           <button
             className={`${styles.btn} text-bg-primary`}
             onClick={() => handleDynamicEvent('showAddPopup')}

@@ -1,4 +1,4 @@
-  .overlay {
+  /* .overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -41,10 +41,6 @@
     font-size: 1rem;
   }
   
-  .btnClose {
-    /* Bootstrap의 btn-close 스타일 유지 */
-  }
-  
   .modalBody {
     color: #333;
     position: relative;
@@ -59,11 +55,7 @@
   .modalFooter {
     justify-content: center;
   }
-  
-  .btn {
-    /* Bootstrap의 btn 스타일 유지 */
-  }
-  
+
   .btnSecondary {
     background-color: #6c757d;
     border-color: #6c757d;
@@ -109,4 +101,4 @@
       .modal {
         width: 100%;
     }
-  }
+  } */
