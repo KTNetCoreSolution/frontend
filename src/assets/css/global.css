@@ -737,6 +737,7 @@ button.boardBtn01 .arrow-icon {
   margin-right: 0.75rem !important;
   min-width: 120px;
   margin-bottom: 0;
+  padding-top: 6px;
 }
 .form-guide {
   font-size: 0.875rem !important;
