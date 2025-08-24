@@ -96,7 +96,7 @@ const StandardEmpJobManage = () => {
   const [_class3Options, setClass3Options] = useState([]);
   const [classData, setClassData] = useState([]);
   const [bizWorkTypes, setBizWorkTypes] = useState([]);
-  const [filters, setFilters] = useState({ CLASSACD: '', CLASSBCD: '', CLASSCCD: '', dayGubun: 'M', classGubun: 'LINE', classGubunTxt: '선로' });
+  const [filters, setFilters] = useState({ CLASSACD: '', CLASSBCD: '', CLASSCCD: '', dayGubun: 'M', classGubun: user?.standardSectionCd || 'LINE', classGubunTxt: user?.standardSectionCd === 'LINE' ? '선로' : user?.standardSectionCd === 'DESIGN' ? '설계' : user?.standardSectionCd === 'BIZ' ? 'BIZ' : '선로' });
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -123,10 +123,10 @@ const StandardEmpJobManage = () => {
       {
         type: 'search',
         fields: [
-          { id: 'classGubunLbl', type: 'label', row: 1, label: '분야', labelVisible: false, width: '25px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
+          { id: 'classGubunLbl', type: 'label', row: 1, label: '분야', labelVisible: false, width: '30px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
           ...(
             hasPermission(user?.auth, 'oper')
-              ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', width: '60px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }]
+              ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', width: '64px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }]
               : user?.standardSectionCd === 'LINE'
                 ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, width: '60px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }]
                 : user?.standardSectionCd === 'DESIGN'
@@ -139,11 +139,11 @@ const StandardEmpJobManage = () => {
           { id: 'CLASSACD', type: 'select', row: 1, label: '대분류', labelVisible: true, options: [], width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 대분류 드롭다운
           { id: 'CLASSBCD', type: 'select', row: 1, label: '중분류', labelVisible: true, options: [], width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 중분류 드롭다운
           { id: 'CLASSCCD', type: 'select', row: 1, label: '소분류', labelVisible: true, options: [], width: '250px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 소분류 드롭다운
-          { id: 'dayGubunLbl', type: 'label', row: 2, label: '작업', labelVisible: false, width: '25px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 작업 라벨
+          { id: 'dayGubunLbl', type: 'label', row: 2, label: '작업', labelVisible: false, width: '30px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 작업 라벨
           { id: 'dayGubun', type: 'select', row: 2, label: '', labelVisible: false, options: [{ value: 'M', label: '월' }, { value: 'D', label: '일' }], defaultValue: 'M', width: '50px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true }, // 월/일 선택 드롭다운
-          { id: 'monthDate', type: 'month', row: 2, label: '', labelVisible: true, placeholder: '월 선택', width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: today }, // 월 선택 입력 (dayGubun: 'M'일 때 표시)
-          { id: 'rangeStartDate', type: 'startday', row: 2, label: '', labelVisible: true, placeholder: '시작일 선택', width: '120px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: today }, // 시작일 입력 (dayGubun: 'D'일 때 표시)
-          { id: 'rangeEndDate', type: 'endday', row: 2, label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', width: '120px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: today }, // 종료일 입력 (dayGubun: 'D'일 때 표시)
+          { id: 'monthDate', type: 'month', row: 2, label: '', labelVisible: true, placeholder: '월 선택', width: '110px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: today }, // 월 선택 입력 (dayGubun: 'M'일 때 표시)
+          { id: 'rangeStartDate', type: 'startday', row: 2, label: '', labelVisible: true, placeholder: '시작일 선택', width: '130px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: today }, // 시작일 입력 (dayGubun: 'D'일 때 표시)
+          { id: 'rangeEndDate', type: 'endday', row: 2, label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', width: '130px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: today }, // 종료일 입력 (dayGubun: 'D'일 때 표시)
         ],
       },
       {

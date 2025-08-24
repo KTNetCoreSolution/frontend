@@ -50,7 +50,7 @@ const getFieldOptions = (fieldId, dependentValue = "", classData) => {
   return [];
 };
 
-const StandardBizEmpJobRegPopup = ({ show, onHide, data, bizWorkTypes }) => {
+const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }) => {
   const today = new Date().toISOString().split("T")[0];
   const [formData, setFormData] = useState({
     CLASSACD: "all",
@@ -72,6 +72,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, bizWorkTypes }) => {
   const [workTimeOptions, setWorkTimeOptions] = useState([]);
   const [classPopupState, setClassPopupState] = useState({ show: false, editingIndex: -1 });
   const [originalValues, setOriginalValues] = useState({});
+  const [classGubun, setClassGubun] = useState(filters.classGubun || 'BIZ');
 
   // CLOSEDT 값 추출
   const closedt = data[0]?.CLOSEDT || '10';
