@@ -100,7 +100,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 
 /* Modals */
 .modal-body, .modal-title, .modal-footer {
-  font-size: var(--bs-body-font-size);
+  /* font-size: var(--bs-body-font-size); */
 }
 .modal-title {
   font-size: 1.125rem !important;
@@ -112,10 +112,6 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .modal-footer .btn + .btn {
   margin-left: 4px !important;
 }
-
-
-
-
 .overlay {
   position: fixed;
   top: 0;
@@ -139,7 +135,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 .modalDialog {
   max-width: 500px;
-  min-width: 300px;
+  /* min-width: 300px; */
   width: 100%;
   margin: 0;
 }
@@ -184,6 +180,11 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 .btnPrimary:hover {
   opacity: .75;
+}
+.text-bg-success {
+  background-color: var(--bs-primary-color) !important;
+  border-color: var(--bs-primary-color) !important;
+  color: #fff !important;
 }
 /* .deleteButton:hover {
 background-color: #c82333;
@@ -700,6 +701,9 @@ button.boardBtn01 .arrow-icon {
 .searchFields input {
   height: 30px;
 }
+.btn-search {
+  min-width: 80px;
+}
 
 /* formgroup */
 .formGroupContainer {
@@ -758,9 +762,11 @@ button.boardBtn01 .arrow-icon {
 }
 .popupIcon {
   padding: 3px 8px;
-  border: 1px solid #dbdbdb;
+  border: 1px solid var(--bs-border-form);
+  background: #ffffff;
   border-radius: 4px;
   cursor: pointer;
+  min-width: 30px;
 }
 .buttonContainer {
   display: flex;
@@ -777,9 +783,14 @@ button.boardBtn01 .arrow-icon {
   cursor: pointer;
   min-height: 30px;
 }
-.downloadButton:hover {
-  background-color: #218838;
+.downloadButton {
+  color: var(--bs-font-secondary-color);
+  border: 1px solid var(--bs-border-form);
+  background: #ffffff;
 }
+/* .downloadButton:hover {
+  background-color: #218838;
+} */
 .btnGroupCustom {
   display: flex;
   gap: 8px;
@@ -833,6 +844,7 @@ button.boardBtn01 .arrow-icon {
 .contentWrapper {
   height: 100vh;
   background: #ffffff;
+  overflow-y: auto;
 }
 .contentWrapper:has(.mainContentWrap) {
   background: #F7F7F7;

@@ -293,16 +293,8 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
                 )}
                 {field.type === 'popupIcon' && (
                   <button
-                    className={styles.popupIcon}
+                    className='popupIcon'
                     onClick={() => onEvent(field.eventType, { id: field.id })}
-                    style={{
-                      width: getStyleValue(field.width, defaultStyles.width),
-                      height: getStyleValue(field.height, defaultStyles.height),
-                      backgroundColor: getStyleValue(field.backgroundColor, defaultStyles.backgroundColor),
-                      color: getStyleValue(field.color, defaultStyles.color),
-                      boxSizing: 'border-box',
-                      margin: 0,
-                    }}
                     disabled={field.enabled === false}
                   >
                     +
@@ -353,14 +345,7 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
               <button
                 key={button.id}
                 onClick={() => onEvent(button.eventType, { id: button.id })}
-                style={{
-                  width: getStyleValue(button.width, '80px'),
-                  // height: getStyleValue(button.height, '30px'),
-                  // backgroundColor: getStyleValue(button.backgroundColor, '#00c4b4'),
-                  // color: getStyleValue(button.color, '#ffffff'),
-                  // boxSizing: 'border-box',
-                  // margin: 0,
-                }}
+                className='btn btn-secondary btn-search'
                 disabled={button.enabled === false}
               >
                 {button.label}

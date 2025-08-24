@@ -306,13 +306,13 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN, 
 
         <div className='buttonContainer'>
           <button
-            className={`${styles.btn} ${styles.btnSecondary}`}
+            className={`${styles.btn} ${styles.btnSecondary} btn btn-secondary`}
             onClick={handleClose}
           >
             닫기
           </button>
           <button
-            className={`${styles.btn} ${styles.btnPrimary}`}
+            className={`${styles.btn} ${styles.btnPrimary} btn text-bg-success`}
             onClick={handleConfirm}
           >
             확인

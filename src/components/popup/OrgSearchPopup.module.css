@@ -95,7 +95,7 @@
   font-size: 13px;
 }
 
-.buttonContainer {
+/* .buttonContainer {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
@@ -130,4 +130,4 @@
 
 .btnSecondary:hover {
   background: #e0e0e0;
-}
+} */

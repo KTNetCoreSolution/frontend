@@ -92,7 +92,7 @@ const CommonPopup = ({
 
   const defaultButtons = [
     { label: "취소", className: `${styles.btn} ${styles.btnSecondary} btn btn-secondary`, action: onHide },
-    { label: "확인", className: `${styles.btn} ${styles.btnPrimary} btn text-bg-success`, action: onConfirm },
+    { label: "확인", className: `${styles.btn} ${styles.btnPrimary} btn btn-primary`, action: onConfirm },
   ];
 
   const activeButtons = buttons.length > 0 ? buttons.slice(0, 5) : defaultButtons;

@@ -8,10 +8,10 @@ const MsgPopup = ({ show, onHide, message }) => {
   return (
     <>
       {/* 배경 오버레이 */}
-      <div className={styles.overlay} onClick={onHide}></div>
+      <div className='overlay' onClick={onHide} style={{zIndex: 1051}}></div>
 
       {/* 모달 */}
-      <div className='modal show d-block' tabIndex="-1">
+      <div className='modal show d-block' tabIndex="-1" style={{zIndex: 1052}}>
         <div className='modalDialog modal-dialog-centered'>
           <div className='modalContent'>
             <div className='modalHeader modal-header'>
