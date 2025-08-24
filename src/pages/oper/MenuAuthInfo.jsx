@@ -283,8 +283,8 @@ const MenuAuthInfo = () => {
   };
 
   return (
-    <div className={`container mt-1 ${styles.container}`}>
-      <div className="btn-group-custom d-flex justify-content-end gap-2 mb-3">
+    <div className={`container ${styles.container}`}>
+      <div className="buttonContainer mb-3">
         <button className={`btn text-bg-secondary ${styles.btnCancel}`} onClick={handleReset}>초기화</button>
         <button className={`btn text-bg-success ${styles.btnReg}`} onClick={handleSave} disabled={loading}>
           {loading ? "저장 중..." : "저장"}
@@ -300,7 +300,7 @@ const MenuAuthInfo = () => {
               {authFields.map((authName) => (
                 <th key={authName} className={styles.textCenter}>
                   {authName}
-                  <div className="form-check d-flex justify-content-center mt-1">
+                  <div>
                     <input
                       type="checkbox"
                       className={styles.formCheckInput}
@@ -333,7 +333,7 @@ const MenuAuthInfo = () => {
                       key={authName}
                       className={`${styles.textCenter} ${changedCells.has(`${row.MENUID}-${authName}`) ? styles.changedCell : ''}`}
                     >
-                      <div className="d-flex justify-content-center gap-2">
+                      <div className="d-flex justify-content-center gap-4">
                         <div className={`form-check form-check-inline ${styles.formCheckInline}`}>
                           <input
                             type="radio"

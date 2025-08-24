@@ -10,8 +10,8 @@
 
 /* Set smaller font size and scaling factor */
 :root {
-  --bs-body-font-size: 1rem; /* 16px */
-  --bs-form-font-size: 0.875rem;
+  --bs-body-font-size: 0.875rem; /* 14px */
+  --bs-form-font-size: 0.875rem; /* 14px */
   --bs-body-line-height: 1.4;
   --bs-body-bg: #ffffff;
   --bs-body-bg-main: #f7f7f7;
@@ -88,7 +88,11 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 /* Tables */
 .table, .table th, .table td {
   font-size: var(--bs-body-font-size);
-  padding: calc(0.5rem * var(--bs-scaling));
+  padding: 4px 8px !important;
+  border-color: var(--bs-border-form) !important;
+}
+.table input, table select, table textarea {
+  min-height: auto;
 }
 
 /* Dropdowns */
@@ -525,12 +529,12 @@ border-color: #bd2130;
   display: flex;
   font-size: 13px;
   color: #555555;
-  margin: 1rem 2.5rem;
+  margin: 1rem 1.875rem;
 }
 .mainContentWrap {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 2.5rem 1.875rem;
 }
 .mainImgWrap {
   position: relative;
@@ -752,7 +756,7 @@ button.boardBtn01 .arrow-icon {
   align-items: center;
 }
 .formGroup label {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
 }
 .formGroup label:empty {
   width: 0;
@@ -780,6 +784,16 @@ button.boardBtn01 .arrow-icon {
 }
 .form-guide {
   font-size: 0.875rem !important;
+}
+.form-check {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.form-check-inline {
+  display: flex;
+  align-items: center;
+  margin: 0 !important;
+  gap: 4px;
 }
 .radioGroup {
   display: flex;
@@ -823,9 +837,6 @@ button.boardBtn01 .arrow-icon {
   border: 1px solid var(--bs-border-form);
   background: #ffffff;
 }
-/* .downloadButton:hover {
-  background-color: #218838;
-} */
 .btnGroupCustom {
   display: flex;
   gap: 8px;
