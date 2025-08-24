@@ -394,13 +394,13 @@ const ExcelUploadTemplateManage = () => {
       >
         <div className='btnGroupCustom'>
           <button
-            className={`${styles.btn} text-bg-primary`}
+            className={`btn text-bg-primary ${styles.btn}`}
             onClick={() => handleDynamicEvent('showAddPopup')}
           >
             추가
           </button>
           <button 
-            className={`${styles.btn} text-bg-success`} 
+            className={`btn text-bg-success ${styles.btn}`} 
             onClick={handleSave}
           >
             저장

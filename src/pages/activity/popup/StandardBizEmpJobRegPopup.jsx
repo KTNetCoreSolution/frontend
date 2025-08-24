@@ -344,7 +344,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       <Modal.Body>
         <div className={styles.noteSection}>
           <span>* 익월 {closedt}일 지나면 전월자료 수정 불가 합니다.</span>
-          <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={handleRegister}>
+          <button className={`btn text-bg-success`} onClick={handleRegister}>
             등록
           </button>
         </div>
@@ -353,7 +353,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
             <tr>
               <td className={styles.td1}>
                 대분류:
-                <button onClick={() => setClassPopupState({ show: true, editingIndex: -1 })} className={styles.selectBtn}>
+                <button onClick={() => setClassPopupState({ show: true, editingIndex: -1 })} className={`btn text-bg-secondary`}>
                   선택
                 </button>
               </td>
@@ -539,10 +539,10 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                             />
                           </td>
                           <td className={styles.thAction}>
-                            <button onClick={() => handleUpdate(index)} className={`${styles.btn} ${styles.btnPrimary}`}>
+                            <button onClick={() => handleUpdate(index)} className={`btn text-bg-primary`}>
                               수정
                             </button>
-                            <button onClick={() => handleDelete(index)} className={styles.deleteBtn}>
+                            <button onClick={() => handleDelete(index)} className={`btn text-bg-danger`}>
                               삭제
                             </button>
                           </td>

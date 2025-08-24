@@ -1,6 +1,7 @@
 .customModal {
+  width: 95vw !important; /* 원하는 너비 설정 */
   max-width: 95vw !important; /* Responsive max-width */
-  max-height: 95vw !important; /* Responsive max-width */
+  max-height: 95vh !important; /* Responsive max-width */
   margin: 0 auto;
 }
 

@@ -141,15 +141,15 @@ const StandardEmpJobManage = () => {
           { id: 'CLASSCCD', type: 'select', row: 1, label: '소분류', labelVisible: true, options: [], enabled: true }, // 소분류 드롭다운
           { id: 'dayGubunLbl', type: 'label', row: 2, label: '작업', labelVisible: false, enabled: true }, // 작업 라벨
           { id: 'dayGubun', type: 'select', row: 2, label: '', labelVisible: false, options: [{ value: 'M', label: '월' }, { value: 'D', label: '일' }], defaultValue: 'M', enabled: true }, // 월/일 선택 드롭다운
-          { id: 'monthDate', type: 'month', row: 2, label: '', labelVisible: true, placeholder: '월 선택', enabled: false, defaultValue: today }, // 월 선택 입력 (dayGubun: 'M'일 때 표시)
-          { id: 'rangeStartDate', type: 'startday', row: 2, label: '', labelVisible: true, placeholder: '시작일 선택', enabled: false, defaultValue: today }, // 시작일 입력 (dayGubun: 'D'일 때 표시)
-          { id: 'rangeEndDate', type: 'endday', row: 2, label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', enabled: false, defaultValue: today }, // 종료일 입력 (dayGubun: 'D'일 때 표시)
+          { id: 'monthDate', type: 'month', row: 2, width:'110px', label: '', labelVisible: true, placeholder: '월 선택', enabled: false, defaultValue: today }, // 월 선택 입력 (dayGubun: 'M'일 때 표시)
+          { id: 'rangeStartDate', type: 'startday', row: 2, width:'134px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: false, defaultValue: today }, // 시작일 입력 (dayGubun: 'D'일 때 표시)
+          { id: 'rangeEndDate', type: 'endday', row: 2, width:'134px', label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', enabled: false, defaultValue: today }, // 종료일 입력 (dayGubun: 'D'일 때 표시)
         ],
       },
       {
         type: 'buttons',
         fields: [
-          { id: 'addBtn', type: 'button', row: 1, label: '개별업무', eventType: 'showAddPopup', enabled: true }, // 개별업무 추가 버튼
+          { id: 'addBtn', type: 'button', row: 1, label: '개별업무등록', eventType: 'showAddPopup', enabled: true }, // 개별업무 추가 버튼
           { id: 'searchBtn', type: 'button', row: 1, label: '검색', eventType: 'search', enabled: true }, // 검색 버튼
         ],
       },
@@ -338,17 +338,17 @@ const StandardEmpJobManage = () => {
   }, [filters.CLASSACD, filters.CLASSBCD, updatedClass2Options, updatedClass3Options, classData]);
 
   const columns = [
-    { title: 'No', field: 'ID', sorter: 'number', frozen: true },
-    { title: '기준일자', field: 'DDATE', sorter: 'string', frozen: true },
-    { title: '대분류', field: 'CLASSANM', sorter: 'string' },
-    { title: '중분류', field: 'CLASSBNM', sorter: 'string' },
-    { title: '소분류', field: 'CLASSCNM', sorter: 'string' },
-    { title: '이름', field: 'EMPNM', sorter: 'string' },
-    { title: '근무형태코드', field: 'WORKCD', sorter: 'string', visible:false },
-    { title: '근무형태', field: 'WORKNM', sorter: 'string' },
-    { title: '작업일시', field: 'WORKDT', sorter: 'string' },
-    { title: '작업시간', field: 'WORKH', sorter: 'number', ...fn_CellNumber },
-    { title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', ...fn_CellNumber },
+    { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '기준일자', field: 'DDATE', sorter: 'string', width: 100, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '대분류', field: 'CLASSANM', sorter: 'string', width: 180 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '중분류', field: 'CLASSBNM', sorter: 'string', width: 180 },
+    { headerHozAlign: 'center', hozAlign: 'left', title: '소분류', field: 'CLASSCNM', sorter: 'string', width: 220 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '이름', field: 'EMPNM', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible:false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업일시', field: 'WORKDT', sorter: 'string', width: 240 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKH', sorter: 'number', width: 100, ...fn_CellNumber },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', width: 130, ...fn_CellNumber },
   ];
 
   const loadData = async () => {

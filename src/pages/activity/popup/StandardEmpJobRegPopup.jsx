@@ -433,7 +433,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
         <div className={styles.noteSection}>
           <span>* 익월 {data[0]?.CLOSEDT || '10'}일 지나면 전월자료 수정 불가 합니다.</span>
           {isButtonVisible && (
-            <button className={`${styles.btn} ${styles.btnPrimary}`} onClick={() => handleSave('register')}>
+            <button className={`btn text-bg-success`} onClick={() => handleSave('register')}>
               등록
             </button>
           )}
@@ -442,7 +442,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
           <tbody>
             <tr>
               <td className={styles.td1}>
-                대분류:<button onClick={() => setClassPopupState({ show: true, editingIndex: -1 })} className={styles.selectBtn}>
+                대분류:<button onClick={() => setClassPopupState({ show: true, editingIndex: -1 })} className={`btn text-bg-secondary`}>
                   선택
                 </button>
               </td>
@@ -590,7 +590,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
                           {isButtonVisible && (
                             <button
                               onClick={() => setClassPopupState({ show: true, editingIndex: index })}
-                              className={styles.selectBtn}
+                              className={`btn text-bg-secondary`}
                             >
                               선택
                             </button>
@@ -622,10 +622,10 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
                         <td>
                           {isButtonVisible && (
                             <>
-                              <button onClick={() => handleSave('update', index)} className={styles.updateBtn}>
+                              <button onClick={() => handleSave('update', index)} className={`btn text-bg-primary ${styles.updateBtn}`}>
                                 수정
                               </button>
-                              <button onClick={() => handleSave('delete', index)} className={styles.deleteBtn}>
+                              <button onClick={() => handleSave('delete', index)} className={`btn text-bg-danger  ${styles.deleteBtn}`}>
                                 삭제
                               </button>
                             </>
