@@ -8,7 +8,6 @@ import { msgPopup } from '../../../utils/msgPopup';
 
 const getFieldOptions = (fieldId, dependentValue = '', classData) => {
   if (!Array.isArray(classData)) return [];
-
   const uniqueMap = new Map();
 
   if (fieldId === 'CLASSACD') {
@@ -51,7 +50,7 @@ const getFieldOptions = (fieldId, dependentValue = '', classData) => {
   return [];
 };
 
-const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
+const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
   const { user } = useStore();
   const today = new Date().toISOString().split('T')[0];
   const [formData, setFormData] = useState({
@@ -73,6 +72,11 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
   const [classPopupState, setClassPopupState] = useState({ show: false, editingIndex: -1 });
   const [workTypeOptions, setWorkTypeOptions] = useState([]);
   const [isButtonVisible, setIsButtonVisible] = useState(true);
+  const [classGubun, setClassGubun] = useState(filters.classGubun || 'LINE');
+
+  useEffect(() => {
+    setClassGubun(filters.classGubun || 'LINE');
+  }, [filters.classGubun]);
 
   const generateTimeOptions = (isWeekly = false, startTime = null, isEnd = false) => {
     const options = [];
@@ -296,6 +300,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
         pCLASSCD: formData.CLASSCCD,
         pWORKCD: formData.WORKTYPE,
         pWORKCNT: formData.isDuplicate ? '0' : formData.QUANTITY,
+        pSECTIONCD: classGubun,
         pEMPNO: user?.empNo || '',
       };
     } else {
@@ -319,6 +324,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, data }) => {
         pCLASSCD: item.CLASSCCD,
         pWORKCD: item.WORKTYPE,
         pWORKCNT: item.QUANTITY,
+        pSECTIONCD: classGubun,
         pEMPNO: user?.empNo || '',
       };
     }

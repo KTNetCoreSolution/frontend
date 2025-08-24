@@ -96,7 +96,7 @@ const StandardEmpJobManage = () => {
   const [_class3Options, setClass3Options] = useState([]);
   const [classData, setClassData] = useState([]);
   const [bizWorkTypes, setBizWorkTypes] = useState([]);
-  const [filters, setFilters] = useState({ CLASSACD: '', CLASSBCD: '', CLASSCCD: '', dayGubun: 'M', classGubun: 'LINE', classGubunTxt: '선로' });
+  const [filters, setFilters] = useState({ CLASSACD: '', CLASSBCD: '', CLASSCCD: '', dayGubun: 'M', classGubun: user?.standardSectionCd || 'LINE', classGubunTxt: user?.standardSectionCd === 'LINE' ? '선로' : user?.standardSectionCd === 'DESIGN' ? '설계' : user?.standardSectionCd === 'BIZ' ? 'BIZ' : '선로' });
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
