@@ -95,6 +95,7 @@ const StandardEmpJobManage = () => {
   const [_class2Options, setClass2Options] = useState([]);
   const [_class3Options, setClass3Options] = useState([]);
   const [classData, setClassData] = useState([]);
+  const [bizWorkTypes, setBizWorkTypes] = useState([]);
   const [filters, setFilters] = useState({ CLASSACD: '', CLASSBCD: '', CLASSCCD: '', dayGubun: 'M', classGubun: 'LINE', classGubunTxt: '선로' });
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
@@ -248,6 +249,32 @@ const StandardEmpJobManage = () => {
       }
     };
     fetchClassData();
+  }, [filters.classGubun]);
+
+  // bizWorkTypeInfoList API 호출 (classGubun이 'BIZ'일 때만)
+  useEffect(() => {
+    const fetchBizWorkTypes = async () => {
+      if (filters.classGubun !== 'BIZ') return;
+
+      try {
+        const params = {
+          pGUBUN: 'ALL',
+          pDEBUG: 'F',
+        };
+        const response = await fetchData('standard/bizWorkTypeInfoList', params);
+        if (!response.success) {
+          errorMsgPopup(response.message || 'BIZ 작업 유형 목록을 가져오는 중 오류가 발생했습니다.');
+          return;
+        }
+
+        const fetchedBizWorkTypes = Array.isArray(response.data) ? response.data : [];
+        setBizWorkTypes(fetchedBizWorkTypes);
+      } catch (err) {
+        console.error('BIZ 작업 유형 목록 로드 실패:', err);
+        errorMsgPopup(err.response?.data?.message || 'BIZ 작업 유형 목록을 가져오는 중 오류가 발생했습니다.');
+      }
+    };
+    fetchBizWorkTypes();
   }, [filters.classGubun]);
 
   // filters 초기화, CLASSACD, CLASSBCD, CLASSCCD, dayGubun, monthDate 초기값 설정
@@ -532,7 +559,7 @@ const StandardEmpJobManage = () => {
       </div>
       <StandardClassSelectPopup show={showClassPopup} onHide={() => setShowClassPopup(false)} onSelect={handleClassSelect} data={classData} />
       {filters.classGubun === 'BIZ' ? (
-        <StandardBizEmpJobRegPopup show={showAddPopup} onHide={handleAddCancel} filters={filters} data={classData} />
+        <StandardBizEmpJobRegPopup show={showAddPopup} onHide={handleAddCancel} filters={filters} data={classData} bizWorkTypes={bizWorkTypes} />
       ) : (
         <StandardEmpJobRegPopup show={showAddPopup} onHide={handleAddCancel} filters={filters} data={classData} />
       )}
