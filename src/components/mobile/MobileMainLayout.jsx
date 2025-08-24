@@ -85,7 +85,7 @@ const MobileMainLayout = () => {
   return (
     <div className="container">
       <header className="header">
-        <div className="logo" onClick={() => navigate('/mobile/Main')}>
+        <div  onClick={() => navigate('/mobile/Main')}>
           <img src={logo} alt="Logo" className="logoImage" />
         </div>
         <button className={styles.logoutButton} onClick={handleLogout}>

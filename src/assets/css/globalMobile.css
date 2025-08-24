@@ -147,6 +147,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   min-width: 100%;
 }
 .header {
+  display: flex;
   justify-content: space-between;
   padding: 9px 0 9px 16px;  
 }

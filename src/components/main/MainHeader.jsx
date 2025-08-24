@@ -4,6 +4,7 @@ import useStore from '../../store/store';
 import { checkTokenValidity } from '../../utils/authUtils';
 import { fetchData } from '../../utils/dataUtils';
 import styles from './MainLayout.module.css';
+import logoutImg from '../../assets/images/icon_logout.svg';
 
 const MainHeader = () => {
   const [timeDisplay, setTimeDisplay] = useState('00:00');
@@ -87,7 +88,7 @@ const MainHeader = () => {
               <li className="time">{timeDisplay}</li>
               <li className='headerLinkWrap'>
                 <span onClick={handleExtend} className="extendLink">연장</span>
-                <span onClick={handleLogout} className="logoutLink">로그아웃</span>
+                <span onClick={handleLogout} className="logoutLink"><img src={logoutImg} alt="logout 이미지" class="logoutIcon" />로그아웃</span>
               </li>
             </ul>
           </>

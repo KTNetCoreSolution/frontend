@@ -505,8 +505,12 @@ border-color: #bd2130;
 
 .extendLink,
 .logoutLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 0.875rem;
   cursor: pointer;
+  line-height: 32px;
 }
 
 .extendLink {
@@ -523,6 +527,11 @@ border-color: #bd2130;
   height: 2rem;
   border-radius: 1rem;
   padding: 6px 12px;
+}
+.logoutIcon {
+  width: 20px;
+  height: 20px;
+  margin-right: 4px;
 }
 
 /* breadcrumb 영역 */
