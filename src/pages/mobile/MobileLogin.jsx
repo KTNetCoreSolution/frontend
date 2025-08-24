@@ -8,6 +8,8 @@ import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import LicensePopup from '../../components/popup/LicensePopup';
 import styles from './MobileLogin.module.css';
 import logoMainImgM from '../../assets/images/loginmainImg_m.png';
+import loginUserImg from '../../assets/images/icon_user.svg';
+import loginPwImg from '../../assets/images/icon_pw.svg';
 
 const MobileLogin = () => {
   const isLocal = import.meta.env.VITE_ENV === 'local';
@@ -104,7 +106,7 @@ const MobileLogin = () => {
         <form onSubmit={handleLogin}>
           <div className='formGroup'>
             <div className="inputWrapper">
-              <i className="bi bi-person"></i>
+              <img src={loginUserImg} alt="user 이미지" class="inputIcon" />
               <input
                 id="userid"
                 type="text"
@@ -118,7 +120,7 @@ const MobileLogin = () => {
           </div>
           <div className='formGroup'>
             <div className="inputWrapper">
-              <i className="bi bi-lock"></i>
+              <img src={loginPwImg} alt="user 이미지" class="inputIcon" />
               <input
                 id="password"
                 type="password"
@@ -158,30 +160,34 @@ const MobileLogin = () => {
               required
             />
           </div>
-          <div className={styles.buttonGroup}>
-            <button type="submit" className={styles.button}>
-              <i className="bi bi-box-arrow-in-right"></i> 로그인
-            </button>
-            <button
-              type="button"
-              className={styles.smallButton}
-              onClick={handleJoinClick}
-            >
-              <i className="bi bi-person-plus"></i>
-            </button>
-            <button
-              type="button"
-              className={styles.smallButton}
-              onClick={handlePasswordChangeClick}
-            >
-              <i className="bi bi-key"></i>
-            </button>
-            <button
-              type="button"
-              className={styles.smallButton}
-              onClick={handleLicenseClick}
-            >
-              <i className="bi bi-info-circle"></i>
+          <div className='buttonGroup'>
+            <div className='buttonEtcWrap'>
+              <div className='buttonEtcInnerWrap'>
+                <button
+                  type="button"
+                  className='smallButton'
+                  onClick={handleJoinClick}
+                >
+                  회원가입
+                </button>
+                <button
+                  type="button"
+                  className='smallButton'
+                  onClick={handlePasswordChangeClick}
+                >
+                  비밀번호 변경
+                </button>
+              </div>
+              <button
+                type="button"
+                className='smallButton info'
+                onClick={handleLicenseClick}
+              >
+                <i className="bi bi-info-circle"></i>
+              </button>
+            </div>
+            <button type="submit" className='LoginButton'>
+              로그인
             </button>
           </div>
           {error && <p className={styles.error}>{error}</p>}

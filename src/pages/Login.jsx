@@ -11,6 +11,8 @@ import useStore from '../store/store';
 import {fetchData} from '../utils/dataUtils'
 import logoColorImg from '../assets/images/logo_color.png';
 import loginMainImg from '../assets/images/loginmainImg.svg';
+import loginUserImg from '../assets/images/icon_user.svg';
+import loginPwImg from '../assets/images/icon_pw.svg';
 
 const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
 const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
@@ -119,10 +121,12 @@ const Login = () => {
           </div>
         </div>
         <div className='loginContainer'>
+          <p className='title'>Login<span>...</span></p>
           <form onSubmit={handleLogin}>
             <div className='formGroup'>
               <div className="inputWrapper">
-                <i className="bi bi-person"></i>
+                {/* <i className="bi bi-person"></i> */}
+                <img src={loginUserImg} alt="user 이미지" class="inputIcon" />
                 <input
                   id="userid"
                   type="text"
@@ -136,7 +140,8 @@ const Login = () => {
             </div>
             <div className='formGroup'>
               <div className="inputWrapper">
-                <i className="bi bi-lock"></i>
+                {/* <i className="bi bi-lock"></i> */}
+                <img src={loginPwImg} alt="pw 이미지" class="inputIcon" />
                 <input
                   id="password"
                   type="password"
@@ -172,25 +177,29 @@ const Login = () => {
                 className={styles.input}
               />
             </div>
-            <div className={styles.buttonGroup}>
-              <button type="submit" className={styles.loginButton}>
-                <i className="bi bi-box-arrow-in-right"></i> 로그인
+            <div className='buttonGroup'>
+              <div className='buttonEtcWrap'>
+                <div className='buttonEtcInnerWrap'>
+                  <button type="button" className='smallButton' onClick={handleJoinClick}>
+                    회원가입
+                  </button>
+                  <button type="button" className='smallButton' onClick={handlePasswordChangeClick}>
+                    비밀번호 변경
+                  </button>
+                </div>
+                <button type="button" className='smallButton info' onClick={handleLicenseClick}>
+                  <i className="bi bi-info-circle"></i>
+                </button>
+              </div>
+              <button type="submit" className='LoginButton'>
+                로그인
               </button>
-              <button type="button" className={styles.smallButton} onClick={handleJoinClick}>
-                <i className="bi bi-person-plus"></i>
-              </button>
-              <button type="button" className={styles.smallButton} onClick={handlePasswordChangeClick}>
-                <i className="bi bi-key"></i>
-              </button>
-              <button type="button" className={styles.smallButton} onClick={handleLicenseClick}>
-                <i className="bi bi-info-circle"></i>
-              </button>
+              {isLocal && (
+                <button type="button" className='LoginButton' onClick={handleMobileLoginRedirect}>
+                  <i className="bi bi-phone"></i> 모바일로그인으로 이동
+                </button>
+              )}
             </div>
-            {isLocal && (
-              <button type="button" className={styles.button} onClick={handleMobileLoginRedirect}>
-                <i className="bi bi-phone"></i> 모바일로그인으로 이동
-              </button>
-            )}
           </form>
           <Join show={showJoinPopup} onHide={() => setShowJoinPopup(false)} gubun="web" />
           <PasswordChange
