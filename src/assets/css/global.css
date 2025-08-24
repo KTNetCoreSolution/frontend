@@ -22,6 +22,7 @@
   --bs-font-primary-dark-color: #0F9591;
   --bs-border-form: #DADCE0;
   --bs-modal-margin: 0;
+  --bs-modal-padding: 1rem;
 }
 
 /* Apply to body */
@@ -120,6 +121,39 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1040;
+}
+.popupContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+  width: 700px;
+  height: 740px;
+  background-color: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: var(--bs-modal-padding);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.popupContainer .header {
+  display: flex;
+  flex-shrink: 0;
+  background: #fff;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: var(--bs-modal-header-padding);
+  border-bottom: 1px solid #ddd;
+}
+
+.popupContainer .header h3 {
+  font-size: 1rem;
+  margin: 0;
 }
 .modal {
   position: fixed;
@@ -691,6 +725,7 @@ button.boardBtn01 .arrow-icon {
   background-color: #f3f5f7;
   padding: 1rem;
   border-radius: 12px;
+  width: 100%;
 }
 .searchFields {
   display: flex;

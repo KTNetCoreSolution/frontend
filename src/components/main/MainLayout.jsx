@@ -10,7 +10,7 @@ import useStore from '../../store/store';
 import { fetchData } from '../../utils/dataUtils';
 import { hasPermission, checkTokenValiditySimple } from '../../utils/authUtils';
 import styles from './MainLayout.module.css';
-import '../../assets/css/global.css';
+// import '../../assets/css/global.css';
 import logo from '../../assets/images/logo.png';
 
 const MainLayout = () => {
