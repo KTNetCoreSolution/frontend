@@ -120,20 +120,6 @@ const Login = () => {
         </div>
         <div className='loginContainer'>
           <form onSubmit={handleLogin}>
-            {/* <div className='formGroup'>
-              <label htmlFor="userid" className={styles.label}>
-                <i className="bi bi-person"></i> 아이디
-              </label>
-              <input
-                id="userid"
-                type="text"
-                value={empNo}
-                onChange={(e) => setEmpNo(e.target.value)}
-                placeholder="아이디를 입력하세요"
-                required
-                className={styles.input}
-              />
-            </div> */}
             <div className='formGroup'>
               <div className="inputWrapper">
                 <i className="bi bi-person"></i>
@@ -148,20 +134,6 @@ const Login = () => {
                 />
               </div>
             </div>
-            {/* <div className='formGroup'>
-              <label htmlFor="password" className={styles.label}>
-                <i className="bi bi-lock"></i> 비밀번호
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={empPwd}
-                onChange={(e) => setEmpPwd(e.target.value)}
-                placeholder="비밀번호를 입력하세요"
-                required
-                className={styles.input}
-              />
-            </div> */}
             <div className='formGroup'>
               <div className="inputWrapper">
                 <i className="bi bi-lock"></i>

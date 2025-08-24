@@ -7,6 +7,7 @@ import { msgPopup } from '../../utils/msgPopup';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import LicensePopup from '../../components/popup/LicensePopup';
 import styles from './MobileLogin.module.css';
+import logoMainImgM from '../../assets/images/loginmainImg_m.png';
 
 const MobileLogin = () => {
   const isLocal = import.meta.env.VITE_ENV === 'local';
@@ -92,37 +93,42 @@ const MobileLogin = () => {
   };
 
   return (
-    <div className={`${styles.loginContainer}`}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>Login</h1>
+    <div className='loginWrapper'>
+      <p
+        className="logoMainImg"
+        style={{
+          background: `url(${logoMainImgM}) center top / 140px 73px no-repeat`,
+        }}
+      ></p>
+      <div className='loginContainer'>
         <form onSubmit={handleLogin}>
           <div className='formGroup'>
-            <label htmlFor="userid" className={styles.label}>
-              <i className="bi bi-person"></i> 아이디
-            </label>
-            <input
-              id="userid"
-              type="text"
-              className={styles.input}
-              value={empNo}
-              onChange={(e) => setEmpNo(e.target.value)}
-              placeholder="아이디를 입력하세요"
-              required
-            />
+            <div className="inputWrapper">
+              <i className="bi bi-person"></i>
+              <input
+                id="userid"
+                type="text"
+                value={empNo}
+                onChange={(e) => setEmpNo(e.target.value)}
+                placeholder="아이디를 입력하세요"
+                required
+                className="inputWithIcon"
+              />
+            </div>
           </div>
           <div className='formGroup'>
-            <label htmlFor="password" className={styles.label}>
-              <i className="bi bi-lock"></i> 비밀번호
-            </label>
-            <input
-              id="password"
-              type="password"
-              className={styles.input}
-              value={empPwd}
-              onChange={(e) => setEmpPwd(e.target.value)}
-              placeholder="비밀번호를 입력하세요"
-              required
-            />
+            <div className="inputWrapper">
+              <i className="bi bi-lock"></i>
+              <input
+                id="password"
+                type="password"
+                value={empPwd}
+                onChange={(e) => setEmpPwd(e.target.value)}
+                placeholder="비밀번호를 입력하세요"
+                required
+                className="inputWithIcon"
+              />
+            </div>
           </div>
           <div className='formGroup'>
             <div className='captchaContainer'>
@@ -180,20 +186,20 @@ const MobileLogin = () => {
           </div>
           {error && <p className={styles.error}>{error}</p>}
         </form>
+        <Join show={showJoinPopup} onHide={() => setShowJoinPopup(false)} gubun="mobile" />
+        <PasswordChange
+          show={showPasswordChangePopup}
+          onHide={() => setShowPasswordChangePopup(false)}
+          initialEmpNo={empNo}
+          isEditable={isManualPasswordChange}
+          gubun="mobile"
+        />
+        <LicensePopup
+          show={showLicensePopup}
+          onHide={() => setShowLicensePopup(false)}
+        />
       </div>
-      <Join show={showJoinPopup} onHide={() => setShowJoinPopup(false)} gubun="mobile" />
-      <PasswordChange
-        show={showPasswordChangePopup}
-        onHide={() => setShowPasswordChangePopup(false)}
-        initialEmpNo={empNo}
-        isEditable={isManualPasswordChange}
-        gubun="mobile"
-      />
-      <LicensePopup
-        show={showLicensePopup}
-        onHide={() => setShowLicensePopup(false)}
-      />
-    </div>
+    </div> 
   );
 };
 

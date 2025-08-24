@@ -11,9 +11,18 @@
 /* global.css의 기본값을 상속받고 모바일에 맞게 조정 */
 :root {
   --bs-body-font-size: 1rem; /* 16px */
+  --bs-form-font-size: 1rem; /* 14px */
   --bs-body-line-height: 1.4;
   --bs-body-bg: #ffffff;
+  --bs-body-bg-main: #f7f7f7;
+  --bs-primary-color: #2CBBB7;
   --bs-gutter-x: 0;
+  --bs-font-color: #1E2124;
+  --bs-font-secondary-color: #464C53;
+  --bs-font-primary-dark-color: #0F9591;
+  --bs-border-form: #DADCE0;
+  --bs-modal-margin: 0;
+  --bs-modal-padding: 1rem;
 }
 
 /* global.css의 body 스타일 오버라이드 */
@@ -132,7 +141,10 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 
 
 /* 250815 이후 추가 */
-
+#root {
+  width: 100vw;
+  min-width: 100%;
+}
 .header {
   justify-content: space-between;
   padding: 9px 0 9px 16px;  
@@ -143,6 +155,8 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 .main {
   padding: 1rem;
+  height: calc(100vh - 50px);
+  background: #ffffff;
 }
 .cardMenu {
   --bs-card-bg: #F5F7FA !important;
@@ -225,14 +239,101 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 
 
 /* login page */
-/* .loginContainer {
-  width: 90%;
-  max-width: 400px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+body {
+  background: linear-gradient(to bottom, #2CBBB7 0%, #216DB2 30%);
+}
+.logoMainImg {
+  width: 140px;
+  height: 73px;
+  margin-bottom: 36px;
+}
+.loginContainer {
+  width: 100%;
+  height: calc(100vh - 157px);
+  padding: 2rem;
   background-color: #fff;
-  box-sizing: border-box;
-} */
+  border-radius: 30px 30px 0 0;
+}
+.loginContainer form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.loginWrapper {
+  display: flex;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  min-width: unset;
+  justify-content: flex-end;
+  flex-direction: column;
+}
+.loginWrapper .inputWrapper {
+  position: relative;
+  width: 100%;
+}
+.loginWrapper input {
+  width: 100% !important;
+  padding: 8px 10px !important;
+  border: 1px solid var(--bs-border-form) !important;
+  border-radius: 8px !important;
+  font-size: 1rem !important;
+  min-height: 48px !important;
+}
+.loginWrapper .inputWithIcon {
+  padding: 8px 10px 8px 36px !important;
+}
+.loginWrapper .inputWrapper i {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #777;
+}
+.captchaContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+.captchaImage {
+  width: 150px;
+  height: 50px;
+  border: 1px solid var(--bs-border-form);
+  border-radius: 8px;
+}
+.formGroup:has(.captchaContainer) {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* formgroup */
+.formGroupContainer {
+  display: flex;
+  gap: 8px;
+}
+.formGroup {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.formGroup label {
+  font-size: 0.875rem;
+}
+.formGroup label:empty {
+  width: 0;
+  visibility: hidden;
+}
+.formGroup label + div {
+  margin-left: 1rem;
+}
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  font-size: 0.875rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #d4d4d6;
+  min-height: 30px;
+}

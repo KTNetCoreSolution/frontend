@@ -7,7 +7,7 @@ import { checkTokenValiditySimple } from '../../utils/authUtils';
 import { fetchData } from '../../utils/dataUtils';
 import logo from '../../assets/images/logo.png';
 import styles from './MobileMainLayout.module.css';
-import '../../assets/css/globalMobile.css';
+// import '../../assets/css/globalMobile.css';
 
 const ENV = import.meta.env.VITE_ENV || 'local';
 const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
