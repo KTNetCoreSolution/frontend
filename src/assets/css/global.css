@@ -50,6 +50,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   border: 1px solid #d4d4d6 !important;
   min-height: 30px !important;
   min-width: 112px !important;
+  line-height: 1;
 }
 .form-control + .btn, .form-select + .btn {
   margin-left: 4px !important;
@@ -221,6 +222,23 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 .btnPrimary:hover {
   opacity: .75;
+}
+.btnOutlinedIcon {
+  color: var(--bs-font-secondary-color);
+  font-weight: bold;
+  border: 1px solid var(--bs-border-form);
+  background: #ffffff;
+  min-height: 30px;
+  min-width: 30px;
+}
+.btnOutlinedIcon:hover {
+  opacity: 1 !important;
+  color: var(--bs-font-secondary-color);
+  border: 1px solid var(--bs-border-form);
+  background: #ffffff;
+}
+.btnOutlinedIcon + .btnOutlinedIcon {
+  margin-left: 0.25rem !important;
 }
 .text-bg-success {
   background-color: var(--bs-primary-color) !important;
@@ -918,17 +936,12 @@ button.boardBtn01 .arrow-icon {
 .downloadButton {
   font-size: 0.875rem;
   padding: 4px 8px;
-  background-color: #28a745;
-  color: #ffffff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  min-height: 30px;
-}
-.downloadButton {
   color: var(--bs-font-secondary-color);
   border: 1px solid var(--bs-border-form);
   background: #ffffff;
+  border-radius: 4px;
+  cursor: pointer;
+  min-height: 30px;
 }
 .btnGroupCustom {
   display: flex;
@@ -946,6 +959,9 @@ button.boardBtn01 .arrow-icon {
 }
 .btnGroupCustom .btn:hover {
   background-color: unset;
+}
+textarea.form-control {
+  padding: 8px !important;
 }
 
 
@@ -987,6 +1003,51 @@ button.boardBtn01 .arrow-icon {
   min-width: auto;
   padding-top: 0;
 }
+.boardWrap .attachLabelWrap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.boardWrap .attachLabelWrap .form-label {
+  margin-bottom: 0;
+}
+.boardWrap .attachItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+.boardWrap .attachItem + .attachItem {
+  margin-top: 0.5rem;
+}
+.boardWrap .attachItem .imageFile {
+  font-size: 0.875rem;
+}
+.boardWrap .attachItem .txtBtn {
+  background: unset;
+  border: 0;
+  text-decoration: underline;
+}
+.boardWrap .existingAttachItem {
+  margin-top: 0.5rem;
+}
+.boardWrap .existingAttachItem h6 {
+  font-size: 0.875rem;
+}
+.boardBottomBtnWrap {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+.boardBottomBtnWrap .btn {
+  font-size: 1rem !important;
+  padding: 0.375rem 1rem !important;
+}
+
 
 
 /* 공통 */

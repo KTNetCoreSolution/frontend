@@ -228,101 +228,105 @@ const BoardWrite = () => {
         {type === 'carnotice' ? '차량관리' : '공지사항'} {isEdit ? '변경' : '등록'}
       </h2>
       <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">제목</label>
-          <input
-            className={`form-control bg-light-subtle ${styles.formControl}`}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="제목을 입력하세요"
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">내용</label>
-          <textarea
-            className={`form-control bg-light-subtle ${styles.formControl} ${styles.textarea}`}
-            rows="8"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="내용을 입력하세요"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label className="form-label">
-            첨부파일 <span className="text-muted">(최대 {fileUtils.getMaxFiles()}개까지만 첨부 가능하며, {fileUtils.formatFileSize(fileUtils.getMaxFileSize())}까지만 가능합니다. 문서 파일만 업로드 가능.)</span>
-          </label>
-          {existingFilesState.length > 0 && (
-            <div className="mb-3">
-              <h6>기존 첨부파일:</h6>
-              {existingFilesState.map((file) => (
-                <div key={file.fileId} className="d-flex align-items-center mb-2">
-                  <span className="me-2">
-                    {file.fileName} ({fileUtils.formatFileSize(file.size)})
-                    {!file.isValid && <span className="text-danger ms-2">(문서 파일이 아님)</span>}
-                  </span>
+        <div className='boardWrap'>
+          <div>
+            <label className="form-label">제목</label>
+            <input
+              className={`form-control bg-light-subtle ${styles.formControl}`}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="제목을 입력하세요"
+              required
+            />
+          </div>
+          <div>
+            <label className="form-label">내용</label>
+            <textarea
+              className={`form-control bg-light-subtle ${styles.formControl} ${styles.textarea}`}
+              rows="8"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="내용을 입력하세요"
+              required
+            />
+          </div>
+          <div>
+            <div className='attachLabelWrap'>
+              <label className="form-label">
+                첨부파일 <span className="text-muted">(최대 {fileUtils.getMaxFiles()}개까지만 첨부 가능하며, {fileUtils.formatFileSize(fileUtils.getMaxFileSize())}까지만 가능합니다. 문서 파일만 업로드 가능.)</span>
+              </label>
+            </div>
+            {existingFilesState.length > 0 && (
+              <div className="existingAttachItem">
+                <h6>기존 첨부파일:</h6>
+                {existingFilesState.map((file) => (
+                  <div key={file.fileId} className="attachItem">
+                    <span>
+                      {file.fileName} ({fileUtils.formatFileSize(file.size)})
+                      {!file.isValid && <span className="text-danger ms-2">(문서 파일이 아님)</span>}
+                    </span>
+                    <button
+                      type="button"
+                      className="btn btnOutlinedIcon"
+                      onClick={() => handleRemoveExistingFile(file)}
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+            {fileInputs && fileInputs.length > 0 ? (
+              fileInputs.map((input, index) => (
+                <div key={input.id} className="d-flex align-items-center mt-2">
+                  <input
+                    type="file"
+                    className={`form-control bg-light-subtle ${styles.formControl} me-2`}
+                    onChange={(e) => handleFileChange(input.id, e)}
+                    accept={fileUtils.getAccept()}
+                  />
                   <button
                     type="button"
-                    className="btn btn-outline-danger btn-sm"
-                    onClick={() => handleRemoveExistingFile(file)}
+                    className="btn btnOutlinedIcon"
+                    onClick={() => handleRemoveFileInput(input.id)}
                   >
                     -
                   </button>
+                  {index === fileInputs.length - 1 && (
+                    <button
+                      type="button"
+                      className="btn btnOutlinedIcon"
+                      onClick={handleAddFileInput}
+                      disabled={existingFilesState.length + fileInputs.length >= fileUtils.getMaxFiles()}
+                    >
+                      +
+                    </button>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
-          {fileInputs && fileInputs.length > 0 ? (
-            fileInputs.map((input, index) => (
-              <div key={input.id} className="d-flex align-items-center mb-2">
-                <input
-                  type="file"
-                  className={`form-control bg-light-subtle ${styles.formControl} me-2`}
-                  onChange={(e) => handleFileChange(input.id, e)}
-                  accept={fileUtils.getAccept()}
-                />
-                <button
-                  type="button"
-                  className="btn btn-outline-danger me-2"
-                  onClick={() => handleRemoveFileInput(input.id)}
-                >
-                  -
-                </button>
-                {index === fileInputs.length - 1 && (
-                  <button
-                    type="button"
-                    className="btn btn-outline-primary"
-                    onClick={handleAddFileInput}
-                    disabled={existingFilesState.length + fileInputs.length >= fileUtils.getMaxFiles()}
-                  >
-                    +
-                  </button>
-                )}
+              ))
+            ) : (
+              <div></div>
+            )}
+            {files.some(file => file != null) && (
+              <div className="mt-3">
+                <h6>선택된 파일:</h6>
+                <ul>
+                  {files.map((file, index) => (
+                    file && (
+                      <li key={index}>
+                        {file.name} ({fileUtils.formatFileSize(file.size)})
+                      </li>
+                    )
+                  ))}
+                </ul>
               </div>
-            ))
-          ) : (
-            <div></div>
-          )}
-          {files.some(file => file != null) && (
-            <div className="mt-3">
-              <h6>선택된 파일:</h6>
-              <ul>
-                {files.map((file, index) => (
-                  file && (
-                    <li key={index}>
-                      {file.name} ({fileUtils.formatFileSize(file.size)})
-                    </li>
-                  )
-                ))}
-              </ul>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-        <div className="btn-group-custom d-flex justify-content-end gap-2 mb-3 mt-5">
+        <div className="boardBottomBtnWrap">
           <button
             type="button"
-            className={`btn ${styles.btnCancel}`}
+            className='btn btnSecondary'
             onClick={() => navigate('/main/boardMain')}
           >
             취소
@@ -330,7 +334,7 @@ const BoardWrite = () => {
           {!isEdit ? (
             <button
               type="submit"
-              className={`btn ${styles.btnReg}`}
+              className='btn btnPrimary'
               disabled={loading}
             >
               {loading ? "저장 중..." : "등록"}
@@ -339,14 +343,14 @@ const BoardWrite = () => {
             <>
               <button
                 type="submit"
-                className={`btn ${styles.btnMod}`}
+                className='btn btnPrimary'
                 disabled={loading}
               >
                 {loading ? "저장 중..." : "변경"}
               </button>
               <button
                 type="button"
-                className={`btn btn-danger ${styles.btnDel}`}
+                className='btn btnPrimary'
                 onClick={handleDelete}
                 disabled={loading}
               >

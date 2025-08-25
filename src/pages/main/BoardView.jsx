@@ -215,38 +215,40 @@ const BoardView = () => {
           />
         </div>
         <div>
-          <label className="form-label d-flex justify-content-between align-items-center">
-            <span>첨부파일</span>
+          <div className='attachLabelWrap'>
+            <label className="form-label">
+              <span>첨부파일</span>
+            </label>
             {files.length > 0 && (
               <button
-                className="btn btn-sm btn-outline-primary"
+                className="downloadButton"
                 onClick={handleDownloadAll}
               >
                 전체 다운로드
               </button>
             )}
-          </label>
+          </div>
           {files?.length > 0 ? (
             files.map((file, index) => (
-              <div key={index} className={`d-flex align-items-center mb-2 ${styles.fileItem}`}>
-                <div className={styles.imageFile}>
+              <div key={index} className='attachItem'>
+                <div className='imageFile'>
                   {(fileUtils.isImageFile(file) || fileUtils.isTextFile(file)) ? (
-                    <span
+                    <button
                       onClick={() => handleFileClick(file)}
-                      style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
+                      className='txtBtn'
                     >
                       {getFileIcon(file)}
                       {file.fileName} ({fileUtils.formatFileSize(file.fileSize)})
-                    </span>
+                    </button>
                   ) : (
-                    <span>
+                    <button className='txtBtn'>
                       {getFileIcon(file)}
                       {file.fileName} ({fileUtils.formatFileSize(file.fileSize)})
-                    </span>
+                    </button>
                   )}
                 </div>
                 <button
-                  className="btn btn-sm btn-outline-secondary ms-2"
+                  className="downloadButton"
                   onClick={() => handleDownload(file)}
                 >
                   <i className="bi bi-download"></i> 다운로드
@@ -258,16 +260,16 @@ const BoardView = () => {
           )}
         </div>
       </div>
-      <div className='buttonWrap'>
+      <div className='boardBottomBtnWrap'>
         <button
-          className="btn btn-secondary me-2 mb-3 mt-5"
+          className="btn btnSecondary"
           onClick={() => navigate('/main/boardMain')}
         >
           뒤로 가기
         </button>
         {canModifyBoard && (
           <button
-            className="btn btn-warning me-2 mb-3 mt-5"
+            className="btn btnPrimary"
             onClick={handleEdit}
           >
             변경 가기
