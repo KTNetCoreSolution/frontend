@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import useStore from '../../../store/store';
 import Modal from "react-bootstrap/Modal";
 import styles from "./StandardBizEmpJobRegPopup.module.css";
 import StandardClassSelectPopup from "./StandardClassSelectPopup";
@@ -51,6 +52,7 @@ const getFieldOptions = (fieldId, dependentValue = "", classData) => {
 };
 
 const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }) => {
+  const { user } = useStore();
   const today = new Date().toISOString().split("T")[0];
   const [formData, setFormData] = useState({
     CLASSACD: "all",
@@ -71,11 +73,15 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
   const [workersOptions, setWorkersOptions] = useState([]);
   const [workTimeOptions, setWorkTimeOptions] = useState([]);
   const [classPopupState, setClassPopupState] = useState({ show: false, editingIndex: -1 });
-  const [originalValues, setOriginalValues] = useState({});
+  const [isButtonVisible, setIsButtonVisible] = useState(true);
   const [classGubun, setClassGubun] = useState(filters.classGubun || 'BIZ');
 
   // CLOSEDT 값 추출
   const closedt = data[0]?.CLOSEDT || '10';
+
+  useEffect(() => {
+    setClassGubun(filters.classGubun || 'BIZ');
+  }, [filters.classGubun]);
 
   // API 호출로 드롭리스트 옵션 가져오기
   useEffect(() => {
@@ -131,10 +137,10 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
     return Object.values(grouped).map(group => group.sort((a, b) => a.ODR - b.ODR));
   }, [flatProcessItems]);
 
-  // 각 그룹을 9개씩 청크로 나눔
+  // 각 그룹을 14개씩 청크로 나눔
   const chunkedGroups = useMemo(() => {
     return groupedProcessItems.map(group =>
-      Array.from({ length: Math.ceil(group.length / 9) }, (_, i) => group.slice(i * 9, (i + 1) * 9))
+      Array.from({ length: Math.ceil(group.length / 14) }, (_, i) => group.slice(i * 14, (i + 1) * 14))
     );
   }, [groupedProcessItems]);
 
@@ -177,6 +183,57 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
     setClass3Options(updatedClass3Options);
   }, [updatedClass3Options]);
 
+  const fetchRegisteredList = async (date) => {
+    try {
+      const params = {
+        pGUBUN: 'LIST',
+        pEMPNO: user?.empNo || '',
+        pDATE1: date,
+        pDEBUG: 'F',
+      };
+      const response = await fetchData('standard/empJob/biz/reg/list', params);
+      if (!response.success) {
+        msgPopup(response.message || '등록 리스트를 가져오는 중 오류가 발생했습니다.');
+        return;
+      }
+      const fetchedData = Array.isArray(response.data) ? response.data : [];
+      const mappedData = fetchedData
+        .filter((item) => item.DDATE !== '')
+        .map((item) => ({
+          CLASSACD: item.CLASSACD || '',
+          CLASSBCD: item.CLASSBCD || '',
+          CLASSCCD: item.CLASSCCD || '',
+          CLASSANM: item.CLASSANM || '',
+          CLASSBNM: item.CLASSBNM || '',
+          CLASSCNM: item.CLASSCNM || '',
+          CUSTOMER: item.BIZTXT || '',
+          DISPATCH: item.BIZRUN || '',
+          WORKERS: item.BIZMAN || '',
+          WORKTIME: item.WORKCD || '',
+          LINES: item.WORKCNT || '1',
+          PROCESS: item.WORKGBCD || '',
+          PROCESSNM: item.WORKGBNM || item.WORKNM || '',
+          PROCESSTIME: item.WORKGBTM || '0',
+          WORKDATE: item.DDATE || '',
+        }));
+      setRegisteredList(mappedData);
+      if (response.data && response.data[0] && response.data[0].MODIFYN === 'N') {
+        setIsButtonVisible(false);
+      } else {
+        setIsButtonVisible(true);
+      }
+    } catch (err) {
+      console.error('등록 리스트 로드 실패:', err);
+      msgPopup(err.response?.data?.message || '등록 리스트를 가져오는 중 오류가 발생했습니다.');
+    }
+  };
+
+  useEffect(() => {
+    if (formData.WORKDATE && user?.empNo) {
+      fetchRegisteredList(formData.WORKDATE);
+    }
+  }, [formData.WORKDATE, user?.empNo]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => {
@@ -196,13 +253,6 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
   };
 
   const handleRowChange = (index, field, value) => {
-    setOriginalValues((prev) => ({
-      ...prev,
-      [index]: {
-        ...prev[index],
-        [field]: registeredList[index][field],
-      },
-    }));
     setRegisteredList((prev) =>
       prev.map((item, i) =>
         i === index ? { ...item, [field]: field === "PROCESSTIME" ? parseInt(value) || 0 : value } : item
@@ -210,94 +260,100 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
     );
   };
 
-  const handleUpdate = (index) => {
-    const totalTime = registeredList.reduce((sum, item) => sum + (parseInt(item.PROCESSTIME) || 0), 0);
-
-    if (totalTime > 1440) {
-      msgPopup("하루 24시간 초과하면 안됩니다.");
-      setRegisteredList((prev) =>
-        prev.map((item, i) =>
-          i === index
-            ? {
-                ...item,
-                CUSTOMER: originalValues[index]?.CUSTOMER || item.CUSTOMER,
-                PROCESSTIME: originalValues[index]?.PROCESSTIME || item.PROCESSTIME,
-              }
-            : item
-        )
-      );
-      return;
-    }
-
-    msgPopup("수정완료");
-    setOriginalValues((prev) => {
-      const newValues = { ...prev };
-      delete newValues[index];
-      return newValues;
-    });
-  };
-
-  const handleRegister = () => {
-    if (
-      formData.CLASSCCD === "all" ||
-      formData.DISPATCH === "" ||
-      formData.WORKERS === "" ||
-      formData.WORKTIME === "" ||
-      formData.LINES <= 0
-    ) {
-      msgPopup("소분류, 출동여부, 작업인원, 근무시간, 회선수를 확인해주세요.");
-      return;
-    }
-
-    const processTimeSum = Object.values(processTimes).reduce((sum, time) => sum + (parseInt(time) || 0), 0);
-    if (totalRegisteredTime + processTimeSum > 1440) {
-      msgPopup("하루 24시간 초과하면 안됩니다.");
-      return;
-    }
-
-    const selectedMajor = data.find((item) => item.CLASSACD === formData.CLASSACD);
-    const selectedMiddle = data.find((item) => item.CLASSBCD === formData.CLASSBCD);
-    const selectedMinor = data.find((item) => item.CLASSCCD === formData.CLASSCCD);
-
-    const newItems = [];
-    flatProcessItems.forEach((item) => {
-      const time = processTimes[item.WORKCD];
-      if (time > 0) {
-        newItems.push({
-          CLASSACD: formData.CLASSACD,
-          CLASSBCD: formData.CLASSBCD,
-          CLASSCCD: formData.CLASSCCD,
-          CLASSANM: selectedMajor ? selectedMajor.CLASSANM : "",
-          CLASSBNM: selectedMiddle ? selectedMiddle.CLASSBNM : "",
-          CLASSCNM: selectedMinor ? selectedMinor.CLASSCNM : "",
-          WORKDATE: formData.WORKDATE,
-          CUSTOMER: formData.CUSTOMER,
-          DISPATCH: formData.DISPATCH,
-          WORKERS: formData.WORKERS,
-          WORKTIME: formData.WORKTIME,
-          LINES: formData.LINES,
-          PROCESS: item.WORKCD,
-          PROCESSNM: item.WORKNM,
-          PROCESSTIME: time,
-        });
+  const handleSave = async (action, index = -1) => {
+    let params;
+    if (action === 'register') {
+      if (
+        formData.CLASSCCD === "all" ||
+        formData.DISPATCH === "" ||
+        formData.WORKERS === "" ||
+        formData.WORKTIME === "" ||
+        formData.LINES <= 0
+      ) {
+        msgPopup("소분류, 출동여부, 작업인원, 근무시간, 회선수를 확인해주세요.");
+        return;
       }
-    });
 
-    if (newItems.length === 0) {
-      msgPopup("처리시간(분)을 하나 이상 입력해주세요.");
-      return;
+      const workGbCodes = [];
+      const workGbTms = [];
+      flatProcessItems.forEach((item) => {
+        const time = processTimes[item.WORKCD];
+        if (time > 0) {
+          workGbCodes.push(item.WORKCD);
+          workGbTms.push(time);
+        }
+      });
+
+      if (workGbCodes.length === 0) {
+        msgPopup("처리시간(분)을 하나 이상 입력해주세요.");
+        return;
+      }
+
+      if (workGbCodes.length > 10) {
+        msgPopup("10개 이하까지만 등록 가능합니다. 나눠서 등록 하시기 바랍니다.");
+        return;
+      }
+
+      if (totalRegisteredTime + Object.values(processTimes).reduce((sum, time) => sum + (parseInt(time) || 0), 0) > 1440) {
+        msgPopup("하루 24시간 초과하면 안됩니다.");
+        return;
+      }
+
+      params = {
+        pGUBUN: 'I',
+        pDATE1: formData.WORKDATE,
+        pDATE2: formData.WORKDATE,
+        pCLASSCD: formData.CLASSCCD,
+        pBIZTXT: formData.CUSTOMER,
+        pBIZRUN: formData.DISPATCH,
+        pBIZMAN: formData.WORKERS,
+        pWORKCD: formData.WORKTIME,
+        pWORKCNT: formData.LINES,
+        pWORKGBCD: workGbCodes.join('^'),
+        pWORKGBTM: workGbTms.join('^'),
+        pSECTIONCD: classGubun,
+        pEMPNO: user?.empNo || '',
+      };
+    } else {
+      const item = registeredList[index];
+      params = {
+        pGUBUN: action === 'update' ? 'U' : 'D',
+        pDATE1: item.WORKDATE,
+        pDATE2: item.WORKDATE,
+        pCLASSCD: item.CLASSCCD,
+        pBIZTXT: item.CUSTOMER,
+        pBIZRUN: item.DISPATCH,
+        pBIZMAN: item.WORKERS,
+        pWORKCD: item.WORKTIME,
+        pWORKCNT: item.LINES,
+        pWORKGBCD: item.PROCESS,
+        pWORKGBTM: item.PROCESSTIME,
+        pSECTIONCD: classGubun,
+        pEMPNO: user?.empNo || '',
+      };
     }
 
-    setRegisteredList((prev) => [...prev, ...newItems]);
-  };
-
-  const handleDelete = (index) => {
-    setRegisteredList((prev) => prev.filter((_, i) => i !== index));
-    setOriginalValues((prev) => {
-      const newValues = { ...prev };
-      delete newValues[index];
-      return newValues;
-    });
+    try {
+      const response = await fetchData('standard/empJob/biz/reg/save', params);
+      if (!response.success) {
+        msgPopup(response.errMsg || `${action === 'register' ? '등록' : action === 'update' ? '수정' : '삭제'} 중 오류가 발생했습니다.`);
+        return;
+      } else {
+        if (response.errMsg !== '' || (response.data[0] && response.data[0].errCd !== '00')) {
+          let errMsg = response.errMsg;
+          if (response.data[0] && response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+          msgPopup(errMsg);
+          return;
+        }
+      }
+      await fetchRegisteredList(params.pDATE1);
+      if (action !== 'register') {
+        msgPopup(`${action === 'update' ? '수정' : '삭제'} 완료`);
+      }
+    } catch (err) {
+      console.error(`${action} 실패:`, err);
+      msgPopup(err.response?.data?.errMsg || `${action === 'register' ? '등록' : action === 'update' ? '수정' : '삭제'} 중 오류가 발생했습니다.`);
+    }
   };
 
   const handleClassSelect = ({ major, middle, minor }) => {
@@ -305,7 +361,6 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
     if (editingIndex === -1) {
       setClass2Options(getFieldOptions("CLASSBCD", major, data));
       setClass3Options(getFieldOptions("CLASSCCD", middle, data));
-
       setFormData((prev) => ({
         ...prev,
         CLASSACD: major,
@@ -325,9 +380,9 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                 CLASSACD: major,
                 CLASSBCD: middle,
                 CLASSCCD: minor,
-                CLASSANM: selectedMajor ? selectedMajor.CLASSANM : "",
-                CLASSBNM: selectedMiddle ? selectedMiddle.CLASSBNM : "",
-                CLASSCNM: selectedMinor ? selectedMinor.CLASSCNM : "",
+                CLASSANM: selectedMajor ? selectedMajor.CLASSANM : '',
+                CLASSBNM: selectedMiddle ? selectedMiddle.CLASSBNM : '',
+                CLASSCNM: selectedMinor ? selectedMinor.CLASSCNM : '',
               }
             : item
         )
@@ -341,21 +396,28 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       <Modal.Header closeButton>
         <Modal.Title>Biz 개별 업무 등록</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body style={{ fontSize: '14px' }}>
         <div className={styles.noteSection}>
           <span>* 익월 {closedt}일 지나면 전월자료 수정 불가 합니다.</span>
-          <button className={`btn text-bg-success`} onClick={handleRegister}>
-            등록
-          </button>
+          <div className={styles.inputButtonWrapper}>
+            <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.dateInput} />
+            {isButtonVisible && (
+              <button className={`btn text-bg-success`} onClick={() => handleSave('register')}>
+                등록
+              </button>
+            )}
+          </div>
         </div>
         <table className={styles.formTable}>
           <tbody>
             <tr>
               <td className={styles.td1}>
                 대분류:
-                <button onClick={() => setClassPopupState({ show: true, editingIndex: -1 })} className={`btn text-bg-secondary`}>
-                  선택
-                </button>
+                {isButtonVisible && (
+                  <button onClick={() => setClassPopupState({ show: true, editingIndex: -1 })} className={`btn text-bg-secondary`}>
+                    선택
+                  </button>
+                )}
               </td>
               <td className={styles.td2}>
                 <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange} className={styles.select}>
@@ -447,34 +509,35 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                         groupChunks.map((chunk, chunkIndex) => (
                           <React.Fragment key={`${groupIndex}-${chunkIndex}`}>
                             <tr>
-                              <td className={styles.processTable}>항목</td>
+                              <td className={`${styles.processTable} ${styles.processTableCell}`}>항목</td>
                               {chunk.map((item) => (
-                                <td key={item.WORKCD} className={styles.processTable}>{item.WORKNM}</td>
+                                <td key={item.WORKCD} className={`${styles.processTable} ${styles.processTableCell}`}>{item.WORKNM}</td>
                               ))}
-                              {chunk.length < 9 &&
-                                Array(9 - chunk.length)
+                              {chunk.length < 14 &&
+                                Array(14 - chunk.length)
                                   .fill()
-                                  .map((_, j) => <td key={`empty-${groupIndex}-${chunkIndex}-${j}`} className={styles.processTable}></td>)}
+                                  .map((_, j) => <td key={`empty-${groupIndex}-${chunkIndex}-${j}`} className={`${styles.processTable} ${styles.processTableCell}`}></td>)}
                             </tr>
                             <tr>
-                              <td className={styles.processTable}>처리시간(분)</td>
+                              <td className={`${styles.processTable} ${styles.processTableCell}`}>처리시간(분)</td>
                               {chunk.map((item) => (
-                                <td key={item.WORKCD} className={styles.processTable}>
+                                <td key={item.WORKCD} className={`${styles.processTable} ${styles.processTableCell}`}>
                                   <input
                                     type="number"
                                     min="0"
                                     value={processTimes[item.WORKCD] || 0}
                                     onChange={(e) => handleProcessChange(item.WORKCD, e.target.value)}
                                     className={styles.rowInput}
+                                    style={{ backgroundColor: (processTimes[item.WORKCD] || 0) > 0 ? '#fff9e6' : '#fff' }}
                                     name={`txt${item.WORKCD}`}
                                     id={`txt${item.WORKCD}`}
                                   />
                                 </td>
                               ))}
-                              {chunk.length < 9 &&
-                                Array(9 - chunk.length)
+                              {chunk.length < 14 &&
+                                Array(14 - chunk.length)
                                   .fill()
-                                  .map((_, j) => <td key={`empty-input-${groupIndex}-${chunkIndex}-${j}`} className={styles.processTable}></td>)}
+                                  .map((_, j) => <td key={`empty-input-${groupIndex}-${chunkIndex}-${j}`} className={`${styles.processTable} ${styles.processTableCell}`}></td>)}
                             </tr>
                           </React.Fragment>
                         ))
@@ -515,7 +578,17 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                           <td className={styles.thWorkDate}>{item.WORKDATE}</td>
                           <td className={styles.thClassA}>{item.CLASSANM}</td>
                           <td className={styles.thClassB}>{item.CLASSBNM}</td>
-                          <td className={styles.thClassC}>{item.CLASSCNM}</td>
+                          <td className={styles.thClassC}>
+                            {item.CLASSCNM}
+                            {isButtonVisible && (
+                              <button
+                                onClick={() => setClassPopupState({ show: true, editingIndex: index })}
+                                className={`btn text-bg-secondary`}
+                              >
+                                선택
+                              </button>
+                            )}
+                          </td>
                           <td className={styles.thCustomer}>
                             <input
                               type="text"
@@ -539,12 +612,16 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                             />
                           </td>
                           <td className={styles.thAction}>
-                            <button onClick={() => handleUpdate(index)} className={`btn text-bg-primary`}>
-                              수정
-                            </button>
-                            <button onClick={() => handleDelete(index)} className={`btn text-bg-danger`}>
-                              삭제
-                            </button>
+                            {isButtonVisible && (
+                              <>
+                                <button onClick={() => handleSave('update', index)} className={`btn text-bg-primary`}>
+                                  수정
+                                </button>
+                                <button onClick={() => handleSave('delete', index)} className={`btn text-bg-danger`}>
+                                  삭제
+                                </button>
+                              </>
+                            )}
                           </td>
                         </tr>
                       ))}
