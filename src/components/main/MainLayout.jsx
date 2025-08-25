@@ -154,7 +154,7 @@ const MainLayout = () => {
       </header>
       <MainTopNavLoc />
       {loading.isLoading && (
-        <div className="progressBarContainer">
+        <div className={styles.progressBarContainer}>
           <CircularProgressbar
             value={loading.progress}
             text={`${Math.round(loading.progress)}%`}

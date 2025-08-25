@@ -106,7 +106,7 @@ const MobileLogin = () => {
         <form onSubmit={handleLogin}>
           <div className='formGroup'>
             <div className="inputWrapper">
-              <img src={loginUserImg} alt="user 이미지" class="inputIcon" />
+              <img src={loginUserImg} alt="user 이미지" className="inputIcon" />
               <input
                 id="userid"
                 type="text"
@@ -120,7 +120,7 @@ const MobileLogin = () => {
           </div>
           <div className='formGroup'>
             <div className="inputWrapper">
-              <img src={loginPwImg} alt="user 이미지" class="inputIcon" />
+              <img src={loginPwImg} alt="user 이미지" className="inputIcon" />
               <input
                 id="password"
                 type="password"

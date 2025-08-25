@@ -88,7 +88,7 @@ const MainHeader = () => {
               <li className="time">{timeDisplay}</li>
               <li className='headerLinkWrap'>
                 <span onClick={handleExtend} className="extendLink">연장</span>
-                <span onClick={handleLogout} className="logoutLink"><img src={logoutImg} alt="logout 이미지" class="logoutIcon" />로그아웃</span>
+                <span onClick={handleLogout} className="logoutLink"><img src={logoutImg} alt="logout 이미지" className="logoutIcon" />로그아웃</span>
               </li>
             </ul>
           </>

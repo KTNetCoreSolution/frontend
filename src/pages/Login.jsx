@@ -126,7 +126,7 @@ const Login = () => {
             <div className='formGroup'>
               <div className="inputWrapper">
                 {/* <i className="bi bi-person"></i> */}
-                <img src={loginUserImg} alt="user 이미지" class="inputIcon" />
+                <img src={loginUserImg} alt="user 이미지" className="inputIcon" />
                 <input
                   id="userid"
                   type="text"
@@ -141,7 +141,7 @@ const Login = () => {
             <div className='formGroup'>
               <div className="inputWrapper">
                 {/* <i className="bi bi-lock"></i> */}
-                <img src={loginPwImg} alt="pw 이미지" class="inputIcon" />
+                <img src={loginPwImg} alt="pw 이미지" className="inputIcon" />
                 <input
                   id="password"
                   type="password"
