@@ -8,7 +8,6 @@ import { msgPopup } from '../utils/msgPopup';
 import { errorMsgPopup } from '../utils/errorMsgPopup';
 import LicensePopup from '../components/popup/LicensePopup'
 import useStore from '../store/store';
-import {fetchData} from '../utils/dataUtils'
 import logoColorImg from '../assets/images/logo_color.png';
 import loginMainImg from '../assets/images/loginmainImg.svg';
 import loginUserImg from '../assets/images/icon_user.svg';
@@ -37,7 +36,7 @@ const Login = () => {
     const interval = setInterval(() => {
       setTimer((prev) => {
         if (prev <= 1) {
-          loadCaptcha();
+          setTimeout(() => loadCaptcha(), 0);
           return 60;
         }
         return prev - 1;
@@ -57,9 +56,11 @@ const Login = () => {
     setCaptchaError('');
     try {
       const captchaUrl = await fetchCaptcha();
-      setCaptchaImage(captchaUrl);
-      setTimer(60);
-      setIsCaptchaLoading(false);
+      setTimeout(() => {
+        setCaptchaImage(captchaUrl);
+        setTimer(60);
+        setIsCaptchaLoading(false);
+      }, 0);
     } catch (error) {
       console.error('캡챠 로드 실패, 재시도 남음:', retryCount - 1, error.message);
       setTimeout(() => loadCaptcha(retryCount - 1), 1000);

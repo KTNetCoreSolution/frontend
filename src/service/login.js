@@ -3,7 +3,8 @@ import useStore from '../store/store';
 
 export const performLogin = async (gubun, empNo, empPwd, captchaInput, navigate, setError) => {
   try {
-    const response = await fetchData('auth/login', { empNo, empPwd, captchaInput });
+    
+    const response = await fetchData('auth/login', { empNo, empPwd, captchaInput }, {}, 'N', false);
     
     if (!response.success) {
       throw new Error(response.errMsg || '아이디, 비밀번호 또는 캡챠가 잘못되었습니다.');
@@ -34,7 +35,8 @@ export const performLogin = async (gubun, empNo, empPwd, captchaInput, navigate,
 
 export const performSsoLogin = async (gubun, empNo, navigate, setError) => {
   try {
-    const response = await fetchData('auth/sso/login', { empNo });
+    
+    const response = await fetchData('auth/sso/login', { empNo }, {}, 'N', false);
     
     if (!response.success) {
       throw new Error(response.errMsg || '아이디, 비밀번호 또는 캡챠가 잘못되었습니다.');
@@ -72,7 +74,8 @@ export const fetchCaptcha = async () => {
       },
       withCredentials: true, // Include credentials for session
     };
-    const response = await fetchData('auth/captcha', {}, config);
+    
+    const response = await fetchData('auth/captcha', {}, config, 'N', false);
     // Check if response is an image
     if (response.type !== 'image/png') {
       // Read JSON error response

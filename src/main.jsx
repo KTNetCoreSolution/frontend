@@ -18,7 +18,7 @@ const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
 
 const initializeVersionCheck = async () => {
   try {
-    const response = await fetchData('ver/check');
+    const response = await fetchData('ver/check', {}, {}, 'N', false);
     // response 자체가 문자열이거나 response.data 사용
     const serverVersion = response.headers?.['x-server-version'] || response.data || response;
 

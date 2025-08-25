@@ -28,6 +28,27 @@ const simulateProgress = async (setLoading, totalDuration = 200) => {
 };
 
 /**
+ * 로딩 상태와 진행률을 처리하는 공통 함수
+ * @param {Function} setLoading - 로딩 상태를 설정하는 함수
+ * @param {boolean} progressShow - 진행률 표시 여부
+ * @param {number} [totalDuration=200] - 전체 진행 시간 (밀리초)
+ * @returns {Promise<void>}
+ */
+const handleLoadingProgress = async (setLoading, progressShow, totalDuration = 200) => {
+  if (!setLoading) {
+    console.error('setLoading 함수가 정의되지 않았습니다.');
+    return;
+  }
+  if (!progressShow) {
+    setLoading({ isLoading: true, progress: 0 });
+    return;
+  }
+  
+  setLoading({ isLoading: true, progress: 0 });
+  await simulateProgress(setLoading, totalDuration);
+};
+
+/**
  * JSON 데이터를 필터링하여 반환합니다.
  * @param {Object|Array} jsonData - 필터링할 JSON 데이터 (객체 또는 배열)
  * @param {Object} [filters={}] - 필터링 조건 (예: { name: 'john', status: 'active' })
@@ -68,20 +89,18 @@ export async function fetchJsonData(jsonData, filters = {}) {
  * @param {Object} [directYn] - 지정 URL 사용유무
  * @returns {Promise<any|Error>} 응답 데이터 (배열 또는 객체) 또는 오류 객체
  */
-export async function fetchData(url, filters = {}, config = {}, directYn = 'N') {
-  const { setLoading } = useStore.getState();
+export async function fetchData(url, filters = {}, config = {}, directYn = 'N', progressShow = true) {
   url = (directYn != 'Y') ? common.getServerUrl(url) : url;
-
+  const { setLoading } = useStore.getState();
   try {
-    setLoading({ isLoading: true, progress: 0 });
-    await simulateProgress(setLoading, 200);
+    await handleLoadingProgress(setLoading, progressShow);
     const response = await api.post(`${url}`, filters, config);
     return response.data;
   } catch (error) {
     console.error('데이터 가져오기 실패:', error.message, error.response?.data);
     throw error;
   } finally {
-    setLoading({ isLoading: false, progress: 0 });
+    if(progressShow) setLoading({ isLoading: false, progress: 0 });
   }
 }
 
@@ -93,13 +112,11 @@ export async function fetchData(url, filters = {}, config = {}, directYn = 'N') 
  * @param {Object} [directYn] - 지정 URL 사용유무
  * @returns {Promise<any|Error>} 응답 데이터 (배열 또는 객체) 또는 오류 객체
  */
-export async function fetchDataGet(url, filters = {}, config = {}, directYn = 'N') {
-  const { setLoading } = useStore.getState();
+export async function fetchDataGet(url, filters = {}, config = {}, directYn = 'N', progressShow = true) {
   url = (directYn != 'Y') ? common.getServerUrl(url) : url;
-    
+  const { setLoading } = useStore.getState();
   try {
-    setLoading({ isLoading: true, progress: 0 });
-    await simulateProgress(setLoading, 200);
+    await handleLoadingProgress(setLoading, progressShow);
     const queryParams = new URLSearchParams(filters).toString();
     const fullUrl = queryParams ? `${url}?${queryParams}` : `${url}`;
     const response = await api.get(fullUrl, config);
@@ -108,7 +125,7 @@ export async function fetchDataGet(url, filters = {}, config = {}, directYn = 'N
     console.error('데이터 가져오기 실패 (GET):', error.message, error.response?.data);
     throw error;
   } finally {
-    setLoading({ isLoading: false, progress: 0 });
+    if(progressShow) setLoading({ isLoading: false, progress: 0 });
   }
 }
 
@@ -120,13 +137,11 @@ export async function fetchDataGet(url, filters = {}, config = {}, directYn = 'N
  * @param {Object} [directYn] - 지정 URL 사용유무
  * @returns {Promise<Object>} 응답 데이터 또는 오류 메시지
  */
-export const fetchFileData = async (url, params, config = {}, directYn = 'N') => {
-  const { setLoading } = useStore.getState();
+export const fetchFileData = async (url, params, config = {}, directYn = 'N', progressShow = true) => {
   url = (directYn != 'Y') ? common.getServerUrl(url) : url;
-
+  const { setLoading } = useStore.getState();
   try {
-    setLoading({ isLoading: true, progress: 0 });
-    await simulateProgress(setLoading, 200);
+    await handleLoadingProgress(setLoading, progressShow);
     const response = await api.post(`${url}`, params, config);
     return response.data || { success: false, message: "No data returned" };
   } catch (error) {
@@ -135,7 +150,7 @@ export const fetchFileData = async (url, params, config = {}, directYn = 'N') =>
       message: error.response?.data?.message || error.message || "Request failed",
     };
   } finally {
-    setLoading({ isLoading: false, progress: 0 });
+    if(progressShow) setLoading({ isLoading: false, progress: 0 });
   }
 };
 
@@ -181,18 +196,17 @@ export const fetchFileUpload = async (url, formData, config = {}, directYn = 'N'
  * @param {Object} [config={}] - 추가 axios 설정 (예: headers)
  * @returns {Promise<any|Error>} 응답 데이터 (배열 또는 객체) 또는 오류 객체
  */
-export async function externalFetchData(url, filters = {}, config = {}) {
+export async function externalFetchData(url, filters = {}, config = {}, progressShow = true) {
   const { setLoading } = useStore.getState();
   try {
-    setLoading({ isLoading: true, progress: 0 });
-    await simulateProgress(setLoading, 200);
+    await handleLoadingProgress(setLoading, progressShow);
     const response = await api.post(url, filters, config);
     return response.data;
   } catch (error) {
     console.error('데이터 가져오기 실패:', error.message, error.response?.data);
     throw error;
   } finally {
-    setLoading({ isLoading: false, progress: 0 });
+    if(progressShow) setLoading({ isLoading: false, progress: 0 });
   }
 }
 
@@ -203,11 +217,10 @@ export async function externalFetchData(url, filters = {}, config = {}) {
  * @param {Object} [config={}] - 추가 axios 설정 (예: headers)
  * @returns {Promise<any|Error>} 응답 데이터 (배열 또는 객체) 또는 오류 객체
  */
-export async function externalFetchDataGet(url, filters = {}, config = {}) {
+export async function externalFetchDataGet(url, filters = {}, config = {}, progressShow = true) {
   const { setLoading } = useStore.getState();
   try {
-    setLoading({ isLoading: true, progress: 0 });
-    await simulateProgress(setLoading, 200);
+    await handleLoadingProgress(setLoading, progressShow);
     const queryParams = new URLSearchParams(filters).toString();
     const fullUrl = queryParams ? `${url}?${queryParams}` : url;
     const response = await api.get(fullUrl, config);
@@ -216,7 +229,7 @@ export async function externalFetchDataGet(url, filters = {}, config = {}) {
     console.error('데이터 가져오기 실패 (GET):', error.message, error.response?.data);
     throw error;
   } finally {
-    setLoading({ isLoading: false, progress: 0 });
+    if(progressShow) setLoading({ isLoading: false, progress: 0 });
   }
 }
 
@@ -227,11 +240,10 @@ export async function externalFetchDataGet(url, filters = {}, config = {}) {
  * @param {Object} [config={}] - 추가 axios 설정 (예: headers)
  * @returns {Promise<Object>} 응답 데이터 또는 오류 메시지
  */
-export const externalFetchFileData = async (url, params, config = {}) => {
+export const externalFetchFileData = async (url, params, config = {}, progressShow = true) => {
   const { setLoading } = useStore.getState();
   try {
-    setLoading({ isLoading: true, progress: 0 });
-    await simulateProgress(setLoading, 200);
+    await handleLoadingProgress(setLoading, progressShow);
     const response = await api.post(url, params, config);
     return response.data || { success: false, message: "No data returned" };
   } catch (error) {
@@ -240,7 +252,7 @@ export const externalFetchFileData = async (url, params, config = {}) => {
       message: error.response?.data?.message || error.message || "Request failed",
     };
   } finally {
-    setLoading({ isLoading: false, progress: 0 });
+    if(progressShow) setLoading({ isLoading: false, progress: 0 });
   }
 };
 

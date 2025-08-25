@@ -32,7 +32,7 @@ const MobileLogin = () => {
     const interval = setInterval(() => {
       setTimer((prev) => {
         if (prev <= 1) {
-          loadCaptcha();
+          setTimeout(() => loadCaptcha(), 0);
           return 60;
         }
         return prev - 1;
@@ -53,12 +53,14 @@ const MobileLogin = () => {
     setCaptchaError('');
     try {
       const captchaUrl = await fetchCaptcha();
-      setCaptchaImage(captchaUrl);
-      setTimer(60);
-      setIsCaptchaLoading(false);
+      setTimeout(() => {
+        setCaptchaImage(captchaUrl);
+        setTimer(60);
+        setIsCaptchaLoading(false);
+      }, 0);
     } catch (error) {
       console.error('캡챠 로드 실패, 재시도 남음:', retryCount - 1, error.message);
-      setTimeout(() => loadCaptcha(retryCount - 1), 1000); // 1초 후 재시도
+      setTimeout(() => loadCaptcha(retryCount - 1), 1000);
     }
   };
 
