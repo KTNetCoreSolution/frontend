@@ -223,11 +223,10 @@ const BoardWrite = () => {
   };
 
   return (
-    <div className="container bg-body">
-      <h2 className={`text-primary text-dark fs-5 mb-4 pt-3 ${styles.boardTitle}`}>
+    <div className="container">
+      <h2 className='pageTitle'>
         {type === 'carnotice' ? '차량관리' : '공지사항'} {isEdit ? '변경' : '등록'}
       </h2>
-      <div className={styles.boardTitleLine}></div>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label className="form-label">제목</label>

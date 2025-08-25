@@ -176,100 +176,104 @@ const BoardView = () => {
   };
 
   return (
-    <div className="container bg-body">
-      <h2 className={`text-primary text-dark fs-5 mb-4 pt-3 ${styles.boardTitle}`}>
+    <div className="container">
+      <h2 className='pageTitle'>
         {type === 'carnotice' ? '차량관리 상세' : '공지사항 상세'}
       </h2>
-      <div className="mb-3">
-        <label className="form-label">작성일</label>
-        <input
-          className={`form-control ${styles.formControl}`}
-          value={noticeDetails?.date || ''}
-          readOnly
-        />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">작성자</label>
-        <input
-          className={`form-control ${styles.formControl}`}
-          value={noticeDetails?.regedBy || ''}
-          readOnly
-        />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">제목</label>
-        <input
-          className={`form-control ${styles.formControl}`}
-          value={title}
-          readOnly
-        />
-      </div>
-      <div className="mb-3">
-        <label className="form-label">내용</label>
-        <textarea
-          className={`form-control ${styles.formControl} ${styles.textarea}`}
-          rows="8"
-          value={content}
-          readOnly
-        />
-      </div>
-      <div className="mb-4">
-        <label className="form-label d-flex justify-content-between align-items-center">
-          <span>첨부파일</span>
-          {files.length > 0 && (
-            <button
-              className="btn btn-sm btn-outline-primary"
-              onClick={handleDownloadAll}
-            >
-              전체 다운로드
-            </button>
-          )}
-        </label>
-        {files?.length > 0 ? (
-          files.map((file, index) => (
-            <div key={index} className={`d-flex align-items-center mb-2 ${styles.fileItem}`}>
-              <div className={styles.imageFile}>
-                {(fileUtils.isImageFile(file) || fileUtils.isTextFile(file)) ? (
-                  <span
-                    onClick={() => handleFileClick(file)}
-                    style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
-                  >
-                    {getFileIcon(file)}
-                    {file.fileName} ({fileUtils.formatFileSize(file.fileSize)})
-                  </span>
-                ) : (
-                  <span>
-                    {getFileIcon(file)}
-                    {file.fileName} ({fileUtils.formatFileSize(file.fileSize)})
-                  </span>
-                )}
-              </div>
+      <div className='boardWrap'>
+        <div>
+          <label className="form-label">작성일</label>
+          <input
+            className={`form-control ${styles.formControl}`}
+            value={noticeDetails?.date || ''}
+            readOnly
+          />
+        </div>
+        <div>
+          <label className="form-label">작성자</label>
+          <input
+            className={`form-control ${styles.formControl}`}
+            value={noticeDetails?.regedBy || ''}
+            readOnly
+          />
+        </div>
+        <div>
+          <label className="form-label">제목</label>
+          <input
+            className={`form-control ${styles.formControl}`}
+            value={title}
+            readOnly
+          />
+        </div>
+        <div>
+          <label className="form-label">내용</label>
+          <textarea
+            className={`form-control ${styles.formControl} ${styles.textarea}`}
+            rows="8"
+            value={content}
+            readOnly
+          />
+        </div>
+        <div>
+          <label className="form-label d-flex justify-content-between align-items-center">
+            <span>첨부파일</span>
+            {files.length > 0 && (
               <button
-                className="btn btn-sm btn-outline-secondary ms-2"
-                onClick={() => handleDownload(file)}
+                className="btn btn-sm btn-outline-primary"
+                onClick={handleDownloadAll}
               >
-                <i className="bi bi-download"></i> 다운로드
+                전체 다운로드
               </button>
-            </div>
-          ))
-        ) : (
-          <div>첨부파일 없음</div>
+            )}
+          </label>
+          {files?.length > 0 ? (
+            files.map((file, index) => (
+              <div key={index} className={`d-flex align-items-center mb-2 ${styles.fileItem}`}>
+                <div className={styles.imageFile}>
+                  {(fileUtils.isImageFile(file) || fileUtils.isTextFile(file)) ? (
+                    <span
+                      onClick={() => handleFileClick(file)}
+                      style={{ cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}
+                    >
+                      {getFileIcon(file)}
+                      {file.fileName} ({fileUtils.formatFileSize(file.fileSize)})
+                    </span>
+                  ) : (
+                    <span>
+                      {getFileIcon(file)}
+                      {file.fileName} ({fileUtils.formatFileSize(file.fileSize)})
+                    </span>
+                  )}
+                </div>
+                <button
+                  className="btn btn-sm btn-outline-secondary ms-2"
+                  onClick={() => handleDownload(file)}
+                >
+                  <i className="bi bi-download"></i> 다운로드
+                </button>
+              </div>
+            ))
+          ) : (
+            <div>첨부파일 없음</div>
+          )}
+        </div>
+      </div>
+      <div className='buttonWrap'>
+        <button
+          className="btn btn-secondary me-2 mb-3 mt-5"
+          onClick={() => navigate('/main/boardMain')}
+        >
+          뒤로 가기
+        </button>
+        {canModifyBoard && (
+          <button
+            className="btn btn-warning me-2 mb-3 mt-5"
+            onClick={handleEdit}
+          >
+            변경 가기
+          </button>
         )}
       </div>
-      <button
-        className="btn btn-secondary me-2 mb-3 mt-5"
-        onClick={() => navigate('/main/boardMain')}
-      >
-        뒤로 가기
-      </button>
-      {canModifyBoard && (
-        <button
-          className="btn btn-warning me-2 mb-3 mt-5"
-          onClick={handleEdit}
-        >
-          변경 가기
-        </button>
-      )}
       {selectedImage && (
         <ImageViewPopup
           imageSrc={selectedImage.src}
