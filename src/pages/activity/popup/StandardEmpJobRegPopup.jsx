@@ -5,6 +5,8 @@ import styles from './StandardEmpJobRegPopup.module.css';
 import StandardClassSelectPopup from './StandardClassSelectPopup';
 import { fetchData } from '../../../utils/dataUtils';
 import { msgPopup } from '../../../utils/msgPopup';
+import { errorMsgPopup } from '../../../utils/errorMsgPopup';
+import common from "../../../utils/common";
 
 const getFieldOptions = (fieldId, dependentValue = '', classData) => {
   if (!Array.isArray(classData)) return [];
@@ -272,6 +274,15 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
   const handleSave = async (action, index = -1) => {
     let params;
     if (action === 'register') {
+      // 건(구간/본/개소) 검증 (최대 10자)
+      if (!formData.isDuplicate) {
+        const quantityValidation = common.validateVarcharLength(String(formData.QUANTITY), 10, "건(구간/본/개소)");
+        if (!quantityValidation.valid) {
+          errorMsgPopup(quantityValidation.error);
+          return;
+        }
+      }
+
       if (formData.CLASSCCD === 'all' || formData.WORKTYPE === '' || (!formData.isDuplicate && !formData.QUANTITY)) {
         msgPopup('소분류, 건수, 근무형태를 확인해주세요.');
         return;
@@ -303,9 +314,17 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
         pSECTIONCD: classGubun,
         pEMPNO: user?.empNo || '',
       };
-    } else {
+    } else if (action === 'update') {
       const item = registeredList[index];
-      if (action === 'update' && timeToMinutes(item.STARTTIME) >= timeToMinutes(item.ENDTIME)) {
+
+      // 건(구간/본/개소) 검증 (최대 10자)
+      const quantityValidation = common.validateVarcharLength(String(item.QUANTITY), 10, "건(구간/본/개소)");
+      if (!quantityValidation.valid) {
+        errorMsgPopup(quantityValidation.error);
+        return;
+      }
+
+      if (timeToMinutes(item.STARTTIME) >= timeToMinutes(item.ENDTIME)) {
         msgPopup('종료시간이 시작시간보다 큽니다.');
         return;
       }
@@ -315,7 +334,22 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
       }*/
 
       params = {
-        pGUBUN: action === 'update' ? 'U' : 'D',
+        pGUBUN: 'U',
+        pDATE1: item.WORKDATE,
+        pDATE2: item.WORKDATE,
+        pORGIN_STARTTM: item.ORGIN_STARTTM,
+        pSTARTTM: item.STARTTIME,
+        pENDTM: item.ENDTIME,
+        pCLASSCD: item.CLASSCCD,
+        pWORKCD: item.WORKTYPE,
+        pWORKCNT: item.QUANTITY,
+        pSECTIONCD: classGubun,
+        pEMPNO: user?.empNo || '',
+      };
+    } else {
+      const item = registeredList[index];
+      params = {
+        pGUBUN: 'D',
         pDATE1: item.WORKDATE,
         pDATE2: item.WORKDATE,
         pORGIN_STARTTM: item.ORGIN_STARTTM,

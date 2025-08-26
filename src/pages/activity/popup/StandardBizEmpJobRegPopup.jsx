@@ -5,6 +5,8 @@ import styles from "./StandardBizEmpJobRegPopup.module.css";
 import StandardClassSelectPopup from "./StandardClassSelectPopup";
 import { fetchData } from "../../../utils/dataUtils";
 import { msgPopup } from "../../../utils/msgPopup";
+import { errorMsgPopup } from '../../../utils/errorMsgPopup';
+import common from "../../../utils/common";
 
 const getFieldOptions = (fieldId, dependentValue = "", classData) => {
   if (!Array.isArray(classData)) return [];
@@ -277,6 +279,31 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
   const handleSave = async (action, index = -1) => {
     let params;
     if (action === 'register') {
+      // 회선번호+고객명 검증 (최대 300자)
+      const customerValidation = common.validateVarcharLength(formData.CUSTOMER, 300, "회선번호+고객명");
+      if (!customerValidation.valid) {
+        errorMsgPopup(customerValidation.error);
+        return;
+      }
+
+      // 회선수 검증 (최대 10자)
+      const linesValidation = common.validateVarcharLength(String(formData.LINES), 10, "회선수");
+      if (!linesValidation.valid) {
+        errorMsgPopup(linesValidation.error);
+        return;
+      }
+
+      // 프로세스 처리시간 검증 (각 WORKCD당 최대 8자)
+      for (const [workcd, time] of Object.entries(processTimes)) {
+        if (time > 0) {
+          const processValidation = common.validateVarcharLength(String(time), 8, `프로세스 처리시간 (${workcd})`);
+          if (!processValidation.valid) {
+            errorMsgPopup(processValidation.error);
+            return;
+          }
+        }
+      }
+
       if (
         formData.CLASSCCD === "all" ||
         formData.DISPATCH === "" ||
@@ -308,7 +335,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         return;
       }
 
-      if (totalRegisteredTime + Object.values(processTimes).reduce((sum, time) => sum + (parseInt(time) || 0), 0) > 1440) {
+      if (totalProcessTime > 1440) {
         msgPopup("하루 24시간 초과하면 안됩니다.");
         return;
       }
@@ -328,10 +355,48 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         pSECTIONCD: classGubun,
         pEMPNO: user?.empNo || '',
       };
+    } else if (action === 'update') {
+      const item = registeredList[index];
+
+      // 회선번호+고객명 검증 (최대 300자)
+      const customerValidation = common.validateVarcharLength(item.CUSTOMER, 300, "회선번호+고객명");
+      if (!customerValidation.valid) {
+        errorMsgPopup(customerValidation.error);
+        return;
+      }
+
+      // 처리시간 검증 (최대 8자)
+      const processTimeValidation = common.validateVarcharLength(String(item.PROCESSTIME), 8, "처리시간(분)");
+      if (!processTimeValidation.valid) {
+        errorMsgPopup(processTimeValidation.error);
+        return;
+      }
+
+      // 수정 시 해당 항목의 PROCESSTIME만 확인
+      if (parseInt(item.PROCESSTIME) > 1440) {
+        msgPopup("하루 24시간 초과하면 안됩니다.");
+        return;
+      }
+
+      params = {
+        pGUBUN: 'U',
+        pDATE1: item.WORKDATE,
+        pDATE2: item.WORKDATE,
+        pCLASSCD: item.CLASSCCD,
+        pBIZTXT: item.CUSTOMER,
+        pBIZRUN: item.DISPATCHCD,
+        pBIZMAN: item.WORKERSCD,
+        pWORKCD: item.WORKTIMECD,
+        pWORKCNT: item.LINES,
+        pWORKGBCD: item.PROCESS,
+        pWORKGBTM: item.PROCESSTIME,
+        pSECTIONCD: classGubun,
+        pEMPNO: user?.empNo || '',
+      };
     } else {
       const item = registeredList[index];
       params = {
-        pGUBUN: action === 'update' ? 'U' : 'D',
+        pGUBUN: 'D',
         pDATE1: item.WORKDATE,
         pDATE2: item.WORKDATE,
         pCLASSCD: item.CLASSCCD,
@@ -347,8 +412,6 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       };
     }
 
-    console.log(params);
-
     try {
       const response = await fetchData('standard/empJob/biz/reg/save', params);
       if (!response.success) {
@@ -363,9 +426,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         }
       }
       await fetchRegisteredList(params.pDATE1);
-      if (action !== 'register') {
-        msgPopup(`${action === 'update' ? '수정' : '삭제'} 완료`);
-      }
+      msgPopup(`${action === 'register' ? '등록' : action === 'update' ? '수정' : '삭제'} 완료`);
     } catch (err) {
       console.error(`${action} 실패:`, err);
       msgPopup(err.response?.data?.errMsg || `${action === 'register' ? '등록' : action === 'update' ? '수정' : '삭제'} 중 오류가 발생했습니다.`);
