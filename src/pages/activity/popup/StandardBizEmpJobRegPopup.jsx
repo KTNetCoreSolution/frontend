@@ -67,6 +67,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
   });
   const [processTimes, setProcessTimes] = useState({});
   const [registeredList, setRegisteredList] = useState([]);
+  const [originalRegisteredList, setOriginalRegisteredList] = useState([]);
   const [class2Options, setClass2Options] = useState([]);
   const [class3Options, setClass3Options] = useState([]);
   const [dispatchOptions, setDispatchOptions] = useState([]);
@@ -148,7 +149,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
   useEffect(() => {
     const initialTimes = {};
     flatProcessItems.forEach((item) => {
-      initialTimes[item.WORKCD] = 0;
+      initialTimes[item.WORKCD] = 0; // 모든 WORKCD에 대해 0으로 초기화
     });
     setProcessTimes(initialTimes);
   }, [flatProcessItems]);
@@ -160,9 +161,8 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
 
   // 프로세스 총 처리시간 계산
   const totalProcessTime = useMemo(() => {
-    const processTimeSum = Object.values(processTimes).reduce((sum, time) => sum + (parseInt(time) || 0), 0);
-    return totalRegisteredTime + processTimeSum;
-  }, [processTimes, totalRegisteredTime]);
+    return Object.values(processTimes).reduce((sum, time) => sum + (parseInt(time) || 0), 0);
+  }, [processTimes]);
 
   // 분을 시간:분 형식으로 변환
   const formatTime = (minutes) => {
@@ -207,16 +207,22 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
           CLASSBNM: item.CLASSBNM || '',
           CLASSCNM: item.CLASSCNM || '',
           CUSTOMER: item.BIZTXT || '',
-          DISPATCH: item.BIZRUN || '',
-          WORKERS: item.BIZMAN || '',
-          WORKTIME: item.WORKCD || '',
+          ORIGINAL_CUSTOMER: item.BIZTXT || '', // 원본 값 저장
+          DISPATCHCD: item.BIZRUN || '',
+          DISPATCH: item.BIZRUNNM || '',
+          WORKERSCD: item.BIZMAN || '',
+          WORKERS: item.BIZMANNM || '',
+          WORKTIMECD: item.WORKCD || '',
+          WORKTIME: item.WORKNM || '',
           LINES: item.WORKCNT || '1',
-          PROCESS: item.WORKGBCD || '',
-          PROCESSNM: item.WORKGBNM || item.WORKNM || '',
-          PROCESSTIME: item.WORKGBTM || '0',
+          PROCESS: item.BIZWORKGB || '',
+          PROCESSNM: item.BIZWORKGBNM || '',
+          PROCESSTIME: item.WORKM || '0',
+          ORIGINAL_PROCESSTIME: item.WORKM || '0', // 원본 값 저장
           WORKDATE: item.DDATE || '',
         }));
       setRegisteredList(mappedData);
+      setOriginalRegisteredList(mappedData); // 원본 데이터 저장
       if (response.data && response.data[0] && response.data[0].MODIFYN === 'N') {
         setIsButtonVisible(false);
       } else {
@@ -249,13 +255,21 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
   };
 
   const handleProcessChange = (workcd, value) => {
-    setProcessTimes((prev) => ({ ...prev, [workcd]: parseInt(value) || 0 }));
+    setProcessTimes((prev) => ({ ...prev, [workcd]: value === '' ? '' : parseInt(value) || 0 }));
+  };
+
+  const handleProcessFocus = (workcd) => {
+    setProcessTimes((prev) => ({ ...prev, [workcd]: prev[workcd] === 0 ? '' : prev[workcd] }));
+  };
+
+  const handleProcessBlur = (workcd) => {
+    setProcessTimes((prev) => ({ ...prev, [workcd]: prev[workcd] === '' ? 0 : parseInt(prev[workcd]) || 0 }));
   };
 
   const handleRowChange = (index, field, value) => {
     setRegisteredList((prev) =>
       prev.map((item, i) =>
-        i === index ? { ...item, [field]: field === "PROCESSTIME" ? parseInt(value) || 0 : value } : item
+        i === index ? { ...item, [field]: field === "PROCESSTIME" ? (value === '' ? '0' : parseInt(value) || 0) : value } : item
       )
     );
   };
@@ -277,7 +291,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       const workGbCodes = [];
       const workGbTms = [];
       flatProcessItems.forEach((item) => {
-        const time = processTimes[item.WORKCD];
+        const time = processTimes[item.WORKCD] === '' ? 0 : parseInt(processTimes[item.WORKCD]) || 0;
         if (time > 0) {
           workGbCodes.push(item.WORKCD);
           workGbTms.push(time);
@@ -290,7 +304,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       }
 
       if (workGbCodes.length > 10) {
-        msgPopup("10개 이하까지만 등록 가능합니다. 나눠서 등록 하시기 바랍니다.");
+        msgPopup("10개 이하까지만 등록 가능합니다. \n나눠서 등록 하시기 바랍니다.");
         return;
       }
 
@@ -322,9 +336,9 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         pDATE2: item.WORKDATE,
         pCLASSCD: item.CLASSCCD,
         pBIZTXT: item.CUSTOMER,
-        pBIZRUN: item.DISPATCH,
-        pBIZMAN: item.WORKERS,
-        pWORKCD: item.WORKTIME,
+        pBIZRUN: item.DISPATCHCD,
+        pBIZMAN: item.WORKERSCD,
+        pWORKCD: item.WORKTIMECD,
         pWORKCNT: item.LINES,
         pWORKGBCD: item.PROCESS,
         pWORKGBTM: item.PROCESSTIME,
@@ -332,6 +346,8 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         pEMPNO: user?.empNo || '',
       };
     }
+
+    console.log(params);
 
     try {
       const response = await fetchData('standard/empJob/biz/reg/save', params);
@@ -414,7 +430,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
               <td className={styles.td1}>
                 대분류:
                 {isButtonVisible && (
-                  <button onClick={() => setClassPopupState({ show: true, editingIndex: -1 })} className={`btn text-bg-secondary`}>
+                  <button onClick={() => setClassPopupState({ show: true, editingIndex: -1 })} className={`${styles.btn} text-bg-secondary`}>
                     선택
                   </button>
                 )}
@@ -494,7 +510,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
               </td>
               <td className={styles.td9}>회선수:</td>
               <td>
-                <input type="number" name="LINES" value={formData.LINES} onChange={handleChange} min="1" className={styles.input} />
+                <input type="number" name="LINES" value={formData.LINES} onChange={handleChange} min="1" className={styles.input2} />
               </td>
             </tr>
             <tr>
@@ -525,8 +541,10 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                                   <input
                                     type="number"
                                     min="0"
-                                    value={processTimes[item.WORKCD] || 0}
+                                    value={processTimes[item.WORKCD] === 0 ? '' : processTimes[item.WORKCD] ?? ''}
                                     onChange={(e) => handleProcessChange(item.WORKCD, e.target.value)}
+                                    onFocus={() => handleProcessFocus(item.WORKCD)}
+                                    onBlur={() => handleProcessBlur(item.WORKCD)}
                                     className={styles.rowInput}
                                     style={{ backgroundColor: (processTimes[item.WORKCD] || 0) > 0 ? '#fff9e6' : '#fff' }}
                                     name={`txt${item.WORKCD}`}
@@ -550,7 +568,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
             <tr>
               <td colSpan="10">
                 <h5>
-                  등록 리스트 <span style={{ color: "red" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
+                  등록 리스트 <span style={{ color: "blue" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
                 </h5>
                 <div className={styles.listTableContainer}>
                   <table className={styles.listTable}>
@@ -569,6 +587,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                         <th className={styles.thProcess}>프로세스</th>
                         <th className={styles.thProcessTime}>처리시간(분)</th>
                         <th className={styles.thAction}>작업</th>
+                        <th></th>
                       </tr>
                     </thead>
                     <tbody>
@@ -583,7 +602,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                             {isButtonVisible && (
                               <button
                                 onClick={() => setClassPopupState({ show: true, editingIndex: index })}
-                                className={`btn text-bg-secondary`}
+                                className={`${styles.btn} text-bg-secondary`}
                               >
                                 선택
                               </button>
@@ -595,6 +614,9 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                               value={item.CUSTOMER}
                               onChange={(e) => handleRowChange(index, "CUSTOMER", e.target.value)}
                               className={styles.input}
+                              style={{
+                                backgroundColor: item.CUSTOMER !== originalRegisteredList[index]?.ORIGINAL_CUSTOMER ? '#fff9e6' : '#fff',
+                              }}
                             />
                           </td>
                           <td className={styles.thDispatch}>{item.DISPATCH}</td>
@@ -609,20 +631,24 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                               value={item.PROCESSTIME}
                               onChange={(e) => handleRowChange(index, "PROCESSTIME", e.target.value)}
                               className={styles.rowInput}
+                              style={{
+                                backgroundColor: item.PROCESSTIME !== originalRegisteredList[index]?.ORIGINAL_PROCESSTIME ? '#fff9e6' : '#fff',
+                              }}
                             />
                           </td>
                           <td className={styles.thAction}>
                             {isButtonVisible && (
                               <>
-                                <button onClick={() => handleSave('update', index)} className={`btn text-bg-primary`}>
+                                <button onClick={() => handleSave('update', index)} className={`${styles.btn} text-bg-primary`}>
                                   수정
                                 </button>
-                                <button onClick={() => handleSave('delete', index)} className={`btn text-bg-danger`}>
+                                <button onClick={() => handleSave('delete', index)} className={`${styles.btn} text-bg-danger`}>
                                   삭제
                                 </button>
                               </>
                             )}
                           </td>
+                          <td></td>
                         </tr>
                       ))}
                     </tbody>
