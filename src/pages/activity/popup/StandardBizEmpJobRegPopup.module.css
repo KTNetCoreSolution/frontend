@@ -5,6 +5,10 @@
   margin: 0 auto;
 }
 
+.modalBody {
+  font-size: 14px;
+}
+
 .formTable {
   width: 100%;
   border-collapse: collapse;
@@ -246,5 +250,14 @@
 
 .listTableContainer {
   width: 100%;
+  max-height: 250px;
   display: block;
+}
+
+.listTable thead,
+.processTable thead {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  z-index: 1;
 }

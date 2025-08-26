@@ -473,7 +473,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       <Modal.Header closeButton>
         <Modal.Title>Biz 개별 업무 등록</Modal.Title>
       </Modal.Header>
-      <Modal.Body style={{ fontSize: '14px' }}>
+      <Modal.Body className={styles.modalBody}>
         <div className={styles.noteSection}>
           <span>* 익월 {closedt}일 지나면 전월자료 수정 불가 합니다.</span>
           <div className={styles.inputButtonWrapper}>
