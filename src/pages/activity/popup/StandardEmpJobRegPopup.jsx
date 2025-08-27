@@ -153,6 +153,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
         pGUBUN: 'LIST',
         pEMPNO: user?.empNo || '',
         pDATE1: date,
+        pSECTIONCD: classGubun,
         pDEBUG: 'F',
       };
       const response = await fetchData('standard/empJob/common/reg/list', params);
