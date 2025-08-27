@@ -103,7 +103,7 @@ const MainHome = () => {
     <div className='mainContentWrap'>
       <div className='mainImgWrap'
         style={{
-          background: `#D9F7FF url(${mainImg}) left 64px bottom 0 / 218px auto no-repeat`,
+          background: `#D9F7FF url(${mainImg}) left 45px bottom 0 / 192px auto no-repeat`,
         }}
       >
         <div className='mainTxtWrap'>

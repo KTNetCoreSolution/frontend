@@ -285,26 +285,28 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN, 
           </button>
         </div>
 
-        <TreeWrapper className={styles.tableWrapper}>
-          {loading && <div className={styles.loading}>로딩 중...</div>}
-          {!loading && treeData.length === 0 && (
-            <div className={styles.loading}>데이터가 없습니다.</div>
-          )}
-          {!loading && treeData.length > 0 && (
-            <SimpleTreeView
-              slots={{
-                collapseIcon: FaChevronDown,
-                expandIcon: FaChevronRight,
-              }}
-              expandedItems={expanded}
-              onItemExpansionToggle={handleToggle}
-              multiSelect={isMulti}
-              disableSelection={false}
-            >
-              {renderTreeItems(treeData)}
-            </SimpleTreeView>
-          )}
-        </TreeWrapper>
+        <div className="body">
+          <TreeWrapper className='tableWrapper'>
+            {loading && <div className={styles.loading}>로딩 중...</div>}
+            {!loading && treeData.length === 0 && (
+              <div className={styles.loading}>데이터가 없습니다.</div>
+            )}
+            {!loading && treeData.length > 0 && (
+              <SimpleTreeView
+                slots={{
+                  collapseIcon: FaChevronDown,
+                  expandIcon: FaChevronRight,
+                }}
+                expandedItems={expanded}
+                onItemExpansionToggle={handleToggle}
+                multiSelect={isMulti}
+                disableSelection={false}
+              >
+                {renderTreeItems(treeData)}
+              </SimpleTreeView>
+            )}
+          </TreeWrapper>
+        </div>
 
         <div className='buttonContainer'>
           <button

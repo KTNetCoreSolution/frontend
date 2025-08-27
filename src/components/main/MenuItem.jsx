@@ -3,6 +3,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import useStore from '../../store/store';
 import { checkTokenValidity, hasPermission } from '../../utils/authUtils';
 import styles from './MainLayout.module.css';
+import arrowDown from '../../assets/images/icon_arrow_down_white.svg';
 
 const MenuItem = ({ item }) => {
   const [showChildren, setShowChildren] = useState(false);
@@ -48,7 +49,8 @@ const MenuItem = ({ item }) => {
             onClick={toggleChildren}
             data-path={item.URL}
           >
-            {item.MENUNM}
+            <span>{item.MENUNM}</span>
+            <img src={arrowDown} alt=" " className='menuIcon' />
           </a>
 
           {/* 하위 메뉴는 showChildren일 때만 렌더링 */}

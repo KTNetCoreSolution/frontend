@@ -99,15 +99,15 @@ const CommonPopup = ({
 
   return (
     <>
-      <div className={styles.overlay} onClick={onHide}></div>
+      <div className='overlay' onClick={onHide}></div>
       <div className={`${styles.modal} show d-block`} tabIndex="-1">
-        <div className={`${styles.modalDialog} modal-dialog-centered`}>
-          <div className={`${styles.modalContent} modal-content`}>
-            <div className={`${styles.modalHeader} modal-header`}>
-              <h5 className={`${styles.modalTitle} modal-title`}>{title}</h5>
-              <button type="button" className={`${styles.btnClose} btn-close`} onClick={onHide}></button>
+        <div className='modal-dialog modal-dialog-centered'>
+          <div className='modal-content'>
+            <div className='modal-header'>
+              <h5 className='modal-title'>{title}</h5>
+              <button type="button" className='btn-close' onClick={onHide}></button>
             </div>
-            <div className={`${styles.modalBody} modal-body`}>
+            <div className='modal-body'>
               {children}
               {showToast && (
                 <div className={`${styles.toast} alert alert-danger`} role="alert">
@@ -115,12 +115,12 @@ const CommonPopup = ({
                 </div>
               )}
             </div>
-            <div className={`${styles.modalFooter} modal-footer`}>
+            <div className='modal-footer'>
               {activeButtons.map((btn, index) => (
                 <button
                   key={index}
                   type="button"
-                  className={`${styles.margin1} ${btn.className}`}
+                  className='btn btnSecondary'
                   onClick={() => handleButtonClick(btn.action)}
                 >
                   {btn.label}

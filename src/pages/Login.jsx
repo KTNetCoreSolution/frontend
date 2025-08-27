@@ -107,7 +107,7 @@ const Login = () => {
         <div 
           className='loginimgWrap'
           style={{
-            background: `#EFFFFC url(${loginMainImg}) right 40px bottom 40px / 250px 155px no-repeat`,
+            background: `#EFFFFC url(${loginMainImg}) right 30px bottom 40px / 180px 112px no-repeat`,
           }}
         >
           <p
@@ -126,7 +126,6 @@ const Login = () => {
           <form onSubmit={handleLogin}>
             <div className='formGroup'>
               <div className="inputWrapper">
-                {/* <i className="bi bi-person"></i> */}
                 <img src={loginUserImg} alt="user 이미지" className="inputIcon" />
                 <input
                   id="userid"
@@ -141,7 +140,6 @@ const Login = () => {
             </div>
             <div className='formGroup'>
               <div className="inputWrapper">
-                {/* <i className="bi bi-lock"></i> */}
                 <img src={loginPwImg} alt="pw 이미지" className="inputIcon" />
                 <input
                   id="password"
