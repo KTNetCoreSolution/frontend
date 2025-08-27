@@ -246,8 +246,8 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
   const isInvalidTimeRange = (start, end) => {
     const startMin = timeToMinutes(start);
     const endMin = timeToMinutes(end);
-    const lunchStart = 12 * 60;
-    const lunchEnd = 13 * 60;
+    const lunchStart = timeToMinutes(data[0]?.BSTARTDT || '12:00');
+    const lunchEnd = timeToMinutes(data[0]?.BENDDT || '13:00');
     return startMin < lunchEnd && endMin > lunchStart;
   };
 
@@ -272,6 +272,11 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
     return (endMin - startMin) / 60;
   };
 
+  const handleClose = () => {
+    setClassPopupState({ show: false, editingIndex: -1 });
+    onHide(); // 모달을 닫기 위해 onHide 호출
+  };
+
   const handleSave = async (action, index = -1) => {
     let params;
     if (action === 'register') {
@@ -294,10 +299,11 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
         return;
       }
 
-      /*if (isInvalidTimeRange(formData.STARTTIME, formData.ENDTIME)) {
-        msgPopup('12:00 ~ 13:00 입력 불가 시간입니다.');
+      if (isInvalidTimeRange(formData.STARTTIME, formData.ENDTIME)) {
+        msgPopup(`${data[0]?.BSTARTDT || '12:00'} ~ ${data[0]?.BENDDT || '13:00'} 입력 불가 시간입니다.`);
         return;
-      }*/
+      }
+
       if (checkTimeOverlap(formData.STARTTIME, formData.ENDTIME)) {
         msgPopup('오류!\n이미 입력한 업무시간입니다.!!');
         return;
@@ -329,10 +335,11 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
         msgPopup('종료시간이 시작시간보다 큽니다.');
         return;
       }
-      /*if (isInvalidTimeRange(item.STARTTIME, item.ENDTIME)) {
-        msgPopup('입력 불가 시간입니다.');
+
+      if (isInvalidTimeRange(item.STARTTIME, item.ENDTIME)) {
+        msgPopup(`${data[0]?.BSTARTDT || '12:00'} ~ ${data[0]?.BENDDT || '13:00'} 입력 불가 시간입니다.`);
         return;
-      }*/
+      }
 
       params = {
         pGUBUN: 'U',
@@ -464,20 +471,27 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
       <Modal.Header closeButton>
         <Modal.Title>개별업무 등록</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className={styles.modalBody}>
         <div className={styles.noteSection}>
-          <span>* 익월 {data[0]?.CLOSEDT || '10'}일 지나면 전월자료 수정 불가 합니다.</span>
-          {isButtonVisible && (
-            <button className={`btn text-bg-success`} onClick={() => handleSave('register')}>
-              등록
+          <span>* 익월 {data[0]?.CLOSEDT || '10'}일 지나면 전월자료 수정 불가 합니다.<br/>
+          * {data[0]?.BSTARTDT || '12:00'} ~ {data[0]?.BENDDT || '13:00'} 은 입력이 불가한 시간입니다.
+          </span>
+          <div className={styles.noteButtons}>
+            {isButtonVisible && (
+              <button className={`btn text-bg-success`} onClick={() => handleSave('register')}>
+                등록
+              </button>
+            )}
+            <button className={`btn text-bg-secondary`} onClick={() => handleClose()}>
+                닫기
             </button>
-          )}
+          </div>
         </div>
         <table className={styles.formTable}>
           <tbody>
             <tr>
               <td className={styles.td1}>
-                대분류:<button onClick={() => setClassPopupState({ show: true, editingIndex: -1 })} className={`btn text-bg-secondary`}>
+                대분류:<button onClick={() => setClassPopupState({ show: true, editingIndex: -1 })} className={`${styles.btn} text-bg-secondary`}>
                   선택
                 </button>
               </td>
@@ -532,7 +546,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
                     className={styles.duplicateInput}
                   />
                 )}
-                <input type="checkbox" name="isDuplicate" checked={formData.isDuplicate} onChange={handleChange} />
+                <input type="checkbox" name="isDuplicate" checked={formData.isDuplicate} onChange={handleChange} className={`${styles.checkbox}`} />
                 <span className={styles.duplicateSpan}>중복건</span>
               </td>
             </tr>
@@ -544,8 +558,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
             </tr>
             <tr>
               <td>
-                작업일시<br />
-                (주간:<input type="checkbox" name="isWeekly" checked={formData.isWeekly} onChange={handleChange} /> )
+                작업일시(주간:<input type="checkbox" name="isWeekly" checked={formData.isWeekly} onChange={handleChange} className={styles.checkbox}/> )
               </td>
               <td>
                 <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.dateInput} />
@@ -567,7 +580,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
               </td>
               <td>근무형태:</td>
               <td>
-                <select name="WORKTYPE" value={formData.WORKTYPE} onChange={handleChange} className={styles.select}>
+                <select name="WORKTYPE" value={formData.WORKTYPE} onChange={handleChange} className={`${styles.select} ${styles.selectWorkType}`}>
                   <option value="">선택</option>
                   {workTypeOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -583,23 +596,26 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
                 <table className={styles.listTable}>
                   <thead>
                     <tr>
-                      <th style={{ width: '100px' }}>날짜</th>
-                      <th style={{ width: '188px' }}>시간</th>
-                      <th>소분류</th>
-                      <th style={{ width: '130px' }}>건(구간/본/개소)</th>
-                      <th style={{ width: '110px' }}>근무형태</th>
-                      <th style={{ width: '110px' }}>작업</th>
+                      <th className={styles.thNo}>No</th>
+                      <th className={styles.thDate}>날짜</th>
+                      <th className={styles.thTime}>시간</th>
+                      <th className={styles.thClassC}>소분류</th>
+                      <th className={styles.thQuantity}>건(구간/본/개소)</th>
+                      <th className={styles.thWorkType}>근무형태</th>
+                      <th className={styles.thAction}>작업</th>
+                      <th></th>
                     </tr>
                   </thead>
                   <tbody>
                     {registeredList.map((item, index) => (
                       <tr key={index}>
-                        <td>{item.WORKDATE}</td>
-                        <td>
+                        <td className={styles.thNo}>{index + 1}</td>
+                        <td className={styles.thDate}>{item.WORKDATE}</td>
+                        <td className={styles.thTime}>
                           <select
                             value={item.STARTTIME}
                             onChange={(e) => handleRowChange(index, 'STARTTIME', e.target.value)}
-                            className={styles.timeSelect}
+                            className={styles.listSelect}
                           >
                             {listTimeOptions.map((time) => (
                               <option key={time} value={time}>
@@ -611,7 +627,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
                           <select
                             value={item.ENDTIME}
                             onChange={(e) => handleRowChange(index, 'ENDTIME', e.target.value)}
-                            className={styles.timeSelect}
+                            className={styles.listSelect}
                           >
                             {getListEndTimeOptions(item.STARTTIME).map((time) => (
                               <option key={time} value={time}>
@@ -620,31 +636,31 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
                             ))}
                           </select>
                         </td>
-                        <td>
+                        <td className={styles.thClassC}>
                           {item.CLASSCNM}
                           {isButtonVisible && (
                             <button
                               onClick={() => setClassPopupState({ show: true, editingIndex: index })}
-                              className={`btn text-bg-secondary`}
+                              className={`${styles.btn} ${styles.listBtn}  text-bg-secondary`}
                             >
                               선택
                             </button>
                           )}
                         </td>
-                        <td>
+                        <td className={styles.thQuantity}>
                           <input
                             type="number"
                             value={item.QUANTITY}
                             onChange={(e) => handleRowChange(index, 'QUANTITY', e.target.value)}
                             min="0"
-                            className={styles.rowInput}
+                            className={`${styles.rowInput} ${styles.listInput}`}
                           />
                         </td>
-                        <td>
+                        <td className={styles.thWorkType}>
                           <select
                             value={item.WORKTYPE || ''}
                             onChange={(e) => handleRowChange(index, 'WORKTYPE', e.target.value)}
-                            className={styles.select}
+                            className={styles.listSelect}
                           >
                             <option value="">선택</option>
                             {workTypeOptions.map((option) => (
@@ -654,18 +670,19 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
                             ))}
                           </select>
                         </td>
-                        <td>
+                        <td className={styles.thAction}>
                           {isButtonVisible && (
                             <>
-                              <button onClick={() => handleSave('update', index)} className={`btn text-bg-primary ${styles.updateBtn}`}>
+                              <button onClick={() => handleSave('update', index)} className={`${styles.btn} ${styles.listBtn} text-bg-primary`}>
                                 수정
                               </button>
-                              <button onClick={() => handleSave('delete', index)} className={`btn text-bg-danger  ${styles.deleteBtn}`}>
+                              <button onClick={() => handleSave('delete', index)} className={`${styles.btn} ${styles.listBtn} text-bg-danger`}>
                                 삭제
                               </button>
                             </>
                           )}
                         </td>
+                        <td></td>
                       </tr>
                     ))}
                   </tbody>

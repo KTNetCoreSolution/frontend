@@ -1,7 +1,12 @@
 .customModal {
-  width: 1024px !important; /* 원하는 너비 설정 */
-  max-width: 90vw !important; /* 뷰포트 기준 최대 너비 제한 */
+  width: 1084px !important; /* 원하는 너비 설정 */
+  max-width: 95vw !important; /* Responsive max-width */
+  max-height: 95vh !important; /* Responsive max-width */
   margin: 0 auto;
+}
+
+.modalBody {
+  font-size: 14px;
 }
 
 /* 나머지 기존 CSS 유지 */
@@ -17,7 +22,7 @@
 }
 
 .td1, .td3 {
-  width: 124px;
+  width: 130px;
 }
 
 .td2 {
@@ -33,12 +38,16 @@
   font-size: 14px;
 }
 
+.selectWorkType {
+  width: 80px !important;
+}
+
 .duplicateSpan {
-  background-color: #d8d8d8;
+  color: #dc3545;
 }
 
 .duplicateInput {
-  width: 260px;
+  width: 100px;
   padding: 6px;
   border: 1px solid #ced4da;
   border-radius: 4px;
@@ -100,12 +109,71 @@
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
+  table-layout: fixed; /* 열 너비 고정 */
+  box-sizing: border-box;
+}
+
+.listTable thead {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.listTable tbody {
+  display: block;
+  max-height: 250px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.listTable tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
 }
 
 .listTable th, .listTable td {
   padding: 8px;
   border: 1px solid #ced4da;
   text-align: center;
+  box-sizing: border-box;
+  overflow-x: auto; /* 셀 내용이 넘치면 가로 스크롤 생성 */
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  font-size: 12px; /* 등록 리스트 텍스트 폰트 크기 */
+}
+
+.listSelect, .listBtn, .listInput {
+  font-size: 12px;
+}
+
+.listBtn {
+  padding: 4px 10px !important;
+  margin-right: 5px !important;
+}
+
+.listInput {
+  min-height: 14px;
+}
+
+.thNo { width: 40px; }
+.thDate { width: 100px; }
+.thTime { width: 188px; }
+.thClassC { width: 300px; } /* 소분류 */
+.thQuantity { width: 130px; } /* 건(구간/본/개소) */
+.thWorkType { width: 110px; } /* 근무형태 */
+.thAction { width: 130px; } /* 작업 */
+
+.listTableContainer {
+  width: 100%;
+  max-height: 250px;
+  display: block;
+}
+
+.listTable thead {
+  position: sticky;
+  top: 0;
+  background-color: #f8f9fa;
+  z-index: 1;
 }
 
 .deleteBtn {
@@ -123,7 +191,8 @@
 
 .btn {
   padding: 6px 12px;
-  margin-right: 10px;
+  margin-left: 1px;
+  margin-right: 1px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -150,4 +219,15 @@
   margin-bottom: 10px;
   font-size: 12px;
   color: #6c757d;
+}
+
+.noteButtons {
+  display: flex;
+  gap: 5px;
+}
+
+.checkbox {
+  vertical-align: middle;
+  margin-left: 5px;
+  margin-right: 2px;
 }

@@ -277,11 +277,16 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
     );
   };
 
+  const handleClose = () => {
+    setClassPopupState({ show: false, editingIndex: -1 });
+    onHide(); // 모달을 닫기 위해 onHide 호출
+  };
+
   const handleSave = async (action, index = -1) => {
     let params;
     if (action === 'register') {
-      // 회선번호+고객명 검증 (최대 300자)
-      const customerValidation = common.validateVarcharLength(formData.CUSTOMER, 300, "회선번호+고객명");
+      // 회선번호+고객명 검증 (최대 150자)
+      const customerValidation = common.validateVarcharLength(formData.CUSTOMER, 150, "회선번호+고객명");
       if (!customerValidation.valid) {
         errorMsgPopup(customerValidation.error);
         return;
@@ -476,7 +481,8 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       </Modal.Header>
       <Modal.Body className={styles.modalBody}>
         <div className={styles.noteSection}>
-          <span>* 익월 {closedt}일 지나면 전월자료 수정 불가 합니다.</span>
+          <span>* 익월 {closedt}일 지나면 전월자료 수정 불가 합니다.<br/>
+          * 등록은 이미 등록 된 자료 중 분류, 회선번호+고객명, 출동여부, 작업인원, 근무시간이 같으면 회선수만 수정됩니다.</span>
           <div className={styles.inputButtonWrapper}>
             <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.dateInput} />
             {isButtonVisible && (
@@ -484,6 +490,9 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                 등록
               </button>
             )}
+            <button className={`btn text-bg-secondary`} onClick={() => handleClose()}>
+                닫기
+            </button>
           </div>
         </div>
         <table className={styles.formTable}>
@@ -667,7 +676,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                               type="text"
                               value={item.CUSTOMER}
                               onChange={(e) => handleRowChange(index, "CUSTOMER", e.target.value)}
-                              className={styles.input}
+                              className={`${styles.input} ${styles.listInput}`}
                               style={{
                                 backgroundColor: item.CUSTOMER !== originalRegisteredList[index]?.ORIGINAL_CUSTOMER ? '#fff9e6' : '#fff',
                               }}
@@ -684,7 +693,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                               min="0"
                               value={item.PROCESSTIME}
                               onChange={(e) => handleRowChange(index, "PROCESSTIME", e.target.value)}
-                              className={styles.rowInput}
+                              className={`${styles.rowInput} ${styles.listInput}`}
                               style={{
                                 backgroundColor: item.PROCESSTIME !== originalRegisteredList[index]?.ORIGINAL_PROCESSTIME ? '#fff9e6' : '#fff',
                               }}
@@ -693,10 +702,10 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                           <td className={styles.thAction}>
                             {isButtonVisible && (
                               <>
-                                <button onClick={() => handleSave('update', index)} className={`${styles.btn} text-bg-primary`}>
+                                <button onClick={() => handleSave('update', index)} className={`${styles.btn} ${styles.listBtn} text-bg-primary`}>
                                   수정
                                 </button>
-                                <button onClick={() => handleSave('delete', index)} className={`${styles.btn} text-bg-danger`}>
+                                <button onClick={() => handleSave('delete', index)} className={`${styles.btn} ${styles.listBtn} text-bg-danger`}>
                                   삭제
                                 </button>
                               </>
