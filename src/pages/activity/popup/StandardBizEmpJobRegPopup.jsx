@@ -55,7 +55,7 @@ const getFieldOptions = (fieldId, dependentValue = "", classData) => {
 
 const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }) => {
   const { user } = useStore();
-  const today = new Date().toISOString().split("T")[0];
+  const today = common.getTodayDate();
   const [formData, setFormData] = useState({
     CLASSACD: "all",
     CLASSBCD: "all",
@@ -660,14 +660,6 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                           <td className={styles.thClassB}>{item.CLASSBNM}</td>
                           <td className={styles.thClassC}>
                             {item.CLASSCNM}
-                            {isButtonVisible && (
-                              <button
-                                onClick={() => setClassPopupState({ show: true, editingIndex: index })}
-                                className={`${styles.btn} text-bg-secondary`}
-                              >
-                                선택
-                              </button>
-                            )}
                           </td>
                           <td className={styles.thCustomer}>
                             <input

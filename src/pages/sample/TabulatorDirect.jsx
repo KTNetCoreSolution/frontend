@@ -14,6 +14,7 @@ import ExcelUploadPopup from '../../components/popup/ExcelUploadPopup';
 import styles from '../../components/table/TableSearch.module.css';
 import { fetchData } from '../../utils/dataUtils';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
+import common from '../../utils/common';
 
 /**
  * 필드 옵션 데이터를 반환
@@ -86,9 +87,8 @@ const TabulatorDirect = () => {
     selectedOrgRef.current = selectedOrg;
   }, [selectedOrg]);
 
-  const today = new Date();
-  const todayDate = today.toISOString().split('T')[0];
-  const todayMonth = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}`;
+  const todayDate = common.getTodayDate();
+  const todayMonth = common.getTodayMonth();
 
   // 검색 및 버튼 구성
   // TODO: searchConfig는 MainSearch 컴포넌트에서 동적으로 검색 폼과 버튼을 렌더링하기 위한 설정 객체입니다. 아래는 각 속성의 사용법과 동작에 대한 설명입니다:

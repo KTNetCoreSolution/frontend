@@ -54,7 +54,7 @@ const getFieldOptions = (fieldId, dependentValue = '', classData) => {
 
 const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
   const { user } = useStore();
-  const today = new Date().toISOString().split('T')[0];
+  const today = common.getTodayDate();
   const [formData, setFormData] = useState({
     CLASSACD: 'all',
     CLASSBCD: 'all',

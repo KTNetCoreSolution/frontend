@@ -22,9 +22,8 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
   };
   const defaultMaxLength = 255;
 
-  const today = new Date();
-  const todayDate = today.toISOString().split('T')[0];
-  const todayMonth = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}`;
+  const todayDate = common.getTodayDate();
+  const todayMonth = common.getTodayMonth();
 
   const getStyleValue = (value, defaultValue) => value === 'default' || !value ? defaultValue : value;
 

@@ -13,6 +13,7 @@ import StandardEmpJobRegPopup from './popup/StandardEmpJobRegPopup';
 import StandardBizEmpJobRegPopup from './popup/StandardBizEmpJobRegPopup';
 import styles from '../../components/table/TableSearch.module.css';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
+import common from '../../utils/common';
 
 const fn_CellNumber = { editor: 'number', editorParams: { min: 0 }, editable: true };
 
@@ -88,7 +89,7 @@ const filterTableFields = [
 const StandardEmpJobManage = () => {
   const { user } = useStore();
   const navigate = useNavigate();
-  const today = new Date().toISOString().split('T')[0];
+  const today = common.getTodayDate();
   const [showClassPopup, setShowClassPopup] = useState(false);
   const [showAddPopup, setShowAddPopup] = useState(false);
   const [_class1Options, setClass1Options] = useState([]);

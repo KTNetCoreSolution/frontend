@@ -66,4 +66,58 @@ export default {
     if (!msg) return "";
     return msg.replace(/\r?\n/g, "<br />");
   },
+
+  getTodayDate() {
+    const options = {
+      timeZone: 'Asia/Seoul', // 한국 표준시 타임존 지정
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    };
+
+    const formatter = new Intl.DateTimeFormat('ko-KR', options);
+    const parts = formatter.formatToParts(new Date());
+
+    const year = parts.find(p => p.type === 'year').value;
+    const month = parts.find(p => p.type === 'month').value;
+    const day = parts.find(p => p.type === 'day').value;
+
+    if (month.length === 1) {
+      month = '0' + month;
+    }
+
+    if (day.length === 1) {
+      day = '0' + day;
+    }
+
+    return `${year}-${month}-${day}`;
+  },
+
+  getTodayMonth() {
+    const options = {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric',
+      month: '2-digit' // 항상 2자리로 추출
+    };
+
+    const formatter = new Intl.DateTimeFormat('ko-KR', options);
+    const parts = formatter.formatToParts(new Date());
+
+    const yearPart = parts.find(p => p.type === 'year').value;
+    let monthPart = parts.find(p => p.type === 'month').value;
+
+    // 혹시라도 month가 1자리일 경우, 앞에 0 붙이기
+    if (monthPart.length === 1) {
+      monthPart = '0' + monthPart;
+    }
+
+    return `${yearPart}-${monthPart}`;
+  },
+
+  getDateTime() {
+    const nowUtc = new Date().getTime();
+    const offsetKST = 9 * 60 * 60 * 1000;
+    const nowKST = nowUtc + offsetKST;  // 밀리초 단위로 계산된 한국 시간 타임스탬프
+    return nowKST; // 숫자(밀리초 타임스탬프) 반환
+  },
 };

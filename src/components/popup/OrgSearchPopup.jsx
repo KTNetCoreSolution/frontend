@@ -9,6 +9,7 @@ import useStore from "../../store/store";
 import { fetchData } from "../../utils/dataUtils";
 import { errorMsgPopup } from "../../utils/errorMsgPopup";
 import { convertOrgInfoToHierarchy } from "../../utils/hierarchyJsonUtils";
+import common from '../../utils/common';
 
 const TreeWrapper = styled.div`
   flex: 1;
@@ -76,10 +77,11 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN, 
     setIsOpen(true);
     const loadData = async () => {
       setLoading(true);
+
       try {
         const params = {
           pGUBUN: pGUBUN || "EMPNO",
-          pMDATE: new Date().toISOString().slice(0, 7).replace("-", ""),
+          pMDATE: common.getTodayMonth(),
           pSEARCH: user?.empNo || "",
           pDEBUG: "F",
         };
