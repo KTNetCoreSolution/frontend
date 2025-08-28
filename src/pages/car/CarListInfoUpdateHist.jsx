@@ -5,12 +5,13 @@ import { handleDownloadExcel } from '../../utils/tableExcel.js';
 import useStore from '../../store/store.js';
 import MainSearch from '../../components/main/MainSearch.jsx';
 import TableSearch from '../../components/table/TableSearch.jsx';
+import CommonPopup from '../../components/popup/CommonPopup.jsx';
+import OrgSearchPopup from '../../components/popup/OrgSearchPopup.jsx';
 import styles from '../../components/table/TableSearch.module.css';
+import common from '../../utils/common';
 import { fetchData } from '../../utils/dataUtils.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
-import { msgPopup } from '../../utils/msgPopup.js';
 import { arEG, tr } from 'date-fns/locale';
-import { formatters } from 'date-fns';
 
 /**
  * 필드 옵션 데이터를 반환
@@ -64,14 +65,14 @@ const getFieldOptions = (fieldId, dependentValue = '') => {
 const CarListInfoUpdateHist = () => {
   const { user } = useStore();
   const [showPopup, setShowPopup] = useState(false);
+  const [popupTitle, setPopupTitle] = useState('');
   const [popupContent, setPopupContent] = useState(null);
   const [popupOnConfirm, setPopupOnConfirm] = useState(null);
   const [selectedOrg, setSelectedOrg] = useState(user?.orgCd || ''); // 조직 선택 팝업용 상태
   const [selectedOrgNm, setSelectedOrgNm] = useState(user?.orgNm || ''); // 조직 선택 팝업용 상태
   const [_selectedUsers] = useState([]);
   const selectedOrgRef = useRef(selectedOrg); // 최신 selectedOrg 값을 추적
-  const today = new Date();
-  const todayDate = today.toISOString().split('T')[0];
+  const todayDate = common.getTodayDate();
 
   // selectedOrg 변경 시 ref 업데이트
   useEffect(() => {
@@ -257,8 +258,7 @@ const CarListInfoUpdateHist = () => {
     } finally {
       setLoading(false);
     }
-  };
-  
+  };  
 
   // 동적 이벤트 처리
   /**
@@ -291,7 +291,7 @@ const CarListInfoUpdateHist = () => {
         return true;
       });
       setShowPopup(true);
-    } 
+    }
   };
 
   // Tabulator 테이블 초기화
@@ -465,6 +465,9 @@ const CarListInfoUpdateHist = () => {
           style={{ visibility: loading || tableStatus !== 'ready' ? 'hidden' : 'visible' }}
         />
       </div>
+      <CommonPopup show={showPopup} onHide={() => setShowPopup(false)} onConfirm={popupOnConfirm} title={popupTitle}>
+        {popupContent}
+      </CommonPopup>
     </div>
   );
 };

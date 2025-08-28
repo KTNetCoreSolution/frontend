@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useStore from '../../store/store';
-import commonUtils from '../../utils/common.js';
+import commonUtils from '../../utils/common';
 import fileUtils from '../../utils/fileUtils';
 import { fetchData, fetchFileUpload } from "../../utils/dataUtils";
 import { msgPopup } from '../../utils/msgPopup.js';
@@ -13,7 +13,7 @@ import styles from './UserCarLogRegPopup.Module.css'; // CSS 파일을 별도로
 
 const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
   const today = new Date();
-  const todayDate = today.toISOString().split('T')[0];
+  const todayDate = commonUtils.getTodayDate();
   const timeOption = (stdTime, gbn) => {
     const times = [];
     for (let hour = 0; hour < 24; hour++) {
@@ -535,7 +535,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
       const response = await fetchData('carlog/carLogReceiptInfo', params);
 
       if (!response.success) {
-        throw new Error(response.errMsg || '영수증 조회 중 오류가 발생했습니다.');
+        throw new Error(response.errMsg || '주차장 영수증 조회 중 오류가 발생했습니다.');
       } else {
         if (response.data.length > 0) {
           if (response.data[0].errCd && (response.errMsg !== '' || response.data[0].errCd !== '00')) {
@@ -559,14 +559,14 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
         } else {          
             setReceiptList([]);
             if(vSaveBtnDisplay === 'none' ) {
-              msgPopup('등록된 영수증이 없습니다.');
+              msgPopup('등록된 주차장 영수증이 없습니다.');
               handleUploadCancel();       
             }
         }
       }
     } catch (error) {
       console.error('Registration error:', error);
-      errorMsgPopup(error.message || '영수증 조회 중 오류가 발생했습니다.');
+      errorMsgPopup(error.message || '주차장 영수증 조회 중 오류가 발생했습니다.');
     }
   }
 
@@ -611,14 +611,14 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
   };
 
   const handleImgDelete = async (item) => {
-    if(confirm("영수증을 삭제 하시겠습니까?")) {
+    if(confirm("주차장 영수증을 삭제 하시겠습니까?")) {
       try {
         const params = {pLOGDATE: logInfo.LOGDATE, pLOGSTTIME: logInfo.LOGSTTIME, pCARID: logInfo.CARID, pSEQ: item.SEQ};
 
         const response = await fetchData('carlog/carLogReceiptDel', params);
 
         if (!response.success) {
-          throw new Error(response.errMsg || '영수증 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+          throw new Error(response.errMsg || '주차장 영수증 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
         } else {
           if (response.errMsg !== '' || response.data[0].errCd !== '00') {
             let errMsg = response.errMsg;
@@ -633,7 +633,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
         }
       } catch (error) {
         console.error('Registration error:', error);
-        errorMsgPopup(error.message || '영수증 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+        errorMsgPopup(error.message || '주차장 영수증 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
       } 
     }
   };  
@@ -802,13 +802,13 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             </div>
           </div>
           <div className="mb-2">
-            <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={(e) => carLogReceiptPopup()}>영수증첨부</button>
+            <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={(e) => carLogReceiptPopup()}>주차장 영수증첨부</button>
               <CommonPopup
                 show={showAddPopup}
                 onHide={handleUploadCancel}
-                title="영수증"
+                title="주차장 영수증"
                 requiresConfirm={true} // Enable confirmation for "템플릿추가"
-                confirmMessage="영수증을 추가하시겠습니까?" // Custom confirmation message                
+                confirmMessage="주차장 영수증을 추가하시겠습니까?" // Custom confirmation message                
                 buttons={vSaveBtnDisplay === 'block' ? 
                   [ { label: "닫기", className: `${styles.btn} ${styles.btnSecondary} btn btn-secondary`, action: handleUploadCancel },
                     {
@@ -819,7 +819,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
                   ] :
                   [ { label: "닫기", className: `${styles.btn} ${styles.btnSecondary} btn btn-secondary`, action: handleUploadCancel }]}
               >
-                <div className="row" style={{display: `${vSaveBtnDisplay}`}}>
+                <div className="row" style={{display: `${vSaveBtnDisplay}`, width:450 + 'px'}}>
                   <div className="mb-3">
                     <label className="form-label">이미지</label>
                     <input
@@ -834,10 +834,10 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
                     />
                   </div>
                 </div>
-                <div className="row" style={{display: receiptList.length > 0 ? 'block' : 'none'}} >
+                <div className="row" style={{display: receiptList.length > 0 ? 'block' : 'none', width:450 + 'px'}} >
                   <button className="btn btn-sm btn-outline-primary" style={{marginBottom:10 + 'px', width:100 + 'px', marginRight:12 + 'px', float:'right'}} onClick={handleDownloadAll}>전체 다운로드</button>
                 </div>
-                <div className="row" style={{display: receiptList.length > 0 ? 'block' : 'none'}} >
+                <div className="row" style={{display: receiptList.length > 0 ? 'block' : 'none', width:450 + 'px'}} >
                   <div style={{padding: 20 + 'px', maxHeight:500 + 'px', overflowX:'hidden', overflowY:'auto'}}>
                     {receiptList.map((item, index) => 
                     <div key={`imgDiv` + index} className="mb-3">

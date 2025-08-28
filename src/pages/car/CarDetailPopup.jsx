@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useStore from '../../store/store';
-import commonUtils from '../../utils/common.js';
+import commonUtils from '../../utils/common';
 import { fetchData } from '../../utils/dataUtils.js';
 import CommonPopup from '../../components/popup/CommonPopup';
 import OrgSearchPopup from '../../components/popup/OrgSearchPopup';
@@ -14,7 +14,7 @@ import styles from './CarInfoDetailPopup.module.css';
 
 const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   const { user } = useStore();
-  const today = new Date().toISOString().split('T')[0];
+  const today = commonUtils.getTodayDate();
   const [vStyle, setVStyle] = useState({vDISPLAY: 'show', vBTNDEL: 'show', vDISABLED: ''});  
   const [showOrgPopup, setShowOrgPopup] = useState(false);
   const [showMngUserPopup, setShowMngUserPopup] = useState(false);

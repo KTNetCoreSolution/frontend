@@ -10,6 +10,7 @@ import OrgSearchPopup from '../../components/popup/OrgSearchPopup.jsx';
 import UserSearchPopup from '../../components/popup/UserSearchPopup';
 import LogRegPopup from './UserCarLogRegPopup.jsx';
 import styles from '../../components/table/TableSearch.module.css';
+import common from '../../utils/common';
 import { fetchData } from '../../utils/dataUtils.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import { msgPopup } from '../../utils/msgPopup.js';
@@ -56,8 +57,7 @@ const UserCarLog = () => {
   const [selectedOrgNm, setSelectedOrgNm] = useState(user?.orgNm || ''); // 조직 선택 팝업용 상태
   const [_selectedUsers, setSelectedUsers] = useState([]);
   const selectedOrgRef = useRef(selectedOrg); // 최신 selectedOrg 값을 추적
-  const today = new Date();
-  const todayDate = today.toISOString().split('T')[0];
+  const todayDate = common.getTodayDate();  
 
   const fn_CellButton = (label, className, onClick) => ({
     formatter: (cell) => {
@@ -211,7 +211,6 @@ const UserCarLog = () => {
           setTimeout(() => {
             setData((prevData) =>
               prevData.map((row) => {
-                alert(row.ID);
                 if (row.ID === rowData.ID) {
                   const updatedRow = { ...row, [stateField]: checkbox.checked ? "Y" : "N" };
                   if (stateField === "isConfirm" && !checkbox.checked) {
