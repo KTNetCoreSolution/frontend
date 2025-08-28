@@ -17,6 +17,7 @@
     width: auto;
     height: auto;
     background-color: #fff;
+    border-radius: 1rem;
   }
   
   .modalDialog {

@@ -208,22 +208,24 @@ const UserSearchPopup = ({ onClose, onConfirm }) => {
       <div className='popupContainer'>
         <div className='header'>
           <h3>사용자 검색</h3>
-          <button className={styles.closeButton} onClick={handleClose}>
+          <button className='closeButton' onClick={handleClose}>
             ×
           </button>
         </div>
-        <div className={styles.searchSection}>
-          <MainSearch config={searchConfig} filters={filters} setFilters={setFilters} onEvent={handleDynamicEvent} />
+        <div className="body">
+          <div className={styles.searchSection}>
+            <MainSearch config={searchConfig} filters={filters} setFilters={setFilters} onEvent={handleDynamicEvent} />
+          </div>
+          <TableWrapper>
+            {tableStatus === "initializing" && <div className={styles.loading}>초기화 중...</div>}
+            {loading && <div className={styles.loading}>로딩 중...</div>}
+            <div
+              ref={tableRef}
+              className={styles.tableSection}
+              style={{ visibility: loading || tableStatus !== "ready" ? "hidden" : "visible" }}
+            />
+          </TableWrapper>
         </div>
-        <TableWrapper>
-          {tableStatus === "initializing" && <div className={styles.loading}>초기화 중...</div>}
-          {loading && <div className={styles.loading}>로딩 중...</div>}
-          <div
-            ref={tableRef}
-            className={styles.tableSection}
-            style={{ visibility: loading || tableStatus !== "ready" ? "hidden" : "visible" }}
-          />
-        </TableWrapper>
         <div className='buttonContainer'>
           <button className={`${styles.btn} ${styles.btnSecondary} btn btn-secondary`} onClick={handleClose}>
             닫기

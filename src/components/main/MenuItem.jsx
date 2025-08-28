@@ -45,7 +45,7 @@ const MenuItem = ({ item }) => {
         <>
           <a
             href="#"
-            className={`${styles.menuLink} ${styles.scrolly}`}
+            className="menuLink scrolly"
             onClick={toggleChildren}
             data-path={item.URL}
           >
@@ -68,7 +68,8 @@ const MenuItem = ({ item }) => {
         <NavLink
           to={item.URL}
           className={({ isActive }) =>
-            `${styles.navLink} ${styles.scrolly} ${isActive ? styles.navLinkActive : ''}`
+            // `${styles.navLink} ${styles.scrolly} ${isActive ? styles.navLinkActive : ''}`
+            `navLink scrolly ${isActive ? 'navLinkActive' : ''}`
           }
           data-path={item.URL}
           end={item.URL === '/main'}
@@ -89,7 +90,7 @@ const MenuItem = ({ item }) => {
           {item.MENUNM}
         </NavLink>
       ) : (
-        <span className={`${styles.menuLink} ${styles.scrolly}`}>
+        <span className="menuLink scrolly">
           {item.MENUNM}
         </span>
       )}
