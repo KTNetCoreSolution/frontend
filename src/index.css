@@ -1,6 +1,13 @@
 /* @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap'); */
 
+
+@font-face{font-family:kt; font-weight:100; font-style:normal; src:url(./assets/fonts/KTfontThin.eot); src:local("※"), url(./assets/fonts/KTfontThin.woff) format("woff"), url(./assets/fonts/KTfontThin.ttf) format("TrueType");}
+@font-face{font-family:kt; font-weight:200; font-style:normal; src:url(./assets/fonts/KTfontLight.eot); src:local("※"), url(./assets/fonts/KTfontLight.woff) format("woff"), url(./assets/fonts/KTfontLight.ttf) format("TrueType");}
+@font-face{font-family:kt; font-weight:400; font-style:normal; src:url(./assets/fonts/KTfontMedium.eot);src:local("※"), url(./assets/fonts/KTfontMedium.woff) format("woff"), url(./assets/fonts/KTfontMedium.ttf) format("TrueType");}
+@font-face{font-family:kt; font-weight:800; font-style:normal; src:url(./assets/fonts/KTfontBold.eot); src:local("※"), url(./assets/fonts/KTfontBold.woff) format("woff"), url(./assets/fonts/KTfontBold.ttf) format("TrueType");}
+
 /* KT Regular */
+/*
 @font-face {
   font-family: 'KT';
   src: url('./assets/fonts/KTL.woff2') format('woff2'),
@@ -9,8 +16,10 @@
   font-style: normal;
   font-display: swap;
 }
+  */
 
 /* KT Bold */
+/*
 @font-face {
   font-family: 'KT';
   src: url('./assets/fonts/KTB.woff2') format('woff2'),
@@ -19,6 +28,7 @@
   font-style: normal;
   font-display: swap;
 }
+  */
 
 * {
   margin: 0;
