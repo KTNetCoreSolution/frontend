@@ -229,6 +229,7 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
                       enabled={field.enabled}
                       {...getDateConstraints(field)}
                     />
+                     {/*
                     <button
                       className="btn btn-link p-0 ms-2"
                       onClick={() => handleResetDate(field)}
@@ -238,6 +239,7 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
                     >
                       <i className="bi bi-x-square fs-6"></i>
                     </button>
+                    */}
                   </div>
                 )}
                 {field.type === 'select' && (
