@@ -25,6 +25,7 @@ const StandardEmpStatisticPopup = ({ show, onHide, data }) => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [classPopupState, setClassPopupState] = useState({ show: false, editingIndex: -1 });
 
   // 테이블 초기화
   useEffect(() => {
@@ -73,7 +74,7 @@ const StandardEmpStatisticPopup = ({ show, onHide, data }) => {
           pagination: false,
           */
         });
-        
+
         if (!tableInstance.current) throw new Error('createTable returned undefined or null');
 
         // ✅ tableBuilt 이벤트가 발생해야만 ready
@@ -132,6 +133,7 @@ const StandardEmpStatisticPopup = ({ show, onHide, data }) => {
           pEMPNO: data[0].EMPNO,
           pORGCD: "",
           pDATE1: data[0].DDATE,
+          pCLASSCD: data[0].CLASSCD,
           pDEBUG: "F",
         };
 
@@ -210,6 +212,11 @@ const StandardEmpStatisticPopup = ({ show, onHide, data }) => {
     handleDownloadExcel(tableInstance.current, tableStatus, '개인별분야별월별통계.xlsx');
   };
 
+    const handleClose = () => {
+    setClassPopupState({ show: false, editingIndex: -1 });
+    onHide(); // 모달을 닫기 위해 onHide 호출
+  };
+
   return (
     <Modal show={show} onHide={onHide} centered dialogClassName={styles.customModal}>
       <Modal.Header closeButton>
@@ -235,6 +242,11 @@ const StandardEmpStatisticPopup = ({ show, onHide, data }) => {
         {tableStatus === 'initializing' && <div>초기화 중...</div>}
         {loading && <div>로딩 중...</div>}
         <div ref={tableRef} className={styles.tableSection} style={{ height: '300px', visibility: loading || tableStatus !== 'ready' ? 'hidden' : 'visible' }} />
+        <div className={styles.inputButtonWrapper}>
+          <button className={`btn text-bg-secondary`} onClick={() => handleClose()}>
+              닫기
+          </button>
+        </div>
       </Modal.Body>
     </Modal>
   );

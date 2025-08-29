@@ -124,14 +124,18 @@ const StandardTeamJobManage = () => {
         setSelectedEmpData({
           SECTIONCD: rowData.SECTIONCD,
           DDATE: rowData.DDATE,
+          CLASSCD: rowData.CLASSCCD,
           EMPNO: rowData.EMPNO || '',
         });
         setShowStatisticPopup(true);
       },
       cellStyle: { color: '#247db3' }
     },
+    { headerHozAlign: 'center', title: '대분류코드', field: 'CLASSACD', hozAlign: 'center', width: 100, visible:false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '대분류', field: 'CLASSANM', sorter: 'string', width: 180 },
+    { headerHozAlign: 'center', title: '중분류코드', field: 'CLASSBCD', hozAlign: 'center', width: 100, visible:false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '중분류', field: 'CLASSBNM', sorter: 'string', width: 180 },
+    { headerHozAlign: 'center', title: '소분류코드', field: 'CLASSCCD', hozAlign: 'center', width: 100, visible:false },
     { headerHozAlign: 'center', hozAlign: 'left', title: '소분류', field: 'CLASSCNM', sorter: 'string', width: 220 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', width: 130, ...fn_CellNumber },
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
@@ -179,6 +183,7 @@ const StandardTeamJobManage = () => {
         pEMPNO: user?.empNo || '',
         pORGCD: '',
         pDATE1: filters.rangeStartDate,
+        pCLASSCD: '',
         pDEBUG: 'F',
       };
 
