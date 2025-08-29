@@ -359,6 +359,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         pWORKGBCD: workGbCodes.join('^'),
         pWORKGBTM: workGbTms.join('^'),
         pSECTIONCD: classGubun,
+        pBIZINPUTKEY: '',
         pEMPNO: user?.empNo || '',
       };
     } else if (action === 'update') {
@@ -397,6 +398,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         pWORKGBCD: item.PROCESS,
         pWORKGBTM: item.PROCESSTIME,
         pSECTIONCD: classGubun,
+        pBIZINPUTKEY: '',
         pEMPNO: user?.empNo || '',
       };
     } else {
@@ -414,6 +416,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         pWORKGBCD: item.PROCESS,
         pWORKGBTM: item.PROCESSTIME,
         pSECTIONCD: classGubun,
+        pBIZINPUTKEY: '',
         pEMPNO: user?.empNo || '',
       };
     }

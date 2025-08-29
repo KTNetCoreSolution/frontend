@@ -12,12 +12,10 @@ import { msgPopup } from '../../utils/msgPopup';
 import styles from '../../components/table/TableSearch.module.css';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import common from '../../utils/common';
-import CommonPopup from '../../components/popup/CommonPopup';
-import StandardEmpStatisticPopup from './popup/StandardEmpStatisticPopup';
 
 const fn_CellNumber = { editor: 'number', editorParams: { min: 0 }, editable: true };
 
-// 삭제 버튼 생성 함수
+// 삭제 버튼 생성 함수 (ExcelUploadTemplateManage.jsx 참조)
 const fn_CellButton = (label, className, onClick) => ({
   formatter: (cell) => {
     const button = document.createElement("button");
@@ -48,7 +46,7 @@ const filterTableFields = [
   { id: 'filterText', type: 'text', label: '', placeholder: '찾을 내용을 입력하세요', width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
 ];
 
-const StandardTeamJobManage = () => {
+const StandardInputStatistic = () => {
   const { user } = useStore();
   const navigate = useNavigate();
   const today = common.getTodayDate();
@@ -66,10 +64,6 @@ const StandardTeamJobManage = () => {
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
   const isInitialRender = useRef(true);
-  const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [showStatisticPopup, setShowStatisticPopup] = useState(false); // 통계 팝업 상태
-  const [selectedEmpData, setSelectedEmpData] = useState(null); // 선택된 팀원 데이터
 
   // 초기 searchConfig 설정
   const searchConfig = {
@@ -119,15 +113,7 @@ const StandardTeamJobManage = () => {
       sorter: 'string', 
       width: 100, 
       frozen: true,
-      cellClick: (e, cell) => {
-        const rowData = cell.getRow().getData();
-        setSelectedEmpData({
-          SECTIONCD: rowData.SECTIONCD,
-          DDATE: rowData.DDATE,
-          EMPNO: rowData.EMPNO || '',
-        });
-        setShowStatisticPopup(true);
-      },
+      cellClick: (e, cell) => { msgPopup(cell.getValue() + ' 팝업 준비중'); },
       cellStyle: { color: '#247db3' }
     },
     { headerHozAlign: 'center', hozAlign: 'center', title: '대분류', field: 'CLASSANM', sorter: 'string', width: 180 },
@@ -137,10 +123,6 @@ const StandardTeamJobManage = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKDT', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '분야', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '시작시간', field: 'STARTTM', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: 'BIZ입력키', field: 'BIZINPUTKEY', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '사원번호', field: 'EMPNO', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '업무량(시간)', field: 'WORKH', sorter: 'number', width: 120, ...fn_CellNumber },
     { 
       headerHozAlign: 'center', 
@@ -152,8 +134,7 @@ const StandardTeamJobManage = () => {
         const rowData = cell.getRow().getData();
         if (rowData.DELYN === 'Y') {
           return fn_CellButton('삭제', `btn-danger ${styles.deleteButton}`, (rowData) => {
-            setSelectedRow(rowData);
-            setShowDeletePopup(true);
+            msgPopup(`${rowData.EMPNM} 삭제 예정입니다.`);
           }).formatter(cell);
         }
         return null;
@@ -200,7 +181,7 @@ const StandardTeamJobManage = () => {
 
   // user 로딩 대기 및 리디렉션 처리
   useEffect(() => {
-    if (user === null) return;
+    if (user === null) return; // user가 로드되기 전에는 아무 작업도 하지 않음
     if (!user) navigate('/');
   }, [user, navigate]);
 
@@ -280,67 +261,6 @@ const StandardTeamJobManage = () => {
     }
   };
 
-  // 삭제 확인 핸들러
-  const handleDeleteConfirm = async () => {
-    if (!selectedRow) return;
-    setShowDeletePopup(false);
-    setLoading(true);
-    try {
-      let apiPath, params;
-      if (selectedRow.SECTIONCD === 'LINE' || selectedRow.SECTIONCD === 'DESIGN') {
-        apiPath = 'standard/empJob/common/reg/save';
-        params = {
-          pGUBUN: 'D',
-          pDATE1: selectedRow.DDATE,
-          pDATE2: '',
-          pORGIN_STARTTM: selectedRow.STARTTM,
-          pSTARTTM: selectedRow.STARTTM,
-          pENDTM: '',
-          pCLASSCD: '',
-          pWORKCD: '',
-          pWORKCNT: '',
-          pSECTIONCD: selectedRow.SECTIONCD,
-          pEMPNO: user?.empNo || '',
-        };
-      } else if (selectedRow.SECTIONCD === 'BIZ') {
-        apiPath = 'standard/empJob/biz/reg/save';
-        params = {
-          pGUBUN: 'DD',
-          pDATE1: selectedRow.DDATE,
-          pDATE2: '',
-          pCLASSCD: '',
-          pBIZTXT: '',
-          pBIZRUN: '',
-          pBIZMAN: '',
-          pWORKCD: '',
-          pWORKCNT: '',
-          pWORKGBCD: selectedRow.BIZWORKGB || '',
-          pWORKGBTM: '',
-          pSECTIONCD: selectedRow.SECTIONCD,
-          pBIZINPUTKEY: selectedRow.BIZINPUTKEY,
-          pEMPNO: user?.empNo || '',
-        };
-      } else {
-        errorMsgPopup('지원되지 않는 SECTIONCD입니다.');
-        return;
-      }
-
-      const response = await fetchData(apiPath, params);
-      if (!response.success) {
-        errorMsgPopup(response.message || '삭제 중 오류가 발생했습니다.');
-        return;
-      }
-      msgPopup('삭제되었습니다.');
-      loadData();
-    } catch (err) {
-      console.error('삭제 실패:', err);
-      errorMsgPopup('삭제 중 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-      setSelectedRow(null);
-    }
-  };
-
   // user가 로드되기 전에는 로딩 상태 표시
   if (user === null) {
     return <div>사용자 정보 로드 중...</div>;
@@ -359,7 +279,7 @@ const StandardTeamJobManage = () => {
         filters={tableFilters}
         setFilters={setTableFilters}
         rowCount={rowCount}
-        onDownloadExcel={() => handleDownloadExcel(tableInstance.current, tableStatus, '팀별업무관리.xlsx')}
+        onDownloadExcel={() => handleDownloadExcel(tableInstance.current, tableStatus, '입력세부현황.xlsx')}
         buttonStyles={styles}
       />
       <div className={styles.tableWrapper}>
@@ -367,24 +287,8 @@ const StandardTeamJobManage = () => {
         {loading && <div>로딩 중...</div>}
         <div ref={tableRef} className={styles.tableSection} style={{ visibility: loading || tableStatus !== 'ready' ? 'hidden' : 'visible' }} />
       </div>
-      <CommonPopup
-        show={showDeletePopup}
-        onHide={() => { setShowDeletePopup(false); setSelectedRow(null); }}
-        onConfirm={handleDeleteConfirm}
-        title="삭제 확인"
-      >
-        <p>{selectedRow?.CLASSCNM ? `${selectedRow.CLASSCNM} 삭제하시겠습니까?` : '삭제하시겠습니까?'}</p>
-      </CommonPopup>
-      <StandardEmpStatisticPopup
-        show={showStatisticPopup}
-        onHide={() => setShowStatisticPopup(false)}
-        onSelect={(selected) => {
-          setShowStatisticPopup(false);   // ✅ 여기서 팝업 닫기
-        }}
-        data={selectedEmpData ? [selectedEmpData] : []}
-      />
     </div>
   );
 };
 
-export default StandardTeamJobManage;
+export default StandardInputStatistic;
