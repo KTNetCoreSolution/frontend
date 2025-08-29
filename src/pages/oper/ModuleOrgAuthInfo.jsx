@@ -57,7 +57,7 @@ const ModuleOrgAuthInfo = () => {
       {
         type: "search",
         fields: [
-          { id: 'msgLabel', type: 'label', row: 2, label: '업무조직은 디폴트가 인사테이블의 조직이고, 여기서 작업한 저장 정보가 업무조직을 최우선 시 합니다.', labelVisible: true, width: '600px', height: '30px', backgroundColor: '#ffffff', color: '#d62424', enabled: true },
+          { id: 'msgLabel', type: 'label', row: 2, label: '업무조직은 디폴트가 인사테이블의 조직이고, 여기서 작업한 저장 정보가 업무조직을 최우선 시 합니다.', labelVisible: true, width: '800px', height: '30px', backgroundColor: '#ffffff', color: '#d62424', enabled: true },
           {
             id: "orgText",
             type: "text",

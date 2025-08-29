@@ -368,7 +368,13 @@ const StandardEmpJobManage = () => {
                     ? 'BIZ'
                     : 'LINE',
         pEMPNO: user?.empNo || '',
-        pCLASSCD: filters.CLASSCCD === 'all' ? '' : filters.CLASSCCD,
+        pCLASSCD: (filters.CLASSCCD === '' || filters.CLASSCCD === 'all') 
+            ? ((filters.CLASSBCD === '' || filters.CLASSBCD === 'all') 
+                ? ((filters.CLASSACD === '' || filters.CLASSACD === 'all') 
+                    ? '' 
+                    : filters.CLASSACD) 
+                : filters.CLASSBCD) 
+            : filters.CLASSCCD,
         pDATEGUBUN: filters.dayGubun,
         pDATE1: (filters.dayGubun === 'D') ? filters.rangeStartDate : (filters.dayGubun === 'M' ? filters.monthDate : ''),
         pDATE2: (filters.dayGubun === 'D') ? filters.rangeEndDate : (filters.dayGubun === 'M' ? filters.monthDate : ''),
