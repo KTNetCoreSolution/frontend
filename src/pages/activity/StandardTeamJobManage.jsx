@@ -87,7 +87,7 @@ const StandardTeamJobManage = () => {
                 : user?.standardSectionCd === 'BIZ'
                   ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true }]
                   : []),
-          { id: 'rangeStartDate', type: 'day', row: 1, width: '100px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: true, defaultValue: today },
+          { id: 'rangeStartDate', type: 'day', row: 1, width: '90px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: true, defaultValue: today },
         ],
       },
       {

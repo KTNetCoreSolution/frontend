@@ -132,7 +132,7 @@ const TabulatorDirect = () => {
           { id: 'orgPopupBtn', type: 'popupIcon', row: 2, label: '조직 선택', labelVisible: false, eventType: 'showOrgPopup', width: '30px', height: '30px', backgroundColor: '#f0f0f0', color: '#000000', enabled: true },
           { id: 'userText', type: 'text', row: 2, label: '사용자예제', labelVisible: true, placeholder: '사용자 선택', width: '150px', height: '30px', backgroundColor: '#f0f0f0', color: '#000000', enabled: false },
           { id: 'userPopupBtn', type: 'popupIcon', row: 2, label: '사용자 선택', labelVisible: false, eventType: 'showUserPopup', width: '30px', height: '30px', backgroundColor: '#f0f0f0', color: '#000000', enabled: true },
-          { id: 'testSearchBtn', type: 'button', row: 2, label: '팝업', labelVisible: false, eventType: 'testSearch', width: '80px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
+          { id: 'testSearchBtn', type: 'button', row: 2, label: '팝업', labelVisible: false, eventType: 'testSearch', width: 'default', height: 'default', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
           { id: 'status1', type: 'select', row: 3, label: '드롭리스트예제', labelVisible: true, options: getFieldOptions('org1'), width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
           { id: 'status2', type: 'select', row: 3, label: '드롭리스트예제', labelVisible: false, options: status2Options, width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
           { id: 'status3', type: 'select', row: 3, label: '드롭리스트예제', labelVisible: false, options: status3Options, width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },

@@ -107,14 +107,21 @@ const StandardIntoStatistic = () => {
 
   // 공통 cellClick 핸들러
   const handleDayClick = (cell, day) => {
+    const cellValue = cell.getValue();
+
+    if (!cellValue || parseFloat(cellValue) === 0) return;
+
     const rowData = cell.getRow().getData();
     const sectionCd = hasPermission(user?.auth, 'oper') ? filters.classGubun : user?.standardSectionCd || 'LINE';
     const classCd = rowData.CLASSCCD || rowData.CLASSBCD || rowData.CLASSACD || '';
+    const orgCd = rowData.ORGCD;
+    const empNo = rowData.EMPNO;
     setSelectedData({
       SECTIONCD: sectionCd,
-      ORGCD: filters.ORGCD || '',
-      DDATE: `${rowData.MDATE}-${day.padStart(2, '0')}`,
+      ORGCD: orgCd,
+      DDATE: `${rowData.MDATE}${day.padStart(2, '0')}`,
       CLASSCD: classCd,
+      EMPNO: empNo,
     });
     setShowStatisticPopup(true);
   };
@@ -207,7 +214,7 @@ const StandardIntoStatistic = () => {
                 : user?.standardSectionCd === 'BIZ'
                   ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true }]
                   : []),
-          { id: 'monthDate', type: 'month', row: 1, width: '110px', label: '월', labelVisible: true, placeholder: '월 선택', enabled: true, defaultValue: today.substring(0, 7) },
+          { id: 'monthDate', type: 'month', row: 1, width: '74px', label: '월', labelVisible: true, placeholders: '월 선택', enabled: true, defaultValue: today.substring(0, 7) },
           { id: 'orgText', type: 'text', row: 1, label: '조직', labelVisible: true, placeholder: '조직 선택', enabled: false },
           { id: 'orgPopupBtn', type: 'popupIcon', row: 1, label: '조직 선택', labelVisible: false, eventType: 'showOrgPopup', enabled: true },
           { id: 'selectBtn', type: 'button', label: '선택', labelVisible: false, eventType: 'showClassPopup', enabled: true },
@@ -258,12 +265,14 @@ const StandardIntoStatistic = () => {
           errorMsgPopup(response.message || '분류 목록을 가져오는 중 오류가 발생했습니다.');
           return;
         }
-        const fetchedClassData = Array.isArray(response.data) ? response.data : [];
+        const fetchedClassData = Array.isArray(response.data) ?response.data : [];
         setClassData(fetchedClassData);
       } catch (err) {
         console.error('분류 목록 로드 실패:', err);
         errorMsgPopup('분류 목록을 가져오는 중 오류가 발생했습니다.');
-      }
+     
+
+ }
     };
     fetchClassData();
   }, [filters.classGubun, user]);
@@ -296,316 +305,26 @@ const StandardIntoStatistic = () => {
     { headerHozAlign: 'center', hozAlign: 'left', title: '소분류', field: 'CLASSCNM', sorter: 'string', width: 190, frozen: true },
     { headerHozAlign: 'center', hozAlign: 'center', title: '월누계', field: 'MONTH_TOTAL', sorter: 'number', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '월', field: 'MDATE', sorter: 'number', width: 100, visible: false },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '01일',
-      field: 'DAY_01',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '01'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '02일',
-      field: 'DAY_02',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '02'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '03일',
-      field: 'DAY_03',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '03'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '04일',
-      field: 'DAY_04',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '04'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '05일',
-      field: 'DAY_05',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '05'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '06일',
-      field: 'DAY_06',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '06'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '07일',
-      field: 'DAY_07',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '07'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '08일',
-      field: 'DAY_08',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '08'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '09일',
-      field: 'DAY_09',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '09'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '10일',
-      field: 'DAY_10',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '10'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '11일',
-      field: 'DAY_11',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '11'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '12일',
-      field: 'DAY_12',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '12'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '13일',
-      field: 'DAY_13',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '13'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '14일',
-      field: 'DAY_14',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '14'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '15일',
-      field: 'DAY_15',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '15'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '16일',
-      field: 'DAY_16',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '16'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '17일',
-      field: 'DAY_17',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '17'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '18일',
-      field: 'DAY_18',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '18'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '19일',
-      field: 'DAY_19',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '19'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '20일',
-      field: 'DAY_20',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '20'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '21일',
-      field: 'DAY_21',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '21'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '22일',
-      field: 'DAY_22',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '22'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '23일',
-      field: 'DAY_23',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '23'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '24일',
-      field: 'DAY_24',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '24'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '25일',
-      field: 'DAY_25',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '25'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '26일',
-      field: 'DAY_26',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '26'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '27일',
-      field: 'DAY_27',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '27'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '28일',
-      field: 'DAY_28',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '28'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '29일',
-      field: 'DAY_29',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '29'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '30일',
-      field: 'DAY_30',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '30'),
-      cellStyle: { color: '#247db3' },
-    },
-    {
-      headerHozAlign: 'center',
-      hozAlign: 'center',
-      title: '31일',
-      field: 'DAY_31',
-      sorter: 'number',
-      width: 80,
-      cellClick: (e, cell) => handleDayClick(cell, '31'),
-      cellStyle: { color: '#247db3' },
-    },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조직코드', field: 'ORGCD', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '사원번호', field: 'EMPNO', sorter: 'string', width: 100, visible: false },
+    ...Array.from({ length: 31 }, (_, i) => {
+      const day = String(i + 1).padStart(2, '0');
+      return {
+        headerHozAlign: 'center',
+        hozAlign: 'center',
+        title: `${day}일`,
+        field: `DAY_${day}`,
+        sorter: 'number',
+        width: 80,
+        cellClick: (e, cell) => handleDayClick(cell, day),
+        formatter: (cell) => {
+          const value = cell.getValue();
+          if (!value || parseFloat(value) === 0) return '';
+          return parseFloat(value).toFixed(2);
+        },
+        cellStyle: { color: '#247db3' },
+      };
+    }),
   ];
 
   const loadData = async () => {

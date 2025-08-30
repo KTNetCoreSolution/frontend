@@ -142,9 +142,9 @@ const StandardEmpJobManage = () => {
           { id: 'CLASSCCD', type: 'select', row: 1, label: '소분류', labelVisible: true, options: [], enabled: true }, // 소분류 드롭다운
           { id: 'dayGubunLbl', type: 'label', row: 2, label: '작업', labelVisible: false, enabled: true }, // 작업 라벨
           { id: 'dayGubun', type: 'select', row: 2, label: '', labelVisible: false, options: [{ value: 'M', label: '월' }, { value: 'D', label: '일' }], defaultValue: 'M', enabled: true }, // 월/일 선택 드롭다운
-          { id: 'monthDate', type: 'month', row: 2, width:'110px', label: '', labelVisible: true, placeholder: '월 선택', enabled: false, defaultValue: today }, // 월 선택 입력 (dayGubun: 'M'일 때 표시)
-          { id: 'rangeStartDate', type: 'startday', row: 2, width:'134px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: false, defaultValue: today }, // 시작일 입력 (dayGubun: 'D'일 때 표시)
-          { id: 'rangeEndDate', type: 'endday', row: 2, width:'134px', label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', enabled: false, defaultValue: today }, // 종료일 입력 (dayGubun: 'D'일 때 표시)
+          { id: 'monthDate', type: 'month', row: 2, width:'74px', label: '', labelVisible: true, placeholder: '월 선택', enabled: false, defaultValue: today }, // 월 선택 입력 (dayGubun: 'M'일 때 표시)
+          { id: 'rangeStartDate', type: 'startday', row: 2, width:'90px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: false, defaultValue: today }, // 시작일 입력 (dayGubun: 'D'일 때 표시)
+          { id: 'rangeEndDate', type: 'endday', row: 2, width:'90px', label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', enabled: false, defaultValue: today }, // 종료일 입력 (dayGubun: 'D'일 때 표시)
         ],
       },
       {

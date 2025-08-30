@@ -306,14 +306,16 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
                     id={field.id}
                     onClick={() => onEvent(field.eventType, { id: field.id })}
                     style={{
-                      width: getStyleValue(field.width, '80px'),
-                      height: getStyleValue(field.height, '30px'),
+                      width: getStyleValue(field.width, defaultStyles.width),
+                      height: getStyleValue(field.height, defaultStyles.height),
                       backgroundColor: getStyleValue(field.backgroundColor, '#00c4b4'),
                       color: getStyleValue(field.color, '#ffffff'),
+                      fontSize: '14px',
+                      padding: '4px 8px',
                       boxSizing: 'border-box',
                       margin: 0,
                       border: 'none',
-                      borderRadius: '4px',
+                      borderRadius: '3px',
                       cursor: field.enabled ? 'pointer' : 'not-allowed',
                     }}
                     disabled={field.enabled === false}
@@ -327,9 +329,9 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
                       width: getStyleValue(field.width, defaultStyles.width),
                       height: getStyleValue(field.height, defaultStyles.height),
                       color: getStyleValue(field.color, defaultStyles.color),
-                      display: 'inline-block',
                       lineHeight: getStyleValue(field.height, defaultStyles.height),
                       boxSizing: 'border-box',
+                      fontSize: '14px',
                       margin: 0,
                     }}
                   >

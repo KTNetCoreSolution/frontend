@@ -26,26 +26,25 @@ const StandardOrgDayStatisticPopup = ({ show, onHide, data }) => {
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
-  // StandardEmpJobManage의 columns를 동일하게 가져옴 (DAY_01~31 값 있는 것만 동적 필터링)
   const columns = [
     { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
     { headerHozAlign: 'center', hozAlign: 'center', title: '기준일자', field: 'DDATE', sorter: 'string', width: 100, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '팀원', field: 'EMPNM', sorter: 'string', width: 100, frozen: true },
     { headerHozAlign: 'center', title: '대분류코드', field: 'CLASSACD', hozAlign: 'center', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '대분류', field: 'CLASSANM', sorter: 'string', width: 180 },
     { headerHozAlign: 'center', title: '중분류코드', field: 'CLASSBCD', hozAlign: 'center', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '중분류', field: 'CLASSBNM', sorter: 'string', width: 180 },
     { headerHozAlign: 'center', title: '소분류코드', field: 'CLASSCCD', hozAlign: 'center', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'left', title: '소분류', field: 'CLASSCNM', sorter: 'string', width: 220 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', width: 130 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '이름', field: 'EMPNM', sorter: 'string', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKDT', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '근무', field: 'WORKNM', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKDT', sorter: 'string', width: 240 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '분야', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '시작시간', field: 'STARTTM', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: 'BIZ입력키', field: 'BIZINPUTKEY', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '사원번호', field: 'EMPNO', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '업무량(시간)', field: 'WORKH', sorter: 'number', width: 120 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간(시간)', field: 'WORKH', sorter: 'number', width: 120 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', width: 130 },
   ];
 
   // 테이블 초기화
@@ -88,7 +87,6 @@ const StandardOrgDayStatisticPopup = ({ show, onHide, data }) => {
     };
   }, [show]);
 
-  // 데이터 로딩 (DAY_01~31 중 값 있는 날짜만 필터링)
   useEffect(() => {
     if (!show) return;
     let isMounted = true;
@@ -114,16 +112,16 @@ const StandardOrgDayStatisticPopup = ({ show, onHide, data }) => {
 
       try {
         const params = {
-          pGUBUN: "DETAIL",
+          pGUBUN: 'DETAIL',
           pSECTIONCD: data[0].SECTIONCD,
-          pEMPNO: "",
+          pEMPNO: data[0].EMPNO,
           pORGCD: data[0].ORGCD,
           pDATE1: data[0].DDATE,
           pCLASSCD: data[0].CLASSCD,
-          pDEBUG: "F",
+          pDEBUG: 'F',
         };
 
-        const response = await fetchData("standard/teamJob/list", params); // API 경로 StandardIntoStatistic 참조
+        const response = await fetchData("standard/intoList/list", params);
 
         if (!response.success && isMounted) {
           errorMsgPopup(response.message || "데이터를 가져오는 중 오류가 발생했습니다.");
@@ -131,16 +129,7 @@ const StandardOrgDayStatisticPopup = ({ show, onHide, data }) => {
           return;
         }
 
-        let responseData = Array.isArray(response.data) ? response.data : [];
-        
-        // DAY_01 ~ DAY_31 중 값이 있는 날짜만 필터링 (동적 컬럼 또는 데이터 필터)
-        responseData = responseData.filter(row => {
-          for (let i = 1; i <= 31; i++) {
-            const dayField = `DAY_${i.toString().padStart(2, '0')}`;
-            if (row[dayField] && row[dayField] > 0) return true;
-          }
-          return false;
-        });
+        const responseData = Array.isArray(response.data) ? response.data : [];
 
         if (isMounted) setTableData(responseData);
       } catch (err) {
@@ -202,7 +191,7 @@ const StandardOrgDayStatisticPopup = ({ show, onHide, data }) => {
   }, [filters, tableStatus, loading]);
 
   const onDownloadExcel = () => {
-    handleDownloadExcel(tableInstance.current, tableStatus, '조직별일별통계.xlsx');
+    handleDownloadExcel(tableInstance.current, tableStatus, '일별업무리스트.xlsx');
   };
 
   const handleClose = () => {
@@ -212,7 +201,7 @@ const StandardOrgDayStatisticPopup = ({ show, onHide, data }) => {
   return (
     <Modal show={show} onHide={onHide} centered dialogClassName={styles.customModal}>
       <Modal.Header closeButton>
-        <Modal.Title>조직별 일별 통계</Modal.Title>
+        <Modal.Title>일별 업무 리스트</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <TableSearch
