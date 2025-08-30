@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom";
+// import ReactDOM from "react-dom";
 import styles from "./CommonPopup.module.css";
 
 const CommonPopup = ({
@@ -98,7 +98,8 @@ const CommonPopup = ({
 
   const activeButtons = buttons.length > 0 ? buttons.slice(0, 5) : defaultButtons;
 
-  return ReactDOM.createPortal(
+  // return ReactDOM.createPortal(
+  return (  
     <>
 
       <div className={styles.overlay} onClick={onHide}></div>
@@ -143,8 +144,9 @@ const CommonPopup = ({
       >
         <p>{confirmMessage || "이 작업을 진행하시겠습니까?"}</p>
       </CommonPopup>
-    </>,
-    document.body
+    </>
+    // ,
+    // document.body
   );
 };
 

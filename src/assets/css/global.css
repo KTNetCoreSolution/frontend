@@ -117,6 +117,9 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 
 /* Modals */
+.modal-body {
+  overflow: visible !important;
+}
 .modal-body, .modal-title, .modal-footer {
   /* font-size: var(--bs-body-font-size); */
 }
@@ -984,6 +987,9 @@ button.boardBtn01 .arrow-icon {
   border-radius: 4px;
   border: 1px solid #d4d4d6;
   min-height: 30px;
+}
+.formGroup select {
+  line-height: 1;
 }
 .form-label {
   font-size: 0.875rem;
