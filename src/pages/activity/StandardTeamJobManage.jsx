@@ -68,8 +68,8 @@ const StandardTeamJobManage = () => {
   const isInitialRender = useRef(true);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [showStatisticPopup, setShowStatisticPopup] = useState(false); // 통계 팝업 상태
-  const [selectedEmpData, setSelectedEmpData] = useState(null); // 선택된 팀원 데이터
+  const [showStatisticPopup, setShowStatisticPopup] = useState(false);
+  const [selectedEmpData, setSelectedEmpData] = useState(null);
 
   // 초기 searchConfig 설정
   const searchConfig = {
@@ -79,7 +79,7 @@ const StandardTeamJobManage = () => {
         fields: [
           { id: 'classGubunLbl', type: 'label', row: 1, label: '분야', labelVisible: false, enabled: true },
           ...(hasPermission(user?.auth, 'oper')
-            ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true }]
+            ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true, eventType: 'selectChange' }]
             : user?.standardSectionCd === 'LINE'
               ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true }]
               : user?.standardSectionCd === 'DESIGN'
@@ -99,26 +99,27 @@ const StandardTeamJobManage = () => {
     ],
   };
 
-  // filters 초기화
-  useEffect(() => {
-    setFilters((prev) => ({
-      ...prev,
-      rangeStartDate: prev.rangeStartDate || today,
-    }));
-    setTableFilters(initialFilters(filterTableFields));
-  }, [today]);
-
+  // 모든 컬럼 정의 (BIZ 및 LINE, DESIGN 포함)
   const columns = [
     { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
     { headerHozAlign: 'center', hozAlign: 'center', title: '기준일자', field: 'DDATE', sorter: 'string', width: 100, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '구분', field: 'SECTIONCD', sorter: 'string', width: 100, frozen: true,
+      formatter: function(cell) {
+        const value = cell.getValue();
+        switch (value) {
+          case 'BIZ':
+            return 'BIZ';
+          case 'DESIGN':
+            return '설계';
+          case 'LINE':
+            return '선로';
+          default:
+            return value;  // 혹은 빈 문자열, '알 수 없음' 등
+        }
+      }
+    },
     { 
-      headerHozAlign: 'center', 
-      hozAlign: 'center', 
-      title: '팀원', 
-      field: 'EMPNM', 
-      sorter: 'string', 
-      width: 100, 
-      frozen: true,
+      headerHozAlign: 'center', hozAlign: 'center', title: '팀원', field: 'EMPNM', sorter: 'string', width: 100, frozen: true,
       cellClick: (e, cell) => {
         const rowData = cell.getRow().getData();
         setSelectedEmpData({
@@ -131,21 +132,28 @@ const StandardTeamJobManage = () => {
       },
       cellStyle: { color: '#247db3' }
     },
-    { headerHozAlign: 'center', title: '대분류코드', field: 'CLASSACD', hozAlign: 'center', width: 100, visible:false },
+    { headerHozAlign: 'center', title: '대분류코드', field: 'CLASSACD', hozAlign: 'center', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '대분류', field: 'CLASSANM', sorter: 'string', width: 180 },
-    { headerHozAlign: 'center', title: '중분류코드', field: 'CLASSBCD', hozAlign: 'center', width: 100, visible:false },
+    { headerHozAlign: 'center', title: '중분류코드', field: 'CLASSBCD', hozAlign: 'center', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '중분류', field: 'CLASSBNM', sorter: 'string', width: 180 },
-    { headerHozAlign: 'center', title: '소분류코드', field: 'CLASSCCD', hozAlign: 'center', width: 100, visible:false },
+    { headerHozAlign: 'center', title: '소분류코드', field: 'CLASSCCD', hozAlign: 'center', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'left', title: '소분류', field: 'CLASSCNM', sorter: 'string', width: 220 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', width: 130, ...fn_CellNumber },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKDT', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', width: 130 }, //LINE,DESIGN
+    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false }, //LINE,DESIGN
+    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 }, //LINE,DESIGN
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKDT', sorter: 'string', width: 100 }, //LINE,DESIGN
+    { headerHozAlign: 'center', hozAlign: 'center', title: '업무량(시간)', field: 'WORKH', sorter: 'number', width: 120 }, //LINE,DESIGN
     { headerHozAlign: 'center', hozAlign: 'center', title: '분야', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '시작시간', field: 'STARTTM', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: 'BIZ입력키', field: 'BIZINPUTKEY', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '사원번호', field: 'EMPNO', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '업무량(시간)', field: 'WORKH', sorter: 'number', width: 120, ...fn_CellNumber },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '회선번호+고객명', field: 'BIZTXT', sorter: 'string', width: 128 }, //BIZ
+    { headerHozAlign: 'center', hozAlign: 'center', title: '출동여부', field: 'BIZRUNNM', sorter: 'string', width: 100 }, //BIZ
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업인원', field: 'BIZMANNM', sorter: 'string', width: 100 }, //BIZ
+    { headerHozAlign: 'center', hozAlign: 'center', title: '근무시간', field: 'BIZWORKNM', sorter: 'string', width: 100 }, //BIZ
+    { headerHozAlign: 'center', hozAlign: 'center', title: '회선수', field: 'BIZWORKCNT', sorter: 'string', width: 100 }, //BIZ
+    { headerHozAlign: 'center', hozAlign: 'center', title: '프로세스', field: 'BIZWORKGBNM', sorter: 'string', width: 180 }, //BIZ
+    { headerHozAlign: 'center', hozAlign: 'center', title: '처리시간(시간)', field: 'BIZWORKH', sorter: 'number', width: 120 }, //BIZ
     { 
       headerHozAlign: 'center', 
       hozAlign: 'center', 
@@ -164,6 +172,84 @@ const StandardTeamJobManage = () => {
       }
     },
   ];
+
+  // filters 초기화
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      rangeStartDate: prev.rangeStartDate || today,
+    }));
+    setTableFilters(initialFilters(filterTableFields));
+  }, [today]);
+
+  // 테이블 초기화
+  useEffect(() => {
+    const initializeTable = async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!tableRef.current) {
+        console.warn('테이블 컨테이너가 준비되지 않았습니다.');
+        return;
+      }
+      try {
+        tableInstance.current = createTable(tableRef.current, columns, [], {
+          headerHozAlign: 'center',
+          layout: 'fitColumns',
+        });
+        if (!tableInstance.current) throw new Error('createTable returned undefined or null');
+        setTableStatus('ready');
+      } catch (err) {
+        setTableStatus('error');
+        console.error('Table initialization failed:', err.message);
+      }
+    };
+    initializeTable();
+    return () => {
+      if (tableInstance.current) {
+        tableInstance.current.destroy();
+        tableInstance.current = null;
+        setTableStatus('initializing');
+      }
+    };
+  }, []);
+
+  // classGubun 변경 시 컬럼 가시성 제어
+  useEffect(() => {
+    if (tableInstance.current && tableStatus === 'ready') {
+      const isBiz = hasPermission(user?.auth, 'oper') ? filters.classGubun === 'BIZ' : user?.standardSectionCd === 'BIZ';
+
+      // LINE, DESIGN 컬럼
+      if(isBiz)
+      {
+        tableInstance.current.hideColumn('WORKCNT');
+        tableInstance.current.hideColumn('WORKNM');
+        tableInstance.current.hideColumn('WORKDT');
+        tableInstance.current.hideColumn('WORKH');
+
+        tableInstance.current.showColumn('BIZTXT');
+        tableInstance.current.showColumn('BIZRUNNM');
+        tableInstance.current.showColumn('BIZMANNM');
+        tableInstance.current.showColumn('BIZWORKNM');
+        tableInstance.current.showColumn('BIZWORKCNT');
+        tableInstance.current.showColumn('BIZWORKGBNM');
+        tableInstance.current.showColumn('BIZWORKH');
+      }
+      else{
+        tableInstance.current.showColumn('WORKCNT');
+        tableInstance.current.showColumn('WORKNM');
+        tableInstance.current.showColumn('WORKDT');
+        tableInstance.current.showColumn('WORKH');
+        
+        tableInstance.current.hideColumn('BIZTXT');
+        tableInstance.current.hideColumn('BIZRUNNM');
+        tableInstance.current.hideColumn('BIZMANNM');
+        tableInstance.current.hideColumn('BIZWORKNM');
+        tableInstance.current.hideColumn('BIZWORKCNT');
+        tableInstance.current.hideColumn('BIZWORKGBNM');
+        tableInstance.current.hideColumn('BIZWORKH');
+
+      }
+    }
+  }, [filters.classGubun, tableStatus]);
 
   const loadData = async () => {
     setLoading(true);
@@ -210,35 +296,6 @@ const StandardTeamJobManage = () => {
   }, [user, navigate]);
 
   useEffect(() => {
-    const initializeTable = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      if (!tableRef.current) {
-        console.warn('테이블 컨테이너가 준비되지 않았습니다.');
-        return;
-      }
-      try {
-        tableInstance.current = createTable(tableRef.current, columns, [], {
-          headerHozAlign: 'center',
-          layout: 'fitColumns',
-        });
-        if (!tableInstance.current) throw new Error('createTable returned undefined or null');
-        setTableStatus('ready');
-      } catch (err) {
-        setTableStatus('error');
-        console.error('Table initialization failed:', err.message);
-      }
-    };
-    initializeTable();
-    return () => {
-      if (tableInstance.current) {
-        tableInstance.current.destroy();
-        tableInstance.current = null;
-        setTableStatus('initializing');
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     if (isInitialRender.current) {
       isInitialRender.current = false;
       return;
@@ -267,7 +324,7 @@ const StandardTeamJobManage = () => {
       if (filterText !== '') {
         tableInstance.current.setFilter([
           { field: 'EMPNM', type: 'like', value: filterText },
-          { field: 'WORKNM', type: 'like', value: 'filterText' },
+          { field: 'WORKNM', type: 'like', value: filterText },
         ], 'or');
       } else {
         tableInstance.current.clearFilter();
@@ -384,7 +441,7 @@ const StandardTeamJobManage = () => {
         show={showStatisticPopup}
         onHide={() => setShowStatisticPopup(false)}
         onSelect={(selected) => {
-          setShowStatisticPopup(false);   // ✅ 여기서 팝업 닫기
+          setShowStatisticPopup(false);
         }}
         data={selectedEmpData ? [selectedEmpData] : []}
       />
