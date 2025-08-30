@@ -129,6 +129,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   border-top-left-radius: var(--bs-modal-inner-border-radius);
   border-top-right-radius: var(--bs-modal-inner-border-radius);
 } */
+
 .modal-title {
   font-size: 1.125rem !important;
   font-weight: 700;
@@ -145,12 +146,16 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 50%;
+  left: 50%;
+  width: 100vw;
+  height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1040;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translate(-50%, -50%);
 }
 .popupContainer {
   position: fixed;
@@ -160,6 +165,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   z-index: 1050;
   width: 700px;
   /* height: 740px; */
+  max-height: 90vh;
   background-color: #fff;
   border-radius: 1rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -184,7 +190,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   font-weight: 700;
   margin: 0;
 }
-.popupContainer .buttonContainer {
+.popupContainer > .buttonContainer {
   display: flex;
   flex-shrink: 0;
   flex-wrap: wrap;
@@ -218,6 +224,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .popupContainer .body {
   position: relative;
   flex: 1 1 auto;
+  overflow-y: auto;
   padding: var(--bs-modal-padding);
 
 }
@@ -240,6 +247,9 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   background-color: #fff;
   --bs-modal-margin: 0;
   border-radius: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .modalDialog {
   max-width: 500px;

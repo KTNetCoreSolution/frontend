@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom";
 import styles from "./CommonPopup.module.css";
 
 const CommonPopup = ({
@@ -97,17 +98,18 @@ const CommonPopup = ({
 
   const activeButtons = buttons.length > 0 ? buttons.slice(0, 5) : defaultButtons;
 
-  return (
+  return ReactDOM.createPortal(
     <>
-      <div className='overlay' onClick={onHide}></div>
+
+      <div className={styles.overlay} onClick={onHide}></div>
       <div className={`${styles.modal} show d-block`} tabIndex="-1">
-        <div className='modal-dialog modal-dialog-centered'>
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <h5 className='modal-title'>{title}</h5>
-              <button type="button" className='btn-close' onClick={onHide}></button>
+        <div className={`${styles.modalDialog} modal-dialog-centered`}>
+          <div className={`${styles.modalContent} modal-content`}>
+            <div className={`${styles.modalHeader} modal-header`}>
+              <h5 className={`${styles.modalTitle} modal-title`}>{title}</h5>
+              <button type="button" className={`${styles.btnClose} btn-close`} onClick={onHide}></button>
             </div>
-            <div className='modal-body'>
+            <div className={`${styles.modalBody} modal-body`}>
               {children}
               {showToast && (
                 <div className={`${styles.toast} alert alert-danger`} role="alert">
@@ -115,12 +117,12 @@ const CommonPopup = ({
                 </div>
               )}
             </div>
-            <div className='modal-footer'>
+            <div className={`${styles.modalFooter} modal-footer`}>
               {activeButtons.map((btn, index) => (
                 <button
                   key={index}
                   type="button"
-                  className='btn btnSecondary'
+                  className={`${styles.margin1} ${btn.className}`}
                   onClick={() => handleButtonClick(btn.action)}
                 >
                   {btn.label}
@@ -141,7 +143,8 @@ const CommonPopup = ({
       >
         <p>{confirmMessage || "이 작업을 진행하시겠습니까?"}</p>
       </CommonPopup>
-    </>
+    </>,
+    document.body
   );
 };
 
