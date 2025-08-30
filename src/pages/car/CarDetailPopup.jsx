@@ -348,7 +348,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
             <label className="form-label" htmlFor="carId">차대번호<font color='red'>*</font></label>
             <input type="text" className={`form-control ${styles.formControl}`} id="carId" value={carInfo.CARID} disabled={`${vStyle.vDISABLED}`} placeholder="차대번호를 입력하세요" onInput={(e) => {handleMaxLength(e, 30)}} onChange={(e) => {setCarInfo({ ...carInfo, CARID: e.target.value })}} />
             <button id="btnCarId" type="button" className={`btn btn-secondary flex-shrink-0`} style={{display:`${vStyle.vDISPLAY}`}} disabled={`${vStyle.vDISABLED}`} onClick={(e) => handleSearchCarInfo(carInfo.CARID)}>확인</button>
-            <button className={`btn btn-sm btn-danger ${styles.deleteButton} flex-shrink-0`} style={{display:`${vStyle.vBTNDEL}`}} onClick={handleDelete}>삭제</button>
+            <button className={`btn btn-sm btn-outline-secondary ${styles.deleteButton} flex-shrink-0`} style={{display:`${vStyle.vBTNDEL}`}} onClick={handleDelete}>삭제</button>
           </div>
           <div className="col-6 d-flex justify-content-end align-items-center">
             <label className="form-guide"><font color='red'>*</font>은 필수 입력 항목입니다.</label>

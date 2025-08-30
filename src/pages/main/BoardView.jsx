@@ -256,7 +256,7 @@ const BoardView = () => {
               </div>
             ))
           ) : (
-            <div>첨부파일 없음</div>
+            <div className='noAttachItem'>첨부파일 없음</div>
           )}
         </div>
       </div>

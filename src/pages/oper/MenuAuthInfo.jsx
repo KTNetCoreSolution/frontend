@@ -283,9 +283,9 @@ const MenuAuthInfo = () => {
   };
 
   return (
-    <div className={`container ${styles.container}`}>
+    <div className='container'>
       <div className="buttonContainer mb-3">
-        <button className={`btn text-bg-secondary ${styles.btnCancel}`} onClick={handleReset}>초기화</button>
+        <button className={`btn text-bg-secondary`} onClick={handleReset}>초기화</button>
         <button className={`btn text-bg-success ${styles.btnReg}`} onClick={handleSave} disabled={loading}>
           {loading ? "저장 중..." : "저장"}
         </button>
@@ -293,7 +293,7 @@ const MenuAuthInfo = () => {
 
       <div className={`table-responsive ${styles.tableResponsive}`}>
         <table className={`table table-bordered ${styles.table}`}>
-          <thead className={styles.stickyTop}>
+          <thead className='stickyTop'>
             <tr>
               <th className={`${styles.textCenter} ${styles.stickyColumn}`}>목차관리</th>
               <th className={`${styles.textCenter} ${styles.stickyColumn2}`}>작업대상</th>

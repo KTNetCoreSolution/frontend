@@ -308,7 +308,7 @@ const BoardWrite = () => {
               <div></div>
             )}
             {files.some(file => file != null) && (
-              <div className="mt-3">
+              <div className="attachList">
                 <h6>선택된 파일:</h6>
                 <ul>
                   {files.map((file, index) => (

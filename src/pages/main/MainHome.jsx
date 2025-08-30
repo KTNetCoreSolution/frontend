@@ -111,7 +111,7 @@ const MainHome = () => {
           <div className='mainTxt02'>케이티넷코어</div>
         </div>
       </div>
-      <div className={`w-100 ${styles.contentContainer}`}>
+      <div className='w-100'>
         <div className="d-flex justify-content-between align-items-center mb-3">
           <h3 className='boardTitle'>
             공지사항

@@ -207,7 +207,7 @@ const UserSearchPopup = ({ onClose, onConfirm }) => {
     <div className='overlay'>
       <div className='popupContainer'>
         <div className='header'>
-          <h3>사용자 검색</h3>
+          <h3>사용자 검색</h3> 
           <button className='closeButton' onClick={handleClose}>
             ×
           </button>

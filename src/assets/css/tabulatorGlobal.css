@@ -1,14 +1,20 @@
 .tabulator {
     background-color: #fff;
-    border: 1px solid #999;
+    /* border: 1px solid #999; */
     font-size: 0.8125rem;
 }
 
 .tabulator .tabulator-header {
     background-color: #fff;
+    border-top: 1px solid #999;
     border-bottom: 1px solid #999;
     color: #000;
 }
+
+
+/* .tabulator .tabulator-tableholder {
+  border-bottom: 1px solid #999;
+} */
 
 .tabulator-row {
     border-bottom: 1px solid #ddd;
@@ -22,30 +28,30 @@
     display: flex;
     align-items: center;
     flex-direction: column;
-    border-top: 1px solid #999;
+    border-top: unset;
     background-color: #fff;
     color: #555;
     text-align: center;
+    margin-top: 1rem;
 }
 
 .tabulator .tabulator-footer .tabulator-page {
-    background: rgba(255, 255, 255, .2);
-    border: 1px solid #aaa;
+    background: unset;
+    border: unset;
     border-radius: 3px;
     display: inline-block;
-    margin: 0 2px;
-    padding: 2px 5px;
-    min-width: 22px;
-    height: 22px;
-    margin: 0 10px;
+    padding: 0;
+    min-width: 30px;
+    height: 30px;
+    margin: 0 5px;
     border-radius: 50%;
     line-height: 1;
 }
 
 .tabulator .tabulator-footer .tabulator-page.active {
     color: #fff;
-    background: #0eaba7;
-    border: 1px solid #0eaba7;
+    background: #2CBBB7;
+    border: 1px solid #2CBBB7;
 }
 
 button.tabulator-page {

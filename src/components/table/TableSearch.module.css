@@ -99,8 +99,12 @@
 }
 
 .tableSection {
-  border: 1px solid #ddd;
+  /* border: 1px solid #ddd; */
   width: 100%;
+}
+
+.tabulator {
+  border: unset;
 }
 
 .loading {

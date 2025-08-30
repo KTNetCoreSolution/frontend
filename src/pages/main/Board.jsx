@@ -67,26 +67,26 @@ const Board = ({ canWriteBoard, type = 'notice' }) => {
   };
 
   return (
-    <div className="h-100 p-3 border" style={{ width: '100%' }}>
+    <div className='boardBox'>
       <div className="list-group-item d-flex justify-content-between align-items-center">
-        <h3 className={`mb-3 fs-5 text-dark ${styles.boardTitle}`}>
+        <h3 className='boardTitle'>
           {type === 'carnotice' ? '차량관리' : '공지사항'}
         </h3>
         {canWriteBoard && (
           <button
-            className={`btn btn-primary mb-3 ${styles.btnReg}`}
+            className='btn btn-primary'
             onClick={() => navigate('/main/boardWrite', { state: { type } })}
           >
             등록
           </button>
         )}
       </div>
-      <ul className={`list-group list-group-flush ${styles.contentContainer}`}>
+      <ul className='list-group contentContainer'>
         {currentNotices.length > 0 ? (
           currentNotices.map((notice, idx) => (
             <li
               key={idx}
-              className="list-group-item d-flex justify-content-between align-items-center"
+              className="list-group-item"
             >
               <span
                 onClick={() => handleNoticeClick(notice)}
@@ -96,9 +96,7 @@ const Board = ({ canWriteBoard, type = 'notice' }) => {
                 <span>{notice.title}</span>
               </span>
               <div>
-                <span
-                  className={`badge bg-primary rounded-pill me-2 ${styles.contentDate}`}
-                >
+                <span className='contentDate'>
                   {notice.date || new Date().toLocaleDateString()}
                 </span>
               </div>

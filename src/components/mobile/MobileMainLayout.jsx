@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Suspense } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import useStore from '../../store/store';
@@ -15,9 +15,11 @@ const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
 
 const MobileMainLayout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, clearUser, clearMenu, loading } = useStore();
   const [isChecking, setIsChecking] = useState(true);
-
+  
+  const isMainPage = location.pathname === '/mobile/Main';
   const isMobileDomain = window.location.host === MOBILE_DOMAIN;
 
   // 60분 자동 로그아웃 (UI 없이 백그라운드 처리)
@@ -84,14 +86,16 @@ const MobileMainLayout = () => {
 
   return (
     <div className="container">
-      <header className="header">
-        <div  onClick={() => navigate('/mobile/Main')}>
-          <img src={logo} alt="Logo" className="logoImage" />
-        </div>
-        <button className={styles.logoutButton} onClick={handleLogout}>
-          Logout
-        </button>
-      </header>
+      {isMainPage && (
+        <header className="header">
+          <div onClick={() => navigate('/mobile/Main')}>
+            <img src={logo} alt="Logo" className="logoImage" />
+          </div>
+          <button className={styles.logoutButton} onClick={handleLogout}>
+            Logout
+          </button>
+        </header>
+      )}
       {loading.isLoading && (
         <div className={styles.progressBarContainer}>
           <CircularProgressbar
@@ -106,7 +110,7 @@ const MobileMainLayout = () => {
           />
         </div>
       )}
-      <section className="main">
+      <section className={isMainPage ? "main" : "sub"}>
         <Suspense fallback={<div>Loading...</div>}>
           <Outlet />
         </Suspense>

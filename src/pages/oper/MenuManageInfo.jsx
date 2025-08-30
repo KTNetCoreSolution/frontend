@@ -502,10 +502,10 @@ const MenuManageInfo = () => {
         buttonStyles={styles}
       >
         <div className='btnGroupCustom'>
-          <button className={`btn text-bg-primary ${styles.btn}`} onClick={handleAddClick}>
+          <button className='btn btn-secondary' onClick={handleAddClick}>
             추가
           </button>
-          <button className={`btn text-bg-success ${styles.btn}`} onClick={handleSave}>
+          <button className='btn btn-primary' onClick={handleSave}>
             저장
           </button>
         </div>

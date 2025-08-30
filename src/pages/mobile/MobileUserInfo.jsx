@@ -31,9 +31,9 @@ const handleLogout = async () => {
 
   return (
     <div className="container-fluid p-0">
-      <header className="bg-primary text-white p-3 d-flex justify-content-between align-items-center">
+      <header className="header">
         <h1 className="h5 mb-0">기본정보</h1>
-        <button className="btn btn-outline-light" onClick={handleToggleSidebar}>
+        <button className="btn" onClick={handleToggleSidebar}>
           <i className="bi bi-list"></i>
         </button>
       </header>
@@ -44,7 +44,7 @@ const handleLogout = async () => {
         onLogout={handleLogout}
       />
 
-      <div className="p-3">
+      <div className='subContainer'>
         <ul className="nav nav-tabs" id="infoTabs" role="tablist">
           <li className="nav-item" role="presentation">
             <button

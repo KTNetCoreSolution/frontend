@@ -290,7 +290,7 @@ const UserAuthManage = () => {
         <div ref={tableRef} className={styles.tableSection} style={{ visibility: loading || tableStatus !== "ready" ? "hidden" : "visible" }} />
       </div>
       <CommonPopup show={showAuthPopup} onHide={handleAuthCancel} onConfirm={handleAuthConfirm} title="권한 선택">
-        <div className="mb-3">
+        <div className="formGroup">
           <label htmlFor="authIdSelect" className="form-label">권한</label>
           <select className={`form-select ${styles.formSelect}`} id="authIdSelect" value={newAuth.AUTHID} onChange={(e) => {
             const auth = authList.find((a) => a.AUTHID === e.target.value);

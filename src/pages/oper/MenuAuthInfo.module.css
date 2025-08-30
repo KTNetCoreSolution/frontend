@@ -53,7 +53,7 @@
   background-color: #fff;
 }
 
-.stickyTop {
+/* .stickyTop {
   position: sticky;
   top: 0;
   background: white;
@@ -63,7 +63,7 @@
 .stickyTop > tr > th {
   background-color: #d6dfdf;
   border-color: #547574;
-}
+} */
 
 .table .formCheckInput {
   accent-color: #547574;
