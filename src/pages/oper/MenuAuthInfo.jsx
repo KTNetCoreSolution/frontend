@@ -298,9 +298,9 @@ const MenuAuthInfo = () => {
               <th className={`${styles.textCenter} ${styles.stickyColumn}`}>목차관리</th>
               <th className={`${styles.textCenter} ${styles.stickyColumn2}`}>작업대상</th>
               {authFields.map((authName) => (
-                <th key={authName} className={styles.textCenter}>
-                  {authName}
-                  <div>
+                <th key={authName}>
+                  <div className='thCheck'>
+                    {authName}
                     <input
                       type="checkbox"
                       className={styles.formCheckInput}
@@ -309,6 +309,7 @@ const MenuAuthInfo = () => {
                       disabled={!Array.isArray(data) || data.length === 0}
                     />
                   </div>
+
                 </th>
               ))}
             </tr>
@@ -323,7 +324,7 @@ const MenuAuthInfo = () => {
                   <td className={`${styles.textCenter} ${styles.stickyColumn2}`}>
                     <input
                       type="checkbox"
-                      className={styles.formCheckInput}
+                      // className={styles.formCheckInput}
                       checked={isRowChanged(row.MENUID)}
                       onChange={() => handleCheckboxChange(row.MENUID)}
                     />
@@ -337,7 +338,7 @@ const MenuAuthInfo = () => {
                         <div className={`form-check form-check-inline ${styles.formCheckInline}`}>
                           <input
                             type="radio"
-                            className={styles.formCheckInput}
+                            // className={styles.formCheckInput}
                             name={`${authName}-${row.MENUID}`}
                             value="Y"
                             checked={getAuthYn(row, authName) === "Y"}
@@ -348,7 +349,7 @@ const MenuAuthInfo = () => {
                         <div className={`form-check form-check-inline ${styles.formCheckInline}`}>
                           <input
                             type="radio"
-                            className={styles.formCheckInput}
+                            // className={styles.formCheckInput}
                             name={`${authName}-${row.MENUID}`}
                             value="N"
                             checked={getAuthYn(row, authName) === "N"}

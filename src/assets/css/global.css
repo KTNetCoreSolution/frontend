@@ -122,9 +122,17 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   border-top: 1px solid #1E2124 !important;
   z-index: 2;
 }
-
 .stickyTop > tr > th {
   background-color: #F1F5F9;
+}
+.thCheck {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 2px;
+  text-align: center;     
 }
 
 /* Dropdowns */
@@ -992,9 +1000,9 @@ button.boardBtn01 .arrow-icon {
   gap: 10px;
   align-items: center;
 }
-.searchFields input {
+/* .searchFields input {
   height: 30px;
-}
+} */
 .btn-search {
   min-width: 80px;
 }
@@ -1022,7 +1030,7 @@ button.boardBtn01 .arrow-icon {
 .formGroup label + div {
   margin-left: 1rem;
 }
-.formGroup input,
+.formGroup input:not([type="radio"]):not([type="checkbox"]),
 .formGroup select,
 .formGroup textarea {
   font-size: 0.875rem;
@@ -1032,8 +1040,48 @@ button.boardBtn01 .arrow-icon {
   min-height: 30px;
   line-height: 1.4;
 }
-/* .formGroup select {
-  line-height: 1;
+/* .formGroup input[type="radio"],
+.formGroup input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  border: 1px solid #d4d4d6;
+  border-radius: 4px;
+  background-color: #ffffff;
+  position: relative;
+  cursor: pointer;
+  margin-right: 6px;
+}
+.formGroup input[type="radio"] {
+  border-radius: 50%;
+}
+.formGroup input[type="checkbox"]:checked::before {
+  content: "\f26e";
+  font-family: "bootstrap-icons";
+  font-size: 20px;
+  color: #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.formGroup input[type="checkbox"]:checked {
+  background-color: var(--bs-primary-color);
+  border-color: #d4d4d6;
+}
+.formGroup input[type="radio"]:checked::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: var(--bs-primary-color);
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 } */
 .form-label {
   font-size: 0.875rem;
@@ -1259,22 +1307,6 @@ textarea.form-control {
 .contentWrapper:has(.mainContentWrap) {
   background: #F7F7F7;
 }
-
-input,
-select,
-textarea {
-  font-size: 0.875rem;
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid #d4d4d6;
-  min-height: 30px;
-}
-
-input + button, select + button {
-  margin-right: 8px;
-}
-
-
 
 /* boardmain */
 .boardMainContainer {
