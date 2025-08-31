@@ -15,27 +15,23 @@ import common from '../../utils/common';
 
 const fn_CellNumber = { editor: 'number', editorParams: { min: 0 }, editable: true };
 
-// 삭제 버튼 생성 함수 (ExcelUploadTemplateManage.jsx 참조)
-const fn_CellButton = (label, className, onClick) => ({
-  formatter: (cell) => {
-    const button = document.createElement("button");
-    button.className = `btn btn-sm ${className}`;
-    button.innerText = label;
-    button.onclick = () => onClick(cell.getData());
-    return button;
-  },
-});
 
 // getFieldOptions 함수
 const getFieldOptions = (fieldId) => {
   if (fieldId === 'filterSelect') {
     return [
       { value: '', label: '선택' },
-      { value: 'EMPNM', label: '팀원' },
+      { value: 'EMPNM', label: '작업자' },
       { value: 'CLASSANM', label: '대분류' },
       { value: 'CLASSBNM', label: '중분류' },
       { value: 'CLASSCNM', label: '소분류' },
-      { value: 'WORKNM', label: '근무형태' },
+      { value: 'WORKNM', label: '근무유형' },
+    ];
+  }
+  if (fieldId === 'dayGubun') {
+    return [
+      { value: 'M', label: '월' },
+      { value: 'D', label: '일' },
     ];
   }
   return [];
@@ -53,7 +49,11 @@ const StandardInputStatistic = () => {
   const [filters, setFilters] = useState({
     classGubun: user?.standardSectionCd || 'LINE',
     classGubunTxt: user?.standardSectionCd === 'LINE' ? '선로' : user?.standardSectionCd === 'DESIGN' ? '설계' : user?.standardSectionCd === 'BIZ' ? 'BIZ' : '선로',
+    dayGubun: 'M',
+    monthDate: today.substring(0, 7),
     rangeStartDate: today,
+    rangeEndDate: today,
+    CLASSCD: '',
   });
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
@@ -66,7 +66,7 @@ const StandardInputStatistic = () => {
   const isInitialRender = useRef(true);
 
   // 초기 searchConfig 설정
-  const searchConfig = {
+  const baseSearchConfig = {
     areas: [
       {
         type: 'search',
@@ -81,7 +81,11 @@ const StandardInputStatistic = () => {
                 : user?.standardSectionCd === 'BIZ'
                   ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true }]
                   : []),
-          { id: 'rangeStartDate', type: 'day', row: 1, width: '100px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: true, defaultValue: today },
+          { id: 'dayGubunLbl', type: 'label', row: 1, label: '작업', labelVisible: false, enabled: true },
+          { id: 'dayGubun', type: 'select', row: 1, label: '', labelVisible: false, options: getFieldOptions('dayGubun'), defaultValue: 'M', enabled: true },
+          { id: 'monthDate', type: 'month', row: 1, width: '74px', label: '', labelVisible: true, placeholder: '월 선택', enabled: false, defaultValue: today.substring(0, 7) },
+          { id: 'rangeStartDate', type: 'startday', row: 1, width: '96px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: false, defaultValue: today },
+          { id: 'rangeEndDate', type: 'endday', row: 1, width: '96px', label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', enabled: false, defaultValue: today },
         ],
       },
       {
@@ -93,53 +97,72 @@ const StandardInputStatistic = () => {
     ],
   };
 
+  const [searchConfig, setSearchConfig] = useState(baseSearchConfig);
+
+  useEffect(() => {
+    setSearchConfig((prev) => {
+      const newAreas = prev.areas.map((area) => {
+        if (area.type !== 'search') return area;
+        const baseFields = baseSearchConfig.areas.find((a) => a.type === 'search').fields;
+        const currentFields = prev.areas.find((a) => a.type === 'search').fields;
+        const newFields = baseFields.filter((field) => {
+          if (filters.dayGubun === 'M') {
+            return field.id !== 'rangeStartDate' && field.id !== 'rangeEndDate';
+          } else if (filters.dayGubun === 'D') {
+            return field.id !== 'monthDate';
+          }
+          return true;
+        });
+        return { ...area, fields: newFields };
+      });
+      return { ...prev, areas: newAreas };
+    });
+  }, [filters.dayGubun]);
+
   // filters 초기화
   useEffect(() => {
-    setFilters((prev) => ({
-      ...prev,
-      rangeStartDate: prev.rangeStartDate || today,
-    }));
+    setFilters((prev) => {
+      const searchFields = searchConfig.areas.find((area) => area.type === 'search').fields;
+      const dateFilters = {};
+      searchFields.forEach((field) => {
+        if (['day', 'startday', 'endday'].includes(field.type) && prev[field.id] === undefined) {
+          dateFilters[field.id] = field.defaultValue || today;
+        } else if (['month', 'startmonth', 'endmonth'].includes(field.type) && prev[field.id] === undefined) {
+          dateFilters[field.id] = field.defaultValue || today.substring(0, 7);
+        }
+      });
+      return {
+        ...prev,
+        ...dateFilters,
+        dayGubun: prev.dayGubun || 'M',
+        monthDate: prev.monthDate || today.substring(0, 7),
+        rangeStartDate: prev.rangeStartDate || today,
+        rangeEndDate: prev.rangeEndDate || today,
+        CLASSCD: prev.CLASSCD || '',
+      };
+    });
     setTableFilters(initialFilters(filterTableFields));
-  }, [today]);
+  }, [searchConfig, today]);
 
   const columns = [
     { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '기준일자', field: 'DDATE', sorter: 'string', width: 100, frozen: true },
-    { 
-      headerHozAlign: 'center', 
-      hozAlign: 'center', 
-      title: '팀원', 
-      field: 'EMPNM', 
-      sorter: 'string', 
-      width: 100, 
-      frozen: true,
-      cellClick: (e, cell) => { msgPopup(cell.getValue() + ' 팝업 준비중'); },
-      cellStyle: { color: '#247db3' }
-    },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업일', field: 'DDATE', sorter: 'string', width: 100, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 100, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조직1', field: 'ORGNM1', sorter: 'string', width: 130 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조직2', field: 'ORGNM2', sorter: 'string', width: 130 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조직3', field: 'ORGNM3', sorter: 'string', width: 130 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조직4', field: 'ORGNM4', sorter: 'string', width: 130 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '대분류', field: 'CLASSANM', sorter: 'string', width: 180 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '중분류', field: 'CLASSBNM', sorter: 'string', width: 180 },
     { headerHozAlign: 'center', hozAlign: 'left', title: '소분류', field: 'CLASSCNM', sorter: 'string', width: 220 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', width: 130, ...fn_CellNumber },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKDT', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '업무량(시간)', field: 'WORKH', sorter: 'number', width: 120, ...fn_CellNumber },
-    { 
-      headerHozAlign: 'center', 
-      hozAlign: 'center', 
-      title: '', 
-      field: 'actions', 
-      width: 80, 
-      formatter: (cell) => {
-        const rowData = cell.getRow().getData();
-        if (rowData.DELYN === 'Y') {
-          return fn_CellButton('삭제', `btn-danger ${styles.deleteButton}`, (rowData) => {
-            msgPopup(`${rowData.EMPNM} 삭제 예정입니다.`);
-          }).formatter(cell);
-        }
-        return null;
-      }
-    },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업건', field: 'WORKCNT', sorter: 'number', width: 130 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '시작시간', field: 'STARTTM', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '종료시간', field: 'ENDTM', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKH', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업자', field: 'EMPNM', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '근무유형코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '근무유형', field: 'WORKNM', sorter: 'string', width: 100 },
   ];
 
   const loadData = async () => {
@@ -158,12 +181,15 @@ const StandardInputStatistic = () => {
                 ? 'BIZ'
                 : 'LINE',
         pEMPNO: user?.empNo || '',
-        pORGCD: '',
-        pDATE1: filters.rangeStartDate,
+        pORGCD: 'ALL',
+        pDATEGUBUN: filters.dayGubun,
+        pDATE1: filters.dayGubun === 'D' ? filters.rangeStartDate : filters.dayGubun === 'M' ? filters.monthDate : '',
+        pDATE2: filters.dayGubun === 'D' ? filters.rangeEndDate : filters.dayGubun === 'M' ? filters.monthDate : '',
+        pCLASSCD: filters.CLASSCD,
         pDEBUG: 'F',
       };
 
-      const response = await fetchData('standard/teamJob/list', params);
+      const response = await fetchData('standard/inputStatistic/list', params);
       if (!response.success) {
         errorMsgPopup(response.message || '데이터를 가져오는 중 오류가 발생했습니다.');
         return;
@@ -243,7 +269,10 @@ const StandardInputStatistic = () => {
       if (filterText !== '') {
         tableInstance.current.setFilter([
           { field: 'EMPNM', type: 'like', value: filterText },
-          { field: 'WORKNM', type: 'like', value: 'filterText' },
+          { field: 'CLASSANM', type: 'like', value: filterText },
+          { field: 'CLASSBNM', type: 'like', value: filterText },
+          { field: 'CLASSCNM', type: 'like', value: filterText },
+          { field: 'WORKNM', type: 'like', value: filterText },
         ], 'or');
       } else {
         tableInstance.current.clearFilter();
@@ -257,7 +286,16 @@ const StandardInputStatistic = () => {
     if (eventType === 'search') {
       loadData();
     } else if (eventType === 'selectChange') {
-      setFilters((prev) => ({ ...prev, [payload.id]: payload.value }));
+      const { id, value } = payload;
+      setFilters((prev) => {
+        const newFilters = { ...prev, [id]: value };
+        if (id === 'dayGubun') {
+          newFilters.monthDate = value === 'M' ? today.substring(0, 7) : '';
+          newFilters.rangeStartDate = value === 'D' ? today : '';
+          newFilters.rangeEndDate = value === 'D' ? today : '';
+        }
+        return newFilters;
+      });
     }
   };
 

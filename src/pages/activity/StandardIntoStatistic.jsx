@@ -343,7 +343,7 @@ const StandardIntoStatistic = () => {
                 ? 'BIZ'
                 : 'LINE',
         pEMPNO: user?.empNo || '',
-        pORGCD: filters.ORGCD || '',
+        pORGCD: filters.ORGCD || 'ALL',
         pDATE1: filters.monthDate,
         pCLASSCD: (filters.CLASSCCD === '' || filters.CLASSCCD === 'all')
           ? ((filters.CLASSBCD === '' || filters.CLASSBCD === 'all')

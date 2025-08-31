@@ -87,7 +87,7 @@ const StandardTeamJobManage = () => {
                 : user?.standardSectionCd === 'BIZ'
                   ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true }]
                   : []),
-          { id: 'rangeStartDate', type: 'day', row: 1, width: '90px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: true, defaultValue: today },
+          { id: 'rangeStartDate', type: 'day', row: 1, width: '94px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: true, defaultValue: today },
         ],
       },
       {
@@ -103,21 +103,8 @@ const StandardTeamJobManage = () => {
   const columns = [
     { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
     { headerHozAlign: 'center', hozAlign: 'center', title: '기준일자', field: 'DDATE', sorter: 'string', width: 100, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '구분', field: 'SECTIONCD', sorter: 'string', width: 100, frozen: true,
-      formatter: function(cell) {
-        const value = cell.getValue();
-        switch (value) {
-          case 'BIZ':
-            return 'BIZ';
-          case 'DESIGN':
-            return '설계';
-          case 'LINE':
-            return '선로';
-          default:
-            return value;  // 혹은 빈 문자열, '알 수 없음' 등
-        }
-      }
-    },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 100, frozen: true },
     { 
       headerHozAlign: 'center', hozAlign: 'center', title: '팀원', field: 'EMPNM', sorter: 'string', width: 100, frozen: true,
       cellClick: (e, cell) => {
@@ -143,7 +130,7 @@ const StandardTeamJobManage = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 }, //LINE,DESIGN
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKDT', sorter: 'string', width: 100 }, //LINE,DESIGN
     { headerHozAlign: 'center', hozAlign: 'center', title: '업무량(시간)', field: 'WORKH', sorter: 'number', width: 120 }, //LINE,DESIGN
-    { headerHozAlign: 'center', hozAlign: 'center', title: '분야', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '시작시간', field: 'STARTTM', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: 'BIZ입력키', field: 'BIZINPUTKEY', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '사원번호', field: 'EMPNO', sorter: 'string', width: 100, visible: false },

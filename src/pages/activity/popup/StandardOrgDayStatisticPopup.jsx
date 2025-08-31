@@ -39,7 +39,7 @@ const StandardOrgDayStatisticPopup = ({ show, onHide, data }) => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무', field: 'WORKNM', sorter: 'string', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKDT', sorter: 'string', width: 240 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '분야', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '시작시간', field: 'STARTTM', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: 'BIZ입력키', field: 'BIZINPUTKEY', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '사원번호', field: 'EMPNO', sorter: 'string', width: 100, visible: false },
