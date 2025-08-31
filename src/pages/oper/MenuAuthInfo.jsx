@@ -324,7 +324,7 @@ const MenuAuthInfo = () => {
                     <span>{formatMenuName(row.MENUNM, row.MENULEVEL)}</span>
                   </td>
                   <td className={`${styles.textCenter} ${styles.stickyColumn2}`}>
-                    <div className="formGroup">
+                    <div className="formGroup justify-content-center">
                       <input
                         type="checkbox"
                         // className={styles.formCheckInput}
