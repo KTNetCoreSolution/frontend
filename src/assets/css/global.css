@@ -1045,12 +1045,13 @@ button.boardBtn01 .arrow-icon {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border: 1px solid #d4d4d6;
   background-color: #ffffff;
   position: relative;
   cursor: pointer;
+  padding: 0;
 }
 .formGroup input[type="radio"] {
   border-radius: 50%;

@@ -43,6 +43,7 @@ const StyledTreeItem = styled(TreeItem, {
     box-sizing: border-box;
   }
   & .MuiTreeItem-label {
+    font-family: "Pretendard Variable", -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
     font-size: 13px;
     line-height: 1.5;
   }
@@ -52,6 +53,18 @@ const StyledTreeItem = styled(TreeItem, {
     align-items: center;
   }
 `;
+
+const StyledChevronDown = styled(FaChevronDown)({
+  width: '12px',
+  height: '12px',
+  color: '#212529',
+});
+
+const StyledChevronRight = styled(FaChevronRight)({
+  width: '12px',
+  height: '12px',
+  color: '#212529',
+});
 
 const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN, isMulti = true, isChecked = true }) => {
   const { user } = useStore();
@@ -258,10 +271,24 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN, 
         label={
           <div className={styles.nodeContainer}>
             <Checkbox
-              className={styles.nodeCheckbox}
               checked={selectedIds.includes(node.id)}
               onChange={() => handleSelect(node.id)}
               onClick={(e) => e.stopPropagation()}
+              sx={{
+                width: 16,
+                height: 16,
+                padding: 0,
+                borderRadius: 4,
+                '&.Mui-checked': {
+                  color: 'var(--bs-primary-color)',
+                  
+                },
+                '& .MuiSvgIcon-root': {
+                  fontSize: 18,
+                  borderRadius: 4,
+                  border: 'none',
+                }
+              }}
             />
             <span className={styles.nodeLabel}>
               {node.name} (레벨: {node.ORGLEVEL})
@@ -294,8 +321,8 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN, 
             {!loading && treeData.length > 0 && (
               <SimpleTreeView
                 slots={{
-                  collapseIcon: FaChevronDown,
-                  expandIcon: FaChevronRight,
+                  collapseIcon: StyledChevronDown,
+                  expandIcon: StyledChevronRight,
                 }}
                 expandedItems={expanded}
                 onItemExpansionToggle={handleToggle}

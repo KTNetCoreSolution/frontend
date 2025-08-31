@@ -70,10 +70,21 @@
 }
 
 .nodeCheckbox {
+  width: 18px;
+  height: 18px;
   margin: 0;
   padding: 0;
-  color: #1976d2;
+  color: var(--bs-primary-color);
+  border: 1px solid #d4d4d6;
+  border-radius: 4px
 }
+/* 
+.nodeCheckbox.Mui-checked {
+  color: var(--bs-primary-color);
+}
+.nodeCheckbox.Mui-checked .MuiSvgIcon-root {
+  fill: #ff0000;
+} */
 
 .nodeLabel {
   font-size: 13px;
