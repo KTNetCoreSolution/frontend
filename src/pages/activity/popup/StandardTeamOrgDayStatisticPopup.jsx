@@ -6,9 +6,9 @@ import { handleDownloadExcel } from '../../../utils/tableExcel';
 import TableSearch from '../../../components/table/TableSearch';
 import { fetchData } from '../../../utils/dataUtils';
 import { errorMsgPopup } from '../../../utils/errorMsgPopup';
-import styles from './StandardOrgDayStatisticPopup.module.css';
+import styles from './StandardTeamOrgDayStatisticPopup.module.css';
 
-const StandardOrgDayStatisticPopup = ({ show, onHide, data }) => {
+const StandardTeamOrgDayStatisticPopup = ({ show, onHide, data }) => {
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
   const [filters, setFilters] = useState(initialFilters([
@@ -121,7 +121,7 @@ const StandardOrgDayStatisticPopup = ({ show, onHide, data }) => {
           pDEBUG: 'F',
         };
 
-        const response = await fetchData("standard/intoList/list", params);
+        const response = await fetchData('standard/teamInputStatistic/list', params);
 
         if (!response.success && isMounted) {
           errorMsgPopup(response.message || "데이터를 가져오는 중 오류가 발생했습니다.");
@@ -233,4 +233,4 @@ const StandardOrgDayStatisticPopup = ({ show, onHide, data }) => {
   );
 };
 
-export default StandardOrgDayStatisticPopup;
+export default StandardTeamOrgDayStatisticPopup;

@@ -12,30 +12,16 @@ import { msgPopup } from '../../utils/msgPopup';
 import styles from '../../components/table/TableSearch.module.css';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import common from '../../utils/common';
+import StandardTeamOrgDayStatisticPopup from './popup/StandardTeamOrgDayStatisticPopup';
 
 const fn_CellNumber = { editor: 'number', editorParams: { min: 0 }, editable: true };
-
-// 삭제 버튼 생성 함수 (ExcelUploadTemplateManage.jsx 참조)
-const fn_CellButton = (label, className, onClick) => ({
-  formatter: (cell) => {
-    const button = document.createElement("button");
-    button.className = `btn btn-sm ${className}`;
-    button.innerText = label;
-    button.onclick = () => onClick(cell.getData());
-    return button;
-  },
-});
 
 // getFieldOptions 함수
 const getFieldOptions = (fieldId) => {
   if (fieldId === 'filterSelect') {
     return [
       { value: '', label: '선택' },
-      { value: 'EMPNM', label: '팀원' },
-      { value: 'CLASSANM', label: '대분류' },
-      { value: 'CLASSBNM', label: '중분류' },
-      { value: 'CLASSCNM', label: '소분류' },
-      { value: 'WORKNM', label: '근무형태' },
+      { value: 'ORGNM', label: '팀정보' },
     ];
   }
   return [];
@@ -53,7 +39,7 @@ const StandardTeamInputStatistic = () => {
   const [filters, setFilters] = useState({
     classGubun: user?.standardSectionCd || 'LINE',
     classGubunTxt: user?.standardSectionCd === 'LINE' ? '선로' : user?.standardSectionCd === 'DESIGN' ? '설계' : user?.standardSectionCd === 'BIZ' ? 'BIZ' : '선로',
-    rangeStartDate: today,
+    monthDate: today.substring(0, 7),
   });
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
@@ -64,6 +50,25 @@ const StandardTeamInputStatistic = () => {
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
   const isInitialRender = useRef(true);
+  const [showStatisticPopup, setShowStatisticPopup] = useState(false);
+  const [selectedData, setSelectedData] = useState(null);
+
+  // 공통 cellClick 핸들러
+  const handleDayClick = (cell, day) => {
+    const cellValue = cell.getValue();
+
+    if (!cellValue || parseFloat(cellValue) === 0) return;
+
+    const rowData = cell.getRow().getData();
+    const sectionCd = hasPermission(user?.auth, 'oper') ? filters.classGubun : user?.standardSectionCd || 'LINE';
+    const orgCd = rowData.ORGCD;
+    setSelectedData({
+      SECTIONCD: sectionCd,
+      ORGCD: orgCd,
+      DDATE: `${rowData.MDATE}${day.padStart(2, '0')}`,
+    });
+    setShowStatisticPopup(true);
+  };
 
   // 초기 searchConfig 설정
   const searchConfig = {
@@ -73,7 +78,7 @@ const StandardTeamInputStatistic = () => {
         fields: [
           { id: 'classGubunLbl', type: 'label', row: 1, label: '분야', labelVisible: false, enabled: true },
           ...(hasPermission(user?.auth, 'oper')
-            ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true }]
+            ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true, eventType: 'selectChange' }]
             : user?.standardSectionCd === 'LINE'
               ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true }]
               : user?.standardSectionCd === 'DESIGN'
@@ -81,7 +86,7 @@ const StandardTeamInputStatistic = () => {
                 : user?.standardSectionCd === 'BIZ'
                   ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true }]
                   : []),
-          { id: 'rangeStartDate', type: 'day', row: 1, width: '100px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: true, defaultValue: today },
+          { id: 'monthDate', type: 'month', row: 1, width: '74px', label: '월', labelVisible: true, placeholders: '월 선택', enabled: true, defaultValue: today.substring(0, 7) },
         ],
       },
       {
@@ -97,49 +102,38 @@ const StandardTeamInputStatistic = () => {
   useEffect(() => {
     setFilters((prev) => ({
       ...prev,
-      rangeStartDate: prev.rangeStartDate || today,
+      monthDate: prev.monthDate || today.substring(0, 7),
     }));
     setTableFilters(initialFilters(filterTableFields));
   }, [today]);
 
   const columns = [
     { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '기준일자', field: 'DDATE', sorter: 'string', width: 100, frozen: true },
-    { 
-      headerHozAlign: 'center', 
-      hozAlign: 'center', 
-      title: '팀원', 
-      field: 'EMPNM', 
-      sorter: 'string', 
-      width: 100, 
-      frozen: true,
-      cellClick: (e, cell) => { msgPopup(cell.getValue() + ' 팝업 준비중'); },
-      cellStyle: { color: '#247db3' }
-    },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '대분류', field: 'CLASSANM', sorter: 'string', width: 180 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '중분류', field: 'CLASSBNM', sorter: 'string', width: 180 },
-    { headerHozAlign: 'center', hozAlign: 'left', title: '소분류', field: 'CLASSCNM', sorter: 'string', width: 220 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', width: 130, ...fn_CellNumber },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKDT', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '업무량(시간)', field: 'WORKH', sorter: 'number', width: 120, ...fn_CellNumber },
-    { 
-      headerHozAlign: 'center', 
-      hozAlign: 'center', 
-      title: '', 
-      field: 'actions', 
-      width: 80, 
-      formatter: (cell) => {
-        const rowData = cell.getRow().getData();
-        if (rowData.DELYN === 'Y') {
-          return fn_CellButton('삭제', `btn-danger ${styles.deleteButton}`, (rowData) => {
-            msgPopup(`${rowData.EMPNM} 삭제 예정입니다.`);
-          }).formatter(cell);
-        }
-        return null;
-      }
-    },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 100, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '월', field: 'MDATE', sorter: 'number', width: 100, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '팀코드', field: 'ORGCD', sorter: 'string', width: 100, frozen: true, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '팀정보', field: 'ORGNM', sorter: 'string', width: 120, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '팀인원(명)', field: 'EMPNOCNT', sorter: 'number', width: 100, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '월누계', field: 'MONTH_TOTAL', sorter: 'number', width: 100, frozen: true },
+    ...Array.from({ length: 31 }, (_, i) => {
+      const day = String(i + 1).padStart(2, '0');
+      return {
+        headerHozAlign: 'center',
+        hozAlign: 'center',
+        title: `${day}일`,
+        field: `DAY_${day}`,
+        sorter: 'number',
+        width: 80,
+        cellClick: (e, cell) => handleDayClick(cell, day),
+        formatter: (cell) => {
+          const value = cell.getValue();
+          if (!value || parseFloat(value) === 0) return '';
+          return parseFloat(value).toFixed(2);
+        },
+        cellStyle: { color: '#247db3' },
+      };
+    }),
   ];
 
   const loadData = async () => {
@@ -159,11 +153,12 @@ const StandardTeamInputStatistic = () => {
                 : 'LINE',
         pEMPNO: user?.empNo || '',
         pORGCD: '',
-        pDATE1: filters.rangeStartDate,
+        pDATE1: filters.monthDate,
+        pCLASSCD: '',
         pDEBUG: 'F',
       };
 
-      const response = await fetchData('standard/teamJob/list', params);
+      const response = await fetchData('standard/teamInputStatistic/list', params);
       if (!response.success) {
         errorMsgPopup(response.message || '데이터를 가져오는 중 오류가 발생했습니다.');
         return;
@@ -181,7 +176,7 @@ const StandardTeamInputStatistic = () => {
 
   // user 로딩 대기 및 리디렉션 처리
   useEffect(() => {
-    if (user === null) return; // user가 로드되기 전에는 아무 작업도 하지 않음
+    if (user === null) return;
     if (!user) navigate('/');
   }, [user, navigate]);
 
@@ -242,8 +237,7 @@ const StandardTeamInputStatistic = () => {
     } else if (filterText) {
       if (filterText !== '') {
         tableInstance.current.setFilter([
-          { field: 'EMPNM', type: 'like', value: filterText },
-          { field: 'WORKNM', type: 'like', value: 'filterText' },
+          { field: 'ORGNM', type: 'like', value: filterText },
         ], 'or');
       } else {
         tableInstance.current.clearFilter();
@@ -287,6 +281,11 @@ const StandardTeamInputStatistic = () => {
         {loading && <div>로딩 중...</div>}
         <div ref={tableRef} className={styles.tableSection} style={{ visibility: loading || tableStatus !== 'ready' ? 'hidden' : 'visible' }} />
       </div>
+      <StandardTeamOrgDayStatisticPopup
+        show={showStatisticPopup}
+        onHide={() => setShowStatisticPopup(false)}
+        data={selectedData ? [selectedData] : []}
+      />
     </div>
   );
 };
