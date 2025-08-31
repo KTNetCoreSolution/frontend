@@ -301,13 +301,15 @@ const MenuAuthInfo = () => {
                 <th key={authName}>
                   <div className='thCheck'>
                     {authName}
-                    <input
-                      type="checkbox"
-                      className={styles.formCheckInput}
-                      onChange={(e) => handleSelectAll(authName, e.target.checked)}
-                      checked={Array.isArray(data) && data.length > 0 && data.every((row) => getAuthYn(row, authName) === "Y")}
-                      disabled={!Array.isArray(data) || data.length === 0}
-                    />
+                    <div className="formGroup">
+                      <input
+                        type="checkbox"
+                        className={styles.formCheckInput}
+                        onChange={(e) => handleSelectAll(authName, e.target.checked)}
+                        checked={Array.isArray(data) && data.length > 0 && data.every((row) => getAuthYn(row, authName) === "Y")}
+                        disabled={!Array.isArray(data) || data.length === 0}
+                      />
+                    </div>
                   </div>
 
                 </th>
@@ -322,12 +324,14 @@ const MenuAuthInfo = () => {
                     <span>{formatMenuName(row.MENUNM, row.MENULEVEL)}</span>
                   </td>
                   <td className={`${styles.textCenter} ${styles.stickyColumn2}`}>
-                    <input
-                      type="checkbox"
-                      // className={styles.formCheckInput}
-                      checked={isRowChanged(row.MENUID)}
-                      onChange={() => handleCheckboxChange(row.MENUID)}
-                    />
+                    <div className="formGroup">
+                      <input
+                        type="checkbox"
+                        // className={styles.formCheckInput}
+                        checked={isRowChanged(row.MENUID)}
+                        onChange={() => handleCheckboxChange(row.MENUID)}
+                      />
+                    </div>
                   </td>
                   {authFields.map((authName) => (
                     <td
@@ -335,7 +339,7 @@ const MenuAuthInfo = () => {
                       className={`${styles.textCenter} ${changedCells.has(`${row.MENUID}-${authName}`) ? styles.changedCell : ''}`}
                     >
                       <div className="d-flex justify-content-center gap-4">
-                        <div className={`form-check form-check-inline ${styles.formCheckInline}`}>
+                        <div className={`formGroup form-check form-check-inline ${styles.formCheckInline}`}>
                           <input
                             type="radio"
                             // className={styles.formCheckInput}
@@ -346,7 +350,7 @@ const MenuAuthInfo = () => {
                           />
                           <label className="form-check-label">Y</label>
                         </div>
-                        <div className={`form-check form-check-inline ${styles.formCheckInline}`}>
+                        <div className={`formGroup form-check form-check-inline ${styles.formCheckInline}`}>
                           <input
                             type="radio"
                             // className={styles.formCheckInput}
