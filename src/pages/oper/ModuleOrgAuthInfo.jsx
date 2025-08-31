@@ -836,10 +836,10 @@ const ModuleOrgAuthInfo = () => {
         buttonStyles={styles}
       >
         <div className='btnGroupCustom'>
-          <button className={`btn text-bg-primary ${styles.btn}`} onClick={handleAddClick}>
+          <button className={`btn btn-secondary ${styles.btn}`} onClick={handleAddClick}>
             추가
           </button>
-          <button className={`btn text-bg-success ${styles.btn}`} onClick={handleSave}>
+          <button className={`btn btn-primary ${styles.btn}`} onClick={handleSave}>
             저장
           </button>
         </div>
@@ -859,110 +859,110 @@ const ModuleOrgAuthInfo = () => {
         onConfirm={handleAddConfirm}
         title="권한 추가"
       >
-        <div className="mb-3">
-          <label className="form-label">입력 유형</label>
-          <select
-            className={`form-select ${styles.formSelect}`}
-            value={newAuth.inputType}
-            onChange={(e) => setNewAuth({ ...newAuth, inputType: e.target.value, EMPNO: "", EMPORG: "", AUTHOPERATOR: "" })}
-          >
-            <option value="EMP">담당자</option>
-            <option value="ORG">담당조직</option>
-          </select>
-        </div>
-        {newAuth.inputType === "EMP" && (
-          <div className="mb-3">
-            <label className="form-label">담당자</label>
-            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <input
-                type="text"
-                className={`form-control ${styles.formControl}`}
-                value={newAuth.EMPORG}
-                readOnly
-                placeholder="담당자를 선택하세요"
-                style={{ width: "150px", height: "30px", backgroundColor: "#f0f0f0", color: "#000000" }}
-              />
-              <button
-                className={`btn btn-sm ${styles.popupIcon}`}
-                onClick={() => {
-                  setShowUserPopup(true);
-                }}
-                style={{ width: "30px", height: "30px", padding: "0", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f0f0f0", color: "#000000" }}
-              >
-                +
-              </button>
-            </div>
+        <div className='formColWrap'>
+          <div className='formGroup'>
+            <label className="form-label">입력 유형</label>
+            <select
+              className={`form-select ${styles.formSelect}`}
+              value={newAuth.inputType}
+              onChange={(e) => setNewAuth({ ...newAuth, inputType: e.target.value, EMPNO: "", EMPORG: "", AUTHOPERATOR: "" })}
+            >
+              <option value="EMP">담당자</option>
+              <option value="ORG">담당조직</option>
+            </select>
           </div>
-        )}
-        {newAuth.inputType === "ORG" && (
-          <div className="mb-3">
-            <label className="form-label">담당조직</label>
+          {newAuth.inputType === "EMP" && (
+            <div className='formGroup'>
+              <label className="form-label">담당자</label>
+              <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                <input
+                  type="text"
+                  className={`form-control ${styles.formControl}`}
+                  value={newAuth.EMPORG}
+                  readOnly
+                  placeholder="담당자를 선택하세요"
+                  style={{ width: "150px", height: "30px", backgroundColor: "#f0f0f0", color: "#000000" }}
+                />
+                <button
+                  className='popupIcon'
+                  onClick={() => {
+                    setShowUserPopup(true);
+                  }}
+                >
+                  <i class="bi bi-plus"></i>
+                </button>
+              </div>
+            </div>
+          )}
+          {newAuth.inputType === "ORG" && (
+            <div className='formGroup'>
+              <label className="form-label">담당조직</label>
+              <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                <input
+                  type="text"
+                  className={`form-control ${styles.formControl}`}
+                  value={newAuth.EMPORG}
+                  readOnly
+                  placeholder="조직 선택"
+                  style={{ width: "150px", height: "30px", backgroundColor: "#f0f0f0", color: "#000000" }}
+                />
+                <button
+                  className={`btn btn-sm ${styles.popupIcon}`}
+                  onClick={() => {
+                    if (!newAuth.MODULETYPE) {
+                      errorMsgPopup("업무를 먼저 선택해주세요.");
+                      return;
+                    }
+                    setTimeout(() => setShowEmpOrgPopup(true), 0);
+                  }}
+                  style={{ width: "30px", height: "30px", padding: "0", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f0f0f0", color: "#000000" }}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          )}
+          <div className='formGroup'>
+            <label className="form-label">업무</label>
+            <select
+              className={`form-select ${styles.formSelect}`}
+              value={newAuth.MODULETYPE}
+              onChange={(e) => {
+                setNewAuth({ ...newAuth, MODULETYPE: e.target.value });
+              }}
+            >
+              <option value="">선택</option>
+              {moduleOptions.filter(opt => opt.value !== "").map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className='formGroup'>
+            <label className="form-label">권한조직</label>
             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
               <input
                 type="text"
                 className={`form-control ${styles.formControl}`}
-                value={newAuth.EMPORG}
+                value={newAuth.ORGNM}
                 readOnly
                 placeholder="조직 선택"
                 style={{ width: "150px", height: "30px", backgroundColor: "#f0f0f0", color: "#000000" }}
               />
               <button
-                className={`btn btn-sm ${styles.popupIcon}`}
+                className='popupIcon'
                 onClick={() => {
                   if (!newAuth.MODULETYPE) {
-                    errorMsgPopup("업무를 먼저 선택해주세요.");
-                    return;
+                      errorMsgPopup("업무를 먼저 선택해주세요.");
+                      return;
                   }
-                  setTimeout(() => setShowEmpOrgPopup(true), 0);
+                  setShowOrgPopup(true);
                 }}
-                style={{ width: "30px", height: "30px", padding: "0", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f0f0f0", color: "#000000" }}
               >
-                +
+                <i class="bi bi-plus"></i>
               </button>
             </div>
-          </div>
-        )}
-        <div className="mb-3">
-          <label className="form-label">업무</label>
-          <select
-            className={`form-select ${styles.formSelect}`}
-            value={newAuth.MODULETYPE}
-            onChange={(e) => {
-              setNewAuth({ ...newAuth, MODULETYPE: e.target.value });
-            }}
-          >
-            <option value="">선택</option>
-            {moduleOptions.filter(opt => opt.value !== "").map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label className="form-label">권한조직</label>
-          <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-            <input
-              type="text"
-              className={`form-control ${styles.formControl}`}
-              value={newAuth.ORGNM}
-              readOnly
-              placeholder="조직 선택"
-              style={{ width: "150px", height: "30px", backgroundColor: "#f0f0f0", color: "#000000" }}
-            />
-            <button
-              className={`btn btn-sm ${styles.popupIcon}`}
-              onClick={() => {
-                if (!newAuth.MODULETYPE) {
-                    errorMsgPopup("업무를 먼저 선택해주세요.");
-                    return;
-                }
-                setShowOrgPopup(true);
-              }}
-              style={{ width: "30px", height: "30px", padding: "0", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f0f0f0", color: "#000000" }}
-            >
-              +
-            </button>
           </div>
         </div>
       </CommonPopup>

@@ -394,13 +394,13 @@ const ExcelUploadTemplateManage = () => {
       >
         <div className='btnGroupCustom'>
           <button
-            className={`btn text-bg-primary ${styles.btn}`}
+            className={`btn btn-secondary ${styles.btn}`}
             onClick={() => handleDynamicEvent('showAddPopup')}
           >
             추가
           </button>
           <button 
-            className={`btn text-bg-success ${styles.btn}`} 
+            className={`btn btn-primary ${styles.btn}`} 
             onClick={handleSave}
           >
             저장
@@ -427,28 +427,30 @@ const ExcelUploadTemplateManage = () => {
           },
         ]}
       >
-        <div className="mb-3">
-          <label className="form-label">제목</label>
-          <input
-            type="text"
-            className={`form-control ${styles.formControl}`}
-            value={newTemplate.TITLE}
-            onChange={(e) => setNewTemplate({ ...newTemplate, TITLE: e.target.value })}
-            placeholder="템플릿 제목을 입력하세요"
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">파일</label>
-          <input
-            type="file"
-            className={`form-control ${styles.formControl}`}
-            accept=".xlsx,.xls"
-            multiple
-            onChange={(e) => {
-              const selectedFiles = Array.from(e.target.files || []);
-              setNewTemplate({ ...newTemplate, FILES: selectedFiles });
-            }}
-          />
+        <div className='formColWrap'>
+          <div className='formGroup'>
+            <label className="form-label">제목</label>
+            <input
+              type="text"
+              className={`form-control ${styles.formControl}`}
+              value={newTemplate.TITLE}
+              onChange={(e) => setNewTemplate({ ...newTemplate, TITLE: e.target.value })}
+              placeholder="템플릿 제목을 입력하세요"
+            />
+          </div>
+          <div className='formGroup'>
+            <label className="form-label">파일</label>
+            <input
+              type="file"
+              className={`form-control ${styles.formControl}`}
+              accept=".xlsx,.xls"
+              multiple
+              onChange={(e) => {
+                const selectedFiles = Array.from(e.target.files || []);
+                setNewTemplate({ ...newTemplate, FILES: selectedFiles });
+              }}
+            />
+          </div>
         </div>
       </CommonPopup>
     </div>

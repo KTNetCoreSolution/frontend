@@ -525,80 +525,82 @@ const MenuManageInfo = () => {
         onConfirm={handleAddConfirm}
         title="메뉴 추가"
       >
-        <div className="mb-3">
-          <label className="form-label">메뉴명</label>
-          <input
-            type="text"
-            className={`form-control ${styles.formControl}`}
-            value={newMenu.MENUNM}
-            onChange={(e) => setNewMenu({ ...newMenu, MENUNM: e.target.value })}
-            placeholder="메뉴명을 입력하세요"
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">상위메뉴</label>
-          <select
-            className={`form-select ${styles.formSelect}`}
-            value={newMenu.UPPERMENUID}
-            onChange={(e) => {
-              const upperMenuId = e.target.value;
-              const newLevel = upperMenuId
-                ? calculateMenuLevel({ UPPERMENUID: upperMenuId, MENUID: "temp" }, data)
-                : 1;
-              setNewMenu({ ...newMenu, UPPERMENUID: upperMenuId, MENULEVEL: String(newLevel) });
-            }}
-          >
-            <option value="">없음</option>
-            {data
-              .filter((row) => row.MENUID !== newMenu.MENUID)
-              .map((row) => (
-                <option key={row.MENUID} value={row.MENUID}>
-                  {formatMenuName(row.MENUNM, row.MENULEVEL)}
-                </option>
-              ))}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label className="form-label">URL</label>
-          <input
-            type="text"
-            className={`form-control ${styles.formControl}`}
-            value={newMenu.URL}
-            onChange={(e) => setNewMenu({ ...newMenu, URL: e.target.value })}
-            placeholder="URL을 입력하세요"
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">메뉴순서</label>
-          <input
-            type="number"
-            className={`form-control ${styles.formControl}`}
-            value={newMenu.MENUORDER}
-            onChange={(e) => setNewMenu({ ...newMenu, MENUORDER: e.target.value })}
-            placeholder="메뉴 순서를 입력하세요"
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">하위포함</label>
-          <select
-            className={`form-select ${styles.formSelect}`}
-            value={newMenu.LEAFMENUYN}
-            onChange={(e) => setNewMenu({ ...newMenu, LEAFMENUYN: e.target.value })}
-          >
-            <option value="Y">Y</option>
-            <option value="N">N</option>
-          </select>
-        </div>
-        <div className="mb-3">
-          <label className="form-label">사용</label>
-          <select
-            className={`form-select ${styles.formSelect}`}
-            value={newMenu.USEYN}
-            onChange={(e) => setNewMenu({ ...newMenu, USEYN: e.target.value })}
-          >
-            <option value="Y">Y</option>
-            <option value="N">N</option>
-          </select>
+        <div className='formColWrap'>
+          <div className='formGroup'>
+            <label className="form-label">메뉴명</label>
+            <input
+              type="text"
+              className={`form-control ${styles.formControl}`}
+              value={newMenu.MENUNM}
+              onChange={(e) => setNewMenu({ ...newMenu, MENUNM: e.target.value })}
+              placeholder="메뉴명을 입력하세요"
+            />
+          </div>
+          <div className='formGroup'>
+            <label className="form-label">상위메뉴</label>
+            <select
+              className={`form-select ${styles.formSelect}`}
+              value={newMenu.UPPERMENUID}
+              onChange={(e) => {
+                const upperMenuId = e.target.value;
+                const newLevel = upperMenuId
+                  ? calculateMenuLevel({ UPPERMENUID: upperMenuId, MENUID: "temp" }, data)
+                  : 1;
+                setNewMenu({ ...newMenu, UPPERMENUID: upperMenuId, MENULEVEL: String(newLevel) });
+              }}
+            >
+              <option value="">없음</option>
+              {data
+                .filter((row) => row.MENUID !== newMenu.MENUID)
+                .map((row) => (
+                  <option key={row.MENUID} value={row.MENUID}>
+                    {formatMenuName(row.MENUNM, row.MENULEVEL)}
+                  </option>
+                ))}
+            </select>
+          </div>
+          <div className='formGroup'>
+            <label className="form-label">URL</label>
+            <input
+              type="text"
+              className={`form-control ${styles.formControl}`}
+              value={newMenu.URL}
+              onChange={(e) => setNewMenu({ ...newMenu, URL: e.target.value })}
+              placeholder="URL을 입력하세요"
+            />
+          </div>
+          <div className='formGroup'>
+            <label className="form-label">메뉴순서</label>
+            <input
+              type="number"
+              className={`form-control ${styles.formControl}`}
+              value={newMenu.MENUORDER}
+              onChange={(e) => setNewMenu({ ...newMenu, MENUORDER: e.target.value })}
+              placeholder="메뉴 순서를 입력하세요"
+            />
+          </div>
+          <div className='formGroup'>
+            <label className="form-label">하위포함</label>
+            <select
+              className={`form-select ${styles.formSelect}`}
+              value={newMenu.LEAFMENUYN}
+              onChange={(e) => setNewMenu({ ...newMenu, LEAFMENUYN: e.target.value })}
+            >
+              <option value="Y">Y</option>
+              <option value="N">N</option>
+            </select>
+          </div>
+          <div className='formGroup'>
+            <label className="form-label">사용</label>
+            <select
+              className={`form-select ${styles.formSelect}`}
+              value={newMenu.USEYN}
+              onChange={(e) => setNewMenu({ ...newMenu, USEYN: e.target.value })}
+            >
+              <option value="Y">Y</option>
+              <option value="N">N</option>
+            </select>
+          </div>
         </div>
       </CommonPopup>
       <CommonPopup

@@ -307,9 +307,7 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN, 
       <div className='popupContainer'>
         <div className='header'>
           <h3>조직 선택</h3>
-          <button className='closeButton' onClick={handleClose}>
-            ×
-          </button>
+          <button className='closeButton' onClick={handleClose} />
         </div>
 
         <div className="body">

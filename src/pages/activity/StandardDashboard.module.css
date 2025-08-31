@@ -1,9 +1,7 @@
 .container {
   width: 100%;
   max-width: 1920px;
-  padding: 20px;
   margin: 0 auto;
-  background-color: #e9ecef;
 }
 
 .container.fullscreen {
@@ -39,6 +37,11 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  height: 240px;
+  border-radius: 12px !important;
+  background: var(--white);
+  box-shadow: 0 5px 10px rgba(100, 100, 111, 0.1) !important;
+  padding: 1.5rem;
 }
 
 .rightHeader {
@@ -108,9 +111,10 @@
 .chart {
   height: 240px;
   width: 100%;
-  border: 1px solid gray;
-  border-radius: 4px;
-  background-color: #fff;
+  border-radius: 12px !important;
+  background: var(--white);
+  box-shadow: 0 5px 10px rgba(100, 100, 111, 0.1) !important;
+  padding: 1.5rem;
 }
 
 .container.fullscreen .chart {

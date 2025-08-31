@@ -493,13 +493,13 @@ const CarCodeManage = () => {
       >
         <div className='btnGroupCustom'>
           <button
-            className='btn text-bg-primary'
+            className='btn btn-secondary'
             onClick={() => handleDynamicEvent('showAddPopup')}
           >
             추가
           </button>
           <button 
-            className='btn text-bg-success'
+            className='btn btn-primary'
             onClick={handleSave}
           >
             저장
@@ -526,59 +526,61 @@ const CarCodeManage = () => {
           },
         ]}
       >
-        <div className="mb-3">
-          <label className="form-label">차종</label>
-          <select className={`form-select ${styles.formSelect}`}
-            onChange={(e) => {
-              setNewCodeInfo({ ...newCodeInfo, CARTYPE: e.target.value });
-            }}
-          >
-            <option value="all">선택</option>
-            {getFieldOptions('TYPE').map((field) => <option key={field.value} value={field.value}>{field.label}</option>)}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label className="form-label">차형</label>
-          <select className={`form-select ${styles.formSelect}`}
-            onChange={(e) => {
-              setNewCodeInfo({ ...newCodeInfo, CARCLASS: e.target.value });
-            }}
-          >
-            <option value="all">선택</option>
-            {getFieldOptions('CLASS').map((field) => <option key={field.value} value={field.value}>{field.label}</option>)}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label className="form-label">규모</label>
-          <select className={`form-select ${styles.formSelect}`}
-            onChange={(e) => {
-              setNewCodeInfo({ ...newCodeInfo, CARSIZE: e.target.value });
-            }}
-          >
-            <option value="all">선택</option>
-            {getFieldOptions('SIZE').map((field) => <option key={field.value} value={field.value}>{field.label}</option>)}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label className="form-label">차명</label>
-          <input type="text" className={`form-control ${styles.formControl}`} placeholder="차량명 입력" 
-            onChange={(e) => {
-              setNewCodeInfo({ ...newCodeInfo, CARNM: e.target.value });
-            }}
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">이미지</label>
-          <input
-            type="file"
-            className={`form-control ${styles.formControl}`}
-            accept="image/*"
-            multiple
-            onChange={(e) => {
-              const selectedFiles = Array.from(e.target.files || []);
-              setNewCodeInfo({ ...newCodeInfo, FILES: selectedFiles });
-            }}
-          />
+        <div className='formColWrap'>
+          <div className='formGroup'>
+            <label className="form-label">차종</label>
+            <select className={`form-select ${styles.formSelect}`}
+              onChange={(e) => {
+                setNewCodeInfo({ ...newCodeInfo, CARTYPE: e.target.value });
+              }}
+            >
+              <option value="all">선택</option>
+              {getFieldOptions('TYPE').map((field) => <option key={field.value} value={field.value}>{field.label}</option>)}
+            </select>
+          </div>
+          <div className='formGroup'>
+            <label className="form-label">차형</label>
+            <select className={`form-select ${styles.formSelect}`}
+              onChange={(e) => {
+                setNewCodeInfo({ ...newCodeInfo, CARCLASS: e.target.value });
+              }}
+            >
+              <option value="all">선택</option>
+              {getFieldOptions('CLASS').map((field) => <option key={field.value} value={field.value}>{field.label}</option>)}
+            </select>
+          </div>
+          <div className='formGroup'>
+            <label className="form-label">규모</label>
+            <select className={`form-select ${styles.formSelect}`}
+              onChange={(e) => {
+                setNewCodeInfo({ ...newCodeInfo, CARSIZE: e.target.value });
+              }}
+            >
+              <option value="all">선택</option>
+              {getFieldOptions('SIZE').map((field) => <option key={field.value} value={field.value}>{field.label}</option>)}
+            </select>
+          </div>
+          <div className='formGroup'>
+            <label className="form-label">차명</label>
+            <input type="text" className={`form-control ${styles.formControl}`} placeholder="차량명 입력" 
+              onChange={(e) => {
+                setNewCodeInfo({ ...newCodeInfo, CARNM: e.target.value });
+              }}
+            />
+          </div>
+          <div className='formGroup'>
+            <label className="form-label">이미지</label>
+            <input
+              type="file"
+              className={`form-control ${styles.formControl}`}
+              accept="image/*"
+              multiple
+              onChange={(e) => {
+                const selectedFiles = Array.from(e.target.files || []);
+                setNewCodeInfo({ ...newCodeInfo, FILES: selectedFiles });
+              }}
+            />
+          </div>
         </div>
       </CommonPopup>
       {selectedImage && <ImageViewPopup

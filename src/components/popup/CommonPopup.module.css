@@ -45,12 +45,12 @@
   .modalBody {
     color: #333;
     position: relative;
-    border: 1px solid #696969;
+    /* border: 1px solid #696969;
     margin: 10px 5px;
     padding: 10px 10px;
     border-radius: 5px;
-    background: #f0f0f0;
-    line-height: 3px !important;
+    background: #f0f0f0; */
+    /* line-height: 3px !important; */
   }
   
   .modalFooter {

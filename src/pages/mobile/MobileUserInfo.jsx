@@ -76,7 +76,7 @@ const handleLogout = async () => {
           </li>
         </ul>
 
-        <div className="tab-content p-3">
+        <div className="tab-content mt-4">
           <div
             className="tab-pane fade show active"
             id="info"

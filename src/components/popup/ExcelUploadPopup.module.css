@@ -54,7 +54,7 @@
   padding: 10px 10px;
   border-radius: 5px;
   background: #f0f0f0;
-  line-height: 3px !important;
+  /* line-height: 3px !important; */
   display: flex;
   align-items: stretch; /* Ensure input and buttons stretch appropriately */
   flex-direction: column;

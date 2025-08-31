@@ -298,7 +298,7 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
                     onClick={() => onEvent(field.eventType, { id: field.id })}
                     disabled={field.enabled === false}
                   >
-                    +
+                    <i class="bi bi-plus"></i>
                   </button>
                 )}
                 {field.type === 'button' && (

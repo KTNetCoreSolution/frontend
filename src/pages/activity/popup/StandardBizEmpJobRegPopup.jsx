@@ -705,10 +705,10 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                           <td className={styles.thAction}>
                             {isButtonVisible && (
                               <>
-                                <button onClick={() => handleSave('update', index)} className={`${styles.btn} ${styles.listBtn} text-bg-primary`}>
+                                <button onClick={() => handleSave('update', index)} className={`${styles.btn} ${styles.listBtn} btn-secondary`}>
                                   수정
                                 </button>
-                                <button onClick={() => handleSave('delete', index)} className={`${styles.btn} ${styles.listBtn} text-bg-danger`}>
+                                <button onClick={() => handleSave('delete', index)} className={`${styles.btn} ${styles.listBtn} btn-primary`}>
                                   삭제
                                 </button>
                               </>

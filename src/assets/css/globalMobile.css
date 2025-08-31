@@ -264,9 +264,9 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 
 .tab-content {
-  border: 1px solid #dee2e6;
+  /* border: 1px solid #dee2e6; */
   border-top: none;
-  padding: 1rem;
+  /* padding: 1rem; */
 }
 
 

@@ -354,7 +354,7 @@ const StandardDashboard = () => {
   }, [summaryData]);
 
   return (
-    <div className={`${styles.container} ${isFullscreen ? styles.fullscreen : ''}`}>
+    <div className={`chartWrap ${styles.container} ${isFullscreen ? styles.fullscreen : ''}`}>
       <div className={styles.inputSection}>
         <div className={styles.chartsContainer}>
           <div className={styles.subSection}>

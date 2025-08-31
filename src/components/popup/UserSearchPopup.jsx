@@ -208,9 +208,7 @@ const UserSearchPopup = ({ onClose, onConfirm }) => {
       <div className='popupContainer'>
         <div className='header'>
           <h3>사용자 검색</h3> 
-          <button className='closeButton' onClick={handleClose}>
-            ×
-          </button>
+          <button className='closeButton' onClick={handleClose} />
         </div>
         <div className="body">
           <div className={styles.searchSection}>
