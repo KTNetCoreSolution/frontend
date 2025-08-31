@@ -889,7 +889,7 @@ const ModuleOrgAuthInfo = () => {
                     setShowUserPopup(true);
                   }}
                 >
-                  <i class="bi bi-plus"></i>
+                  <i className="bi bi-plus"></i>
                 </button>
               </div>
             </div>
@@ -960,7 +960,7 @@ const ModuleOrgAuthInfo = () => {
                   setShowOrgPopup(true);
                 }}
               >
-                <i class="bi bi-plus"></i>
+                <i className="bi bi-plus"></i>
               </button>
             </div>
           </div>
