@@ -1,5 +1,5 @@
 .customModal {
-  width: 95vw !important; /* 원하는 너비 설정 */
+  width: 80vw !important; /* 원하는 너비 설정 */
   max-width: 95vw !important; /* Responsive max-width */
   max-height: 95vh !important; /* Responsive max-width */
   margin: 0 auto;
@@ -7,11 +7,12 @@
 
 .modalBody {
   font-size: 14px;
+  padding: 0 var(--bs-modal-padding);
 }
 
 .inputButtonWrapper {
   display: flex;
   justify-content: flex-end;
   gap: 5px;
-  margin-top: 10px;
+  margin: 10px 0;
 }

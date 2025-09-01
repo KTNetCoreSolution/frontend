@@ -128,7 +128,7 @@ const StandardClassSelectPopup = ({ show, onHide, onSelect, data }) => {
       <Modal.Header closeButton>
         <Modal.Title>업무구분 선택</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className={`${styles.modalBody} modal-body`}>
         <TableSearch
           filterFields={[
             { id: "filterSelect", label: "", type: "select", options: [{ value: "", label: "선택" }, { value: "CLASSANM", label: "대분류" }, { value: "CLASSBNM", label: "중분류" }, { value: "CLASSCNM", label: "소분류" }] },

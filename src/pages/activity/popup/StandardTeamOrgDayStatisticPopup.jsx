@@ -203,7 +203,7 @@ const StandardTeamOrgDayStatisticPopup = ({ show, onHide, data }) => {
       <Modal.Header closeButton>
         <Modal.Title>일별 업무 리스트</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className={`${styles.modalBody} modal-body`}>
         <TableSearch
           filterFields={[
             { id: 'filterSelect', label: '', type: 'select', options: [

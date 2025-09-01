@@ -301,7 +301,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   position: relative;
   flex: 1 1 auto;
   overflow-y: auto;
-  padding: var(--bs-modal-padding);
+  padding: 0 var(--bs-modal-padding);
 
 }
 .popupContainer .body .tableWrapper {

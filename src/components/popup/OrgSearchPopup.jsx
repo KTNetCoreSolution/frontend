@@ -304,7 +304,7 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN, 
 
   return (
     <div className='overlay'>
-      <div className='popupContainer'>
+      <div className={`popupContainer ${styles.popupContainer}`}>
         <div className='header'>
           <h3>조직 선택</h3>
           <button className='closeButton' onClick={handleClose} />

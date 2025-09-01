@@ -146,7 +146,7 @@ const StandardOrgWorkStatisticsPopup = ({ show, onHide, workHours }) => {
       <Modal.Header closeButton>
         <Modal.Title>본부별 업무 현황</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className={`${styles.modalBody} modal-body`}>
         <p>선택된 업무량(시간): {workHours}</p>
         <TableSearch
           filterFields={[
