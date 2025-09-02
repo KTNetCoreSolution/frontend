@@ -87,7 +87,7 @@ const StandardTeamJobManage = () => {
                 : user?.standardSectionCd === 'BIZ'
                   ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true }]
                   : []),
-          { id: 'rangeStartDate', type: 'day', row: 1, width: '94px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: true, defaultValue: today },
+          { id: 'rangeStartDate', type: 'day', row: 1, width: '100px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: true, defaultValue: today },
         ],
       },
       {
@@ -378,6 +378,13 @@ const StandardTeamJobManage = () => {
       if (!response.success) {
         errorMsgPopup(response.message || '삭제 중 오류가 발생했습니다.');
         return;
+      } else {
+        if (response.errMsg !== '' || (response.data[0] && response.data[0].errCd !== '00')) {
+          let errMsg = response.errMsg;
+          if (response.data[0] && response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+          msgPopup(errMsg);
+          return;
+        }
       }
       msgPopup('삭제되었습니다.');
       loadData();

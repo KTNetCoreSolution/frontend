@@ -40,7 +40,7 @@ const StandardClassSelectPopup = ({ show, onHide, onSelect, data }) => {
           layout: 'fitColumns',
           groupBy: ['CLASSACD', 'CLASSBCD'],
           groupStartOpen: true,
-          groupToggleElement: 'arrow',
+          groupToggleElement: 'header',
           groupHeader: (value, count, data, groupComponent) => {
             if (groupComponent.getField() === 'CLASSACD') {
               return `${data[0].CLASSANM} (${count} items)`;

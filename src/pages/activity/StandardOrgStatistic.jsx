@@ -15,17 +15,12 @@ import common from '../../utils/common';
 
 const fn_CellNumber = { editor: 'number', editorParams: { min: 0 }, editable: true };
 
-
 // getFieldOptions 함수
 const getFieldOptions = (fieldId) => {
   if (fieldId === 'filterSelect') {
     return [
       { value: '', label: '선택' },
-      { value: 'EMPNM', label: '작업자' },
-      { value: 'CLASSANM', label: '대분류' },
-      { value: 'CLASSBNM', label: '중분류' },
-      { value: 'CLASSCNM', label: '소분류' },
-      { value: 'WORKNM', label: '근무유형' },
+      { value: 'ORGNM', label: '조직' },
     ];
   }
   if (fieldId === 'dayGubun') {
@@ -40,6 +35,16 @@ const getFieldOptions = (fieldId) => {
 const filterTableFields = [
   { id: 'filterSelect', type: 'select', label: '', options: getFieldOptions('filterSelect'), width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
   { id: 'filterText', type: 'text', label: '', placeholder: '찾을 내용을 입력하세요', width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
+];
+
+// 기본 컬럼 정의 (SECTIONCD와 SECTIONNM을 일반 열로 유지)
+const baseColumns = [
+  { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 100 },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '인원', field: 'EMPNOCNT', sorter: 'number', width: 100 },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '조직', field: 'ORGNM', sorter: 'string', width: 130 },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '조직코드', field: 'ORGCD', sorter: 'string', width: 130, visible: false },
 ];
 
 const StandardOrgStatistic = () => {
@@ -104,7 +109,6 @@ const StandardOrgStatistic = () => {
       const newAreas = prev.areas.map((area) => {
         if (area.type !== 'search') return area;
         const baseFields = baseSearchConfig.areas.find((a) => a.type === 'search').fields;
-        const currentFields = prev.areas.find((a) => a.type === 'search').fields;
         const newFields = baseFields.filter((field) => {
           if (filters.dayGubun === 'M') {
             return field.id !== 'rangeStartDate' && field.id !== 'rangeEndDate';
@@ -144,33 +148,11 @@ const StandardOrgStatistic = () => {
     setTableFilters(initialFilters(filterTableFields));
   }, [searchConfig, today]);
 
-  const columns = [
-    { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업일', field: 'DDATE', sorter: 'string', width: 100, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 100, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '조직1', field: 'ORGNM1', sorter: 'string', width: 130 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '조직2', field: 'ORGNM2', sorter: 'string', width: 130 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '조직3', field: 'ORGNM3', sorter: 'string', width: 130 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '조직4', field: 'ORGNM4', sorter: 'string', width: 130 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '대분류', field: 'CLASSANM', sorter: 'string', width: 180 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '중분류', field: 'CLASSBNM', sorter: 'string', width: 180 },
-    { headerHozAlign: 'center', hozAlign: 'left', title: '소분류', field: 'CLASSCNM', sorter: 'string', width: 220 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업건', field: 'WORKCNT', sorter: 'number', width: 130 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '시작시간', field: 'STARTTM', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '종료시간', field: 'ENDTM', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKH', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업자', field: 'EMPNM', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무유형코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무유형', field: 'WORKNM', sorter: 'string', width: 100 },
-  ];
-
   const loadData = async () => {
     setLoading(true);
     setIsSearched(true);
     try {
       const params = {
-        pGUBUN: 'LIST',
         pSECTIONCD: hasPermission(user?.auth, 'oper')
           ? filters.classGubun
           : user?.standardSectionCd === 'LINE'
@@ -181,7 +163,7 @@ const StandardOrgStatistic = () => {
                 ? 'BIZ'
                 : 'LINE',
         pEMPNO: user?.empNo || '',
-        pORGCD: 'ALL',
+        pORGCD: '',
         pDATEGUBUN: filters.dayGubun,
         pDATE1: filters.dayGubun === 'D' ? filters.rangeStartDate : filters.dayGubun === 'M' ? filters.monthDate : '',
         pDATE2: filters.dayGubun === 'D' ? filters.rangeEndDate : filters.dayGubun === 'M' ? filters.monthDate : '',
@@ -189,13 +171,55 @@ const StandardOrgStatistic = () => {
         pDEBUG: 'F',
       };
 
-      const response = await fetchData('standard/orgStatistic/list', params);
-      if (!response.success) {
-        errorMsgPopup(response.message || '데이터를 가져오는 중 오류가 발생했습니다.');
+      // 첫 번째 호출: classData (pGUBUN: 'COLLIST')
+      const classResponse = await fetchData('standard/orgStatistic/list', {
+        pGUBUN: 'COLLIST',
+        ...params,
+      });
+      if (!classResponse.success) {
+        errorMsgPopup(classResponse.message || '클래스 데이터를 가져오는 중 오류가 발생했습니다.');
         return;
       }
-      const responseData = Array.isArray(response.data) ? response.data : [];
-      setData(responseData);
+
+      // 동적 컬럼 생성
+      const classData = Array.isArray(classResponse.data) ? classResponse.data : [];
+      const dynamicColumns = classData.map(({ CLASSACD, CLASSANM }) => ({
+        headerHozAlign: 'center',
+        hozAlign: 'center',
+        title: CLASSANM,
+        field: CLASSACD,
+        sorter: 'string',
+        width: 200,
+        visible: true,
+      }));
+
+      // 두 번째 호출: mainData (pGUBUN: 'LIST')
+      const mainResponse = await fetchData('standard/orgStatistic/list', {
+        pGUBUN: 'LIST',
+        ...params,
+      });
+      if (!mainResponse.success) {
+        errorMsgPopup(mainResponse.message || '데이터를 가져오는 중 오류가 발생했습니다.');
+        return;
+      }
+      const mainData = Array.isArray(mainResponse.data) ? mainResponse.data : [];
+      
+      // 데이터에 고유 ID 추가 (일반 행 표시를 위해)
+      const processedData = mainData.map((row, index) => ({
+        ...row,
+        ID: index + 1,
+      }));
+      
+      setData(processedData);
+
+      // 테이블 컬럼 및 데이터 갱신
+      if (tableInstance.current && tableStatus === 'ready') {
+        const updatedColumns = [...baseColumns, ...dynamicColumns];
+        tableInstance.current.setColumns(updatedColumns);
+        tableInstance.current.setData(processedData); // 수정된 데이터 설정
+      } else {
+        console.warn('테이블이 준비되지 않았습니다. 상태:', tableStatus);
+      }
     } catch (err) {
       console.error('데이터 로드 실패:', err);
       errorMsgPopup('데이터를 가져오는 중 오류가 발생했습니다.');
@@ -218,8 +242,9 @@ const StandardOrgStatistic = () => {
         console.warn('테이블 컨테이너가 준비되지 않았습니다.');
         return;
       }
+      
       try {
-        tableInstance.current = createTable(tableRef.current, columns, [], {
+        tableInstance.current = createTable(tableRef.current, baseColumns, data /* 실제 데이터 배열 */, {
           headerHozAlign: 'center',
           layout: 'fitColumns',
         });
