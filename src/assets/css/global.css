@@ -638,7 +638,7 @@ border-color: #bd2130;
 .menuItem .subMenu .subMenu {
   position: absolute;
   top: -10px;
-  left: 160px;
+  left: 100px;
   transform: none;
 }
 
