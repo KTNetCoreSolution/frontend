@@ -215,8 +215,8 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             const mimeType = fileUtils.mimeTypes[extension] || 'application/octet-stream';
             const fileData = response.data[0].IMGDATA;
             const logDate = response.data[0].LOGDATE <= todayDate ? todayDate : response.data[0].LOGDATE;            
-            const logStTime = response.data[0].LOGDATE > todayDate ? response.data[0].LOGENTIME : '00:00';
-            
+            const logStTime = response.data[0].LOGDATE === todayDate ? response.data[0].LOGENTIME : '00:00';
+
             setStTime(timeOption(logStTime, 'S'));
 
             const carNm = response.data[0].CARNM;
@@ -641,7 +641,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
   if (!show) return null;
 
   return (
-    <Modal show={show} onHide={onHide} onParentSearch={onParentSearch} centered>
+    <Modal show={show} onHide={onHide} onParentSearch={onParentSearch} centered dialogClassName={styles.customModal}>
       <Modal.Header closeButton>
         <Modal.Title>운행일지 관리</Modal.Title>
       </Modal.Header>
@@ -703,8 +703,8 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
         </div>
         <div className={`mb-2 ${styles.formDiv}`} style={{display: `${vDisplay ? 'block' : 'none'}`}}>
           <div className="mb-2 d-flex">
-            <label className="form-label" style={{paddingTop:6 + 'px'}}>점검항목</label>
-            <button className={`btn ${styles.btnCheck} ${styles.btn}`} style={{ width:40 + 'px', marginLeft:'auto'}} onClick={(e) => setDisplay(!vDisplay)}>이전</button>
+            <label className="form-label" style={{fontWeight:'bold'}}>점검항목</label>
+            <button className={`btn ${styles.btnCheck} ${styles.btn} ${styles.btnReturn}`} onClick={(e) => setDisplay(!vDisplay)}>이전</button>
           </div>
           <div className="row">
             <div className="col mb-2 d-flex" >
