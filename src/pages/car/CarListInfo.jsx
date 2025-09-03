@@ -526,7 +526,7 @@ const CarListInfo = () => {
         }}
         title={excelPopupTitle}
         rptCd="CARINFOEXCELUPLOAD"
-        templateParams={{ pGUBUN: 'RPTCD', pTITLE: '', pFILEID: '11', pRPTCD: 'CARINFOEXCELUPLOAD', pDEBUG: 'F' }}
+        templateParams={{ pGUBUN: 'RPTCD', pTITLE: '', pFILEID: '12', pRPTCD: 'CARINFOEXCELUPLOAD', pDEBUG: 'F' }}
       />
     </div>
   );
