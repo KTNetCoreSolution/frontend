@@ -12,6 +12,7 @@ import { msgPopup } from '../../utils/msgPopup';
 import styles from '../../components/table/TableSearch.module.css';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import common from '../../utils/common';
+import StandardOrgClassStatisticPopup from './popup/StandardOrgClassStatisticPopup';
 
 const fn_CellNumber = { editor: 'number', editorParams: { min: 0 }, editable: true };
 
@@ -37,7 +38,7 @@ const filterTableFields = [
   { id: 'filterText', type: 'text', label: '', placeholder: '찾을 내용을 입력하세요', width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
 ];
 
-// 기본 컬럼 정의 (SECTIONCD와 SECTIONNM을 일반 열로 유지)
+// 기본 컬럼 정의
 const baseColumns = [
   { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
   { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
@@ -69,6 +70,9 @@ const StandardOrgStatistic = () => {
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
   const isInitialRender = useRef(true);
+  const [showStatisticPopup, setShowStatisticPopup] = useState(false);
+  const [selectedData, setSelectedData] = useState(null);
+  const [dynamicColumns, setDynamicColumns] = useState([]);
 
   // 초기 searchConfig 설정
   const baseSearchConfig = {
@@ -89,14 +93,14 @@ const StandardOrgStatistic = () => {
           { id: 'dayGubunLbl', type: 'label', row: 1, label: '작업', labelVisible: false, enabled: true },
           { id: 'dayGubun', type: 'select', row: 1, label: '', labelVisible: false, options: getFieldOptions('dayGubun'), defaultValue: 'M', enabled: true },
           { id: 'monthDate', type: 'month', row: 1, width: '74px', label: '', labelVisible: true, placeholder: '월 선택', enabled: false, defaultValue: today.substring(0, 7) },
-          { id: 'rangeStartDate', type: 'startday', row: 1, width: '96px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: false, defaultValue: today },
-          { id: 'rangeEndDate', type: 'endday', row: 1, width: '96px', label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', enabled: false, defaultValue: today },
+          { id: 'rangeStartDate', type: 'startday', row: 1, width: '100px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: false, defaultValue: today },
+          { id: 'rangeEndDate', type: 'endday', row: 1, width: '100px', label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', enabled: false, defaultValue: today },
         ],
       },
       {
         type: 'buttons',
         fields: [
-          { id: 'searchBtn', type: 'button', row: 1, label: '검색', eventType: 'search', enabled: true },
+          { id : 'searchBtn', type: 'button', row: 1, label: '검색', eventType: 'search', enabled: true },
         ],
       },
     ],
@@ -126,7 +130,8 @@ const StandardOrgStatistic = () => {
   // filters 초기화
   useEffect(() => {
     setFilters((prev) => {
-      const searchFields = searchConfig.areas.find((area) => area.type === 'search').fields;
+      const searchArea = searchConfig.areas.find((area) => area.type === 'search');
+      const searchFields = searchArea ? searchArea.fields : [];
       const dateFilters = {};
       searchFields.forEach((field) => {
         if (['day', 'startday', 'endday'].includes(field.type) && prev[field.id] === undefined) {
@@ -164,7 +169,8 @@ const StandardOrgStatistic = () => {
                 : 'LINE',
         pEMPNO: user?.empNo || '',
         pORGCD: '',
-        pDATEGUBUN: filters.dayGubun,
+        pORGLEVELGB: '1',
+        pDATEGB: filters.dayGubun,
         pDATE1: filters.dayGubun === 'D' ? filters.rangeStartDate : filters.dayGubun === 'M' ? filters.monthDate : '',
         pDATE2: filters.dayGubun === 'D' ? filters.rangeEndDate : filters.dayGubun === 'M' ? filters.monthDate : '',
         pCLASSCD: filters.CLASSCD,
@@ -183,15 +189,43 @@ const StandardOrgStatistic = () => {
 
       // 동적 컬럼 생성
       const classData = Array.isArray(classResponse.data) ? classResponse.data : [];
-      const dynamicColumns = classData.map(({ CLASSACD, CLASSANM }) => ({
+      const newDynamicColumns = classData.map(({ CLASSACD, CLASSANM }) => ({
         headerHozAlign: 'center',
         hozAlign: 'center',
         title: CLASSANM,
         field: CLASSACD,
-        sorter: 'string',
+        sorter: 'number',
         width: 200,
         visible: true,
+        formatter: (cell) => {
+          const value = Number(cell.getValue());
+          if (!isNaN(value) && value > 0) {
+            cell.getElement().style.color = '#247db3';
+            cell.getElement().style.cursor = 'pointer';
+          } else {
+            cell.getElement().style.color = '#000000';
+            cell.getElement().style.cursor = 'default';
+          }
+          return value || '';
+        },
+        cellClick: (e, cell) => {
+          const field = cell.getField();
+          const rowData = cell.getRow().getData();
+          const value = Number(rowData[field]);
+          console.log('Clicked cell:', { field, value, rowData }); // 디버깅용 로그
+          if (!isNaN(value) && value > 0) {
+            setSelectedData({
+              ...rowData,
+              CLASSCD: field,
+              DDATE: filters.dayGubun === 'D' ? filters.rangeStartDate : filters.monthDate,
+              EMPNO: rowData.EMPNO || user?.empNo || '',
+              ORGCD: rowData.ORGCD || '',
+            });
+            setShowStatisticPopup(true);
+          }
+        },
       }));
+      setDynamicColumns(newDynamicColumns);
 
       // 두 번째 호출: mainData (pGUBUN: 'LIST')
       const mainResponse = await fetchData('standard/orgStatistic/list', {
@@ -204,7 +238,7 @@ const StandardOrgStatistic = () => {
       }
       const mainData = Array.isArray(mainResponse.data) ? mainResponse.data : [];
       
-      // 데이터에 고유 ID 추가 (일반 행 표시를 위해)
+      // 데이터에 고유 ID 추가
       const processedData = mainData.map((row, index) => ({
         ...row,
         ID: index + 1,
@@ -214,9 +248,9 @@ const StandardOrgStatistic = () => {
 
       // 테이블 컬럼 및 데이터 갱신
       if (tableInstance.current && tableStatus === 'ready') {
-        const updatedColumns = [...baseColumns, ...dynamicColumns];
+        const updatedColumns = [...baseColumns, ...newDynamicColumns];
         tableInstance.current.setColumns(updatedColumns);
-        tableInstance.current.setData(processedData); // 수정된 데이터 설정
+        tableInstance.current.setData(processedData);
       } else {
         console.warn('테이블이 준비되지 않았습니다. 상태:', tableStatus);
       }
@@ -231,7 +265,7 @@ const StandardOrgStatistic = () => {
 
   // user 로딩 대기 및 리디렉션 처리
   useEffect(() => {
-    if (user === null) return; // user가 로드되기 전에는 아무 작업도 하지 않음
+    if (user === null) return;
     if (!user) navigate('/');
   }, [user, navigate]);
 
@@ -244,7 +278,7 @@ const StandardOrgStatistic = () => {
       }
       
       try {
-        tableInstance.current = createTable(tableRef.current, baseColumns, data /* 실제 데이터 배열 */, {
+        tableInstance.current = createTable(tableRef.current, baseColumns, data, {
           headerHozAlign: 'center',
           layout: 'fitColumns',
         });
@@ -324,7 +358,6 @@ const StandardOrgStatistic = () => {
     }
   };
 
-  // user가 로드되기 전에는 로딩 상태 표시
   if (user === null) {
     return <div>사용자 정보 로드 중...</div>;
   }
@@ -350,6 +383,11 @@ const StandardOrgStatistic = () => {
         {loading && <div>로딩 중...</div>}
         <div ref={tableRef} className={styles.tableSection} style={{ visibility: loading || tableStatus !== 'ready' ? 'hidden' : 'visible' }} />
       </div>
+      <StandardOrgClassStatisticPopup
+        show={showStatisticPopup}
+        onHide={() => setShowStatisticPopup(false)}
+        data={selectedData ? [selectedData] : []}
+      />
     </div>
   );
 };
