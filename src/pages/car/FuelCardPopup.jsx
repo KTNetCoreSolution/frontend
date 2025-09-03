@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import MainSearch from '../../components/main/MainSearch';
 import { fetchData } from "../../utils/dataUtils";
 import { createTable } from "../../utils/tableConfig";
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
+import Modal from 'react-bootstrap/Modal';
 import styled from 'styled-components';
 import styles from "./FuelCardPopup.module.css";
 
@@ -21,8 +22,7 @@ const getFieldOptions = () => [
   { value: "CARDNO", label: "카드번호" }, { value: "CARNO", label: "차량번호" },
 ];
 
-const UserSearchPopup = ({ onClose, onConfirm, checkCarNo}) => {
-  const [isOpen, setIsOpen] = useState(false);
+const FuelCardPopup = ({ show, onHide, onConfirm, checkCarNo}) => {
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
   const [filters, setFilters] = useState({ searchField: "ORG", searchText: "" });
@@ -44,7 +44,6 @@ const UserSearchPopup = ({ onClose, onConfirm, checkCarNo}) => {
   };
 
   useEffect(() => {
-    setIsOpen(true);
     const initializeTable = async () => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       if (!tableRef.current) {
@@ -134,7 +133,7 @@ const UserSearchPopup = ({ onClose, onConfirm, checkCarNo}) => {
         setTableStatus("initializing");
       }
     };
-  }, []);
+  }, [show]);
 
   useEffect(() => {
     if (tableInstance.current && tableStatus === "ready" && !loading) {
@@ -185,15 +184,24 @@ const UserSearchPopup = ({ onClose, onConfirm, checkCarNo}) => {
   };
 
   const handleClose = () => {
-    setIsOpen(false);
-    if (onClose) onClose();
+    if (tableInstance.current) {
+      tableInstance.current.destroy();
+      tableInstance.current = null;
+      setTableStatus("initializing");
+    }
+    if (onHide) onHide();
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = () => {    
     if (onConfirm) {
       const selectedData = data.find((row) => row.select === "Y") || null;
       let isConfirmed = false;
-      
+
+      if(selectedData === null) {
+        alert("선택된 주유카드가 없습니다.");
+        return;
+      }
+
       if(selectedData.CARNO === "" || checkCarNo === selectedData.CARNO) {
         isConfirmed = true;
       }
@@ -210,17 +218,14 @@ const UserSearchPopup = ({ onClose, onConfirm, checkCarNo}) => {
     }
   };
 
-  if (!isOpen) return null;
+  if (!show) return null;
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.popupContainer}>
-        <div className={styles.header}>
-          <h3>주유카드 검색</h3>
-          <button className={styles.closeButton} onClick={handleClose}>
-            ×
-          </button>
-        </div>
+    <Modal show={show} onHide={onHide} centered dialogClassName={styles.customModal}>
+      <Modal.Header closeButton>
+        <Modal.Title>주유카드정보 관리</Modal.Title>
+      </Modal.Header>
+      <Modal.Body className={`${styles.modalBody} modal-body`}>
         <div className={styles.searchSection}>
           <MainSearch config={searchConfig} filters={filters} setFilters={setFilters} onEvent={handleDynamicEvent} />
         </div>
@@ -233,17 +238,13 @@ const UserSearchPopup = ({ onClose, onConfirm, checkCarNo}) => {
             style={{ visibility: loading || tableStatus !== "ready" ? "hidden" : "visible" }}
           />
         </TableWrapper>
-        <div className='buttonContainer'>
-          <button className={`${styles.btn} ${styles.btnSecondary} btn btn-secondary`} onClick={handleClose}>
-            닫기
-          </button>
-          <button className={`${styles.btn} ${styles.btnPrimary} btn text-bg-success`} onClick={handleConfirm}>
-            확인
-          </button>
-        </div>
-      </div>
-    </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <button className={`btn btn-secondary ${styles.btn}`} onClick={handleClose}>닫기</button>
+        <button className={`btn btn-primary ${styles.btn}`} onClick={handleConfirm}>확인</button>
+      </Modal.Footer>
+    </Modal>
   );
 };
 
-export default UserSearchPopup;
+export default FuelCardPopup;

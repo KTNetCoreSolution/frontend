@@ -1,3 +1,19 @@
+.customModal {
+  width: 633px !important; /* 원하는 너비 설정 */
+  max-width: 95vw !important; /* Responsive max-width */
+  max-height: 95vh !important; /* Responsive max-width */
+  margin: 0 auto;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
 .formSelect {
   width: 100%;
   padding: 4px;

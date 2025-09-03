@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import useStore from '../../store/store.js';
 import commonUtils from '../../utils/common.js';
 import CommonPopup from '../../components/popup/CommonPopup';
@@ -7,7 +7,7 @@ import { fetchData } from '../../utils/dataUtils.js';
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import Modal from 'react-bootstrap/Modal';
-import styles from './CarInfoDetailPopup.module.css';
+import styles from './FuelCardDetailPopup.module.css';
 
 const FuelCardInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   const { user } = useStore();
@@ -226,11 +226,11 @@ const FuelCardInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   if (!show) return null;
 
   return (
-    <Modal show={show} onHide={onHide} onParentSearch={onParentSearch} centered>
+    <Modal show={show} onHide={onHide} onParentSearch={onParentSearch} centered dialogClassName={styles.customModal}>
       <Modal.Header closeButton>
         <Modal.Title>주유카드정보 관리</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body className={`${styles.modalBody} modal-body`}>
         <div className="mb-2 d-flex">
           <label className="form-label flex-shrink-0 me-2" style={{width:60 +'px', paddingTop:6 + 'px'}} htmlFor="cardNo1">카드번호<font color='red'>*</font></label>
           <div style={{display: 'flex', }}>

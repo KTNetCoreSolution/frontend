@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import useStore from '../../store/store';
 import commonUtils from '../../utils/common';
 import { fetchData } from '../../utils/dataUtils.js';
@@ -10,7 +10,7 @@ import FuelCardPopup from '../car/FuelCardPopup';
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import Modal from 'react-bootstrap/Modal';
-import styles from './CarInfoDetailPopup.module.css';
+import styles from './CarDetailPopup.module.css';
 
 const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   const { user } = useStore();
@@ -338,7 +338,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   if (!show) return null;
 
   return (
-    <Modal size='xl' show={show} onHide={onHide} onParentSearch={onParentSearch} centered>
+    <Modal show={show} onHide={onHide} onParentSearch={onParentSearch} centered style={{overflowY: 'hidden'}} dialogClassName={styles.customModal}>
       <Modal.Header closeButton>
         <Modal.Title>기동장비정보 관리</Modal.Title>
       </Modal.Header>
@@ -557,19 +557,6 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         <div className="row">
           <div className="col-6 d-flex">
             <label className="form-label" htmlFor="cardNo">주유카드</label>
-            <CommonPopup show={showFuelCardPopup} onHide={() => setShowFuelCardPopup(false)} title={'주유카드 선택'}>
-              <div>
-                <FuelCardPopup
-                  onClose={() => setShowFuelCardPopup(false)}
-                  onConfirm={(selectedRows) => {
-                    const cardNo = selectedRows.length > 0 ? selectedRows[0].CARDNO : '';
-                    const exfireDt = selectedRows.length > 0 ? selectedRows[0].EXFIREDT : '';
-                    setCarInfo({ ...carInfo, CARDNO: cardNo, EXFIREDT: exfireDt });
-                  }}
-                  checkCarNo={carInfo.CARNO} //차량번호를 넘겨서 주유카드 조회
-                />
-              </div>
-            </CommonPopup>
             <input type="text" value={carInfo.CARDNO} className={`form-control ${styles.formControl}`} id="cardNo"  disabled="disabled" onChange={(e) => {setCarInfo({ ...carInfo, CARDNO: e.target.value })}}/>
             <button type="button" className={`btn btn-secondary ${styles.btn}`} onClick={(e) => {setShowFuelCardPopup(true)}}>선택</button>
           </div>
@@ -584,7 +571,15 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
             <input type="text" value={carInfo.NOTICE2} className={`form-control ${styles.formControl}`} id="notice2" onChange={(e) => {setCarInfo({ ...carInfo, NOTICE2: e.target.value })}}/>
           </div>
         </div>
-      </Modal.Body>      
+      </Modal.Body>   
+      <FuelCardPopup show={showFuelCardPopup} onHide={() => setShowFuelCardPopup(false)}
+        onConfirm={(selectedRows) => {
+          const cardNo = selectedRows.length > 0 ? selectedRows[0].CARDNO : '';
+          const exfireDt = selectedRows.length > 0 ? selectedRows[0].EXFIREDT : '';
+          setCarInfo({ ...carInfo, CARDNO: cardNo, EXFIREDT: exfireDt });
+        }}
+        checkCarNo={carInfo.CARNO}> //차량번호를 넘겨서 주유카드 조회
+      </FuelCardPopup>
       <Modal.Footer>
         <button className='btn btnSecondary' onClick={onHide}>취소</button>
         <button className='btn btnPrimary' onClick={handleSubmit}>확인</button>
