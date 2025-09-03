@@ -21,9 +21,10 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   const [showFuelCardPopup, setShowFuelCardPopup] = useState(false);  
   const [showUnder26UserPopup, setShowUnder26UserPopup] = useState(false);
   const [carList, setCarList] = useState({});
-  const initialCarInfo = {GUBUN: '', PRECARID: '', CARID: '', CARNO: '', RENTALTYPE: '', MGMTSTATUS: '', CARCD: '', USEFUEL: '', MAINCOMPPHONE: '', CARACQUIREDDT: today, RENTALEXFIREDDT: today, CARREGDATE: today
-                                          , CARPRICE: '', RENTALPRICE: '', INSURANCE: '', DEDUCTIONYN: '', ORGGROUP: '', ORGCD: '', ORGNM: '', PRIMARYMNGEMPNO: '', PRIMARYMNGEMPNM: '', PRIMARYMNGMOBILE: '', PRIMARYGARAGEADDR: '', SAFETYMANAGER: ''
-                                          , INVERTER: '', NOTICE: '', UNDER26AGEEMPNO: '', UNDER26AGEEMPNM: '', UNDER26AGEJUMINBTRTHNO: '', UNDER26AGECHGDT: '', CARDNO: '', EXFIREDT: '', NOTICE2: ''};
+  const [rentalCompList, setRentalCompList] = useState({});
+  const initialCarInfo = {GUBUN: '', PRECARID: '', CARID: '', CARNO: '', RENTALTYPE: '', MGMTSTATUS: '', CARCD: '', USEFUEL: '', RENTALCOMP: '', CARACQUIREDDT: today, RENTALEXFIREDDT: today, CARREGDATE: today
+                          , CARPRICE: '', RENTALPRICE: '', INSURANCE: '', DEDUCTIONYN: '', ORGGROUP: '', ORGCD: '', ORGNM: '', PRIMARYMNGEMPNO: '', PRIMARYMNGEMPNM: '', PRIMARYMNGMOBILE: '', PRIMARYGARAGEADDR: '', SAFETYMANAGER: ''
+                          , FIREEXTINGUISHER: '', UNDER26AGEEMPNO: '', UNDER26AGEEMPNM: '', UNDER26AGEJUMINBTRTHNO: '', UNDER26AGECHGDT: '', CARDNO: '', EXFIREDT: '', NOTICE: ''};
   const [carInfo, setCarInfo] = useState(initialCarInfo);
   const [chkCarId, setChkCarId] = useState('');
   
@@ -52,6 +53,26 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
       } catch (error) {
         console.error('Registration error:', error);
         errorMsgPopup(error.message || '차량구분 조회 중 오류가 발생했습니다.');
+      }
+
+      try {
+        const params = { pDEBUG: "F" };
+        const response = await fetchData('car/rentalCompList', params);
+        
+        if (!response.success) {
+          throw new Error(response.errMsg || '렌터카업체 조회 중 오류가 발생했습니다.');
+        } else {
+          if (response.errMsg !== '' || response.data[0].errCd !== '00') {
+            let errMsg = response.errMsg;
+            if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+            errorMsgPopup(errMsg);
+          } else {  
+            setRentalCompList(response.data);
+          }
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        errorMsgPopup(error.message || '렌터카업체 조회 중 오류가 발생했습니다.');
       }
     };
 
@@ -107,17 +128,12 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
     const carNoValidation = commonUtils.validateVarcharLength(carInfo.CARNO, 20, '차량번호');
     if (!carNoValidation.valid) return carNoValidation.error;
 
-    const mainCompPhoneValidation = commonUtils.validateVarcharLength(carInfo.MAINCOMPPHONE, 50, '대표번호');
-    if (!mainCompPhoneValidation.valid) return mainCompPhoneValidation.error;
-
     const primaryGarageAddrValidation = commonUtils.validateVarcharLength(carInfo.PRIMARYGARAGEADDR, 200, '차고지주소(정)');
     if (!primaryGarageAddrValidation.valid) return primaryGarageAddrValidation.error;
 
-    const noticeValidation = commonUtils.validateVarcharLength(carInfo.NOTICE, 1500, '기타사항');
+    const noticeValidation = commonUtils.validateVarcharLength(carInfo.NOTICE, 1500, '비고');
     if (!noticeValidation.valid) return noticeValidation.error;
 
-    const notice2Validation = commonUtils.validateVarcharLength(carInfo.NOTICE2, 1500, '비고');
-    if (!notice2Validation.valid) return notice2Validation.error;
     return '';
   };
   
@@ -149,7 +165,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         pMGMTSTATUS: carInfo.MGMTSTATUS,
         pCARCD: carInfo.CARCD,
         pUSEFUEL: carInfo.USEFUEL,
-        pMAINCOMPPHONE: carInfo.MAINCOMPPHONE,
+        pRENTALCOMP: carInfo.RENTALCOMP,
         pCARACQUIREDDT: carInfo.CARACQUIREDDT,
         pRENTALEXFIREDDT: carInfo.RENTALEXFIREDDT,
         pCARREGDATE: carInfo.CARREGDATE,
@@ -164,15 +180,14 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         pPRIMARYMNGMOBILE: carInfo.PRIMARYMNGMOBILE || '',
         pPRIMARYGARAGEADDR: carInfo.PRIMARYGARAGEADDR,
         pSAFETYMANAGER: carInfo.SAFETYMANAGER,
-        pINVERTER: carInfo.INVERTER,
-        pNOTICE: carInfo.NOTICE,
+        pFIREEXTINGUISHER: carInfo.FIREEXTINGUISHER || 'N',
         pUNDER26AGEEMPNO: carInfo.UNDER26AGEEMPNO,
         pUNDER26AGEEMPNM: carInfo.UNDER26AGEEMPNM,
         pUNDER26AGEJUMINBTRTHNO: carInfo.UNDER26AGEJUMINBTRTHNO,
         pUNDER26AGECHGDT: carInfo.UNDER26AGECHGDT,
         pCARDNO: carInfo.CARDNO,
         pEXFIREDT: carInfo.EXFIREDT,
-        pNOTICE2: carInfo.NOTICE2,
+        pNOTICE: carInfo.NOTICE,
         pREGEMPNO: user?.empNo || ''
       };
 
@@ -220,7 +235,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
           pMGMTSTATUS: '',
           pCARCD: '',
           pUSEFUEL: '',
-          pMAINCOMPPHONE: '',
+          pRENTALCOMP: '',
           pCARACQUIREDDT: '',
           pRENTALEXFIREDDT: '',
           pCARREGDATE: '',
@@ -235,15 +250,14 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
           pPRIMARYMNGMOBILE: '',
           pPRIMARYGARAGEADDR: '',
           pSAFETYMANAGER: '',
-          pINVERTER: '',
-          pNOTICE: '',
+          pFIREEXTINGUISHER: '',
           pUNDER26AGEEMPNO: '',
           pUNDER26AGEEMPNM: '',
           pUNDER26AGEJUMINBTRTHNO: '',
           pUNDER26AGECHGDT: '',
           pCARDNO: '',
           pEXFIREDT: '',
-          pNOTICE2: '',
+          pNOTICE: '',
           pREGEMPNO: user?.empNo || ''
         };
 
@@ -299,9 +313,9 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         throw new Error(response.errMsg || '차량 정보 조회 중 오류가 발생했습니다.');
       } else {
           if(response.data === null) {
-            setCarInfo({GUBUN: 'I', PRECARID: carId, CARID: carId, CARNO: '', RENTALTYPE: '', MGMTSTATUS: '', CARCD: '', USEFUEL: '', MAINCOMPPHONE: '', CARACQUIREDDT: today, RENTALEXFIREDDT: today, CARREGDATE: today
+            setCarInfo({GUBUN: 'I', PRECARID: carId, CARID: carId, CARNO: '', RENTALTYPE: '', MGMTSTATUS: '', CARCD: '', USEFUEL: '', RENTALCOMP: '', CARACQUIREDDT: today, RENTALEXFIREDDT: today, CARREGDATE: today
                         , CARPRICE: '', RENTALPRICE: '', INSURANCE: '', DEDUCTIONYN: '', ORGGROUP: '', ORGCD: '', ORGNM: '', PRIMARYMNGEMPNO: '', PRIMARYMNGEMPNM: '', PRIMARYMNGMOBILE: '', PRIMARYGARAGEADDR: '', SAFETYMANAGER: ''
-                        , INVERTER: '', NOTICE: '', UNDER26AGEEMPNO: '', UNDER26AGEEMPNM: '', UNDER26AGEJUMINBTRTHNO: '', UNDER26AGECHGDT: '', CARDNO: '', EXFIREDT: '', NOTICE2: ''});
+                        , FIREEXTINGUISHER: '', UNDER26AGEEMPNO: '', UNDER26AGEEMPNM: '', UNDER26AGEJUMINBTRTHNO: '', UNDER26AGECHGDT: '', CARDNO: '', EXFIREDT: '', NOTICE: ''});
             msgPopup("신규 등록 가능한 차대번호입니다.");
           } else { 
             if (response.errMsg !== '' || response.data[0].errCd !== '00') {          
@@ -315,11 +329,11 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
           } else {
             //차량정보 컴포넌트에 바인딩
             setCarInfo({GUBUN: 'U', PRECARID: response.data[0].CARID, CARID: response.data[0].CARID, CARNO: response.data[0].CARNO, RENTALTYPE: response.data[0].RENTALTYPE, MGMTSTATUS: response.data[0].MGMTSTATUS, CARCD: response.data[0].CARCD, USEFUEL: response.data[0].USEFUEL
-                      , MAINCOMPPHONE: response.data[0].MAIN_COMP_PHONE, CARACQUIREDDT: response.data[0].CARACQUIREDDT, RENTALEXFIREDDT: response.data[0].RENTALEXFIREDDT, CARREGDATE: response.data[0].CARREGDT, CARPRICE: response.data[0].CARPRICE
+                      , RENTALCOMP: response.data[0].RENTALCOMP, CARACQUIREDDT: response.data[0].CARACQUIREDDT, RENTALEXFIREDDT: response.data[0].RENTALEXFIREDDT, CARREGDATE: response.data[0].CARREGDT, CARPRICE: response.data[0].CARPRICE
                       , RENTALPRICE: response.data[0].RENTALPRICE, INSURANCE: response.data[0].INSURANCE, DEDUCTIONYN: response.data[0].DEDUCTIONYN, ORGGROUP: response.data[0].ORG_GROUP, ORGCD: response.data[0].ORGCD, ORGNM: response.data[0].ORGNM
-                      , PRIMARYMNGEMPNM: response.data[0].PRIMARY_MANAGER_EMPNM, PRIMARYMNGMOBILE: response.data[0].PRIMARY_MANAGER_MOBILE, PRIMARYGARAGEADDR: response.data[0].PRIMARY_GARAGE_ADDR, SAFETYMANAGER: response.data[0].SAFETY_MANAGER
-                      , INVERTER: response.data[0].INVERTER, NOTICE: response.data[0].NOTICE, UNDER26AGEEMPNO: response.data[0].UNDER26AGE_EMPNO, UNDER26AGEEMPNM: response.data[0].UNDER26AGE_EMPNM, UNDER26AGEJUMINBTRTHNO: response.data[0].UNDER26AGE_JUMIN_BIRTH_NO
-                      , UNDER26AGECHGDT: response.data[0].UNDER26AGE_CHGDT, CARDNO: response.data[0].CARDNO, EXFIREDT: response.data[0].EXFIREDT, NOTICE2: response.data[0].NOTICE2});
+                      , PRIMARYMNGEMPNM: response.data[0].PRIMARY_MANAGER_EMPNM, PRIMARYMNGMOBILE: response.data[0].PRIMARY_MANAGER_MOBILE, PRIMARYGARAGEADDR: response.data[0].PRIMARY_GARAGE_ADDR, FIREEXTINGUISHER: response.data[0].FIREEXTINGUISHER, SAFETYMANAGER: response.data[0].SAFETY_MANAGER
+                      , UNDER26AGEEMPNO: response.data[0].UNDER26AGE_EMPNO, UNDER26AGEEMPNM: response.data[0].UNDER26AGE_EMPNM, UNDER26AGEJUMINBTRTHNO: response.data[0].UNDER26AGE_JUMIN_BIRTH_NO
+                      , UNDER26AGECHGDT: response.data[0].UNDER26AGE_CHGDT, CARDNO: response.data[0].CARDNO, EXFIREDT: response.data[0].EXFIREDT, NOTICE: response.data[0].NOTICE});
           }
         }
       }
@@ -395,8 +409,11 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         </div>
         <div className="row">
           <div className="col-6 d-flex">
-            <label className="form-label" htmlFor="mainCompPhone">대표번호</label>
-            <input type="text" id="mainCompPhone" value={carInfo.MAINCOMPPHONE} className={`form-control ${styles.formControl}`} placeholder="대표번호를 입력하세요" onChange={(e) => {setCarInfo({ ...carInfo, MAINCOMPPHONE: e.target.value })}} />
+            <label className="form-label" htmlFor="rentalComp">렌터카업체</label>
+            <select id="rentalComp" className={`form-select ${styles.formSelect}`} value={carInfo.RENTALCOMP} onChange={(e) => {setCarInfo({ ...carInfo, RENTALCOMP: e.target.value })}}>
+              <option value="">선택하세요</option>
+              {rentalCompList.map((item) => <option key={item.RENTALCOMP} value={item.RENTALCOMP}>{item.RENTALCOMP}</option>)}
+            </select>
           </div>
           <div className="col-6 d-flex">
             <label className="form-label" htmlFor="carAquireddt">차량취득일</label>
@@ -497,10 +514,10 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
             </select>
           </div>
           <div className="col-6 d-flex">
-            <label className="form-label" htmlFor="inverter">인버터</label>
-            <select id="inverter" value={carInfo.INVERTER} className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, INVERTER: e.target.value })}}>
+            <label className="form-label" htmlFor="fireExtinguisher">소화기보유</label>
+            <select id="fireExtinguisher" value={carInfo.FIREEXTINGUISHER} className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, FIREEXTINGUISHER: e.target.value })}}>
               <option value="">선택하세요</option>
-              {['정상', '수리', '폐기'].map((type) => (<option key={type} value={type}>{type}</option>))}
+              {['보유', '미보유'].map((type) => (<option key={type} value={type}>{type}</option>))}
             </select>
           </div>
         </div>
@@ -508,12 +525,6 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
           <div className="col-12 d-flex">
             <label className="form-label" htmlFor="primaryGarageAddr">차고지주소</label>
             <input type="text" value={carInfo.PRIMARYGARAGEADDR} className={`form-control ${styles.formControl}`} id="primaryGarageAddr" onChange={(e) => {setCarInfo({ ...carInfo, PRIMARYGARAGEADDR: e.target.value })}}/>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-12 d-flex">
-            <label className="form-label" htmlFor="notice">기타사항</label>
-            <input type="text" value={carInfo.NOTICE} className={`form-control ${styles.formControl}`} id="notice" onChange={(e) => {setCarInfo({ ...carInfo, NOTICE: e.target.value })}}/>
           </div>
         </div>
         <div className="row">
@@ -567,8 +578,8 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         </div>
         <div className="row">
           <div className="col-12 d-flex">
-            <label className="form-label" htmlFor="notice2">비고</label>
-            <input type="text" value={carInfo.NOTICE2} className={`form-control ${styles.formControl}`} id="notice2" onChange={(e) => {setCarInfo({ ...carInfo, NOTICE2: e.target.value })}}/>
+            <label className="form-label" htmlFor="notice">비고</label>
+            <input type="text" value={carInfo.NOTICE} className={`form-control ${styles.formControl}`} id="notice" onChange={(e) => {setCarInfo({ ...carInfo, NOTICE: e.target.value })}}/>
           </div>
         </div>
       </Modal.Body>   

@@ -171,8 +171,8 @@ const CarListInfo = () => {
   ]);
 
   // 엑셀 저장 시 추가로 보여줄 엑셀 field 설정
-  const visibleColumns = ['MAIN_COMP_PHONE|Y', 'CARACQUIREDDT|Y', 'RENTALEXFIREDDT|Y', 'CARREGDATE|Y', 'CARPRICE|Y', 'RENTALPRICE|Y', 'INSURANCE|Y', 'DEDUCTIONYN|Y', 'ORGCD|Y', 'PRIMARY_MANAGER_EMPNO|Y', 'PRIMARY_MANAGER_MOBILE|Y', 'PRIMARY_GARAGE_ADDR|Y'
-    , 'NOTICE|Y', 'UNDER26AGE_EMPNO|Y', 'UNDER26AGE_EMPNM|Y', 'UNDER26AGE_JUMIN_BIRTH_NO|Y', 'UNDER26AGE_CHGDT|Y', 'CARDNO|Y', 'EXFIREDT|Y', 'NOTICE2|Y', 'DETAILBUTTON|N'];  
+  const visibleColumns = ['RENTALCOMP|Y', 'CARACQUIREDDT|Y', 'RENTALEXFIREDDT|Y', 'CARREGDATE|Y', 'CARPRICE|Y', 'RENTALPRICE|Y', 'INSURANCE|Y', 'DEDUCTIONYN|Y', 'ORGCD|Y', 'PRIMARY_MANAGER_EMPNO|Y', 'PRIMARY_MANAGER_MOBILE|Y', 'PRIMARY_GARAGE_ADDR|Y'
+    , 'UNDER26AGE_EMPNO|Y', 'UNDER26AGE_EMPNM|Y', 'UNDER26AGE_JUMIN_BIRTH_NO|Y', 'UNDER26AGE_CHGDT|Y', 'CARDNO|Y', 'EXFIREDT|Y', 'NOTICE|Y', 'DETAILBUTTON|N'];  
 
   // const [filters, setFilters] = useState(initialFilters(searchConfig.areas.find((area) => area.type === 'search').fields));
   const [filters, setFilters] = useState({orgcd: selectedOrg, ...initialFilters(searchConfig.areas.find((area) => area.type === 'search').fields) });
@@ -210,7 +210,7 @@ const CarListInfo = () => {
     { title: '규모', field: 'CARSIZE', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '차명', field: 'CARNM', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '사용연료', field: 'USEFUEL', width: 90, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '대표번호', field: 'MAIN_COMP_PHONE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '렌터카업체', field: 'RENTALCOMP', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '차량취득일(kt도입기준)', field: 'CARACQUIREDDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '계약만료일', field: 'RENTALEXFIREDDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '최초등록일(자동차등록증)', field: 'CARREGDATE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
@@ -229,15 +229,14 @@ const CarListInfo = () => {
     { title: '운전자(정)전화번호', field: 'PRIMARY_MANAGER_MOBILE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '차고지주소', field: 'PRIMARY_GARAGE_ADDR', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '안전관리자여부', field: 'SAFETY_MANAGER', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '인버터', field: 'INVERTER', headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    { title: '기타사항', field: 'NOTICE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '소화기보유', field: 'FIREEXTINGUISHER', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '만26세미만운전자사번', field: 'UNDER26AGE_EMPNO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '만26세미만운전자성명', field: 'UNDER26AGE_EMPNM', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '만26세미만운전자주민번호앞자리', field: 'UNDER26AGE_JUMIN_BIRTH_NO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '만26세미만운전자변경기준일', field: 'UNDER26AGE_CHGDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '카드번호', field: 'CARDNO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '유효기간', field: 'EXFIREDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    { title: '비고', field: 'NOTICE2', headerHozAlign: 'center', hozAlign: 'center', visible: false },    
+    { title: '비고', field: 'NOTICE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '상세', field: 'DETAILBUTTON', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('상세보기', `btn-danger ${styles.deleteButton}`, (rowData) => handleDetail(rowData)) },
   ];
 
@@ -527,7 +526,7 @@ const CarListInfo = () => {
         }}
         title={excelPopupTitle}
         rptCd="CARINFOEXCELUPLOAD"
-        templateParams={{ pGUBUN: 'RPTCD', pTITLE: '', pFILEID: '7', pRPTCD: 'CARINFOEXCELUPLOAD', pDEBUG: 'F' }}
+        templateParams={{ pGUBUN: 'RPTCD', pTITLE: '', pFILEID: '11', pRPTCD: 'CARINFOEXCELUPLOAD', pDEBUG: 'F' }}
       />
     </div>
   );
