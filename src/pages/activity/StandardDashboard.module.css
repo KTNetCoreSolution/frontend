@@ -32,23 +32,7 @@
   gap: 10px;
 }
 
-.rightInfo {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  height: 240px;
-  border-radius: 12px !important;
-  background: var(--white);
-  box-shadow: 0 5px 10px rgba(100, 100, 111, 0.1) !important;
-  padding: 1.5rem;
-}
 
-.rightHeader {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 
 .monthInput {
   padding: 4px;
@@ -80,6 +64,7 @@
   border-collapse: collapse;
   background-color: #fff;
   border: 1px solid #ccc;
+  margin-bottom: 0;
 }
 
 .gridTable th,
@@ -106,15 +91,16 @@
 .subSection {
   flex: 1;
   text-align: center;
-}
-
-.chart {
-  height: 240px;
   width: 100%;
+  height: 248px;
   border-radius: 12px !important;
   background: var(--white);
   box-shadow: 0 5px 10px rgba(100, 100, 111, 0.1) !important;
-  padding: 1.5rem;
+  padding: 1.25rem;
+}
+
+.chart {
+  height: 180px;
 }
 
 .container.fullscreen .chart {

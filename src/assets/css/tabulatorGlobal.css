@@ -24,6 +24,28 @@
     border-right: 1px solid #ddd;
 }
 
+.tabulator-cell {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow: hidden;
+    line-height: 30px;
+}
+
+.tabulator-cell div {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  overflow: hidden;
+}
+
+.tabulator-cell div span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tabulator .tabulator-footer {
     display: flex;
     align-items: center;

@@ -52,7 +52,7 @@ const TableSearch = ({ filterFields, filters, setFilters, onDownloadExcel, child
         </div>
         <div className='buttonContainer' style={{display: excelYn === 'N' ? 'none' : 'flex'}}>
           <button onClick={onDownloadExcel} className='downloadButton'>
-            엑셀 다운로드
+            <i className="bi bi-download"></i> 엑셀 다운로드
           </button>
         </div>
       </div>

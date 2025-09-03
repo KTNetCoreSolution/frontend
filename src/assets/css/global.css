@@ -75,7 +75,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   border-radius: 4px;
   justify-content: center;
   align-items: center;
-  min-height: 30px;
+  height: 30px;
 }
 .btn:hover {
   opacity: 0.75;
@@ -1394,4 +1394,39 @@ textarea.form-control {
 .boardBox .contentContainer > .list-group-item:last-child {
   border-bottom: 0;
   padding-bottom: 0;
+}
+
+
+/* dashboard */
+.subSecTitle {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.rightInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  height: 248px;
+  border-radius: 12px !important;
+  background: var(--white);
+  box-shadow: 0 5px 10px rgba(100, 100, 111, 0.1) !important;
+  padding: 1.25rem;
+}
+
+.rightInfo .subSecTitle {
+  margin-bottom: 0;
+}
+
+.rightHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
 }

@@ -65,97 +65,122 @@ const StandardDashboard = () => {
               text: `${percentValue}%`,
               fontSize: 14,
               fontWeight: 'bold',
-              fill: 'rgb(0,50,190)',
-              textAlign: 'center',
             },
             z: 10, // 렌더링 우선순위 조정
           },
         ],
           series: [
             {
-              type: 'gauge',
+              type: 'pie',
+              radius: ['70%', '90%'],
               center: ['50%', '50%'],
-              startAngle: -90,
-              endAngle: 270,
-              min: 0,
-              max: 100,
-              splitNumber: 10,
-              itemStyle: {
-                color: 'rgb(0,50,190)', // 예제의 메인 색상
-              },
-              progress: {
-                show: true,
-                width: 10,
-                itemStyle: {
-                  color: 'rgb(0,50,190)',
-                },
-              },
-              pointer: {
-                show: true,
-                length: '60%',
-                width: 8,
-                itemStyle: {
-                  color: 'rgb(0,50,190)', // 예제의 포인터 색상
-                },
-              },
-              axisLine: {
-                lineStyle: {
-                  width: 26,
-                  color: [
-                    [percentValue / 100, '#6560c7'],
-                    [1, '#E6EBF8'], // 배경 색상
-                  ],
-                },
-                show:false
-              },
-              axisTick: {
-                distance: -15,
-                splitNumber: 5,
-                lineStyle: {
-                  width: 2,
-                  color: '#999',
-                },
-                show:false
-              },
-              splitLine: {
-                distance: -12,
-                length: 14,
-                lineStyle: {
-                  width: 3,
-                  color: '#999',
-                },
-                show:false
-              },
-              axisLabel: {
-                distance: 10,
-                color: '#999',
-                fontSize: 12,
+              avoidLabelOverlap: false,
+              label: {
                 show: false,
+                position: 'center'
               },
-              anchor: {
-                show: true,
-                showAbove: true,
-                size: 135,
-                itemStyle: {
-                  borderWidth: 10,
-                  borderColor: '#FAFAFA',
-                  shadowBlur: 25,
-                  shadowColor: 'rgba(76,107,167,0.4)', // 예제의 그림자 효과
-                },
-              },
-              title: {
-                show: false, // title 비활성화
-              },
-              detail: {
-                show:false
+              labelLine: {
+                show: false
               },
               data: [
                 {
                   value: percentValue,
+                  name: '진행률',
+                  itemStyle: { color: '#216DB2' }
                 },
-              ],
-            },
-          ],
+                {
+                  value: 100 - percentValue,
+                  name: '남은 영역',
+                  itemStyle: { color: '#eee' }
+                }
+              ]
+            }
+          ]
+          // series: [
+          //   {
+          //     type: 'gauge',
+          //     center: ['50%', '50%'],
+          //     startAngle: -90,
+          //     endAngle: 270,
+          //     min: 0,
+          //     max: 100,
+          //     splitNumber: 10,
+          //     itemStyle: {
+          //       color: 'rgb(0,50,190)', // 예제의 메인 색상
+          //     },
+          //     progress: {
+          //       show: true,
+          //       width: 10,
+          //       itemStyle: {
+          //         color: 'rgb(0,50,190)',
+          //       },
+          //     },
+          //     pointer: {
+          //       show: true,
+          //       length: '60%',
+          //       width: 8,
+          //       itemStyle: {
+          //         color: 'rgb(0,50,190)', // 예제의 포인터 색상
+          //       },
+          //     },
+          //     axisLine: {
+          //       lineStyle: {
+          //         width: 26,
+          //         color: [
+          //           [percentValue / 100, '#6560c7'],
+          //           [1, '#E6EBF8'], // 배경 색상
+          //         ],
+          //       },
+          //       show:false
+          //     },
+          //     axisTick: {
+          //       distance: -15,
+          //       splitNumber: 5,
+          //       lineStyle: {
+          //         width: 2,
+          //         color: '#999',
+          //       },
+          //       show:false
+          //     },
+          //     splitLine: {
+          //       distance: -12,
+          //       length: 14,
+          //       lineStyle: {
+          //         width: 3,
+          //         color: '#999',
+          //       },
+          //       show:false
+          //     },
+          //     axisLabel: {
+          //       distance: 10,
+          //       color: '#999',
+          //       fontSize: 12,
+          //       show: false,
+          //     },
+          //     anchor: {
+          //       show: true,
+          //       showAbove: true,
+          //       size: 135,
+          //       itemStyle: {
+          //         borderWidth: 10,
+          //         borderColor: '#FAFAFA',
+          //         shadowBlur: 25,
+          //         shadowColor: 'rgba(76,107,167,0.4)', // 예제의 그림자 효과
+          //       },
+          //     },
+          //     title: {
+          //       show: false, // title 비활성화
+          //     },
+          //     detail: {
+          //       show:false
+          //     },
+          //     data: [
+          //       {
+          //         value: percentValue,
+          //       },
+          //     ],
+          //   },
+          // ],
         });
       }
 
@@ -175,59 +200,81 @@ const StandardDashboard = () => {
             series: [
               {
                 name: item.구분,
-                type: 'gauge',
-                progress: {
+                type: 'pie',
+                radius: ['70%', '90%'],
+                avoidLabelOverlap: false,
+                label: {
                   show: true,
-                  width: 10,
-                },
-                axisLine: {
-                  lineStyle: {
-                    width: 10,
-                  },
-                },
-                axisTick: {
-                  show: false,
-                },
-                splitLine: {
-                  length: 10,
-                  lineStyle: {
-                    width: 2,
-                    color: '#999',
-                  },
-                  distance: -1,
-                },
-                axisLabel: {
-                  distance: 10,
-                  color: '#999',
-                  fontSize: 10,
-                },
-                anchor: {
-                  show: true,
-                  showAbove: true,
-                  size: 10,
-                  itemStyle: {
-                    borderWidth: 10,
-                  },
-                },
-                detail: {
-                  valueAnimation: true,
-                  formatter: percentValue,
-                  color: 'inherit',
+                  position: 'center',
+                  formatter: `${percentValue}%`,
                   fontSize: 14,
-                  offsetCenter: [0, '70%'],
+                  fontWeight: 'bold'
+                },
+                labelLine: {
+                  show: false
                 },
                 data: [
-                  {
-                    value: percentValue,
-                    name: gubun,
-                  },
-                ],
-                title: {
-                  fontSize: 12,
-                  offsetCenter: [0, '-110%'],
-                },
-              },
-            ],
+                  { value: percentValue, name: '사용', itemStyle: { color: '#2CBBB7' } },
+                  { value: 100 - percentValue, name: '남음', itemStyle: { color: '#eee' } }
+                ]
+              }
+            ]
+            // series: [
+            //   {
+            //     name: item.구분,
+            //     type: 'gauge',
+            //     progress: {
+            //       show: true,
+            //       width: 10,
+            //     },
+            //     axisLine: {
+            //       lineStyle: {
+            //         width: 10,
+            //       },
+            //     },
+            //     axisTick: {
+            //       show: false,
+            //     },
+            //     splitLine: {
+            //       length: 10,
+            //       lineStyle: {
+            //         width: 2,
+            //         color: '#999',
+            //       },
+            //       distance: -1,
+            //     },
+            //     axisLabel: {
+            //       distance: 10,
+            //       color: '#999',
+            //       fontSize: 10,
+            //     },
+            //     anchor: {
+            //       show: true,
+            //       showAbove: true,
+            //       size: 10,
+            //       itemStyle: {
+            //         borderWidth: 10,
+            //       },
+            //     },
+            //     detail: {
+            //       valueAnimation: true,
+            //       formatter: percentValue,
+            //       color: 'inherit',
+            //       fontSize: 14,
+            //       offsetCenter: [0, '70%'],
+            //     },
+            //     data: [
+            //       {
+            //         value: percentValue,
+            //         name: gubun,
+            //       },
+            //     ],
+            //     title: {
+            //       fontSize: 12,
+            //       offsetCenter: [0, '-110%'],
+            //     },
+            //   },
+            // ],
           });
         }
       }
@@ -358,27 +405,34 @@ const StandardDashboard = () => {
       <div className={styles.inputSection}>
         <div className={styles.chartsContainer}>
           <div className={styles.subSection}>
+            <div className='subSecTitle'>전체</div>
             <div ref={chartRefs[0]} className={styles.chart} />
           </div>
           <div className={styles.subSection}>
+            <div className='subSecTitle'>선로</div>
             <div ref={chartRefs[1]} className={styles.chart} />
           </div>
           <div className={styles.subSection}>
+            <div className='subSecTitle'>설계</div>
             <div ref={chartRefs[2]} className={styles.chart} />
           </div>
           <div className={styles.subSection}>
+            <div className='subSecTitle'>BIZ</div>
             <div ref={chartRefs[3]} className={styles.chart} />
           </div>
         </div>
-        <div className={styles.rightInfo}>
-          <div className={styles.rightHeader}>
-            <input
-              type="month"
-              value={month}
-              onChange={e => setMonth(e.target.value)}
-              className={styles.monthInput}
-            />
-            <button className={styles.refreshButton}>🔄</button>
+        <div className='rightInfo'>
+          <div className='rightHeader'>
+            <div className='subSecTitle'>소계</div>
+            <div>
+              <input
+                type="month"
+                value={month}
+                onChange={e => setMonth(e.target.value)}
+                className={styles.monthInput}
+              />
+              <button className={styles.refreshButton}>🔄</button>
+            </div>
           </div>
           <table className={styles.gridTable}>
             <thead>
