@@ -12,7 +12,6 @@ import { saveAs } from 'file-saver';
 import styles from './UserCarLogRegPopup.Module.css'; // CSS 파일을 별도로 import
 
 const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
-  const today = new Date();
   const todayDate = commonUtils.getTodayDate();
   const timeOption = (stdTime, gbn) => {
     const times = [];

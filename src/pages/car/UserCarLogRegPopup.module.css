@@ -89,6 +89,7 @@
 
 .formDivBox {
   padding: 5px;
+  height: 58px;  
   display: block;
   border: 1px solid #d3d3d3;
   border-radius: 10px;
