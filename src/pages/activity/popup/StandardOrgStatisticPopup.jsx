@@ -7,7 +7,6 @@ import TableSearch from '../../../components/table/TableSearch';
 import { fetchData } from '../../../utils/dataUtils';
 import { errorMsgPopup } from '../../../utils/errorMsgPopup';
 import styles from './StandardOrgStatisticPopup.module.css';
-import StandardOrgClassStatisticPopup from './StandardOrgClassStatisticPopup';
 
 const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
   const tableRef = useRef(null);
@@ -37,10 +36,8 @@ const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  const [showClassStatisticPopup, setShowClassStatisticPopup] = useState(false);
-  const [selectedClassData, setSelectedClassData] = useState(null);
 
-  // 기본 컬럼 정의 (StandardOrgStatistic.jsx와 동일)
+  // 기본 컬럼 정의
   const baseColumns = [
     { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
     { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
@@ -64,12 +61,12 @@ const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
         }
         return value || '';
       },
-      cellClick: (e, cell) => {
+      cellClick: async (e, cell) => {
         const value = cell.getValue();
         const rowData = cell.getRow().getData();
         if (value) {
-          setSelectedClassData({
-            ...rowData,
+          // 클릭한 row 데이터를 기반으로 데이터 로드
+          await loadData({
             SECTIONCD: rowData.SECTIONCD || '',
             EMPNO: rowData.EMPNO || '',
             ORGCD: rowData.ORGCD || '',
@@ -79,7 +76,6 @@ const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
             DATE2: rowData.pDATE2 || '',
             CLASSCD: rowData.CLASSCD || '',
           });
-          setShowClassStatisticPopup(true);
         }
       },
     },
@@ -89,6 +85,67 @@ const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '조회일자2', field: 'pDATE2', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '조회조직레벨구분', field: 'pORGLEVELGB', sorter: 'string', width: 100, visible: false },
   ];
+
+  // 데이터 로드 함수
+  const loadData = async (dataParams) => {
+    if (!dataParams) return;
+
+    setLoading(true);
+    setHasSearched(true);
+
+    try {
+      let orgLevelGb = dataParams.ORGLEVELGB || '';
+
+      if (orgLevelGb !== '') {
+        let numLevel = Number(orgLevelGb);
+        if (!isNaN(numLevel)) {
+          numLevel = numLevel + 1;
+          if (numLevel > 4) {
+            numLevel = 4;
+          }
+          orgLevelGb = numLevel.toString();
+        }
+      } else {
+        orgLevelGb = '';
+      }
+
+      const params = {
+        pGUBUN: 'LIST',
+        pSECTIONCD: dataParams.SECTIONCD || '',
+        pEMPNO: dataParams.EMPNO || '',
+        pORGCD: dataParams.ORGCD || '',
+        pORGLEVELGB: orgLevelGb,
+        pDATEGB: dataParams.DATEGB || '',
+        pDATE1: dataParams.DATE1 || '',
+        pDATE2: dataParams.DATE2 || '',
+        pCLASSCD: dataParams.CLASSCD || '',
+        pDEBUG: 'F',
+      };
+
+      // 메인 데이터 로드 (LIST)
+      const response = await fetchData('standard/orgStatistic/list', params);
+      if (!response.success) {
+        errorMsgPopup(response.message || '데이터를 가져오는 중 오류가 발생했습니다.');
+        setTableData([]);
+        return;
+      }
+
+      const responseData = Array.isArray(response.data)
+        ? response.data.map((row, index) => ({
+            ...row,
+            ID: index + 1,
+          }))
+        : [];
+
+      setTableData(responseData);
+    } catch (err) {
+      console.error('데이터 로드 실패:', err);
+      errorMsgPopup('데이터를 가져오는 중 오류가 발생했습니다.');
+      setTableData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // 테이블 초기화
   useEffect(() => {
@@ -129,87 +186,10 @@ const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
     };
   }, [show]);
 
-  // 데이터 로드
+  // 초기 데이터 로드
   useEffect(() => {
     if (!show) return;
-    let isMounted = true;
-
-    const loadData = async () => {
-      if (!data || !Array.isArray(data) || data.length === 0 || !data[0]) {
-        if (isMounted) {
-          setTableData([]);
-          setHasSearched(false);
-          setLoading(false);
-        }
-        return;
-      }
-
-      if (isMounted && !loading) {
-        setLoading(true);
-        setHasSearched(true);
-      }
-
-      try {
-        // let orgLevel = data[0].ORGLEVELGB || '';
-
-        // // orgLevel 값이 숫자 형식이라면 1을 더하고, 아닐 경우 기본값으로 처리
-        // if (orgLevel !== '') {
-        //   let numLevel = Number(orgLevel);
-        //   if (!isNaN(numLevel)) {
-        //     orgLevel = (numLevel + 1).toString();
-        //   }
-        // } else {
-        //   orgLevel = '';
-        // }
-
-        // console.log(orgLevel);
-
-        const params = {
-          pGUBUN: 'LIST',
-          pSECTIONCD: data[0].SECTIONCD || '',
-          pEMPNO: data[0].EMPNO || '',
-          pORGCD: data[0].ORGCD || '',
-          pORGLEVELGB: data[0].ORGLEVEL || '',
-          pDATEGB: data[0].DATEGB || '',
-          pDATE1: data[0].DATE1 || '',
-          pDATE2: data[0].DATE2 || '',
-          pCLASSCD: data[0].CLASSCD || '',
-          pDEBUG: 'F',
-        };
-
-        // 메인 데이터 로드 (LIST)
-        const response = await fetchData('standard/orgStatistic/list', params);
-
-        if (!response.success && isMounted) {
-          errorMsgPopup(response.message || '데이터를 가져오는 중 오류가 발생했습니다.');
-          setTableData([]);
-          return;
-        }
-
-        const responseData = Array.isArray(response.data)
-          ? response.data.map((row, index) => ({
-              ...row,
-              ID: index + 1,
-            }))
-          : [];
-
-        if (isMounted) setTableData(responseData);
-      } catch (err) {
-        console.error('데이터 로드 실패:', err);
-        if (isMounted) {
-          errorMsgPopup('데이터를 가져오는 중 오류가 발생했습니다.');
-          setTableData([]);
-        }
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-
-    loadData();
-
-    return () => {
-      isMounted = false;
-    };
+    loadData(data[0]);
   }, [show, JSON.stringify(data)]);
 
   // 테이블 데이터 및 컬럼 반영
@@ -303,11 +283,6 @@ const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
           </button>
         </div>
       </Modal.Body>
-      <StandardOrgClassStatisticPopup
-        show={showClassStatisticPopup}
-        onHide={() => setShowClassStatisticPopup(false)}
-        data={selectedClassData ? [selectedClassData] : []}
-      />
     </Modal>
   );
 };
