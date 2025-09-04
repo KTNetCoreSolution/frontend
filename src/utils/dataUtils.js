@@ -119,20 +119,9 @@ export async function fetchDataGet(url, filters = {}, config = {}, directYn = 'N
     await handleLoadingProgress(setLoading, progressShow);
     const queryParams = new URLSearchParams(filters).toString();
     const fullUrl = queryParams ? `${url}?${queryParams}` : `${url}`;
-    alert('get url:' + fullUrl);
     const response = await api.get(fullUrl, config);
     return response.data;
   } catch (error) {
-      // 에러 메시지 및 응답 데이터 포함하여 알림창에 표시
-      const errorMessage = `
-        메시지: ${error.message}
-        응답 데이터: ${JSON.stringify(error.response?.data, null, 2) || '없음'}
-        상태 코드: ${error.response?.status || '없음'}
-        스택 트레이스: ${error.stack || '없음'}
-      `;
-      
-      alert(errorMessage);
-
     console.error('데이터 가져오기 실패 (GET):', error.message, error.response?.data);
     throw error;
   } finally {

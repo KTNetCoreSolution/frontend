@@ -15,10 +15,8 @@ const SsoMobileLogin = () => {
       try {
         // URL 쿼리 파라미터에서 token 읽기
         const urlParams = new URLSearchParams(window.location.search);
-        alert(urlParams);
         const token = urlParams.get('token');
 
-        alert('token:' + token);
         if (!token) {
           msg = '토큰이 존재하지 않습니다.';
           errorMsgPopup(msg);
@@ -29,20 +27,12 @@ const SsoMobileLogin = () => {
           token: token
         };
 
-        alert('fetchDataGet params:' + params);
-
-        alert('MKATE_URL:' + MKATE_URL);
-
-        const res = await fetchDataGet(MKATE_URL, params, { withCredentials: true }, 'Y', false);
+        const res = await fetchDataGet(MKATE_URL, params, { withCredentials: true }, 'Y');
         if (!res || !res.result) {
           msg = 'SSO 응답 형식 오류';
-
-          alert('msg');
           errorMsgPopup(msg);
           throw new Error(msg);
         }
-
-        alert('res.result:' + res.result);
 
         if (res.result.code !== '0') {
           msg = res.result.errdesc || '응답 결과 오류';
