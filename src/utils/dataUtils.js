@@ -123,6 +123,8 @@ export async function fetchDataGet(url, filters = {}, config = {}, directYn = 'N
     const response = await api.get(fullUrl, config);
     return response.data;
   } catch (error) {
+    alert('error:' + error);
+
     console.error('데이터 가져오기 실패 (GET):', error.message, error.response?.data);
     throw error;
   } finally {
