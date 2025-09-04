@@ -13,6 +13,7 @@ import styles from '../../components/table/TableSearch.module.css';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import common from '../../utils/common';
 import StandardOrgClassStatisticPopup from './popup/StandardOrgClassStatisticPopup';
+import StandardOrgStatisticPopup from './popup/StandardOrgStatisticPopup';
 
 const fn_CellNumber = { editor: 'number', editorParams: { min: 0 }, editable: true };
 
@@ -44,12 +45,50 @@ const baseColumns = [
   { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
   { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 100 },
   { headerHozAlign: 'center', hozAlign: 'center', title: '인원', field: 'EMPNOCNT', sorter: 'number', width: 100 },
-  { headerHozAlign: 'center', hozAlign: 'center', title: '조직', field: 'ORGNM', sorter: 'string', width: 130 },
+  {
+    headerHozAlign: 'center',
+    hozAlign: 'center',
+    title: '조직',
+    field: 'ORGNM',
+    sorter: 'string',
+    width: 130,
+    formatter: (cell) => {
+      const value = cell.getValue();
+      if (value) {
+        cell.getElement().style.color = '#247db3';
+        cell.getElement().style.cursor = 'pointer';
+      } else {
+        cell.getElement().style.color = '#000000';
+        cell.getElement().style.cursor = 'default';
+      }
+      return value || '';
+    },
+    cellClick: (e, cell, setSelectedOrgData, setShowOrgStatisticPopup, user) => {
+      const value = cell.getValue();
+      const rowData = cell.getRow().getData();
+      if (value) {
+        setSelectedOrgData({
+          ...rowData,
+          SECTIONCD: rowData.SECTIONCD || '',
+          EMPNO: rowData.EMPNO || user?.empNo || '',
+          ORGCD: rowData.ORGCD || '',
+          ORGLEVELGB: rowData.pORGLEVELGB || '',
+          ORGLEVEL: rowData.ORGLEVEL || '',
+          DATEGB: rowData.pDATEGB || '',
+          DATE1: rowData.pDATE1 || '',
+          DATE2: rowData.pDATE2 || '',
+          CLASSCD: rowData.CLASSCD || '',
+        });
+        setShowOrgStatisticPopup(true);
+      }
+    },
+  },
   { headerHozAlign: 'center', hozAlign: 'center', title: '조직코드', field: 'ORGCD', sorter: 'string', width: 130, visible: false },
   { headerHozAlign: 'center', hozAlign: 'center', title: '조회일자구분', field: 'pDATEGB', sorter: 'string', width: 100, visible: false },
   { headerHozAlign: 'center', hozAlign: 'center', title: '조회일자1', field: 'pDATE1', sorter: 'string', width: 100, visible: false },
   { headerHozAlign: 'center', hozAlign: 'center', title: '조회일자2', field: 'pDATE2', sorter: 'string', width: 100, visible: false },
   { headerHozAlign: 'center', hozAlign: 'center', title: '조회조직레벨구분', field: 'pORGLEVELGB', sorter: 'string', width: 100, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '조직레벨', field: 'ORGLEVEL', sorter: 'string', width: 100, visible: false },
 ];
 
 const StandardOrgStatistic = () => {
@@ -75,8 +114,21 @@ const StandardOrgStatistic = () => {
   const tableInstance = useRef(null);
   const isInitialRender = useRef(true);
   const [showStatisticPopup, setShowStatisticPopup] = useState(false);
+  const [showOrgStatisticPopup, setShowOrgStatisticPopup] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
+  const [selectedOrgData, setSelectedOrgData] = useState(null); // 수정: 상태 정의 확인
   const [dynamicColumns, setDynamicColumns] = useState([]);
+
+    // ORGNM 컬럼에 상태 전달
+  const updatedBaseColumns = baseColumns.map((column) => {
+    if (column.field === 'ORGNM') {
+      return {
+        ...column,
+        cellClick: (e, cell) => column.cellClick(e, cell, setSelectedOrgData, setShowOrgStatisticPopup, user),
+      };
+    }
+    return column;
+  });
 
   // 초기 searchConfig 설정
   const baseSearchConfig = {
@@ -104,7 +156,7 @@ const StandardOrgStatistic = () => {
       {
         type: 'buttons',
         fields: [
-          { id : 'searchBtn', type: 'button', row: 1, label: '검색', eventType: 'search', enabled: true },
+          { id: 'searchBtn', type: 'button', row: 1, label: '검색', eventType: 'search', enabled: true },
         ],
       },
     ],
@@ -216,15 +268,14 @@ const StandardOrgStatistic = () => {
           const field = cell.getField();
           const rowData = cell.getRow().getData();
           const value = Number(rowData[field]);
-          console.log('Clicked cell:', { field, value, rowData }); // 디버깅용 로그
           if (!isNaN(value) && value > 0) {
             setSelectedData({
               ...rowData,
               CLASSCD: field,
-              SECTIONCD:  rowData.SECTIONCD || '',
-              DATEGB:  rowData.pDATEGB || '',
-              DATE1:  rowData.pDATE1 || '',
-              DATE2:  rowData.pDATE2 || '',
+              SECTIONCD: rowData.SECTIONCD || '',
+              DATEGB: rowData.pDATEGB || '',
+              DATE1: rowData.pDATE1 || '',
+              DATE2: rowData.pDATE2 || '',
               EMPNO: rowData.EMPNO || user?.empNo || '',
               ORGCD: rowData.ORGCD || '',
               ORGLEVELGB: rowData.pORGLEVELGB || '',
@@ -245,18 +296,18 @@ const StandardOrgStatistic = () => {
         return;
       }
       const mainData = Array.isArray(mainResponse.data) ? mainResponse.data : [];
-      
+
       // 데이터에 고유 ID 추가
       const processedData = mainData.map((row, index) => ({
         ...row,
         ID: index + 1,
       }));
-      
+
       setData(processedData);
 
       // 테이블 컬럼 및 데이터 갱신
       if (tableInstance.current && tableStatus === 'ready') {
-        const updatedColumns = [...baseColumns, ...newDynamicColumns];
+        const updatedColumns = [...updatedBaseColumns, ...newDynamicColumns];
         tableInstance.current.setColumns(updatedColumns);
         tableInstance.current.setData(processedData);
       } else {
@@ -284,9 +335,9 @@ const StandardOrgStatistic = () => {
         console.warn('테이블 컨테이너가 준비되지 않았습니다.');
         return;
       }
-      
+
       try {
-        tableInstance.current = createTable(tableRef.current, baseColumns, data, {
+        tableInstance.current = createTable(tableRef.current, updatedBaseColumns, data, {
           headerHozAlign: 'center',
           layout: 'fitColumns',
         });
@@ -334,13 +385,7 @@ const StandardOrgStatistic = () => {
       tableInstance.current.setFilter(filterSelect, 'like', filterText);
     } else if (filterText) {
       if (filterText !== '') {
-        tableInstance.current.setFilter([
-          { field: 'EMPNM', type: 'like', value: filterText },
-          { field: 'CLASSANM', type: 'like', value: filterText },
-          { field: 'CLASSBNM', type: 'like', value: filterText },
-          { field: 'CLASSCNM', type: 'like', value: filterText },
-          { field: 'WORKNM', type: 'like', value: filterText },
-        ], 'or');
+        tableInstance.current.setFilter([{ field: 'ORGNM', type: 'like', value: filterText }], 'or');
       } else {
         tableInstance.current.clearFilter();
       }
@@ -395,6 +440,12 @@ const StandardOrgStatistic = () => {
         show={showStatisticPopup}
         onHide={() => setShowStatisticPopup(false)}
         data={selectedData ? [selectedData] : []}
+      />
+      <StandardOrgStatisticPopup
+        show={showOrgStatisticPopup}
+        onHide={() => setShowOrgStatisticPopup(false)}
+        data={selectedOrgData ? [selectedOrgData] : []}
+        dynamicColumns={dynamicColumns} // 추가: 동적 컬럼 전달
       />
     </div>
   );

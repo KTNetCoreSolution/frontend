@@ -122,8 +122,6 @@ const StandardOrgClassStatisticPopup = ({ show, onHide, data }) => {
           pDEBUG: 'F',
         };
 
-        console.log(params);
-
         const response = await fetchData('standard/orgStatistic/list', params);
 
         if (!response.success && isMounted) {

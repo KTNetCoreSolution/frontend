@@ -10,13 +10,16 @@ let msg = '';
 const SsoMobileLogin = () => {
   const navigate = useNavigate();
 
+  alert('최초화면');
   useEffect(() => {
     const ssoLogin = async () => {
       try {
         // URL 쿼리 파라미터에서 token 읽기
         const urlParams = new URLSearchParams(window.location.search);
+        alert(urlParams);
         const token = urlParams.get('token');
 
+        alert('token:' + token);
         if (!token) {
           msg = '토큰이 존재하지 않습니다.';
           errorMsgPopup(msg);
@@ -27,12 +30,16 @@ const SsoMobileLogin = () => {
           token: token
         };
 
+        alert('fetchDataGet params:' + params);
+
         const res = await fetchDataGet(MKATE_URL, params, { withCredentials: true }, 'Y');
         if (!res || !res.result) {
           msg = 'SSO 응답 형식 오류';
           errorMsgPopup(msg);
           throw new Error(msg);
         }
+
+        alert('res.result:' + res.result);
 
         if (res.result.code !== '0') {
           msg = res.result.errdesc || '응답 결과 오류';
