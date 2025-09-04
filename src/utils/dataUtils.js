@@ -119,6 +119,7 @@ export async function fetchDataGet(url, filters = {}, config = {}, directYn = 'N
     await handleLoadingProgress(setLoading, progressShow);
     const queryParams = new URLSearchParams(filters).toString();
     const fullUrl = queryParams ? `${url}?${queryParams}` : `${url}`;
+    alert('get url:' + fullUrl);
     const response = await api.get(fullUrl, config);
     return response.data;
   } catch (error) {

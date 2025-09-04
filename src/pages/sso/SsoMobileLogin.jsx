@@ -10,7 +10,6 @@ let msg = '';
 const SsoMobileLogin = () => {
   const navigate = useNavigate();
 
-  alert('최초화면');
   useEffect(() => {
     const ssoLogin = async () => {
       try {
@@ -37,6 +36,8 @@ const SsoMobileLogin = () => {
         const res = await fetchDataGet(MKATE_URL, params, { withCredentials: true }, 'Y');
         if (!res || !res.result) {
           msg = 'SSO 응답 형식 오류';
+
+          alert('msg');
           errorMsgPopup(msg);
           throw new Error(msg);
         }
