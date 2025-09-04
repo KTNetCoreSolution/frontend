@@ -32,6 +32,8 @@ const SsoMobileLogin = () => {
 
         alert('fetchDataGet params:' + params);
 
+        alert('MKATE_URL:' + MKATE_URL);
+
         const res = await fetchDataGet(MKATE_URL, params, { withCredentials: true }, 'Y');
         if (!res || !res.result) {
           msg = 'SSO 응답 형식 오류';
