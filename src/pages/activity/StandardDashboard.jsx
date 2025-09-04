@@ -285,14 +285,14 @@ const StandardDashboard = () => {
         let seriesData, legendData, xAxisData;
         if (i === 0) {
           seriesData = [
-            { name: '선로', type: 'bar', data: headquarterLineData.map(item => item['업무량(시간)'] / 100) },
-            { name: '설계', type: 'bar', data: headquarterDesignData.map(item => item['업무량(시간)'] / 100) },
+            { name: '선로', type: 'bar', data: headquarterLineData.map(item => item['업무량(시간)'] / 100), itemStyle: {color: '#216DB2'} },
+            { name: '설계', type: 'bar', data: headquarterDesignData.map(item => item['업무량(시간)'] / 100), itemStyle: {color: '#2CBBB7'} },
           ];
           legendData = ['선로', '설계'];
           xAxisData = headquarterLineData.map(item => item.ORGNM);
         } else {
           seriesData = [
-            { name: '업무량(시간)', type: 'bar', data: headquarterBizData.map(item => item['업무량(시간)'] / 100) },
+            { name: '업무량(시간)', type: 'bar', data: headquarterBizData.map(item => item['업무량(시간)'] / 100), itemStyle: {color: '#216DB2'} },
           ];
           legendData = ['업무량(시간)'];
           xAxisData = headquarterBizData.map(item => item.ORGNM);
@@ -312,7 +312,7 @@ const StandardDashboard = () => {
                 return result;
               },
             },
-            legend: { data: legendData },
+            legend: { data: legendData, orient: 'horizontal', bottom: 10, left: 'center', },
             xAxis: { type: 'category', data: xAxisData },
             yAxis: { type: 'value' },
             barWidth: '20%',
@@ -334,15 +334,15 @@ const StandardDashboard = () => {
           // i에 따라 제목 동적으로 설정
           const titles = ['선로', '설계', 'BIZ'];
           chart.setOption({
-            title: {
-              show: true,
-              text: titles[i], // i=0: 선로, i=1: 설계, i=2: BIZ
-              left: 'center', // 제목을 차트 중앙에 배치
-              top: '5%', // 차트 상단에서 약간 띄움
-              textStyle: {
-                fontSize: 12,
-              },
-            },
+            // title: {
+            //   show: true,
+            //   text: titles[i], // i=0: 선로, i=1: 설계, i=2: BIZ
+            //   left: 'center', // 제목을 차트 중앙에 배치
+            //   top: '5%', // 차트 상단에서 약간 띄움
+            //   textStyle: {
+            //     fontSize: 12,
+            //   },
+            // },
             tooltip: {
               trigger: 'item',
               formatter: '<b>{b}</b> <br/>시간(h): {c}<br/>비율(%): {d}',
@@ -352,30 +352,34 @@ const StandardDashboard = () => {
                 name: '업무 비율',
                 type: 'pie',
                 radius: [0, '60%'],
+                color: ['#2CBBB7', '#216DB2', '#4CD3C2', '#C4E1A1'],
                 label: {
                   formatter: '{abg|{b}}\n{hr|}\n{per|{d}%}  {value|{c}시간}',
-                  backgroundColor: 'transparent',
-                  borderColor: '#aaa',
+                  backgroundColor: '#ffffff',
+                  borderColor: '#8C8D8E',
                   borderWidth: 1,
                   borderRadius: 4,
                   rich: {
                     abg: {
-                      backgroundColor: 'transparent',
-                      width: '100%',
-                      align: 'center',
-                      height: 20,
-                      borderRadius: [4, 4, 0, 0],
+                      color: '#6E7079',
+                      lineHeight: 22,
+                      align: 'center'
                     },
                     hr: {
-                      borderColor: '#aaa',
+                      borderColor: '#8C8D8E',
                       width: '100%',
-                      borderWidth: 0.5,
-                      height: 0,
+                      borderWidth: 1,
+                      height: 0
                     },
                     per: {
-                      color: '#000',
-                      padding: [2, 4],
-                      borderRadius: 2,
+                      color: '#212529',
+                      backgroundColor: 'transparent',
+                      padding: [6, 8]
+                    },
+                    value: {
+                      color: '#212529',
+                      backgroundColor: 'transparent',
+                      padding: [6, 8]
                     },
                   },
                 },
@@ -402,75 +406,89 @@ const StandardDashboard = () => {
 
   return (
     <div className={`chartWrap ${styles.container} ${isFullscreen ? styles.fullscreen : ''}`}>
-      <div className={styles.inputSection}>
-        <div className={styles.chartsContainer}>
+      <div className='chartRowWrap'>
+        <div className='chartTitle'>전사 표준활동 입력현황</div>
+        <div className={styles.inputSection}>
+          <div className={styles.chartsContainer}>
+            <div className={styles.subSection}>
+              <div className='subSecTitle'>전체</div>
+              <div ref={chartRefs[0]} className={styles.chart} />
+            </div>
+            <div className={styles.subSection}>
+              <div className='subSecTitle'>선로</div>
+              <div ref={chartRefs[1]} className={styles.chart} />
+            </div>
+            <div className={styles.subSection}>
+              <div className='subSecTitle'>설계</div>
+              <div ref={chartRefs[2]} className={styles.chart} />
+            </div>
+            <div className={styles.subSection}>
+              <div className='subSecTitle'>BIZ</div>
+              <div ref={chartRefs[3]} className={styles.chart} />
+            </div>
+          </div>
+          <div className='rightInfo'>
+            <div className='rightHeader'>
+              <div className='subSecTitle'>소계</div>
+              <div>
+                <input
+                  type="month"
+                  value={month}
+                  onChange={e => setMonth(e.target.value)}
+                  className={styles.monthInput}
+                />
+                <button className={styles.refreshButton}>🔄</button>
+              </div>
+            </div>
+            <table className={styles.gridTable}>
+              <thead>
+                <tr>
+                  <th>구분</th>
+                  <th>인원(명)</th>
+                  <th>입력시간(h)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {summaryData.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.구분}</td>
+                    <td>{item.입력인원}</td>
+                    <td>{item.입력시간}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div className='chartRowWrap'>
+        <div className='chartTitle'>본부별 표준활동 입력현황</div>
+        <div className={styles.headquarterSection}>
           <div className={styles.subSection}>
-            <div className='subSecTitle'>전체</div>
-            <div ref={chartRefs[0]} className={styles.chart} />
+            <div className='subSecTitle'>선로/설계</div>
+            <div ref={chartRefs[4]} className={styles.chart} />
           </div>
           <div className={styles.subSection}>
+            <div className='subSecTitle'>업무량(시간)</div>
+            <div ref={chartRefs[5]} className={styles.chart} />
+          </div>
+        </div>
+      </div>
+      <div className='chartRowWrap'>
+        <div className='chartTitle'>표준활동 대분류별 입력현황</div>  
+        <div className={styles.fieldSection}>
+          <div className={styles.subSection}>
             <div className='subSecTitle'>선로</div>
-            <div ref={chartRefs[1]} className={styles.chart} />
+            <div ref={chartRefs[6]} className={styles.chart} />
           </div>
           <div className={styles.subSection}>
             <div className='subSecTitle'>설계</div>
-            <div ref={chartRefs[2]} className={styles.chart} />
+            <div ref={chartRefs[7]} className={styles.chart} />
           </div>
           <div className={styles.subSection}>
             <div className='subSecTitle'>BIZ</div>
-            <div ref={chartRefs[3]} className={styles.chart} />
+            <div ref={chartRefs[8]} className={styles.chart} />
           </div>
-        </div>
-        <div className='rightInfo'>
-          <div className='rightHeader'>
-            <div className='subSecTitle'>소계</div>
-            <div>
-              <input
-                type="month"
-                value={month}
-                onChange={e => setMonth(e.target.value)}
-                className={styles.monthInput}
-              />
-              <button className={styles.refreshButton}>🔄</button>
-            </div>
-          </div>
-          <table className={styles.gridTable}>
-            <thead>
-              <tr>
-                <th>구분</th>
-                <th>인원(명)</th>
-                <th>입력시간(h)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {summaryData.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.구분}</td>
-                  <td>{item.입력인원}</td>
-                  <td>{item.입력시간}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div className={styles.headquarterSection}>
-        <div className={styles.subSection}>
-          <div ref={chartRefs[4]} className={styles.chart} />
-        </div>
-        <div className={styles.subSection}>
-          <div ref={chartRefs[5]} className={styles.chart} />
-        </div>
-      </div>
-      <div className={styles.fieldSection}>
-        <div className={styles.subSection}>
-          <div ref={chartRefs[6]} className={styles.chart} />
-        </div>
-        <div className={styles.subSection}>
-          <div ref={chartRefs[7]} className={styles.chart} />
-        </div>
-        <div className={styles.subSection}>
-          <div ref={chartRefs[8]} className={styles.chart} />
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 .container {
   width: 100%;
-  max-width: 1920px;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -89,6 +89,9 @@
 }
 
 .subSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   flex: 1;
   text-align: center;
   width: 100%;

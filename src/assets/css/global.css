@@ -739,6 +739,7 @@ border-color: #bd2130;
 /* breadcrumb 영역 */
 .topNavLoc {
   display: flex;
+  justify-content: flex-end;
   font-size: 13px;
   color: #555555;
   margin: 1rem 1.875rem;
@@ -1429,4 +1430,21 @@ textarea.form-control {
   justify-content: space-between;
   gap: 8px;
   width: 100%;
+}
+
+.chartWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.chartRowWrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.chartTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem !important;
 }
