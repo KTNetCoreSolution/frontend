@@ -46,6 +46,10 @@ const baseColumns = [
   { headerHozAlign: 'center', hozAlign: 'center', title: '인원', field: 'EMPNOCNT', sorter: 'number', width: 100 },
   { headerHozAlign: 'center', hozAlign: 'center', title: '조직', field: 'ORGNM', sorter: 'string', width: 130 },
   { headerHozAlign: 'center', hozAlign: 'center', title: '조직코드', field: 'ORGCD', sorter: 'string', width: 130, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '조회일자구분', field: 'pDATEGB', sorter: 'string', width: 100, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '조회일자1', field: 'pDATE1', sorter: 'string', width: 100, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '조회일자2', field: 'pDATE2', sorter: 'string', width: 100, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '조회조직레벨구분', field: 'pORGLEVELGB', sorter: 'string', width: 100, visible: false },
 ];
 
 const StandardOrgStatistic = () => {
@@ -217,9 +221,13 @@ const StandardOrgStatistic = () => {
             setSelectedData({
               ...rowData,
               CLASSCD: field,
-              DDATE: filters.dayGubun === 'D' ? filters.rangeStartDate : filters.monthDate,
+              SECTIONCD:  rowData.SECTIONCD || '',
+              DATEGB:  rowData.pDATEGB || '',
+              DATE1:  rowData.pDATE1 || '',
+              DATE2:  rowData.pDATE2 || '',
               EMPNO: rowData.EMPNO || user?.empNo || '',
               ORGCD: rowData.ORGCD || '',
+              ORGLEVELGB: rowData.pORGLEVELGB || '',
             });
             setShowStatisticPopup(true);
           }

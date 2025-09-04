@@ -93,9 +93,7 @@ const StandardOrgClassStatisticPopup = ({ show, onHide, data }) => {
 
     const loadData = async () => {
       if (
-        !data || !Array.isArray(data) || data.length === 0 ||
-        !data[0] || !data[0].SECTIONCD || !data[0].DDATE ||
-        data[0].SECTIONCD.trim() === "" || data[0].DDATE.trim() === ""
+        !data || !Array.isArray(data) || data.length === 0 ||!data[0] ||!data[0].SECTIONCD?.trim() ||!data[0].EMPNO?.trim() || !data[0].ORGCD?.trim() ||!data[0].DATEGB?.trim() ||!data[0].DATE1?.trim() ||!data[0].DATE2?.trim() ||!data[0].CLASSCD?.trim() ||!data[0].ORGLEVELGB?.trim()
       ) {
         if (isMounted) {
           setTableData([]);
@@ -111,17 +109,22 @@ const StandardOrgClassStatisticPopup = ({ show, onHide, data }) => {
       }
 
       try {
-        const params = {
+         const params = {
           pGUBUN: 'DETAIL',
           pSECTIONCD: data[0].SECTIONCD||'',
           pEMPNO: data[0].EMPNO||'',
           pORGCD: data[0].ORGCD||'',
-          pDATE1: data[0].DDATE||'',
+          pORGLEVELGB: data[0].ORGLEVELGB||'',
+          pDATEGB: data[0].DATEGB||'',
+          pDATE1: data[0].DATE1||'',
+          pDATE2: data[0].DATE2||'',
           pCLASSCD: data[0].CLASSCD||'',
           pDEBUG: 'F',
         };
 
-        const response = await fetchData('standard/teamInputStatistic/list', params);
+        console.log(params);
+
+        const response = await fetchData('standard/orgStatistic/list', params);
 
         if (!response.success && isMounted) {
           errorMsgPopup(response.message || "데이터를 가져오는 중 오류가 발생했습니다.");

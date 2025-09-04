@@ -146,10 +146,36 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN, 
           setSelectedIds(preSelectedIds);
         }
 
-        // 1레벨 노드만 기본 확장
-        const initialExpanded = finalData
-          .filter((node) => node.ORGLEVEL <= 1)
-          .map((node) => node.id);
+        // pGUBUN에 따라 초기 확장 레벨 설정
+        let expandLevel;
+        if (pGUBUN === 'STABIZEMPNO') {
+          expandLevel = 2;
+        } else if (pGUBUN === 'STADESIGNEMPNO') {
+          expandLevel = 2;
+        } else if (pGUBUN === 'STALINEEMPNO') {
+          expandLevel = 0;
+        } else {
+          expandLevel = 0; // 디폴트: 1레벨
+        }
+
+        // 지정된 레벨까지 노드 확장
+        const collectExpandedIds = (nodes, maxLevel, currentLevel = 0) => {
+          let expandedIds = [];
+          nodes.forEach((node) => {
+            if (node.ORGLEVEL <= maxLevel) {
+              expandedIds.push(node.id);
+              if (node.children && currentLevel < maxLevel) {
+                expandedIds = [
+                  ...expandedIds,
+                  ...collectExpandedIds(node.children, maxLevel, currentLevel + 1),
+                ];
+              }
+            }
+          });
+          return expandedIds;
+        };
+
+        const initialExpanded = collectExpandedIds(finalData, expandLevel);
         setExpanded(initialExpanded);
       } catch (error) {
         console.error("Error loading data:", error);
