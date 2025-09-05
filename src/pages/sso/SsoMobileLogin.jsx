@@ -12,7 +12,7 @@ const SsoMobileLogin = () => {
     try {
       const urlParams = new URLSearchParams(window.location.search);
       let token = urlParams.get('token');
-      
+
       if (!token) {
         alert('토큰이 존재하지 않습니다.')
         setTimeout(() => navigate('/mobile/Login'), 3000);
@@ -20,12 +20,12 @@ const SsoMobileLogin = () => {
       }
       const result = await performSsoLogin('mobile', token, navigate);
       if (!result.success) {
-        errorMsgPopup(result.errMsg);
+        alert(result.errMsg);
         setTimeout(() => navigate('/mobile/Login'), 3000);
       }
     } catch (err) {
       console.error('SSO 로그인 오류:', err);
-      errorMsgPopup(err.message || '로그인에 실패했습니다.');
+      alert(err.message || '로그인에 실패했습니다.');
       setTimeout(() => navigate('/mobile/Login'), 3000);
     } finally {
       setHasTriedLogin(true);
