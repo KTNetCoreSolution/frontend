@@ -13,6 +13,7 @@ const SsoMobileLogin = () => {
       const urlParams = new URLSearchParams(window.location.search);
       let token = urlParams.get('token');
 
+      /*
       if (token) {
         try {
           token = decodeURIComponent(token);
@@ -21,8 +22,8 @@ const SsoMobileLogin = () => {
         }
       } else {
         alert('토큰이 존재하지 않습니다.');
-      }
-
+      }*/
+     
       if (!token) {
         alert('토큰이 존재하지 않습니다.')
         setTimeout(() => navigate('/mobile/Login'), 3000);
