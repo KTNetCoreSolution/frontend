@@ -17,7 +17,6 @@ const MobileDrivingLog = () => {
   const navigate = useNavigate();
   const [showSidebar, setShowSidebar] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const today = commonUtils.getTodayDate();
   const [carId, setCarId] = useState('');
   const [carList, setCarList] = useState([]);
   const [boardList, setBoardList] = useState([]);
@@ -40,24 +39,6 @@ const MobileDrivingLog = () => {
       clearUser();
       navigate('/mobile/Login');
     }
-  };
-  
-  const timeOption = (stdTime, gbn) => {
-    const times = [];
-    for (let hour = 0; hour < 24; hour++) {
-      for (let minute = 0; minute < 60; minute += 30) {
-        const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-        if (timeString >= stdTime) {
-          if(gbn === 'S' && timeString >= stdTime) {
-            times.push(timeString);
-          }
-          else if (gbn === 'E' && timeString > stdTime) {
-            times.push(timeString);
-          }
-        }
-      }
-    }
-    return times;
   };
 
   const initializeComponent = async () => {
@@ -206,7 +187,7 @@ const MobileDrivingLog = () => {
         
         <MobileMainUserMenu show={showSidebar} handleClose={handleToggleSidebar} onLogout={handleLogout} />
 
-        <div className="p-3">
+        <div className="pageMain">
           <div className={`card ${styles.cardRadius}`}>
             <div className="p-1 align-items-center">
               <div {...handlers} className={styles.sliderContainer}>
@@ -250,7 +231,7 @@ const MobileDrivingLog = () => {
           <div className="mb-2">
               <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={(e) => alert('개발중')}>차량점검 및 일지작성</button>
           </div>
-          <div className={`d-flex ${styles.formDivNotiBox}`} onClick={(e) => alert('개발중')} >
+          <div className={`d-flex ${styles.formDivNotiBox}`} onClick={(e) => navigate('/mobile/MobileCarNotice')} >
             <div className={styles.container}>              
               {boardList.map((item, index) =>  
                 <div key={item.NOTICEID} className={`d-flex ${index === 0 ? styles.formDivNotiICON : ''}`} ><div className={`${styles.formDivNotiList}`}>공지</div><label className={`${styles.formNotiList}`} >{item.SIMPLE_TITLE}</label></div>
@@ -272,7 +253,7 @@ const MobileDrivingLog = () => {
             </div>
             <div className={`${styles.arrowContainer}`}></div>
           </div>
-          <div className={`d-flex ${styles.formDivBtnBox}`} onClick={(e) => alert('개발중')} >
+          <div className={`d-flex ${styles.formDivBtnBox}`} onClick={(e) => navigate('/mobile/MobileCarCheckStatus')} >
             <div className={`${styles.container}`}>
               <label className={`${styles.formListTitle}`} >차량상태</label>
               <label className={`${styles.formList}`} >내 조직의 차량상태를 확인합니다</label>

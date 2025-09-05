@@ -1,0 +1,41 @@
+
+.formControl[readonly] {
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+    background-color: #f8f9fa;
+    border-color: #ced4da;
+    color: #495057;
+    opacity: 1;
+  }
+
+ .formControl {
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+ }
+
+ .fileItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.imageFile {
+  display: flex;
+  align-items: center;
+}
+
+.thumbnail {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  margin-right: 10px;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+}
+
+.textarea {
+  min-height: 200px;
+  height: 200px;
+  resize: vertical;
+}
