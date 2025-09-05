@@ -24,7 +24,9 @@ const SsoMobileLogin = () => {
         alert('토큰이 존재하지 않습니다.');
       }*/
 
-        
+        alert(token);
+
+
       if (!token) {
         alert('토큰이 존재하지 않습니다.')
         setTimeout(() => navigate('/mobile/Login'), 3000);
