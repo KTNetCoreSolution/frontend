@@ -13,7 +13,15 @@ const SsoMobileLogin = () => {
       const urlParams = new URLSearchParams(window.location.search);
       let token = urlParams.get('token');
 
-      alert('token' + token);
+      if (token) {
+        try {
+          token = decodeURIComponent(token);
+        } catch (e) {
+          alert('토큰 디코딩 오류:', e);
+        }
+      } else {
+        alert('토큰이 존재하지 않습니다.');
+      }
 
       if (!token) {
         alert('토큰이 존재하지 않습니다.')
@@ -22,9 +30,8 @@ const SsoMobileLogin = () => {
       }
       
       const params = {
-        ssoToken: token
+        token: token
       };
-      
       const result = await performSsoLogin('mobile', params, navigate);
       if (!result.success) {
         alert(result.errMsg);
