@@ -79,8 +79,8 @@ export default {
     const parts = formatter.formatToParts(new Date());
 
     const year = parts.find(p => p.type === 'year').value;
-    const month = parts.find(p => p.type === 'month').value;
-    const day = parts.find(p => p.type === 'day').value;
+    let month = parts.find(p => p.type === 'month').value;
+    let day = parts.find(p => p.type === 'day').value;
 
     if (month.length === 1) {
       month = '0' + month;

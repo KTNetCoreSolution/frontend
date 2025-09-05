@@ -77,7 +77,8 @@ export async function fetchJsonData(jsonData, filters = {}) {
     return filteredData;
   } catch (error) {
     console.error('JSON 데이터 처리 실패:', error.message);
-    throw error;
+    const errMsg = error.response?.data?.errMsg || error.message || '서버 요청에 실패했습니다.';
+    throw new Error(errMsg); // errMsg를 포함한 오류 던지기
   }
 }
 
@@ -98,7 +99,8 @@ export async function fetchData(url, filters = {}, config = {}, directYn = 'N', 
     return response.data;
   } catch (error) {
     console.error('데이터 가져오기 실패:', error.message, error.response?.data);
-    throw error;
+    const errMsg = error.response?.data?.errMsg || error.message || '서버 요청에 실패했습니다.';
+    throw new Error(errMsg); // errMsg를 포함한 오류 던지기
   } finally {
     if(progressShow) setLoading({ isLoading: false, progress: 0 });
   }
@@ -123,7 +125,8 @@ export async function fetchDataGet(url, filters = {}, config = {}, directYn = 'N
     return response.data;
   } catch (error) {
     console.error('데이터 가져오기 실패 (GET):', error.message, error.response?.data);
-    throw error;
+    const errMsg = error.response?.data?.errMsg || error.message || '서버 요청에 실패했습니다.';
+    throw new Error(errMsg); // errMsg를 포함한 오류 던지기
   } finally {
     if(progressShow) setLoading({ isLoading: false, progress: 0 });
   }
@@ -204,7 +207,8 @@ export async function externalFetchData(url, filters = {}, config = {}, progress
     return response.data;
   } catch (error) {
     console.error('데이터 가져오기 실패:', error.message, error.response?.data);
-    throw error;
+    const errMsg = error.response?.data?.errMsg || error.message || '서버 요청에 실패했습니다.';
+    throw new Error(errMsg); // errMsg를 포함한 오류 던지기
   } finally {
     if(progressShow) setLoading({ isLoading: false, progress: 0 });
   }
@@ -227,7 +231,8 @@ export async function externalFetchDataGet(url, filters = {}, config = {}, progr
     return response.data;
   } catch (error) {
     console.error('데이터 가져오기 실패 (GET):', error.message, error.response?.data);
-    throw error;
+    const errMsg = error.response?.data?.errMsg || error.message || '서버 요청에 실패했습니다.';
+    throw new Error(errMsg); // errMsg를 포함한 오류 던지기
   } finally {
     if(progressShow) setLoading({ isLoading: false, progress: 0 });
   }

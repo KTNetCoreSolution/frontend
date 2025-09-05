@@ -33,36 +33,29 @@ export const performLogin = async (gubun, empNo, empPwd, captchaInput, navigate,
   return null;
 };
 
-export const performSsoLogin = async (gubun, empNo, navigate, setError) => {
+export const performSsoLogin = async (gubun, ssoToken, navigate) => {
   try {
-    
-    const response = await fetchData('auth/sso/login', { empNo }, {}, 'N', false);
-    
+    const response = await fetchData('auth/sso/login', { ssoToken }, {}, 'N', false);
     if (!response.success) {
-      throw new Error(response.errMsg || '아이디, 비밀번호 또는 캡챠가 잘못되었습니다.');
+      throw new Error(response.errMsg || 'SSO 로그인 오류');
+    } else if (response.errMsg !== '') {
+      return { success: false, errMsg: response.errMsg };
     } else {
-      if (response.errMsg !== '') {
-        setError(response.errMsg);
-      } else {
-        if (response.data.user.pwdChgYn === 'Y') {
-          return response;
-        }
-
-        const { setUser } = useStore.getState();
-        setUser({
-          ...response.data.user,
-          expiresAt: response.data.expiresAt * 1000,
-        });
-
-        if (gubun === 'web') navigate('/main', { replace: true });
-        else navigate('/mobile/main', { replace: true });
+      if (response.data.user.pwdChgYn === 'Y') {
+        return response;
       }
+      const { setUser } = useStore.getState();
+      setUser({
+        ...response.data.user,
+        expiresAt: response.data.expiresAt * 1000,
+      });
+      navigate(gubun === 'web' ? '/main' : '/mobile/main', { replace: true });
+      return { success: true };
     }
   } catch (error) {
     console.error('Login error:', error.message);
-    setError(error.message || '로그인에 실패했습니다. 다시 시도해주세요.');
+    return { success: false, errMsg: error.message || '로그인에 실패했습니다. 다시 시도해주세요.' };
   }
-  return null;
 };
 
 export const fetchCaptcha = async () => {
