@@ -33,9 +33,9 @@ export const performLogin = async (gubun, empNo, empPwd, captchaInput, navigate,
   return null;
 };
 
-export const performSsoLogin = async (gubun, ssoToken, navigate) => {
+export const performSsoLogin = async (gubun, params, navigate) => {
   try {
-    const response = await fetchData('auth/sso/login', { ssoToken }, {}, 'N', false);
+    const response = await fetchData('auth/sso/login', params, {}, 'N', false);
     if (!response.success) {
       throw new Error(response.errMsg || 'SSO 로그인 오류');
     } else if (response.errMsg !== '') {

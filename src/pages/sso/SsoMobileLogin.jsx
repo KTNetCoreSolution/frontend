@@ -20,7 +20,12 @@ const SsoMobileLogin = () => {
         setTimeout(() => navigate('/mobile/Login'), 3000);
         return;
       }
-      const result = await performSsoLogin('mobile', token, navigate);
+      
+      const params = {
+        ssoToken: token
+      };
+      
+      const result = await performSsoLogin('mobile', params, navigate);
       if (!result.success) {
         alert(result.errMsg);
         setTimeout(() => navigate('/mobile/Login'), 3000);
