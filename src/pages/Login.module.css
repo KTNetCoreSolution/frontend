@@ -74,12 +74,13 @@
   font-size: 0.9rem;
 }
 
-.captchaTimer {
+/* .captchaTimer {
   font-size: 1rem;
   color: #ff0000;
   width: 40px;
   text-align: center;
-}
+  margin-right: 8px;
+} */
 
 .buttonGroup {
   display: flex;

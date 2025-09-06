@@ -137,20 +137,22 @@ const MobileLogin = () => {
           <div className='formGroup'>
             <div className='captchaContainer'>
               {captchaImage ? (
-                <img src={captchaImage} alt="CAPTCHA" className={styles.captchaImage} />
+                <img src={captchaImage} alt="CAPTCHA" className='captchaImage' />
               ) : (
                 <div className={styles.captchaPlaceholder}>
                   {isCaptchaLoading ? 'Loading CAPTCHA...' : captchaError || '캡챠 로드 실패'}
                 </div>
               )}
-              <button
-                type="button"
-                className={styles.captchaRefreshButton}
-                onClick={loadCaptcha}
-              >
-                <i className="bi bi-arrow-repeat"></i>
-              </button>
-              <span className={styles.captchaTimer}>{timer}초</span>
+              <div className='d-flex align-items-center'>
+                <span className='captchaTimer'>{timer}초</span>
+                <button
+                  type="button"
+                  className={styles.captchaRefreshButton}
+                  onClick={loadCaptcha}
+                >
+                  <i className="bi bi-arrow-repeat"></i>
+                </button>
+              </div>
             </div>
             <input
               id="captcha"

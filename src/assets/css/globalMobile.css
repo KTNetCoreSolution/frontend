@@ -344,15 +344,23 @@ body {
 .captchaContainer {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
+  padding: 0 10px;
   margin-bottom: 1rem;
   width: 100%;
+  border: 1px solid var(--bs-border-form);
+  border-radius: 8px;
 }
 .captchaImage {
   width: 150px;
   height: 50px;
-  border: 1px solid var(--bs-border-form);
-  border-radius: 8px;
+}
+.captchaTimer {
+  flex: 0 0 35px;
+  font-size: 0.9rem;
+  color: #ff0000;
+  margin-right: 8px;
 }
 .formGroup:has(.captchaContainer) {
   flex-direction: column;

@@ -19,11 +19,16 @@ const fn_CellNumber = { editor: "number", editorParams: { min: 0 }, editable: tr
 const fn_CellSelect = (values) => ({ editor: "list", editorParams: { values, autocomplete: true }, editable: true });
 const fn_CellButton = (label, className, onClick) => ({
   formatter: (cell) => {
+    const wrapper = document.createElement("div"); 
+    wrapper.style.display = "flex";
+    wrapper.style.justifyContent = "center";
+    wrapper.style.alignItems = "center";
     const button = document.createElement("button");
     button.className = `btn btn-sm ${className}`;
     button.innerText = label;
     button.onclick = () => onClick(cell.getData());
-    return button;
+    wrapper.appendChild(button);
+    return wrapper; 
   },
 });
 const fn_HandleCellEdit = (cell, field, setData, tableInstance) => {
@@ -527,7 +532,7 @@ const MenuManageInfo = () => {
       >
         <div className='formColWrap'>
           <div className='formGroup'>
-            <label className="form-label">메뉴명</label>
+            <label className="form-label w60">메뉴명</label>
             <input
               type="text"
               className={`form-control ${styles.formControl}`}
@@ -537,7 +542,7 @@ const MenuManageInfo = () => {
             />
           </div>
           <div className='formGroup'>
-            <label className="form-label">상위메뉴</label>
+            <label className="form-label w60">상위메뉴</label>
             <select
               className={`form-select ${styles.formSelect}`}
               value={newMenu.UPPERMENUID}
@@ -560,7 +565,7 @@ const MenuManageInfo = () => {
             </select>
           </div>
           <div className='formGroup'>
-            <label className="form-label">URL</label>
+            <label className="form-label w60">URL</label>
             <input
               type="text"
               className={`form-control ${styles.formControl}`}
@@ -570,7 +575,7 @@ const MenuManageInfo = () => {
             />
           </div>
           <div className='formGroup'>
-            <label className="form-label">메뉴순서</label>
+            <label className="form-label w60">메뉴순서</label>
             <input
               type="number"
               className={`form-control ${styles.formControl}`}
@@ -580,7 +585,7 @@ const MenuManageInfo = () => {
             />
           </div>
           <div className='formGroup'>
-            <label className="form-label">하위포함</label>
+            <label className="form-label w60">하위포함</label>
             <select
               className={`form-select ${styles.formSelect}`}
               value={newMenu.LEAFMENUYN}
@@ -591,7 +596,7 @@ const MenuManageInfo = () => {
             </select>
           </div>
           <div className='formGroup'>
-            <label className="form-label">사용</label>
+            <label className="form-label w60">사용</label>
             <select
               className={`form-select ${styles.formSelect}`}
               value={newMenu.USEYN}

@@ -161,10 +161,12 @@ const Login = () => {
                     {isCaptchaLoading ? 'Loading CAPTCHA...' : captchaError || '캡챠 로드 실패'}
                   </div>
                 )}
-                <button type="button" className={styles.smallButton} onClick={loadCaptcha}>
-                  <i className="bi bi-arrow-repeat"></i>
-                </button>
-                <span className={styles.captchaTimer}>{timer}초</span>
+                <div className='d-flex align-items-center'>
+                  <span className='captchaTimer'>{timer}초</span>
+                  <button type="button" className='btn btn-secondary' onClick={loadCaptcha}>
+                    <i className="bi bi-arrow-repeat"></i>
+                  </button>
+                </div>
               </div>
               <input
                 id="captcha"

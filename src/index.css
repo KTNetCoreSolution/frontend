@@ -277,6 +277,9 @@ select {
 .w40 {
   width: 40px;
 }
+.w60 {
+  width: 60px;
+}
 .w80 {
   width: 80px;
 }

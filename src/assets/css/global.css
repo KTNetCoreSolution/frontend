@@ -979,15 +979,24 @@ button.boardBtn01 .arrow-icon {
 .captchaContainer {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
+  padding: 0 10px;
   margin-bottom: 1rem;
   width: 100%;
+  border: 1px solid var(--bs-border-form);
+  border-radius: 8px;
 }
 .captchaImage {
   width: 150px;
   height: 50px;
-  border: 1px solid var(--bs-border-form);
-  border-radius: 8px;
+}
+.captchaTimer {
+  font-size: 1rem;
+  color: #ff0000;
+  width: 40px;
+  text-align: center;
+  margin-right: 8px;
 }
 .formGroup:has(.captchaContainer) {
   flex-direction: column;
@@ -1188,7 +1197,8 @@ label + label {
   min-width: 30px;
   height: 30px;
   line-height: 1;
-  font-size: 20px;
+  font-size: 18px;
+  color: var(--bs-font-secondary-color);
 }
 .buttonContainer {
   display: flex;
@@ -1473,4 +1483,10 @@ textarea.form-control {
 
 
 
+.page-link.disabled, .disabled > .page-link {
+  background-color: unset;
+}
 
+.page-link:hover {
+  background-color: unset;
+}

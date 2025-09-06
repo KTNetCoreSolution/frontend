@@ -19,7 +19,7 @@ const fn_CellText = { editor: "input", editable: false };
 const fn_CellSelect = (values) => ({ editor: "list", editorParams: { values, autocomplete: true }, editable: true });
 const fn_CellButton = (label, className, onClick) => ({
   formatter: (cell) => {
-    const wrapper = document.createElement("div");
+    const wrapper = document.createElement("div"); 
     wrapper.style.display = "flex";
     wrapper.style.justifyContent = "center";
     wrapper.style.alignItems = "center";
@@ -362,8 +362,8 @@ const ModuleOrgAuthInfo = () => {
         const span = document.createElement("span");
         span.innerText = rowData.ORGNM || "";
         const button = document.createElement("button");
-        button.className = `btn btn-sm btn-primary ${styles.popupIcon}`;
-        button.innerText = "+";
+        button.className = `popupIcon`;
+        button.innerHTML = '<i class="bi bi-plus"></i>';
         button.onclick = () => {
           setSelectedId(rowData.ID);
           setSelectedRowData(rowData);

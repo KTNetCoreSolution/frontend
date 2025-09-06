@@ -232,26 +232,26 @@ const FuelCardInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
       </Modal.Header>
       <Modal.Body className={`${styles.modalBody} modal-body`}>
         <div className="mb-2 d-flex">
-          <label className="form-label flex-shrink-0 me-2" style={{width:60 +'px', paddingTop:6 + 'px'}} htmlFor="cardNo1">카드번호<font color='red'>*</font></label>
-          <div style={{display: 'flex', }}>
+          <label className="form-label w60" htmlFor="cardNo1">카드번호<font color='red'>*</font></label>
+          <div className='d-flex'> 
             <input type="text" className={`form-control ${styles.formControl} flex-shrink-0 me-2`} id="cardNo1" value={cardInfo.CARDNO1 || ''} style={{width:55 + 'px'}} disabled={`${vStyle.vDISABLED}`} onInput={(e) => {handleMaxLength(e, 4)}} onChange={(e) => {setCardInfo({ ...cardInfo, CARDNO1: e.target.value, CARDNO: e.target.value + cardInfo.CARDNO2 + cardInfo.CARDNO3 + cardInfo.CARDNO4 })}} />
             <input type="text" className={`form-control ${styles.formControl} flex-shrink-0 me-2`} id="cardNo2" value={cardInfo.CARDNO2 || ''} style={{width:55 + 'px'}} disabled={`${vStyle.vDISABLED}`} onInput={(e) => {handleMaxLength(e, 4)}} onChange={(e) => {setCardInfo({ ...cardInfo, CARDNO2: e.target.value, CARDNO: cardInfo.CARDNO1 + e.target.value + cardInfo.CARDNO3 + cardInfo.CARDNO4 })}} />
             <input type="text" className={`form-control ${styles.formControl} flex-shrink-0 me-2`} id="cardNo3" value={cardInfo.CARDNO3 || ''} style={{width:55 + 'px'}} disabled={`${vStyle.vDISABLED}`} onInput={(e) => {handleMaxLength(e, 4)}} onChange={(e) => {setCardInfo({ ...cardInfo, CARDNO3: e.target.value, CARDNO: cardInfo.CARDNO1 + cardInfo.CARDNO2 + e.target.value + cardInfo.CARDNO4 })}} />
             <input type="text" className={`form-control ${styles.formControl} flex-shrink-0 me-2`} id="cardNo4" value={cardInfo.CARDNO4 || ''} style={{width:55 + 'px'}} disabled={`${vStyle.vDISABLED}`} onInput={(e) => {handleMaxLength(e, 4)}} onChange={(e) => {setCardInfo({ ...cardInfo, CARDNO4: e.target.value, CARDNO: cardInfo.CARDNO1 + cardInfo.CARDNO2 + cardInfo.CARDNO3 + e.target.value })}} />
           </div>
           <div>
-            <button id="btnCarId" type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 + 'px', display:`${vStyle.vDISPLAY}`}} disabled={`${vStyle.vDISABLED}`} onClick={(e) => handleSearchCardInfo(cardInfo.CARDNO)}>확인</button>
-            <button className={`btn btn-sm btn-danger ${styles.deleteButton}`} style={{width:60 +'px', height: 28 + 'px', display:`${vStyle.vBTNDEL}`}} onClick={handleDelete}>삭제</button>
+            <button id="btnCarId" type="button" className='btn btn-secondary' style={{display:`${vStyle.vDISPLAY}`}} disabled={`${vStyle.vDISABLED}`} onClick={(e) => handleSearchCardInfo(cardInfo.CARDNO)}>확인</button>
+            <button className='btn btn-danger' style={{display:`${vStyle.vBTNDEL}`}} onClick={handleDelete}>삭제</button>
           </div>
         </div>
         <div className="mb-2 d-flex">
-          <label className="form-label flex-shrink-0 me-2" htmlFor="exfireMonth" style={{width:60 +'px', paddingTop:6 + 'px'}}>유효기간</label>
+          <label className="form-label w60" htmlFor="exfireMonth">유효기간</label>
           <input type="text" className={`form-control ${styles.formControl} flex-shrink-0 me-2`} id="exfireMonth" value={cardInfo.EXFIREMONTH || ''} style={{width:42 + 'px', textAlign:'center'}} placeholder="mm" onInput={(e) => {handleMaxLength(e, 2)}} onChange={(e) => {setCardInfo({ ...cardInfo, EXFIREMONTH: e.target.value, EXFIREDT: e.target.value + '/' + cardInfo.EXFIREDAY })}} />
-          <label className="form-label flex-shrink-0 me-2" htmlFor="exfireDay" style={{width:5 +'px', paddingTop:6 + 'px'}}>/</label>
+          <label className="form-label" htmlFor="exfireDay">/</label>
           <input type="text" className={`form-control ${styles.formControl} flex-shrink-0 me-2`} id="exfireDay" value={cardInfo.EXFIREDAY || ''} style={{width:42 + 'px', textAlign:'center'}} placeholder="dd" onInput={(e) => {handleMaxLength(e, 2)}} onChange={(e) => {setCardInfo({ ...cardInfo, EXFIREDAY: e.target.value, EXFIREDT: cardInfo.EXFIREMONTH + '/' + e.target.value })}} />
         </div>
         <div className="mb-2 d-flex">
-          <label className="form-label flex-shrink-0 me-2" htmlFor="carNo" style={{width:60 +'px', paddingTop:6 + 'px'}}>차량번호</label>
+          <label className="form-label w60" htmlFor="carNo">차량번호</label>
           <CommonPopup show={showCarListPopup} onHide={() => setShowCarListPopup(false)} title={'차량 선택'}>
             <div>
               <CarListPopup
@@ -267,7 +267,7 @@ const FuelCardInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
           </CommonPopup>
           <input type="text" value={cardInfo.CARNO} className={`form-control ${styles.formControl}`} id="carNo" style={{width:200 +'px'}} disabled="disabled" onChange={(e) => {setCardInfo({ ...cardInfo, CARNO: e.target.value })}}/>
           <input type="text" value={cardInfo.CARID} className={`form-control ${styles.formControl}`} id="carNo" style={{width:200 +'px', display:'none'}} disabled="disabled" onChange={(e) => {setCardInfo({ ...cardInfo, CARID: e.target.value })}}/>
-          <button type="button" className={`btn btn-secondary ${styles.btn}`} style={{width:60 + 'px', height:28 + 'px', marginLeft:10 + 'px'}} onClick={(e) => {setShowCarListPopup(true)}}>선택</button>
+          <button type="button" className='btn btn-secondary' onClick={(e) => {setShowCarListPopup(true)}}>선택</button>
         </div>
       </Modal.Body>
       <Modal.Footer>

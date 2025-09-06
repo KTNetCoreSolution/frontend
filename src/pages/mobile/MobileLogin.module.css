@@ -276,10 +276,11 @@
     height: 40px;
   }
 
-  .captchaTimer {
+  /* .captchaTimer {
     flex: 0 0 35px;
     font-size: 0.9rem;
-  }
+    margin-right: 8px;
+  } */
 
   .captchaRefreshButton {
     flex: 0 0 10%;

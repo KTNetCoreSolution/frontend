@@ -118,7 +118,7 @@ const FuelCardListInfo = () => {
     { title: '유효기간', field: 'EXFIREDT', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '차대번호', field: 'CARID', width: 150, headerHozAlign: 'center', hozAlign: 'center'},
     { title: '차량번호', field: 'CARNO', width: 150, headerHozAlign: 'center', hozAlign: 'center'},
-    { title: '상세', field: 'DETAILBUTTON', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('상세보기', `btn-danger ${styles.deleteButton}`, (rowData) => handleDetail(rowData)) },
+    { title: '상세', field: 'DETAILBUTTON', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('상세보기', `btn btn-outline-secondary`, (rowData) => handleDetail(rowData)) },
   ];
 
   const handleDetail = (rowData) => {

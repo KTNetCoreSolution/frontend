@@ -92,7 +92,7 @@ const Board = ({ canWriteBoard, type = 'notice' }) => {
                 onClick={() => handleNoticeClick(notice)}
                 style={{ cursor: 'pointer' }}
               >
-                <span>{totalNotices - (indexOfFirstItem + idx)}.</span>
+                <span className='me-2'>{totalNotices - (indexOfFirstItem + idx)}.</span>
                 <span>{notice.title}</span>
               </span>
               <div>
@@ -127,7 +127,7 @@ const Board = ({ canWriteBoard, type = 'notice' }) => {
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
               >
-                &lt;
+                Prev
               </button>
             </li>
             {pageNumbers.map((page) => (
@@ -151,7 +151,7 @@ const Board = ({ canWriteBoard, type = 'notice' }) => {
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
               >
-                &gt;
+                Next
               </button>
             </li>
             {totalPages > maxPageButtons && (
