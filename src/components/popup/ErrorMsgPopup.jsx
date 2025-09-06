@@ -15,16 +15,16 @@ const ErrorMsgPopup = ({ show, onHide, message }) => {
         <div className={`${styles.modalDialog} modal-dialog-centered`}>
           <div className={`${styles.modalContent} modal-content`}>
             <div className={`${styles.modalHeader} modal-header`}>
-              <h5 className={`${styles.modalTitle} modal-title`}>
+              <h5 className='modal-title'>
                 <i className="bi bi-exclamation-circle me-2"></i> 오류
               </h5>
               <button type="button" className={`${styles.btnClose} btn-close`} onClick={onHide}></button>
             </div>
-            <div className={`${styles.modalBody} modal-body`}>
-              <p dangerouslySetInnerHTML={{ __html: common.formatMessageWithLineBreaks(message) }} />
+            <div className='modal-body'>
+              <p dangerouslySetInnerHTML={{ __html: common.formatMessageWithLineBreaks(message) }} style={{textAlign: 'center'}} />
             </div>
-            <div className={`${styles.modalFooter} modal-footer`}>
-              <button type="button" className={`btn btn-secondary ${styles.btnSecondaryCustom}`} onClick={onHide}>
+            <div className='modal-footer'>
+              <button type="button" className='btn btn-secondary' onClick={onHide}>
                 닫기
               </button>
             </div>

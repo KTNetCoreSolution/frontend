@@ -122,13 +122,13 @@ const ExcelUploadPopup = ({ show, onHide, title, rptCd, templateParams }) => {
                     accept={fileUtils.getAccept()}
                     aria-label="Upload"
                   />
-                  <span className="input-group-text">
+                  <span className="input-group-text uploadButton">
                     <i className="bi bi-upload"></i>
                   </span>
                 </div>
               </div>
               <div className={styles.buttonGroup}>
-                <button type="button" className={`${styles.btn} ${styles.btnDownload} btn`} onClick={handleDownload}>
+                <button type="button" className={`${styles.btn} ${styles.btnDownload} btn text-bg-success`} onClick={handleDownload}>
                   양식다운로드
                 </button>
                 <button

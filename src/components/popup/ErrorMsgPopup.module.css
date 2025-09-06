@@ -17,6 +17,7 @@
     width: auto; /* 전체 너비를 강제하지 않음 */
     height: auto; /* 전체 높이를 강제하지 않음 */
     background-color: #fff;
+    border-radius: 1rem;
   }
   
   .modalDialog {
@@ -26,16 +27,13 @@
   }
   
   .modalContent {
-    border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     background: #fff;
-    padding: 10px;
   }
   
   .modalHeader {
     background-color: #f8d7da;
     color: #721c24;
-    margin: 2px 0;
   }
   
   .modalTitle {
@@ -48,7 +46,7 @@
   }
   
   .modalBody {
-    color: #000000;
+    color: #000000; 
     padding: 10px;
     border: 1px solid;
     margin: 4px 0;

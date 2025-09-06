@@ -6,16 +6,7 @@ import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import styled from 'styled-components';
 import styles from "./UserSearchPopup.module.css";
 
-const TableWrapper = styled.div`
-  .tabulator-header .tabulator-col {
-    min-height: 20px;
-    line-height: 12px;
-  }
-
-  .tabulator-row {
-    line-height: 12px;
-  }
-`;
+const TableWrapper = styled.div``;
 
 const getFieldOptions = () => [
   { value: "ORG", label: "조직명" }, { value: "EMP", label: "이름" },
@@ -211,9 +202,7 @@ const UserSearchPopup = ({ onClose, onConfirm }) => {
           <button className='closeButton' onClick={handleClose} />
         </div>
         <div className="body">
-          <div className={styles.searchSection}>
-            <MainSearch config={searchConfig} filters={filters} setFilters={setFilters} onEvent={handleDynamicEvent} />
-          </div>
+          <MainSearch config={searchConfig} filters={filters} setFilters={setFilters} onEvent={handleDynamicEvent} />
           <TableWrapper>
             {tableStatus === "initializing" && <div className={styles.loading}>초기화 중...</div>}
             {loading && <div className={styles.loading}>로딩 중...</div>}

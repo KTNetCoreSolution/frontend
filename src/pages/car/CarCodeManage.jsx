@@ -47,11 +47,16 @@ const fn_CellText = { editor: "input", editable: true };
 const fn_CellSelect = (values) => ({ editor: "list", editorParams: { values, autocomplete: true }, editable: true });
 const fn_CellButton = (label, className, onClick) => ({
   formatter: (cell) => {
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.justifyContent = "center";
+    wrapper.style.alignItems = "center";
     const button = document.createElement("button");
     button.className = `btn btn-sm ${className}`;
     button.innerText = label;
     button.onclick = () => onClick(cell.getData());
-    return button;
+    wrapper.appendChild(button);
+    return wrapper; 
   },
 });
 
@@ -528,7 +533,7 @@ const CarCodeManage = () => {
       >
         <div className='formColWrap'>
           <div className='formGroup'>
-            <label className="form-label">차종</label>
+            <label className="form-label w40">차종</label>
             <select className={`form-select ${styles.formSelect}`}
               onChange={(e) => {
                 setNewCodeInfo({ ...newCodeInfo, CARTYPE: e.target.value });
@@ -539,7 +544,7 @@ const CarCodeManage = () => {
             </select>
           </div>
           <div className='formGroup'>
-            <label className="form-label">차형</label>
+            <label className="form-label w40">차형</label>
             <select className={`form-select ${styles.formSelect}`}
               onChange={(e) => {
                 setNewCodeInfo({ ...newCodeInfo, CARCLASS: e.target.value });
@@ -550,7 +555,7 @@ const CarCodeManage = () => {
             </select>
           </div>
           <div className='formGroup'>
-            <label className="form-label">규모</label>
+            <label className="form-label w40">규모</label>
             <select className={`form-select ${styles.formSelect}`}
               onChange={(e) => {
                 setNewCodeInfo({ ...newCodeInfo, CARSIZE: e.target.value });
@@ -561,7 +566,7 @@ const CarCodeManage = () => {
             </select>
           </div>
           <div className='formGroup'>
-            <label className="form-label">차명</label>
+            <label className="form-label w40">차명</label>
             <input type="text" className={`form-control ${styles.formControl}`} placeholder="차량명 입력" 
               onChange={(e) => {
                 setNewCodeInfo({ ...newCodeInfo, CARNM: e.target.value });
@@ -569,7 +574,7 @@ const CarCodeManage = () => {
             />
           </div>
           <div className='formGroup'>
-            <label className="form-label">이미지</label>
+            <label className="form-label w40">이미지</label>
             <input
               type="file"
               className={`form-control ${styles.formControl}`}

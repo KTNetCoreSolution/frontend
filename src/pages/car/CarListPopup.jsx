@@ -6,16 +6,7 @@ import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import styled from 'styled-components';
 import styles from "./CarListPopup.module.css";
 
-const TableWrapper = styled.div`
-  .tabulator-header .tabulator-col {
-    min-height: 20px;
-    line-height: 12px;
-  }
-
-  .tabulator-row {
-    line-height: 12px;
-  }
-`;
+const TableWrapper = styled.div``;
 
 const getFieldOptions = () => [
   { value: "CARNO", label: "차량번호" }, { value: "CARDNO", label: "카드번호" }, 
@@ -34,11 +25,11 @@ const CarListPopup = ({ onClose, onConfirm, checkCardNo}) => {
   const searchConfig = {
     areas: [
       { type: "search", fields: [
-        { id: "searchField", type: "select", row: 1, label: "구분", labelVisible: true, options: getFieldOptions(), width: "80px", height: "30px", backgroundColor: "#ffffff", color: "#000000", enabled: true },
-        { id: "searchText", type: "text", row: 1, label: "", labelVisible: false, placeholder: "검색값을 입력하세요", maxLength: 100, width: "200px", height: "30px", backgroundColor: "#ffffff", color: "#000000", enabled: true },
+        { id: "searchField", type: "select", row: 1, label: "구분", labelVisible: true, options: getFieldOptions(), enabled: true },
+        { id: "searchText", type: "text", row: 1, label: "", labelVisible: false, placeholder: "검색값을 입력하세요", maxLength: 100, width: "200px", enabled: true },
       ]},
       { type: "buttons", fields: [
-        { id: "searchBtn", type: "button", row: 1, label: "검색", eventType: "search", width: "80px", height: "30px", backgroundColor: "#00c4b4", color: "#ffffff", enabled: true },
+        { id: "searchBtn", type: "button", row: 1, label: "검색", eventType: "search", width: "80px", enabled: true },
       ]},
     ],
   };
@@ -214,27 +205,25 @@ const CarListPopup = ({ onClose, onConfirm, checkCardNo}) => {
   if (!isOpen) return null;
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.popupContainer}>
-        <div className={styles.header}>
+    <div className='overlay'>
+      <div className='popupContainer'>
+        <div className='header'>
           <h3>차량검색</h3>
-          <button className={styles.closeButton} onClick={handleClose}>
-            ×
-          </button>
+          <button className='closeButton' onClick={handleClose} />
         </div>
-        <div className={styles.searchSection}>
+        <div className="body">
           <MainSearch config={searchConfig} filters={filters} setFilters={setFilters} onEvent={handleDynamicEvent} />
+          <TableWrapper>
+            {tableStatus === "initializing" && <div className={styles.loading}>초기화 중...</div>}
+            {loading && <div className={styles.loading}>로딩 중...</div>}
+            <div
+              ref={tableRef}
+              className={styles.tableSection}
+              style={{ visibility: loading || tableStatus !== "ready" ? "hidden" : "visible" }}
+            />
+          </TableWrapper>
         </div>
-        <TableWrapper>
-          {tableStatus === "initializing" && <div className={styles.loading}>초기화 중...</div>}
-          {loading && <div className={styles.loading}>로딩 중...</div>}
-          <div
-            ref={tableRef}
-            className={styles.tableSection}
-            style={{ visibility: loading || tableStatus !== "ready" ? "hidden" : "visible" }}
-          />
-        </TableWrapper>
-        <div className={styles.buttonContainer}>
+        <div className='buttonContainer'>
           <button className={`${styles.btn} ${styles.btnSecondary} btn btn-secondary`} onClick={handleClose}>
             닫기
           </button>

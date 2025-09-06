@@ -16,7 +16,6 @@
   z-index: 1050;
   width: auto;
   height: auto;
-  background-color: #fff;
 }
 
 .modalDialog {
@@ -26,16 +25,15 @@
 }
 
 .modalContent {
-  border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   background: #fff;
-  padding: 10px;
 }
 
 .modalHeader {
-  background-color: #00c4b4;
-  color: #fff;
-  border-bottom: none;
+  padding: 1rem;
+  border-bottom: var(--bs-modal-header-border-width) solid var(--bs-modal-header-border-color);
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
 }
 
 .modalTitle {
@@ -49,12 +47,7 @@
 .modalBody {
   color: #333;
   position: relative;
-  border: 1px solid #696969;
-  margin: 10px 5px;
-  padding: 10px 10px;
-  border-radius: 5px;
-  background: #f0f0f0;
-  /* line-height: 3px !important; */
+  padding: var(--bs-modal-padding);;
   display: flex;
   align-items: stretch; /* Ensure input and buttons stretch appropriately */
   flex-direction: column;

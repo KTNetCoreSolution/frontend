@@ -58,11 +58,11 @@
 .modalBody {
   color: #333;
   position: relative;
-  border: 1px solid #696969;
+  /* border: 1px solid #696969;
   margin: 10px 5px;
   padding: 0 var(--bs-modal-padding);
   border-radius: 5px;
-  background: #f8f8f8;
+  background: #f8f8f8; */
 }
 
 .formRow {

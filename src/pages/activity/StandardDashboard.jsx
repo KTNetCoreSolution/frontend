@@ -312,7 +312,7 @@ const StandardDashboard = () => {
                 return result;
               },
             },
-            legend: { data: legendData, orient: 'horizontal', bottom: 10, left: 'center', },
+            legend: { icon: 'circle', itemWidth: 12, itemHeight: 12, data: legendData, orient: 'horizontal', bottom: 10, left: 'center', },
             xAxis: { type: 'category', data: xAxisData },
             yAxis: { type: 'value' },
             barWidth: '20%',
@@ -430,14 +430,14 @@ const StandardDashboard = () => {
           <div className='rightInfo'>
             <div className='rightHeader'>
               <div className='subSecTitle'>소계</div>
-              <div>
+              <div className='formGroup'>
                 <input
                   type="month"
                   value={month}
                   onChange={e => setMonth(e.target.value)}
                   className={styles.monthInput}
                 />
-                <button className={styles.refreshButton}>🔄</button>
+                <button className={styles.refreshButton}><i class="bi bi-arrow-repeat"></i></button>
               </div>
             </div>
             <table className={styles.gridTable}>

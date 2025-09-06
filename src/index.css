@@ -145,6 +145,10 @@ body {
   margin: 0 auto;
 }
 
+p {
+  margin: 0;
+}
+
 ol,
 ul {
   list-style: none;
@@ -269,3 +273,16 @@ select {
   font-family: "Pretendard Variable", -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
 }
 
+
+.w40 {
+  width: 40px;
+}
+.w80 {
+  width: 80px;
+}
+.w100 {
+  width: 100px;
+}
+.w110 {
+  width: 110px;
+}

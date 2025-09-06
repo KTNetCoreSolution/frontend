@@ -7,16 +7,7 @@ import Modal from 'react-bootstrap/Modal';
 import styled from 'styled-components';
 import styles from "./FuelCardPopup.module.css";
 
-const TableWrapper = styled.div`
-  .tabulator-header .tabulator-col {
-    min-height: 20px;
-    line-height: 12px;
-  }
-
-  .tabulator-row {
-    line-height: 12px;
-  }
-`;
+const TableWrapper = styled.div``;
 
 const getFieldOptions = () => [
   { value: "CARDNO", label: "카드번호" }, { value: "CARNO", label: "차량번호" },
@@ -34,11 +25,11 @@ const FuelCardPopup = ({ show, onHide, onConfirm, checkCarNo}) => {
   const searchConfig = {
     areas: [
       { type: "search", fields: [
-        { id: "searchField", type: "select", row: 1, label: "구분", labelVisible: true, options: getFieldOptions(), width: "80px", height: "30px", backgroundColor: "#ffffff", color: "#000000", enabled: true },
-        { id: "searchText", type: "text", row: 1, label: "", labelVisible: false, placeholder: "검색값을 입력하세요", maxLength: 100, width: "200px", height: "30px", backgroundColor: "#ffffff", color: "#000000", enabled: true },
+        { id: "searchField", type: "select", row: 1, label: "구분", labelVisible: true, options: getFieldOptions(), enabled: true },
+        { id: "searchText", type: "text", row: 1, label: "", labelVisible: false, placeholder: "검색값을 입력하세요", maxLength: 100, width: "200px", enabled: true },
       ]},
       { type: "buttons", fields: [
-        { id: "searchBtn", type: "button", row: 1, label: "검색", eventType: "search", width: "80px", height: "30px", backgroundColor: "#00c4b4", color: "#ffffff", enabled: true },
+        { id: "searchBtn", type: "button", row: 1, label: "검색", eventType: "search", enabled: true },
       ]},
     ],
   };
@@ -226,9 +217,7 @@ const FuelCardPopup = ({ show, onHide, onConfirm, checkCarNo}) => {
         <Modal.Title>주유카드정보 관리</Modal.Title>
       </Modal.Header>
       <Modal.Body className={`${styles.modalBody} modal-body`}>
-        <div className={styles.searchSection}>
-          <MainSearch config={searchConfig} filters={filters} setFilters={setFilters} onEvent={handleDynamicEvent} />
-        </div>
+        <MainSearch config={searchConfig} filters={filters} setFilters={setFilters} onEvent={handleDynamicEvent} />
         <TableWrapper>
           {tableStatus === "initializing" && <div className={styles.loading}>초기화 중...</div>}
           {loading && <div className={styles.loading}>로딩 중...</div>}

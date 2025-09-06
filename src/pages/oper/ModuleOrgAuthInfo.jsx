@@ -19,11 +19,16 @@ const fn_CellText = { editor: "input", editable: false };
 const fn_CellSelect = (values) => ({ editor: "list", editorParams: { values, autocomplete: true }, editable: true });
 const fn_CellButton = (label, className, onClick) => ({
   formatter: (cell) => {
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.justifyContent = "center";
+    wrapper.style.alignItems = "center";
     const button = document.createElement("button");
     button.className = `btn btn-sm ${className}`;
     button.innerText = label;
     button.onclick = () => onClick(cell.getData());
-    return button;
+    wrapper.appendChild(button);
+    return wrapper; 
   },
 });
 
@@ -673,7 +678,7 @@ const ModuleOrgAuthInfo = () => {
     const newEmpNm = selectedRows[0]?.EMPNM || "";
     
     if (!newEmpNo) {
-      errorMsgPopup("사번이 선택되지 않았습니다. 담당자를 선택해주세요.");
+      errorMsgPopup("사번이 선택되지 않았습니다.<br />담당자를 선택해주세요.");
       return;
     }
     if (showAddPopup && showUserPopup) {
@@ -861,7 +866,7 @@ const ModuleOrgAuthInfo = () => {
       >
         <div className='formColWrap'>
           <div className='formGroup'>
-            <label className="form-label">입력 유형</label>
+            <label className="form-label" style={{width: '80px'}}>입력 유형</label>
             <select
               className={`form-select ${styles.formSelect}`}
               value={newAuth.inputType}
@@ -873,15 +878,13 @@ const ModuleOrgAuthInfo = () => {
           </div>
           {newAuth.inputType === "EMP" && (
             <div className='formGroup'>
-              <label className="form-label">담당자</label>
-              <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                <input
+              <label className="form-label" style={{width: '80px'}}>담당자</label>
+              <input
                   type="text"
-                  className={`form-control ${styles.formControl}`}
+                  className='form-control'
                   value={newAuth.EMPORG}
                   readOnly
                   placeholder="담당자를 선택하세요"
-                  style={{ width: "150px", height: "30px", backgroundColor: "#f0f0f0", color: "#000000" }}
                 />
                 <button
                   className='popupIcon'
@@ -891,39 +894,34 @@ const ModuleOrgAuthInfo = () => {
                 >
                   <i className="bi bi-plus"></i>
                 </button>
-              </div>
             </div>
           )}
           {newAuth.inputType === "ORG" && (
             <div className='formGroup'>
-              <label className="form-label">담당조직</label>
-              <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                <input
-                  type="text"
-                  className={`form-control ${styles.formControl}`}
-                  value={newAuth.EMPORG}
-                  readOnly
-                  placeholder="조직 선택"
-                  style={{ width: "150px", height: "30px", backgroundColor: "#f0f0f0", color: "#000000" }}
-                />
-                <button
-                  className={`btn btn-sm ${styles.popupIcon}`}
-                  onClick={() => {
-                    if (!newAuth.MODULETYPE) {
-                      errorMsgPopup("업무를 먼저 선택해주세요.");
-                      return;
-                    }
-                    setTimeout(() => setShowEmpOrgPopup(true), 0);
-                  }}
-                  style={{ width: "30px", height: "30px", padding: "0", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#f0f0f0", color: "#000000" }}
-                >
-                  +
-                </button>
-              </div>
+              <label className="form-label" style={{width: '80px'}}>담당조직</label>
+              <input
+                type="text"
+                className='form-control'
+                value={newAuth.EMPORG}
+                readOnly
+                placeholder="조직 선택"
+              />
+              <button
+                className={`btn btn-sm ${styles.popupIcon}`}
+                onClick={() => {
+                  if (!newAuth.MODULETYPE) {
+                    errorMsgPopup("업무를 먼저 선택해주세요.");
+                    return;
+                  }
+                  setTimeout(() => setShowEmpOrgPopup(true), 0);
+                }}
+              >
+                <i className="bi bi-plus"></i>
+              </button>
             </div>
           )}
           <div className='formGroup'>
-            <label className="form-label">업무</label>
+            <label className="form-label" style={{width: '80px'}}>업무</label>
             <select
               className={`form-select ${styles.formSelect}`}
               value={newAuth.MODULETYPE}
@@ -940,29 +938,26 @@ const ModuleOrgAuthInfo = () => {
             </select>
           </div>
           <div className='formGroup'>
-            <label className="form-label">권한조직</label>
-            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <input
-                type="text"
-                className={`form-control ${styles.formControl}`}
-                value={newAuth.ORGNM}
-                readOnly
-                placeholder="조직 선택"
-                style={{ width: "150px", height: "30px", backgroundColor: "#f0f0f0", color: "#000000" }}
-              />
-              <button
-                className='popupIcon'
-                onClick={() => {
-                  if (!newAuth.MODULETYPE) {
-                      errorMsgPopup("업무를 먼저 선택해주세요.");
-                      return;
-                  }
-                  setShowOrgPopup(true);
-                }}
-              >
-                <i className="bi bi-plus"></i>
-              </button>
-            </div>
+            <label className="form-label" style={{width: '80px'}}>권한조직</label>
+            <input
+              type="text"
+              className='form-control'
+              value={newAuth.ORGNM}
+              readOnly
+              placeholder="조직 선택"
+            />
+            <button
+              className='popupIcon'
+              onClick={() => {
+                if (!newAuth.MODULETYPE) {
+                    errorMsgPopup("업무를 먼저 선택해주세요.");
+                    return;
+                }
+                setShowOrgPopup(true);
+              }}
+            >
+              <i className="bi bi-plus"></i>
+            </button>
           </div>
         </div>
       </CommonPopup>

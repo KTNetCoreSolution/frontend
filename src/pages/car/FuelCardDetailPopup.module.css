@@ -6,7 +6,7 @@
 }
 
 .modalBody {  
-  padding: 0 var(--bs-modal-padding);
+  padding: var(--bs-modal-padding);
 }
 
 .formSelect {
