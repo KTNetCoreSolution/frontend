@@ -10,6 +10,7 @@ import { ErrorMsgPopupProvider } from './components/popup/context/ErrorMsgPopupC
 import Login from './pages/Login';
 import MobileLogin from './pages/mobile/MobileLogin';
 import SsoMobileLogin from './pages/sso/SsoMobileLogin';
+import SsoMobileTest from './pages/sso/SsoMobileTest';
 
 const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
 const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
@@ -114,6 +115,16 @@ const App = () => {
                   <Navigate to="/mobile/Main" replace />
                 ) : (
                   <SsoMobileLogin />
+                )
+              }
+            />
+            <Route
+              path="/mobile/ssoMobileTest"
+              element={
+                user ? (
+                  <Navigate to="/mobile/Main" replace />
+                ) : (
+                  <SsoMobileTest />
                 )
               }
             />

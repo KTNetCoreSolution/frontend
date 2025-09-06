@@ -107,6 +107,35 @@ export async function fetchData(url, filters = {}, config = {}, directYn = 'N', 
 }
 
 /**
+ * API를 통해 데이터를 가져오고 클라이언트 측에서 필터링을 수행합니다.
+ * @param {string} url - 데이터를 요청할 엔드포인트 URL
+ * @param {Object} [filters={}] - 필터링 조건 (예: { name: 'john', status: 'active' })
+ * @param {Object} [config={}] - 추가 axios 설정 (예: headers)
+ * @param {Object} [directYn] - 지정 URL 사용유무
+ * @returns {Promise<any|Error>} 응답 데이터 (배열 또는 객체) 또는 오류 객체
+ */
+export function fetchPromiseData(url, filters = {}, config = {}, directYn = 'N', progressShow = true) {
+  url = (directYn !== 'Y') ? common.getServerUrl(url) : url;
+  const { setLoading } = useStore.getState();
+
+  return handleLoadingProgress(setLoading, progressShow)
+    .then(() => {
+      return api.post(`${url}`, filters, config);
+    })
+    .then(response => {
+      return response.data;
+    })
+    .catch(error => {
+      console.error('데이터 가져오기 실패:', error.message, error.response?.data);
+      const errMsg = error.response?.data?.errMsg || error.message || '서버 요청에 실패했습니다.';
+      return Promise.reject(new Error(errMsg));
+    })
+    .finally(() => {
+      if (progressShow) setLoading({ isLoading: false, progress: 0 });
+    });
+}
+
+/**
  * API를 통해 데이터를 가져오고 클라이언트 측에서 필터링을 수행합니다. (GET 방식)
  * @param {string} url - 데이터를 요청할 엔드포인트 URL
  * @param {Object} [filters={}] - 쿼리 파라미터로 보낼 필터링 조건
