@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import SsoMobileLogin from './SsoMobileLogin';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
+import { fetchDataGet } from '../../utils/dataUtils';
 
 const FIXED_TOKEN = 'MzIwMWVzawAAAAEAN+8aB2Jh4wuoOij1Ex9uCk7zthAG8OziOxXpNr/TPPKN1PBLUg6otvE2BMmbQ7Ph2dRd4YODr4F03BGlU8lFpcjpqzH4GTBUD6wz+mIMZ3piDSmrj4vjakH1frafSxj/Gl1C3Z3CH3CubT9XOpNnpCycczfPt82p5HY1NpwjKTuP/UZaEVF1WY+xhWjqPW0JoDt1x04THIedN9L9ODgUPAtcy+gUApI+redME7UXGzeSV1s5J/MOZssBwVoW91t3//9Jsp4ycpePBC77qvTK+eqfT8Bb14S8kLs9aZqB5yQcAippv0MSTNswlv93GzFtM8/TUHz8U4LmQoeh/YRW+WVuZHQAAABQHMK+37FoIxZStFs3ClMVO95lc1lwCf5Erv+DmxulRBWseCcL19VXQxrdLqUhmtHbhZ9muV8Sx5pKod8+tUuE6KGPp64BAW4/zI9Qz0SOmHo=';
 
@@ -10,6 +11,7 @@ const SsoMobileTest = () => {
   const location = useLocation();
   const [fixedToken, setFixedToken] = useState(FIXED_TOKEN);
   const [incomingToken, setIncomingToken] = useState('');
+  const [corpFlag, setCorpFlag] = useState('1'); // .NET 참조: 기본값 KT
   const [showSsoLogin, setShowSsoLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -18,13 +20,13 @@ const SsoMobileTest = () => {
     const urlParams = new URLSearchParams(location.search);
     const token = urlParams.get('token');
     if (token) {
-      setIncomingToken(token); // 디코딩 제거, raw token 사용
+      setIncomingToken(token);
     } else {
       setIncomingToken('');
     }
   }, [location.search]);
 
-  // 폼 제출 핸들러
+  // 기존 폼 제출 핸들러
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isLoading) return;
@@ -36,6 +38,31 @@ const SsoMobileTest = () => {
       navigate(`?token=${encodedToken}`, { replace: true });
     } catch (e) {
       errorMsgPopup('토큰 인코딩 오류: ' + e.message);
+      setIsLoading(false);
+    }
+  };
+
+  // 추가: Spring Boot 호출 시뮬레이션
+  const handleSpringBootCall = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+
+    try {
+      const params = {
+        token: fixedToken,
+        test: 'Y', // 테스트 모드
+        corpFlag: corpFlag // .NET 참조
+      };
+
+      const response = await fetchDataGet('mobile/ssoMLogin', params, {}, 'N', false);
+      if (!response.success) {
+        errorMsgPopup(response.errMsg || 'Spring Boot 호출 실패');
+      } else {
+        setShowSsoLogin(true); // 성공 시 SsoMobileLogin 표시
+      }
+    } catch (err) {
+      errorMsgPopup('Spring Boot 호출 오류: ' + err.message);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -60,6 +87,17 @@ const SsoMobileTest = () => {
                 required
               />
             </div>
+            {/* 추가: corpFlag 입력 */}
+            <div className="mb-3">
+              <label htmlFor="corpFlag" className="form-label">corpFlag (1: KT, 기타: 그룹사)</label>
+              <input
+                className="form-control"
+                id="corpFlag"
+                value={corpFlag}
+                onChange={(e) => setCorpFlag(e.target.value)}
+                required
+              />
+            </div>
             <button
               type="submit"
               className="btn btn-primary"
@@ -74,6 +112,23 @@ const SsoMobileTest = () => {
               }}
             >
               {isLoading ? '처리 중...' : 'SSO 로그인 호출'}
+            </button>
+            {/* 추가: Spring Boot 호출 버튼 */}
+            <button
+              type="button"
+              onClick={handleSpringBootCall}
+              className="btn btn-secondary mt-3"
+              disabled={isLoading}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: isLoading ? '#ccc' : '#6c757d',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {isLoading ? '처리 중...' : 'Spring Boot SSO 호출 시뮬'}
             </button>
           </form>
 

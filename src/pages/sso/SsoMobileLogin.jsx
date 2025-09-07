@@ -10,7 +10,7 @@ const SsoMobileLogin = ({ setIsLoading }) => {
   const ssoLogin = async () => {
     if (isLoading) return;
     setLocalIsLoading(true);
-    setIsLoading(true);
+    if (setIsLoading) setIsLoading(true); // setIsLoading이 있을 때만 호출
 
     const isSsoMobileTest = window.location.pathname.includes('/ssoMobileTest');
 
@@ -48,7 +48,7 @@ const SsoMobileLogin = ({ setIsLoading }) => {
       }
     } finally {
       setLocalIsLoading(false);
-      setIsLoading(false);
+      if (setIsLoading) setIsLoading(false);
     }
   };
 
