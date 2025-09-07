@@ -204,10 +204,12 @@ const Join = ({ show, onHide, gubun }) => {
                     placeholder="이메일을 입력하세요"
                   />
                 </div>
-                <button type="submit" className={`${styles.btn} w-100 mt-3`}>
-                  <i className="bi bi-person-plus me-2"></i>가입
-                </button>
               </form>
+            </div>
+            <div className='modal-footer'>
+              <button type="submit" className='btn btn-primary w-100'>
+                가입
+              </button>
             </div>
           </div>
         </div>

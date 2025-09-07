@@ -60,36 +60,44 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
   }
 
   return (
-    <div
-      ref={offcanvasRef}
-      className={`custom-offcanvas ${show ? 'show' : ''}`}
-      aria-hidden={!show}
-    >
-      <div className="custom-offcanvas-header">
-        <h5>메뉴</h5>
-        <button
-          className="custom-offcanvas-close"
-          onClick={handleClose}
-          aria-label="Close"
-        >
-          ×
-        </button>
+    <>
+      {show && (
+        <div
+          className={`custom-offcanvas-overlay ${show ? 'show' : ''}`}
+          onClick={handleClose} // 오버레이 클릭 시 닫기
+        />
+      )}
+      <div
+        ref={offcanvasRef}
+        className={`custom-offcanvas ${show ? 'show' : ''}`}
+        aria-hidden={!show}
+      >
+        <div className="custom-offcanvas-header">
+          <h5>메뉴</h5>
+          <button
+            className="custom-offcanvas-close"
+            onClick={handleClose}
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+        <div className="custom-offcanvas-body">
+          <ul className="list-group">
+            {mobileUserMenu.map((item) => (
+              <li
+                key={item.MENUID}
+                className={`list-group-item ${location.pathname === item.URL ? 'text-danger' : ''}`}
+                onClick={() => handleMenuClick(item.URL)}
+                style={{ cursor: 'pointer' }}
+              >
+                {item.MENUNM}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-      <div className="custom-offcanvas-body">
-        <ul className="list-group">
-          {mobileUserMenu.map((item) => (
-            <li
-              key={item.MENUID}
-              className={`list-group-item ${location.pathname === item.URL ? 'text-danger' : ''}`}
-              onClick={() => handleMenuClick(item.URL)}
-              style={{ cursor: 'pointer' }}
-            >
-              {item.MENUNM}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+    </>
   );
 };
 

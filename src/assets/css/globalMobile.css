@@ -154,6 +154,9 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .modal-body {
   min-height: 0;
 }
+.modal-footer {
+  justify-content: center;
+}
 
 /* Navbars and navs */
 .nav-link, .navbar-brand, .navbar-text {

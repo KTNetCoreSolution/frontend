@@ -166,11 +166,14 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable, gubun }) => {
                     placeholder="새 비밀번호를 입력하세요"
                   />
                 </div>
-                <button type="submit" className={`${styles.btn} w-100 mt-3`}>
-                  <i className="bi bi-check-circle me-2"></i>변경
-                </button>
-                {error && <p className="text-danger text-center mt-2">{error}</p>}
+
               </form>
+            </div>
+            <div className='modal-footer'>
+              <button type="submit" className='btn btn-primary w-100'>
+                변경
+              </button>
+              {error && <p className="text-danger text-center mt-2">{error}</p>}
             </div>
           </div>
         </div>

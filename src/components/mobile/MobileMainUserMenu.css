@@ -5,7 +5,7 @@
   width: 300px; /* Adjust width as needed */
   height: 100%;
   background-color: #fff;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+  /* box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2); */
   transform: translateX(100%);
   transition: transform 0.3s ease-in-out;
   z-index: 1050;
@@ -13,6 +13,24 @@
 
 .custom-offcanvas.show {
   transform: translateX(0);
+}
+
+.custom-offcanvas-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* 0.7 opacity */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 1040; /* 오프캔버스보다 낮아야 함 */
+}
+
+.custom-offcanvas-overlay.show {
+  opacity: 1;
+  visibility: visible;
 }
 
 .custom-offcanvas-header {
@@ -33,6 +51,11 @@
 .custom-offcanvas-body {
   padding: 1rem;
   overflow-y: auto;
+}
+
+.custom-offcanvas-body .list-group-item {
+  border: unset;
+  padding: 0.75rem 0;
 }
 
 /* Optional: Add backdrop for overlay effect */
