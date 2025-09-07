@@ -56,27 +56,9 @@ const SsoMobileLogin = ({ setIsLoading }) => {
     ssoLogin();
   }, []);
 
-  const handleButtonClick = () => {
-    ssoLogin();
-  };
-
   return (
     <div style={{ padding: '20px', textAlign: 'center' }}>
       <p>{isLoading ? 'SSO 로그인 처리 중입니다...' : 'SSO 로그인'}</p>
-      <button
-        onClick={handleButtonClick}
-        disabled={isLoading}
-        style={{
-          padding: '10px 20px',
-          backgroundColor: isLoading ? '#ccc' : '#007bff',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: isLoading ? 'not-allowed' : 'pointer',
-        }}
-      >
-        {isLoading ? '처리 중...' : 'SSO 로그인 재시도'}
-      </button>
     </div>
   );
 };
