@@ -66,14 +66,14 @@
   font-size: 0.9rem;
 }
 
-.captchaTimer {
+/* .captchaTimer {
   flex: 0 0 40px;
   font-size: 1rem;
   color: #ff0000;
   text-align: center;
-}
+} */
 
-.captchaRefreshButton {
+/* .captchaRefreshButton {
   flex: 0 0 10%;
   padding: 2px;
   background-color: #2cbbb7;
@@ -90,11 +90,11 @@
 
 .captchaRefreshButton:hover {
   background-color: #3b9b98;
-}
+} */
 
-#captcha {
+/* #captcha {
   flex: 0 0 60%;
-}
+} */
 
 .button {
   flex: 0 0 60%;
@@ -161,25 +161,25 @@
     font-size: 1.1rem;
   }
 
-  .captchaImage,
+  /* .captchaImage,
   .captchaPlaceholder {
     flex: 0 0 160px;
     height: 55px;
-  }
+  } */
 
-  .captchaTimer {
+  /* .captchaTimer {
     flex: 0 0 45px;
     font-size: 1.1rem;
-  }
+  } */
 
-  .captchaRefreshButton {
+  /* .captchaRefreshButton {
     flex: 0 0 10%;
     font-size: 1.1rem;
-  }
+  } */
 
-  #captcha {
+  /* #captcha {
     flex: 0 0 60%;
-  }
+  } */
 
   .button {
     flex: 0 0 60%;
@@ -212,25 +212,25 @@
     font-size: 0.9rem;
   }
 
-  .captchaImage,
+  /* .captchaImage,
   .captchaPlaceholder {
     flex: 0 0 120px;
     height: 40px;
-  }
+  } */
 
-  .captchaTimer {
+  /* .captchaTimer {
     flex: 0 0 35px;
     font-size: 0.9rem;
-  }
+  } */
 
-  .captchaRefreshButton {
+  /* .captchaRefreshButton {
     flex: 0 0 10%;
     font-size: 0.9rem;
-  }
+  } */
 
-  #captcha {
+  /* #captcha {
     flex: 0 0 60%;
-  }
+  } */
 
   .button {
     flex: 0 0 60%;
@@ -270,11 +270,11 @@
     font-size: 0.9rem;
   }
 
-  .captchaImage,
+  /* .captchaImage,
   .captchaPlaceholder {
     flex: 0 0 120px;
     height: 40px;
-  }
+  } */
 
   /* .captchaTimer {
     flex: 0 0 35px;
@@ -282,14 +282,14 @@
     margin-right: 8px;
   } */
 
-  .captchaRefreshButton {
+  /* .captchaRefreshButton {
     flex: 0 0 10%;
     font-size: 0.9rem;
-  }
+  } */
 
-  #captcha {
+  /* #captcha {
     flex: 0 0 60%;
-  }
+  } */
 
   .button {
     flex: 0 0 60%;

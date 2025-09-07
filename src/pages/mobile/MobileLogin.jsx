@@ -139,17 +139,13 @@ const MobileLogin = () => {
               {captchaImage ? (
                 <img src={captchaImage} alt="CAPTCHA" className='captchaImage' />
               ) : (
-                <div className={styles.captchaPlaceholder}>
+                <div className='captchaPlaceholder'>
                   {isCaptchaLoading ? 'Loading CAPTCHA...' : captchaError || '캡챠 로드 실패'}
                 </div>
               )}
               <div className='d-flex align-items-center'>
                 <span className='captchaTimer'>{timer}초</span>
-                <button
-                  type="button"
-                  className={styles.captchaRefreshButton}
-                  onClick={loadCaptcha}
-                >
+                <button type="button" className='btn btn-secondary' onClick={loadCaptcha}>
                   <i className="bi bi-arrow-repeat"></i>
                 </button>
               </div>
@@ -196,7 +192,7 @@ const MobileLogin = () => {
           </div>
           {error && <p className={styles.error}>{error}</p>}
         </form>
-        <Join show={showJoinPopup} onHide={() => setShowJoinPopup(false)} gubun="mobile" />
+        <Join show={showJoinPopup} onHide={() => setShowJoinPopup(false)} gubun="mobile"/>
         <PasswordChange
           show={showPasswordChangePopup}
           onHide={() => setShowPasswordChangePopup(false)}

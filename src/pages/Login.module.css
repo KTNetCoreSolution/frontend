@@ -61,7 +61,7 @@
   border-radius: 4px;
 } */
 
-.captchaPlaceholder {
+/* .captchaPlaceholder {
   width: 150px;
   height: 50px;
   border: 1px solid #ccc;
@@ -72,7 +72,7 @@
   background-color: #f5f5f5;
   color: #666;
   font-size: 0.9rem;
-}
+} */
 
 /* .captchaTimer {
   font-size: 1rem;

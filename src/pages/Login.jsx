@@ -157,7 +157,7 @@ const Login = () => {
                 {captchaImage ? (
                   <img src={captchaImage} alt="CAPTCHA" className='captchaImage' />
                 ) : (
-                  <div className={styles.captchaPlaceholder}>
+                  <div className='captchaPlaceholder'>
                     {isCaptchaLoading ? 'Loading CAPTCHA...' : captchaError || '캡챠 로드 실패'}
                   </div>
                 )}

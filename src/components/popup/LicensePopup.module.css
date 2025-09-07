@@ -39,3 +39,12 @@
   background-color: #5a6268;
   border-color: #545b62;
 }
+
+/* Mobile portrait mode */
+@media (max-width: 576px) {
+  .licenseContent {
+    flex: 1; 
+    overflow-y: auto;
+    height: 100%;
+  }
+}

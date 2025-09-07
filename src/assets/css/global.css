@@ -89,6 +89,9 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   border-color: var(--bs-primary-color);
   opacity: 0.75;
 }
+.btn + .btn {
+  margin-left: 4px !important;
+}
 /* Checkboxes and radio buttons */
 .form-check-input {
   width: calc(1rem * var(--bs-scaling));
@@ -155,6 +158,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 .modal-content {
   overflow: visible !important;
+  padding: calc(1rem * var(--bs-scaling));
 }
 .modal-body, .modal-title, .modal-footer {
   /* font-size: var(--bs-body-font-size); */
@@ -195,9 +199,6 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .modal-title {
   font-size: 1rem !important;
   font-weight: 700;
-}
-.modal-content {
-  padding: calc(1rem * var(--bs-scaling));
 }
 .modal-footer {
   justify-content: center;
@@ -953,22 +954,22 @@ button.boardBtn01 .arrow-icon {
 .loginContainer .buttonGroup .LoginButton:last-child {
   margin-top: 1rem;
 }
-.loginWrapper .inputWrapper {
+.loginWrapper .loginWrap .loginContainer .formGroup .inputWrapper {
   position: relative;
   width: 100%;
 }
-.loginWrapper input {
-  width: 100% !important;
-  padding: 8px 10px !important;
-  border: 1px solid var(--bs-border-form) !important;
-  border-radius: 8px !important;
-  font-size: 0.875rem !important;
-  min-height: 40px !important;
+.loginWrapper .loginWrap .loginContainer .formGroup input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--bs-border-form);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  min-height: 40px;
 }
-.loginWrapper .inputWithIcon {
-  padding: 6px 10px 6px 36px !important;
+.loginWrapper .loginWrap .loginContainer .formGroup .inputWithIcon {
+  padding: 6px 10px 6px 36px;
 }
-.loginWrapper .inputWrapper .inputIcon {
+.loginWrapper .loginWrap .loginContainer .formGroup .inputWrapper .inputIcon {
   position: absolute;
   top: 50%;
   left: 10px;
@@ -991,8 +992,20 @@ button.boardBtn01 .arrow-icon {
   width: 150px;
   height: 50px;
 }
+.captchaPlaceholder {
+  width: 150px;
+  height: 50px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  color: #666;
+  font-size: 0.9rem;
+}
 .captchaTimer {
-  font-size: 1rem;
+  font-size: 0.875rem;
   color: #ff0000;
   width: 40px;
   text-align: center;
@@ -1067,6 +1080,12 @@ button.boardBtn01 .arrow-icon {
 }
 
 /* formgroup */
+.formRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 15px;
+}
 .formGroupContainer {
   display: flex;
   gap: 8px;
@@ -1080,7 +1099,7 @@ button.boardBtn01 .arrow-icon {
 .formGroup label {
   display: inline-flex;
   align-items: center;
-  font-size: 0.875rem;
+  font-size: 0.875rem !important;
   flex-shrink: 0;
 }
 .formGroup label:empty {

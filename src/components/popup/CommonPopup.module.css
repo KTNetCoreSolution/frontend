@@ -99,7 +99,14 @@
   }
   
   @media (max-width: 576px) {
-      .modal {
-        width: 100%;
+    .modal {
+      width: 100%;
+    }
+    .modal-content {
+      height: 100vh;
+      /* max-height: 100vh; */
+    }
+    .modal-body {
+      min-height: 0;
     }
   }
