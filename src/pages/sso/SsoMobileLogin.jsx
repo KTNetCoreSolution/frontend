@@ -10,7 +10,7 @@ const SsoMobileLogin = ({ setIsLoading }) => {
   const ssoLogin = async () => {
     if (isLoading) return;
     setLocalIsLoading(true);
-    setIsLoading(true);
+    if (setIsLoading) setIsLoading(true); // setIsLoading이 있을 때만 호출
 
     const isSsoMobileTest = window.location.pathname.includes('/ssoMobileTest');
 
@@ -19,7 +19,7 @@ const SsoMobileLogin = ({ setIsLoading }) => {
       let token = urlParams.get('token');
 
       if (!token && !isSsoMobileTest) {
-        errorMsgPopup('토큰이 존재하지 않습니다.');
+        alert('토큰이 존재하지 않습니다.');
         setTimeout(() => navigate('/mobile/Login'), 3000);
         return;
       }
@@ -37,18 +37,18 @@ const SsoMobileLogin = ({ setIsLoading }) => {
 
       const result = await performSsoLogin('mobile', params, navigate);
       if (!result.success && !isSsoMobileTest) {
-        errorMsgPopup(result.errMsg || '로그인에 실패했습니다.');
+        alert(result.errMsg || '로그인에 실패했습니다.');
         setTimeout(() => navigate('/mobile/Login'), 3000);
       }
     } catch (err) {
       console.error('SSO 로그인 오류:', err);
       if (!isSsoMobileTest) {
-        errorMsgPopup(err.message || '로그인에 실패했습니다.');
+        alert(err.message || '로그인에 실패했습니다.');
         setTimeout(() => navigate('/mobile/Login'), 3000);
       }
     } finally {
       setLocalIsLoading(false);
-      setIsLoading(false);
+      if (setIsLoading) setIsLoading(false);
     }
   };
 
@@ -56,27 +56,9 @@ const SsoMobileLogin = ({ setIsLoading }) => {
     ssoLogin();
   }, []);
 
-  const handleButtonClick = () => {
-    ssoLogin();
-  };
-
   return (
     <div style={{ padding: '20px', textAlign: 'center' }}>
       <p>{isLoading ? 'SSO 로그인 처리 중입니다...' : 'SSO 로그인'}</p>
-      <button
-        onClick={handleButtonClick}
-        disabled={isLoading}
-        style={{
-          padding: '10px 20px',
-          backgroundColor: isLoading ? '#ccc' : '#007bff',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: isLoading ? 'not-allowed' : 'pointer',
-        }}
-      >
-        {isLoading ? '처리 중...' : 'SSO 로그인 재시도'}
-      </button>
     </div>
   );
 };

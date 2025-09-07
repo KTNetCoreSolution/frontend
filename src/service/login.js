@@ -86,6 +86,32 @@ export const performSsoLogin = (gubun, params, navigate) => {
     });
 };
 
+export const performSsoLoginCheck = (gubun, params, navigate) => {
+  return fetchPromiseData('auth/sso/login/check', params, {}, 'N', false)
+    .then(response => {
+      if (!response.success) {
+        throw new Error(response.errMsg || 'SSO 로그인 체크 오류');
+      } else if (response.errMsg !== '') {
+        return { success: false, errMsg: response.errMsg };
+      } else {
+        if (response.data.user.pwdChgYn === 'Y') {
+          return response;
+        }
+        const { setUser } = useStore.getState();
+        setUser({
+          ...response.data.user,
+          expiresAt: response.data.expiresAt * 1000,
+        });
+        navigate(gubun === 'web' ? '/main' : '/mobile/main', { replace: true });
+        return { success: true };
+      }
+    })
+    .catch(error => {
+      console.error('Login check error:', error.message);
+      return { success: false, errMsg: error.message || '로그인 체크에 실패했습니다.' };
+    });
+};
+
 export const fetchCaptcha = async () => {
   try {
     const config = {

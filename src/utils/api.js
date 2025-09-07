@@ -25,11 +25,21 @@ const api = axios.create({
 });
 
 
-// 요청 인터셉터: sessionStorage의 clientVersion 우선 사용
+// 요청 인터셉터: 특정 경로 제외하고 sessionStorage의 clientVersion 우선 사용
 api.interceptors.request.use(config => {
-  const { clientVersion } = useStore.getState();
-  const versionToSend = clientVersion || CLIENT_VERSION;
-  config.headers['X-Client-Version'] = versionToSend;
+  const excludedRoutes = [
+    '/mobile/ssoMLogin',
+    '/mobile/ssoMLoginCheck',
+    '/mobile/ssoMobileTest'
+  ];
+  
+  // 요청 URL이 제외 경로에 포함되지 않을 경우에만 헤더 추가
+  if (!excludedRoutes.some(route => config.url.includes(route))) {
+    const { clientVersion } = useStore.getState();
+    const versionToSend = clientVersion || CLIENT_VERSION;
+    config.headers['X-Client-Version'] = versionToSend;
+  }
+  
   return config;
 });
 
