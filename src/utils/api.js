@@ -28,7 +28,7 @@ const api = axios.create({
 // 요청 인터셉터: 특정 경로 제외하고 sessionStorage의 clientVersion 우선 사용
 api.interceptors.request.use(config => {
   const excludedRoutes = [
-    '/mobile/ssoMLogin2',
+    '/mobile/ssoMLogin',
     '/mobile/ssoMLoginCheck',
     '/mobile/ssoMobileTest'
   ];

@@ -110,7 +110,7 @@ const App = () => {
 
             {/* SSO Mobile Login route */}
             <Route
-              path="/mobile/ssoMLogin2"
+              path="/mobile/ssoMLogin"
               element={
                 user ? (
                   <Navigate to="/mobile/Main" replace />
