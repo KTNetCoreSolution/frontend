@@ -17,6 +17,8 @@ const MobileDrivingLog = () => {
   const navigate = useNavigate();
   const [showSidebar, setShowSidebar] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [preIndex, setPreIndex] = useState(0);
   const [carId, setCarId] = useState('');
   const [carList, setCarList] = useState([]);
   const [boardList, setBoardList] = useState([]);
@@ -83,6 +85,38 @@ const MobileDrivingLog = () => {
     //return () => {
     //};
   }, []);
+  
+  
+  const calculateActiveIndex = (index) => {
+    if (index === 0) {
+      return 0; // 첫 페이지
+    } else if (index === carList.length - 1) {
+      return Math.min(9, carList.length - 1); // 마지막 페이지
+    } else if (carList.length > 10 && index < 9) {
+      // 페이지가 10개 초과일 때
+      if (activeIndex === 1 && index <= preIndex) {
+        return 1; // currentIndex가 1일 때는 첫 도트
+      }
+      else if (index > preIndex) {
+        return activeIndex + 1; // currentIndex가 9 이하일 때는 1:1 매핑
+      } else {
+        return activeIndex - 1; // currentIndex가 9 초과일 때는 9번째 도트 유지
+      }
+    } else if (carList.length > 10 && index >= 9) { 
+      if (activeIndex === 1) {
+        return 1; // currentIndex가 1일 때는 첫 도트
+      }
+      else if (index > preIndex) {
+        return 8; // currentIndex가 9 초과일 때는 도트 하나씩 이동
+      } else if (index <= preIndex) { 
+        return activeIndex - 1; // currentIndex가 9 초과일 때는 도트 하나씩 이동
+      } else {
+        return 1; // currentIndex가 1일 때는 첫 도트
+      }
+    } else {
+      return index - 1; // 직전 도트
+    }
+  };
 
   const handlers = useSwipeable({
     onSwiped: () => {
@@ -93,6 +127,8 @@ const MobileDrivingLog = () => {
         setCurrentIndex(index);
         const carId = carList[index].CARID;
         getCarImgInfo(carId);
+        setPreIndex(currentIndex);
+        setActiveIndex(calculateActiveIndex(index));
       }
     },
     onSwipedRight: () => {
@@ -101,6 +137,8 @@ const MobileDrivingLog = () => {
         setCurrentIndex(index);
         const carId = carList[index].CARID;
         getCarImgInfo(carId);
+        setPreIndex(currentIndex);
+        setActiveIndex(calculateActiveIndex(index));
       };
     },
     trackTouch: true,
@@ -206,9 +244,9 @@ const MobileDrivingLog = () => {
                 </div>
               </div>
               <div className={styles.dotNavigation}>
-                {carList.map((item, index) =>  
-                  <span key={index} className={`${currentIndex === index ? styles.dotActive : styles.dot}`}></span>
-                )}
+                {carList.slice(0, Math.min(10, carList.length)).map((item, index) => (
+                  <span key={index} className={`dot ${index === activeIndex ? styles.dotActive : styles.dot}`}></span>
+                ))}
               </div>
             </div>
           </div>

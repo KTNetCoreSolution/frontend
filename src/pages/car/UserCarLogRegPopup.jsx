@@ -131,6 +131,8 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           const delBtnDisplay = (response.data[0].DELYN === 'Y' && empNo === user?.empNo) ? 'block' : 'none';
           const reJectBtnDisplay = (response.data[0].LOGSTAT === 'R' && orgCd === user?.orgCd && '41' === user?.levelCd) ? 'block' : 'none';
           
+          setStTime(timeOption(data.LOGSTTIME, 'S'));
+          setEnTime(timeOption(data.LOGSTTIME, 'E'));
           setCarInfo({CARNM: carNm, MANAGER_EMPNM: managerEmpNm, MANAGER_MOBILE: managerMobile, GARAGE_ADDR: garageAddr, STKM: 0, src: dataUrl, bookMark: bBookMark, ORGCD: orgCd});
           setLogInfo({GUBUN:'U', CARID: data.CARID, LOGDATE: data.LOGDATE, LOGSTTIME: data.LOGSTTIME, LOGENTIME: logEnTime, SAFETYNOTE: safetyNote, STKM: stKm, ENKM: enKm, FUEL: fuel, NOTE: note, EMPNO: empNo});
           setIsDamage(bDamage);
@@ -162,11 +164,12 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
 
     if(show) {
       initializeComponent();
-      setStTime(timeOption('00:00', 'S'));
-      setEnTime(timeOption('00:00', 'E'));
 
       if (data.CARID && data.CARID !== '') {
         getCarLogInfo();
+      } else {
+        setStTime(timeOption('09:00', 'S'));
+        setEnTime(timeOption('09:00', 'E'));
       }
     }
   }, [show]);
@@ -214,8 +217,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             const mimeType = fileUtils.mimeTypes[extension] || 'application/octet-stream';
             const fileData = response.data[0].IMGDATA;
             const logDate = response.data[0].LOGDATE <= todayDate ? todayDate : response.data[0].LOGDATE;            
-            const logStTime = response.data[0].LOGDATE === todayDate ? response.data[0].LOGENTIME : '00:00';
-
+            const logStTime = response.data[0].LOGDATE === todayDate ? response.data[0].LOGENTIME : '09:00';
             setStTime(timeOption(logStTime, 'S'));
 
             const carNm = response.data[0].CARNM;
@@ -229,7 +231,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             const bBookMark = response.data[0].BOOKMARK === 'Y' ? true : false;
             setEnTime(timeOption(logStTime, 'E'));
 
-            let logEnTime = '00:00';
+            let logEnTime = '09:00';
             timeOption(logInfo.LOGSTTIME, 'E').some(time => {
               if (time > logStTime) {
                 logEnTime = time; 
@@ -312,7 +314,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
   };
 
   const handleLogDate = (e) => {
-    let logStTime = '00:00';
+    let logStTime = '09:00';
     
     if(e.target.value < lastLogInfo.LOGDATE) {
       logDateRef.current.value = lastLogInfo.LOGDATE;
@@ -321,13 +323,13 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
     }
     else {
       setLogInfo({ ...logInfo, LOGDATE: e.target.value });      
-      logStTime = lastLogInfo.LOGDATE >= e.target.value ? lastLogInfo.LOGENTIME : '00:00';
+      logStTime = lastLogInfo.LOGDATE >= e.target.value ? lastLogInfo.LOGENTIME : '09:00';
     }
 
     setStTime(timeOption(logStTime, 'S'));   
     setEnTime(timeOption(logStTime, 'E'));
 
-    let logEnTime = '00:00';
+    let logEnTime = '09:00';
     timeOption(logInfo.LOGSTTIME, 'E').some(time => {
       if (time > logStTime) {
         logEnTime = time; 
@@ -687,11 +689,11 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             <div className="d-flex">
               <label className={`form-label flex-shrink-0 me-2 ${styles.formTitleLabel}`} htmlFor="logDate" style={{width:63 +'px'}}>운행일시</label>
               <input type="date" ref={logDateRef} id="logDate" className={`form-control ${styles.formControl}`} value={logInfo.LOGDATE} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} style={{width:120 +'px', marginRight:5 + 'px'}} onChange={(e) => {handleLogDate(e)}} />
-              <select id="stTime" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGSTTIME: e.target.value })}}>
+              <select id="stTime" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} defaultValue={logInfo.LOGSTTIME} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGSTTIME: e.target.value })}}>
                 {stTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
               </select>
               <label style={{width:16 +'px', paddingTop:8 + 'px', textAlign:'center'}}> ~ </label>
-              <select id="enTime" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGENTIME: e.target.value })}}>
+              <select id="enTime" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} defaultValue={logInfo.LOGENTIME}  disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGENTIME: e.target.value })}}>
                 {enTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
               </select>
             </div>

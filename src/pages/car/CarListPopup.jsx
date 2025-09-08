@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import MainSearch from '../../components/main/MainSearch';
 import { fetchData } from "../../utils/dataUtils";
 import { createTable } from "../../utils/tableConfig";
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
+import Modal from 'react-bootstrap/Modal';
 import styled from 'styled-components';
 import styles from "./CarListPopup.module.css";
+import { is } from "date-fns/locale";
 
 const TableWrapper = styled.div``;
 
@@ -12,8 +14,7 @@ const getFieldOptions = () => [
   { value: "CARNO", label: "차량번호" }, { value: "CARDNO", label: "카드번호" }, 
 ];
 
-const CarListPopup = ({ onClose, onConfirm, checkCardNo}) => {
-  const [isOpen, setIsOpen] = useState(false);
+const CarListPopup = ({ show, onHide, onConfirm, checkCardNo}) => {
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
   const [filters, setFilters] = useState({ searchField: "CARNO", searchText: "" });
@@ -29,19 +30,20 @@ const CarListPopup = ({ onClose, onConfirm, checkCardNo}) => {
         { id: "searchText", type: "text", row: 1, label: "", labelVisible: false, placeholder: "검색값을 입력하세요", maxLength: 100, width: "200px", enabled: true },
       ]},
       { type: "buttons", fields: [
-        { id: "searchBtn", type: "button", row: 1, label: "검색", eventType: "search", width: "80px", enabled: true },
+        { id: "searchBtn", type: "button", row: 1, label: "검색", eventType: "search", enabled: true },
       ]},
     ],
   };
 
   useEffect(() => {
-    setIsOpen(true);
     const initializeTable = async () => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
+
       if (!tableRef.current) {
         console.warn("테이블 컨테이너가 준비되지 않았습니다.");
         return;
       }
+
       try {
         tableInstance.current = createTable(tableRef.current, [
           { frozen: true, headerHozAlign: "center", hozAlign: "center", title: "작업", field: "select", width: 80, formatter: (cell) => {
@@ -118,7 +120,11 @@ const CarListPopup = ({ onClose, onConfirm, checkCardNo}) => {
         console.error("Table initialization failed:", err.message);
       }
     };
-    initializeTable();
+
+    if (show) {
+      initializeTable();
+    }
+
     return () => {
       if (tableInstance.current) {
         tableInstance.current.destroy();
@@ -126,7 +132,7 @@ const CarListPopup = ({ onClose, onConfirm, checkCardNo}) => {
         setTableStatus("initializing");
       }
     };
-  }, []);
+  }, [show]);
 
   useEffect(() => {
     if (tableInstance.current && tableStatus === "ready" && !loading) {
@@ -177,8 +183,12 @@ const CarListPopup = ({ onClose, onConfirm, checkCardNo}) => {
   };
 
   const handleClose = () => {
-    setIsOpen(false);
-    if (onClose) onClose();
+    if (tableInstance.current) {
+      tableInstance.current.destroy();
+      tableInstance.current = null;
+      setTableStatus("initializing");
+    }
+    if (onHide) onHide();
   };
 
   const handleConfirm = () => {
@@ -202,37 +212,30 @@ const CarListPopup = ({ onClose, onConfirm, checkCardNo}) => {
     }
   };
 
-  if (!isOpen) return null;
+  if (!show) return null;
 
   return (
-    <div className='overlay'>
-      <div className='popupContainer'>
-        <div className='header'>
-          <h3>차량검색</h3>
-          <button className='closeButton' onClick={handleClose} />
-        </div>
-        <div className="body">
-          <MainSearch config={searchConfig} filters={filters} setFilters={setFilters} onEvent={handleDynamicEvent} />
-          <TableWrapper>
-            {tableStatus === "initializing" && <div className={styles.loading}>초기화 중...</div>}
-            {loading && <div className={styles.loading}>로딩 중...</div>}
-            <div
-              ref={tableRef}
-              className={styles.tableSection}
-              style={{ visibility: loading || tableStatus !== "ready" ? "hidden" : "visible" }}
-            />
-          </TableWrapper>
-        </div>
-        <div className='buttonContainer'>
-          <button className={`${styles.btn} ${styles.btnSecondary} btn btn-secondary`} onClick={handleClose}>
-            닫기
-          </button>
-          <button className={`${styles.btn} ${styles.btnPrimary} btn text-bg-success`} onClick={handleConfirm}>
-            확인
-          </button>
-        </div>
-      </div>
-    </div>
+    <Modal show={show} onHide={onHide} centered dialogClassName={styles.customModal}>
+      <Modal.Header closeButton>
+        <Modal.Title>차량 선택</Modal.Title>
+      </Modal.Header>
+      <Modal.Body className={`${styles.modalBody} modal-body`}>
+        <MainSearch config={searchConfig} filters={filters} setFilters={setFilters} onEvent={handleDynamicEvent} />
+        <TableWrapper>
+          {tableStatus === "initializing" && <div className={styles.loading}>초기화 중...</div>}
+          {loading && <div className={styles.loading}>로딩 중...</div>}
+          <div
+            ref={tableRef}
+            className={styles.tableSection}
+            style={{ visibility: loading || tableStatus !== "ready" ? "hidden" : "visible" }}
+          />
+        </TableWrapper>
+      </Modal.Body>
+      <Modal.Footer>
+        <button className={`btn btn-secondary ${styles.btn}`} onClick={handleClose}>닫기</button>
+        <button className={`btn btn-primary ${styles.btn}`} onClick={handleConfirm}>확인</button>
+      </Modal.Footer>
+    </Modal>
   );
 };
 

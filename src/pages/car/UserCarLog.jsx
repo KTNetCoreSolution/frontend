@@ -231,7 +231,7 @@ const UserCarLog = () => {
       },
     },
     { title: '번호', field: 'ID', width: 60, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '운행일', field: 'LOGDATE', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '운행일', field: 'LOGDATE', width: 90, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '시작시간', field: 'LOGSTTIME', width: 77, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '종료시간', field: 'LOGENTIME', width: 77, headerHozAlign: 'center', hozAlign: 'center'},
     { title: '조직', field: 'ORG_GROUP', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
@@ -250,7 +250,7 @@ const UserCarLog = () => {
     { title: '비고', field: 'NOTE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '승인여부', field: 'LOGSTAT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '승인상태', field: 'LOGSTATNM', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '상세', field: 'DETAIL', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('상세보기', `btn-danger ${styles.deleteButton}`, (rowData) => handleDetail(rowData)) },
+    { title: '상세', field: 'DETAIL', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('상세보기', `btn btn-outline-secondary`, (rowData) => handleDetail(rowData)) },
   ];
 
   const handleIsConfrim = (rowData) => {

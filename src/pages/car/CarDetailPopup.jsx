@@ -4,8 +4,8 @@ import commonUtils from '../../utils/common';
 import { fetchData } from '../../utils/dataUtils.js';
 import CommonPopup from '../../components/popup/CommonPopup';
 import OrgSearchPopup from '../../components/popup/OrgSearchPopup';
-import MngUserSearchPopup from '../../components/popup/UserSearchPopup';
-import Under26UserSearchPopup from '../../components/popup/UserSearchPopup';
+import MngUserListPopup from '../../components/popup/UserListPopup';
+import Under26UserListPopup from '../../components/popup/UserListPopup';
 import FuelCardPopup from '../car/FuelCardPopup';
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
@@ -350,7 +350,6 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   }
 
   if (!show) return null;
-
   return (
     <Modal show={show} onHide={onHide} onParentSearch={onParentSearch} centered style={{overflowY: 'hidden'}} dialogClassName={styles.customModal}>
       <Modal.Header closeButton>
@@ -486,17 +485,6 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         <div className="row">
           <div className="col-6 d-flex">
             <label className="form-label w100" htmlFor="primaryMngEmpNm">운전자(정)<font color='red'>*</font></label>
-            <CommonPopup show={showMngUserPopup} onHide={() => setShowMngUserPopup(false)} title={'운전자 선택'}>
-              <MngUserSearchPopup
-                  onClose={() => setShowMngUserPopup(false)}
-                  onConfirm={(selectedRows) => {
-                    const userEmpNo = selectedRows.length > 0 ? selectedRows[0].PRIMARYMNGEMPNO : '';
-                    const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';
-                    const userMobile = selectedRows.length > 0 ? selectedRows[0].MOBILE : '';
-                    setCarInfo({ ...carInfo, PRIMARYMNGEMPNO: userEmpNo, PRIMARYMNGEMPNM: userEmpNm, PRIMARYMNGMOBILE: userMobile });
-                  }}
-                />
-            </CommonPopup>
             <input type="text" value={carInfo.PRIMARYMNGEMPNM} className={`form-control ${styles.formControl}`} id="primaryMngEmpNm" disabled="disabled"/>
             <button type="button" className={`btn btn-secondary ${styles.btn} flex-shrink-0`} onClick={(e) => {setShowMngUserPopup(true)}}>선택</button>
           </div>
@@ -530,18 +518,6 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         <div className="row">
           <div className="col-12 d-flex">
             <label className="form-label w100">만26세미만운전자</label>
-            <CommonPopup show={showUnder26UserPopup} onHide={() => setShowUnder26UserPopup(false)} title={'만26세미만운전자 선택'}>
-                <div>
-                  <Under26UserSearchPopup
-                    onClose={() => setShowUnder26UserPopup(false)}
-                    onConfirm={(selectedRows) => {
-                      const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';
-                      const userEmpNo = selectedRows.length > 0 ? selectedRows[0].EMPNO : '';
-                      setCarInfo({ ...carInfo, UNDER26AGEEMPNO: userEmpNo, UNDER26AGEEMPNM: userEmpNm });
-                    }}
-                  />
-                </div>
-            </CommonPopup>
             <button type="button" className={`btn btn-secondary ${styles.btn}`} onClick={(e) => {setShowUnder26UserPopup(true)}}>선택</button>
           </div>
         </div>
@@ -591,12 +567,27 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         }}
         checkCarNo={carInfo.CARNO}> //차량번호를 넘겨서 주유카드 조회
       </FuelCardPopup>
+      <MngUserListPopup show={showMngUserPopup} onHide={() => setShowMngUserPopup(false)}
+        onConfirm={(selectedRows) => {
+          const userEmpNo = selectedRows.length > 0 ? selectedRows[0].PRIMARYMNGEMPNO : '';
+          const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';
+          const userMobile = selectedRows.length > 0 ? selectedRows[0].MOBILE : '';
+          setCarInfo({ ...carInfo, PRIMARYMNGEMPNO: userEmpNo, PRIMARYMNGEMPNM: userEmpNm, PRIMARYMNGMOBILE: userMobile });
+        }}>
+      </MngUserListPopup>
+      <Under26UserListPopup show={showUnder26UserPopup} onHide={() => setShowUnder26UserPopup(false)}
+        onConfirm={(selectedRows) => {
+          const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';a
+          const userEmpNo = selectedRows.length > 0 ? selectedRows[0].EMPNO : '';
+          setCarInfo({ ...carInfo, UNDER26AGEEMPNO: userEmpNo, UNDER26AGEEMPNM: userEmpNm });
+        }}>
+      </Under26UserListPopup>
       <Modal.Footer>
         <button className='btn btnSecondary' onClick={onHide}>취소</button>
         <button className='btn btnPrimary' onClick={handleSubmit}>확인</button>
       </Modal.Footer>
     </Modal>
-  );
+  )
 };
 
 export default CarInfoDetailPopup;

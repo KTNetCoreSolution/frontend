@@ -1,20 +1,20 @@
 import { useState, useEffect, useRef } from "react";
-import MainSearch from '../../components/main/MainSearch';
+import MainSearch from '../main/MainSearch';
 import { fetchData } from "../../utils/dataUtils";
 import { createTable } from "../../utils/tableConfig";
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import Modal from 'react-bootstrap/Modal';
 import styled from 'styled-components';
-import styles from "./FuelCardPopup.module.css";
+import styles from "./UserListPopup.module.css";
 import { is } from "date-fns/locale";
 
 const TableWrapper = styled.div``;
 
 const getFieldOptions = () => [
-  { value: "CARDNO", label: "카드번호" }, { value: "CARNO", label: "차량번호" },
+  { value: "ORG", label: "조직명" }, { value: "EMP", label: "이름" },
 ];
 
-const FuelCardPopup = ({ show, onHide, onConfirm, checkCarNo}) => {
+const UserListPopup = ({ show, onHide, onConfirm }) => {
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
   const [filters, setFilters] = useState({ searchField: "ORG", searchText: "" });
@@ -91,9 +91,13 @@ const FuelCardPopup = ({ show, onHide, onConfirm, checkCarNo}) => {
             return div;
           }},
           { headerHozAlign: "center", hozAlign: "center", title: "순번", field: "seq", sorter: "number", width: 60, editable: false, formatter: (cell) => cell.getRow().getData().seq },
-          { headerHozAlign: "center", hozAlign: "center", title: "카드번호", field: "CARDNO", sorter: "string", width: 200 },
-          { headerHozAlign: "center", hozAlign: "center", title: "만료일", field: "EXFIREDT", sorter: "string", width: 100 },
-          { headerHozAlign: "center", hozAlign: "center", title: "차량번호", field: "CARNO", sorter: "string", width: 100 },
+          { headerHozAlign: "center", hozAlign: "center", title: "사원번호", field: "EMPNO", sorter: "string", width: 80 },
+          { headerHozAlign: "center", hozAlign: "center", title: "이름", field: "EMPNM", sorter: "string", width: 80 },
+          { headerHozAlign: "center", hozAlign: "center", title: "조직코드", field: "ORGCD", sorter: "string", width: 80 },
+          { headerHozAlign: "center", hozAlign: "left", title: "조직명", field: "ORGNM", sorter: "string", width: 100 },
+          { headerHozAlign: "center", hozAlign: "center", title: "직책명", field: "LEVELNM", sorter: "string", width: 80 },
+          { headerHozAlign: "center", hozAlign: "center", title: "호칭명", field: "TITLENM", sorter: "string", width: 80 },
+          { headerHozAlign: "center", hozAlign: "center", title: "휴대전화", field: "MOBILE", sorter: "string", width: 100 },
         ], [], { height: '360px', headerHozAlign: "center", headerFilter: true, layout: 'fitColumns', index: "seq" });
         if (!tableInstance.current) throw new Error("createTable returned undefined or null");
 
@@ -150,8 +154,8 @@ const FuelCardPopup = ({ show, onHide, onConfirm, checkCarNo}) => {
   try {
       const params = {pGUBUN: filters.searchField || "", pSEARCH: filters.searchText || "", pDEBUG: "F"};
 
-      const response = await fetchData("car/FuelCardList", params);
-
+      const response = await fetchData("common/userinfo/list", params);
+      
       if (!response.success) {
         errorMsgPopup(response.message || "데이터를 가져오는 중 오류가 발생했습니다.");
         setData([]);
@@ -192,27 +196,9 @@ const FuelCardPopup = ({ show, onHide, onConfirm, checkCarNo}) => {
   const handleConfirm = () => {    
     if (onConfirm) {
       const selectedData = data.find((row) => row.select === "Y") || null;
-      let isConfirmed = false;
-
-      if(selectedData === null) {
-        alert("선택된 주유카드가 없습니다.");
-        return;
-      }
-
-      if(selectedData.CARNO === "" || checkCarNo === selectedData.CARNO) {
-        isConfirmed = true;
-      }
-      else {
-        if(confirm("다른 차량에 등록된 주유카드 입니다. 그래도 확인하시겠습니까?")) {
-          isConfirmed = true;
-        }
-      }
-      
-      if(isConfirmed) { 
-        onConfirm(selectedData ? [selectedData] : []);
-        handleClose();
-      }
+      onConfirm(selectedData ? [selectedData] : []);
     }
+    handleClose();
   };
 
   if (!show) return null;
@@ -220,7 +206,7 @@ const FuelCardPopup = ({ show, onHide, onConfirm, checkCarNo}) => {
   return (
     <Modal show={show} onHide={onHide} centered dialogClassName={styles.customModal}>
       <Modal.Header closeButton>
-        <Modal.Title>주유카드정보 관리</Modal.Title>
+        <Modal.Title>사원 검색</Modal.Title>
       </Modal.Header>
       <Modal.Body className={`${styles.modalBody} modal-body`}>
         <MainSearch config={searchConfig} filters={filters} setFilters={setFilters} onEvent={handleDynamicEvent} />
@@ -242,4 +228,4 @@ const FuelCardPopup = ({ show, onHide, onConfirm, checkCarNo}) => {
   );
 };
 
-export default FuelCardPopup;
+export default UserListPopup;

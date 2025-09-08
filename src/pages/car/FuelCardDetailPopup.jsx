@@ -28,6 +28,7 @@ const FuelCardInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
     //return () => {
     //};
   }, []);
+
   useEffect(() => {    
     if (show) {        
       if(data !== '') { 
@@ -252,24 +253,18 @@ const FuelCardInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         </div>
         <div className="mb-2 d-flex">
           <label className="form-label w60" htmlFor="carNo">차량번호</label>
-          <CommonPopup show={showCarListPopup} onHide={() => setShowCarListPopup(false)} title={'차량 선택'}>
-            <div>
-              <CarListPopup
-                onClose={() => setShowCarListPopup(false)}
-                onConfirm={(selectedRows) => {
-                  const carId = selectedRows.length > 0 ? selectedRows[0].CARID : '';
-                  const carNo = selectedRows.length > 0 ? selectedRows[0].CARNO : '';
-                  setCardInfo({ ...cardInfo, CARID: carId, CARNO: carNo });
-                }}
-                checkCardNo={cardInfo.CARDNO} //주유카드를 넘겨서 차량번호 조회
-              />
-            </div>
-          </CommonPopup>
           <input type="text" value={cardInfo.CARNO} className={`form-control ${styles.formControl}`} id="carNo" style={{width:200 +'px'}} disabled="disabled" onChange={(e) => {setCardInfo({ ...cardInfo, CARNO: e.target.value })}}/>
           <input type="text" value={cardInfo.CARID} className={`form-control ${styles.formControl}`} id="carNo" style={{width:200 +'px', display:'none'}} disabled="disabled" onChange={(e) => {setCardInfo({ ...cardInfo, CARID: e.target.value })}}/>
           <button type="button" className='btn btn-secondary' onClick={(e) => {setShowCarListPopup(true)}}>선택</button>
         </div>
       </Modal.Body>
+      <CarListPopup show={showCarListPopup} onHide={() => setShowCarListPopup(false)}
+        onConfirm={(selectedRows) => {
+          const carId = selectedRows.length > 0 ? selectedRows[0].CARID : '';
+          const carNo = selectedRows.length > 0 ? selectedRows[0].CARNO : '';
+          setCardInfo({ ...cardInfo, CARID: carId, CARNO: carNo });
+        }}>
+      </CarListPopup>
       <Modal.Footer>
         <button className={`btn btn-secondary ${styles.btn}`} onClick={onHide}>취소</button>
         <button className={`btn btn-primary ${styles.btn}`} onClick={handleSubmit}>확인</button>

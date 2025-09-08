@@ -237,7 +237,7 @@ const CarListInfo = () => {
     { title: '카드번호', field: 'CARDNO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '유효기간', field: 'EXFIREDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '비고', field: 'NOTICE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
-    { title: '상세', field: 'DETAILBUTTON', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('상세보기', `btn-danger ${styles.deleteButton}`, (rowData) => handleDetail(rowData)) },
+    { title: '상세', field: 'DETAILBUTTON', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('상세보기', `btn btn-outline-secondary`, (rowData) => handleDetail(rowData)) },
   ];
 
   const handleDetail = (rowData) => {
