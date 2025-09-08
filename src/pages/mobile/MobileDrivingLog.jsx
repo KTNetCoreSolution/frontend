@@ -267,7 +267,7 @@ const MobileDrivingLog = () => {
             </div>
           </div>
           <div className="mb-2">
-              <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={(e) => alert('개발중')}>차량점검 및 일지작성</button>
+            <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={(e) => alert('개발중')}>차량점검 및 일지작성</button>
           </div>
           <div className={`d-flex ${styles.formDivNotiBox}`} onClick={(e) => navigate('/mobile/MobileCarNotice')} >
             <div className={styles.container}>              
@@ -284,7 +284,7 @@ const MobileDrivingLog = () => {
             </div>
             <div className={`${styles.arrowContainer}`}></div>
           </div>
-          <div className={`d-flex ${styles.formDivBtnBox}`} onClick={(e) => alert('개발중')} >
+          <div className={`d-flex ${styles.formDivBtnBox}`} onClick={(e) => navigate('/mobile/MobileCarLogList')} >
             <div className={`${styles.container}`}>
               <label className={`${styles.formListTitle}`} >운행이력</label>
               <label className={`${styles.formList}`} >내 운행이력을 확인합니다.</label>
