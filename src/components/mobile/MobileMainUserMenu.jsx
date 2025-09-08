@@ -87,7 +87,7 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
             {mobileUserMenu.map((item) => (
               <li
                 key={item.MENUID}
-                className={`list-group-item ${location.pathname === item.URL ? 'text-danger' : ''}`}
+                className={`list-group-item ${location.pathname === item.URL ? 'text-primary-custom' : ''}`}
                 onClick={() => handleMenuClick(item.URL)}
                 style={{ cursor: 'pointer' }}
               >

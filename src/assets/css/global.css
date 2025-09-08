@@ -50,6 +50,9 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .alert, .badge, .breadcrumb, .card, .card-title, .card-text, .list-group-item {
   font-size: var(--bs-form-font-size);
 }
+.text-primary-custom {
+  color: var(--bs-primary-color);
+}
 
 /* Textboxes and select boxes */
 .form-control, .form-select {
