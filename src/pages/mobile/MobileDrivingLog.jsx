@@ -97,7 +97,7 @@ const MobileDrivingLog = () => {
       if (activeIndex === 1 && index <= preIndex) {
         return 1; // currentIndex가 1일 때는 첫 도트
       }
-      else if (index > preIndex) {
+      else if (index > activeIndex && index >= preIndex) {
         return activeIndex + 1; // currentIndex가 9 이하일 때는 1:1 매핑
       } else {
         return activeIndex - 1; // currentIndex가 9 초과일 때는 9번째 도트 유지
