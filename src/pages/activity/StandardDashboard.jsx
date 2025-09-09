@@ -207,83 +207,119 @@ const StandardDashboard = () => {
 
       // 2.1-2.2 조직별 현황: 선로/설계 통합 바 (4), BIZ 바 (5)
       const titles2 = ['선로/설계', 'BIZ'];
-        for (let i = 0; i < 2; i++) {
-          let seriesData, legendData, xAxisData;
-          if (i === 0) {
-            const lineData = orgData.filter(item => item.SECTIONCD === 'LINE');
-            const designData = orgData.filter(item => item.SECTIONCD === 'DESIGN');
-            seriesData = [
-              { name: '선로', type: 'bar', data: lineData.map(item => Number(item.WORKH)), itemStyle: { color: '#216DB2' } },
-              { name: '설계', type: 'bar', data: designData.map(item => Number(item.WORKH)), itemStyle: { color: '#2CBBB7' } },
-            ];
-            legendData = ['선로', '설계'];
-            xAxisData = lineData.map(item => item.ORGNM);
-          } else {
-            const bizData = orgData.filter(item => item.SECTIONCD === 'BIZ');
-            seriesData = [
-              { name: 'BIZ', type: 'bar', data: bizData.map(item => Number(item.WORKH)), itemStyle: { color: '#216DB2' } },
-            ];
-            legendData = ['BIZ'];
-            xAxisData = bizData.map(item => item.ORGNM);
-          }
-
-          if (chartRefs[i + 4].current) {
-            const chart = echarts.init(chartRefs[i + 4].current);
-            chart.setOption({
-              grid: {
-                show: false,
-                left: '5%',
-                right: '5%',
-                top: '15%',
-                bottom: '5%',
-                height: '55%',
+      for (let i = 0; i < 2; i++) {
+        let seriesData, legendData, xAxisData;
+        if (i === 0) {
+          const lineData = orgData.filter(item => item.SECTIONCD === 'LINE');
+          const designData = orgData.filter(item => item.SECTIONCD === 'DESIGN');
+          seriesData = [
+            { 
+              name: '선로', 
+              type: 'bar', 
+              data: lineData.map(item => Number(item.WORKH)), 
+              itemStyle: { color: '#216DB2' },
+              label: {
+                show: true,
+                position: 'top',
+                formatter: '{c}',
+                fontSize: 9,
+                color: '#4a4a4a',
               },
-              tooltip: {
-                trigger: 'axis',
-                axisPointer: { type: 'shadow' },
-                formatter: (params) => {
-                  let result = `${params[0].name}<br/>`;
-                  params.forEach(param => {
-                    result += `${param.seriesName}(h): ${param.data.toFixed(2)}<br/>`;
-                  });
-                  return result;
-                },
+            },
+            { 
+              name: '설계', 
+              type: 'bar', 
+              data: designData.map(item => Number(item.WORKH)), 
+              itemStyle: { color: '#2CBBB7' },
+              label: {
+                show: true,
+                position: 'top',
+                formatter: '{c}',
+                fontSize: 9,
+                color: '#4a4a4a',
               },
-              legend: {
-                icon: 'circle',
-                itemWidth: 12,
-                itemHeight: 12,
-                data: legendData,
-                orient: 'horizontal',
-                top: 0,
-                left: 'center',
+            },
+          ];
+          legendData = ['선로', '설계'];
+          xAxisData = lineData.map(item => item.ORGNM);
+        } else {
+          const bizData = orgData.filter(item => item.SECTIONCD === 'BIZ');
+          seriesData = [
+            { 
+              name: 'BIZ', 
+              type: 'bar', 
+              data: bizData.map(item => Number(item.WORKH)), 
+              itemStyle: { color: '#216DB2' },
+              label: {
+                show: true,
+                position: 'top',
+                formatter: '{c}',
+                fontSize: 9,
+                color: '#4a4a4a',
               },
-              xAxis: {
-                type: 'category',
-                data: xAxisData,
-                axisLabel: {
-                  rotate: 0, // 라벨 회전 제거 (가로로 표시)
-                  fontSize: 12,
-                  interval: 0, // 모든 라벨 표시
-                  margin: 10, // 라벨과 축 사이 간격 조정
-                },
-              },
-              yAxis: {
-                type: 'value',
-                axisLabel: {
-                  formatter: '{value}',
-                  fontSize: 12,
-                  margin: 5, // 라벨과 축 사이 거리 늘림
-                  width: 100, // 라벨 너비 확보
-                  overflow: 'none', // 텍스트 잘림 방지
-                },
-                splitLine: { show: false },
-              },
-              barWidth: '20%',
-              series: seriesData,
-            });
-          }
+            },
+          ];
+          legendData = ['BIZ'];
+          xAxisData = bizData.map(item => item.ORGNM);
         }
+
+        if (chartRefs[i + 4].current) {
+          const chart = echarts.init(chartRefs[i + 4].current);
+          chart.setOption({
+            grid: {
+              show: false,
+              left: '5%',
+              right: '5%',
+              top: '15%',
+              bottom: '5%',
+              height: '55%',
+            },
+            tooltip: {
+              trigger: 'axis',
+              axisPointer: { type: 'shadow' },
+              formatter: (params) => {
+                let result = `${params[0].name}<br/>`;
+                params.forEach(param => {
+                  result += `${param.seriesName}(h): ${param.data.toFixed(2)}<br/>`;
+                });
+                return result;
+              },
+            },
+            legend: {
+              icon: 'circle',
+              itemWidth: 12,
+              itemHeight: 12,
+              data: legendData,
+              orient: 'horizontal',
+              top: 0,
+              left: 'center',
+            },
+            xAxis: {
+              type: 'category',
+              data: xAxisData,
+              axisLabel: {
+                rotate: 0, // 라벨 회전 제거 (가로로 표시)
+                fontSize: 12,
+                interval: 0, // 모든 라벨 표시
+                margin: 10, // 라벨과 축 사이 간격 조정
+              },
+            },
+            yAxis: {
+              type: 'value',
+              axisLabel: {
+                formatter: '{value}',
+                fontSize: 12,
+                margin: 5, // 라벨과 축 사이 거리 늘림
+                width: 100, // 라벨 너비 확보
+                overflow: 'none', // 텍스트 잘림 방지
+              },
+              splitLine: { show: false },
+            },
+            barWidth: '20%',
+            series: seriesData,
+          });
+        }
+      }
 
       // 3.1-3.3 Pie with Rich Text Label (선로, 설계, BIZ)
       ['LINE', 'DESIGN', 'BIZ'].forEach((section, i) => {
