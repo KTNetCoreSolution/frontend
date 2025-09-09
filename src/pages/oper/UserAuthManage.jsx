@@ -292,7 +292,7 @@ const UserAuthManage = () => {
       <CommonPopup show={showAuthPopup} onHide={handleAuthCancel} onConfirm={handleAuthConfirm} title="권한 선택">
         <div className="formGroup">
           <label htmlFor="authIdSelect" className="form-label">권한</label>
-          <select className={`form-select ${styles.formSelect}`} id="authIdSelect" value={newAuth.AUTHID} onChange={(e) => {
+          <select className={`form-select ${styles.formSelect}`} style={{width: '200px'}} id="authIdSelect" value={newAuth.AUTHID} onChange={(e) => {
             const auth = authList.find((a) => a.AUTHID === e.target.value);
             setNewAuth({ AUTHID: e.target.value, AUTHNM: auth ? auth.AUTHNM : "" });
           }}>

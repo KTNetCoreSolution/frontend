@@ -179,12 +179,12 @@ const MobileCarNoticeView = () => {
 
   return (
       <div className="container-fluid p-0">
-        <header className="bg-primary text-white p-3 d-flex justify-content-between align-items-center">
+        <header className="header">
           <h1 className="h5 mb-0">기동장비 공지사항 상세</h1>
-          <button className="btn" onClick={handleToggleSidebar}>
+          <button className="btn text-white" onClick={handleToggleSidebar}>
             <i className="bi bi-list"></i>
           </button>
-        </header>  
+        </header>
         
         <MobileMainUserMenu show={showSidebar} handleClose={handleToggleSidebar} onLogout={handleLogout} />
 
