@@ -179,7 +179,7 @@ const StandardDashboard = () => {
           const chart = echarts.init(chartRefs[i + 1].current);
           chart.setOption({
             tooltip: {
-              formatter: `{a} <br/>총대상시간: ${totalTime}h <br/> 입력시간: ${inputTime}h`,
+              formatter: `총대상시간(h): ${totalTime}<br/> 입력시간(h): ${inputTime}`,
             },
             series: [
               {
