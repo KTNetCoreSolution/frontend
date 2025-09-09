@@ -137,7 +137,7 @@ const StandardDashboard = () => {
 
         chart.setOption({
           tooltip: {
-            formatter: `총대상시간: ${targetTime}h<br/>입력시간: ${inputTime}h`,
+            formatter: `총대상시간(h): ${targetTime}<br/>입력시간(h): ${inputTime}`,
           },
           graphic: [
             {
@@ -221,9 +221,9 @@ const StandardDashboard = () => {
           } else {
             const bizData = orgData.filter(item => item.SECTIONCD === 'BIZ');
             seriesData = [
-              { name: '업무량(시간)', type: 'bar', data: bizData.map(item => Number(item.WORKH)), itemStyle: { color: '#216DB2' } },
+              { name: 'BIZ', type: 'bar', data: bizData.map(item => Number(item.WORKH)), itemStyle: { color: '#216DB2' } },
             ];
-            legendData = ['업무량(시간)'];
+            legendData = ['BIZ'];
             xAxisData = bizData.map(item => item.ORGNM);
           }
 
@@ -234,7 +234,7 @@ const StandardDashboard = () => {
                 show: false,
                 left: '5%',
                 right: '5%',
-                top: '10%',
+                top: '15%',
                 bottom: '5%',
                 height: '55%',
               },
@@ -244,7 +244,7 @@ const StandardDashboard = () => {
                 formatter: (params) => {
                   let result = `${params[0].name}<br/>`;
                   params.forEach(param => {
-                    result += `${param.seriesName}: ${param.data.toFixed(2)}h<br/>`;
+                    result += `${param.seriesName}(h): ${param.data.toFixed(2)}<br/>`;
                   });
                   return result;
                 },
@@ -262,14 +262,16 @@ const StandardDashboard = () => {
                 type: 'category',
                 data: xAxisData,
                 axisLabel: {
-                  rotate: 45,
+                  rotate: 0, // 라벨 회전 제거 (가로로 표시)
                   fontSize: 12,
+                  interval: 0, // 모든 라벨 표시
+                  margin: 10, // 라벨과 축 사이 간격 조정
                 },
               },
               yAxis: {
                 type: 'value',
                 axisLabel: {
-                  formatter: '{value} h',
+                  formatter: '{value}',
                   fontSize: 12,
                   margin: 5, // 라벨과 축 사이 거리 늘림
                   width: 100, // 라벨 너비 확보
@@ -301,7 +303,7 @@ const StandardDashboard = () => {
             '#1E5A99', // 블루 계열 어두운 톤
             '#3AC9C5', // 청록 계열 밝은 톤
             '#2A7BCB', // 블루 계열 중간 톤
-            '#25A8A3', // 청록 계열 중간 톤
+            '#2cbab7', // 청록 계열 중간 톤
             '#154A80', // 블루 계열 더 어두운 톤
             '#48D7D3', // 청록 계열 더 밝은 톤
           ].slice(0, data.length); // 데이터 개수에 맞게 자름
@@ -425,13 +427,13 @@ const StandardDashboard = () => {
             <div ref={chartRefs[4]} className={styles.chart} />
           </div>
           <div className={styles.subSection}>
-            <div className='subSecTitle'>업무량(시간)</div>
+            <div className='subSecTitle'>BIZ</div>
             <div ref={chartRefs[5]} className={styles.chart} />
           </div>
         </div>
       </div>
       <div className='chartRowWrap'>
-        <div className='chartTitle'>표준활동 대분류별 입력현황</div>
+        <div className='chartTitle'>대분류별 표준활동 입력현황</div>
         <div className={styles.fieldSection}>
           <div className={styles.subSection}>
             <div className='subSecTitle'>선로</div>
