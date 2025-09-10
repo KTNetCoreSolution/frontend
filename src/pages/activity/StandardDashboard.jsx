@@ -375,23 +375,23 @@ const StandardDashboard = () => {
     <div className={`chartWrap ${styles.container} ${isFullscreen ? styles.fullscreen : ''}`}>
       <div className='chartRowWrap'>
         <div className='chartTitle'>전사 표준활동 입력현황</div>
-        <div className={styles.inputSection}>
-          <div className={styles.chartsContainer}>
-            <div className={styles.subSection}>
+        <div className='inputSection'>
+          <div className='chartsContainer'>
+            <div className='subSection'>
               <div className='subSecTitle'>전체</div>
-              <div ref={chartRefs[0]} className={styles.chart} />
+              <div ref={chartRefs[0]} className='chart' />
             </div>
-            <div className={styles.subSection}>
+            <div className='subSection'>
               <div className='subSecTitle'>선로</div>
-              <div ref={chartRefs[1]} className={styles.chart} />
+              <div ref={chartRefs[1]} className='chart' />
             </div>
-            <div className={styles.subSection}>
+            <div className='subSection'>
               <div className='subSecTitle'>설계</div>
-              <div ref={chartRefs[2]} className={styles.chart} />
+              <div ref={chartRefs[2]} className='chart' />
             </div>
-            <div className={styles.subSection}>
+            <div className='subSection'>
               <div className='subSecTitle'>BIZ</div>
-              <div ref={chartRefs[3]} className={styles.chart} />
+              <div ref={chartRefs[3]} className='chart' />
             </div>
           </div>
           <div className='rightInfo'>
@@ -404,12 +404,12 @@ const StandardDashboard = () => {
                   onChange={e => setMonth(e.target.value)}
                   className={styles.monthInput}
                 />
-                <button className={styles.refreshButton} onClick={() => user && loadData()}>
+                <button className='refreshButton' onClick={() => user && loadData()}>
                   <i className="bi bi-arrow-repeat"></i>
                 </button>
               </div>
             </div>
-            <table className={styles.gridTable}>
+            <table className='gridTable'>
               <thead>
                 <tr>
                   <th>구분</th>
@@ -434,35 +434,35 @@ const StandardDashboard = () => {
       </div>
       <div className='chartRowWrap'>
         <div className='chartTitle'>대분류별 표준활동 추이현황</div>
-        <div className={styles.fieldSection}>
-          <div className={styles.subSection}>
+        <div className='fieldSection'>
+          <div className='subSection'>
             <div className='subSecTitle'>선로</div>
-            <div ref={chartRefs[4]} className={styles.chart} />
+            <div ref={chartRefs[4]} className='chart' />
           </div>
-          <div className={styles.subSection}>
+          <div className='subSection'>
             <div className='subSecTitle'>설계</div>
-            <div ref={chartRefs[5]} className={styles.chart} />
+            <div ref={chartRefs[5]} className='chart' />
           </div>
-          <div className={styles.subSection}>
+          <div className='subSection'>
             <div className='subSecTitle'>BIZ</div>
-            <div ref={chartRefs[6]} className={styles.chart} />
+            <div ref={chartRefs[6]} className='chart' />
           </div>
         </div>
       </div>
       <div className='chartRowWrap'>
         <div className='chartTitle'>대분류별 표준활동 입력현황</div>
-        <div className={styles.fieldSection}>
-          <div className={styles.subSection}>
+        <div className='fieldSection'>
+          <div className='subSection'>
             <div className='subSecTitle'>선로</div>
-            <div ref={chartRefs[7]} className={styles.chart} />
+            <div ref={chartRefs[7]} className='chart' />
           </div>
-          <div className={styles.subSection}>
+          <div className='subSection'>
             <div className='subSecTitle'>설계</div>
-            <div ref={chartRefs[8]} className={styles.chart} />
+            <div ref={chartRefs[8]} className='chart' />
           </div>
-          <div className={styles.subSection}>
+          <div className='subSection'>
             <div className='subSecTitle'>BIZ</div>
-            <div ref={chartRefs[9]} className={styles.chart} />
+            <div ref={chartRefs[9]} className='chart' />
           </div>
         </div>
       </div>

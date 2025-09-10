@@ -148,15 +148,15 @@ const MobileCarLogList = () => {
                 <>
                   <li>
                     <span className='formLabel'>차량파손</span>
-                    <span className='formText' style={{color: item.DAMAGE === '양호' ? '#22cc00' : 'red'}}>{item.DAMAGE}</span>
+                    <span className='formText' style={{color: item.DAMAGE === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.DAMAGE}</span>
                   </li>
                   <li>
                     <span className='formLabel'>오일누수</span>
-                    <span className='formText' style={{color: item.OILLEAK === '양호' ? '#22cc00' : 'red'}}>{item.OILLEAK}</span>
+                    <span className='formText' style={{color: item.OILLEAK === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.OILLEAK}</span>
                   </li>
                   <li>
                     <span className='formLabel'>타이어</span>
-                    <span className='formText' style={{color: item.TIRE === '양호' ? '#22cc00' : 'red'}}>{item.TIRE}</span>
+                    <span className='formText' style={{color: item.TIRE === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.TIRE}</span>
                   </li>
                 </>
               )}
@@ -165,15 +165,15 @@ const MobileCarLogList = () => {
                 <>
                   <li>
                     <span className='formLabel'>적재물안전</span>
-                    <span className='formText' style={{color: item.LUGGAGE === '양호' ? '#22cc00' : 'red'}}>{item.LUGGAGE}</span>
+                    <span className='formText' style={{color: item.LUGGAGE === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.LUGGAGE}</span>
                   </li>
                   <li>
                     <span className='formLabel'>기타</span>
-                    <span className='formText' style={{color: item.ETC1 === '양호' ? '#22cc00' : 'red'}}>{item.ETC1}</span>
+                    <span className='formText' style={{color: item.ETC1 === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.ETC1}</span>
                   </li>
                   <li>
                     <span className='formLabel'>특이사항</span>
-                    <span className='formText' style={{color: item.ETC2 === '양호' ? '#22cc00' : 'red'}}>{item.ETC2}</span>
+                    <span className='formText' style={{color: item.ETC2 === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.ETC2}</span>
                   </li>
                 </>
               )}
@@ -181,7 +181,7 @@ const MobileCarLogList = () => {
           </div>
           ))
          ) : (
-          <div className="list-group-item text-center">조회된 목록이 없습니다.</div>
+          <div className="nodataWrap">조회된 목록이 없습니다.</div>
         )}
         {totalPages > 1 && (
           <nav aria-label="Page navigation" className="mt-3">
