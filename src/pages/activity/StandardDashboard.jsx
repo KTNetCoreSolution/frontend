@@ -10,12 +10,12 @@ import styles from './StandardDashboard.module.css';
 const StandardDashboard = () => {
   const { user } = useStore();
   const navigate = useNavigate();
-  const chartRefs = Array.from({ length: 9 }, () => useRef(null)); // 0: 인원 게이지, 1-3: 게이지, 4: 선로/설계 바, 5: BIZ 바, 6-8: 분야 파이
+  const chartRefs = Array.from({ length: 10 }, () => useRef(null)); // 0: 인원 게이지, 1-3: 게이지, 4-6: 선로/설계/BIZ 바, 7-9: 분야 파이
   const params = new URLSearchParams(window.location.search);
   const [month, setMonth] = useState(params.get('month') || common.getTodayDate().substring(0, 7));
   const isFullscreen = params.get('fullscreen') === 'true';
   const [totalData, setTotalData] = useState([]);
-  const [orgData, setOrgData] = useState([]);
+  const [tobeData, setTobeData] = useState([]);
   const [classData, setClassData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [userLoading, setUserLoading] = useState(true);
@@ -45,6 +45,7 @@ const StandardDashboard = () => {
       }
       const processedTotalData = totalResponse.data.map(item => ({
         구분: item.SECTIONCD === 'TOTAL' ? '계' : item.SECTIONCD,
+        '대상인원(명)': Number(item.EMPTARGETCNT) || 0,
         '입력인원(명)': Number(item.EMPINPUTCNT) || 0,
         '입력시간(h)': Number(item.WORKH) || 0,
         '비율(%)': item.WORKH && item.SECTIONCD !== 'TOTAL'
@@ -54,20 +55,19 @@ const StandardDashboard = () => {
       }));
       setTotalData(processedTotalData);
 
-      // 2. 본부별 표준활동 입력현황 (ORGLIST)
-      const orgResponse = await fetchData('standard/dashBoard/list', getApiParams('ORGLIST'));
-      if (!orgResponse.success) {
-        errorMsgPopup(orgResponse.message || '본부별 데이터를 가져오는 중 오류가 발생했습니다.');
+      // 2. 대분류별 표준활동 추이현황 (TOBELIST)
+      const tobeResponse = await fetchData('standard/dashBoard/list', getApiParams('TOBELIST'));
+      if (!tobeResponse.success) {
+        errorMsgPopup(tobeResponse.message || '본부별 데이터를 가져오는 중 오류가 발생했습니다.');
         return;
       }
-      // ORGNM에서 "설계부"를 "본부"로 변경
-      const processedOrgData = orgResponse.data.map(item => ({
+      const processedTobeData = tobeResponse.data.map(item => ({
         ...item,
         ORGNM: item.ORGNM,
       }));
-      setOrgData(processedOrgData);
+      setTobeData(processedTobeData);
 
-      // 3. 표준활동 대분류별 입력현황 (CLASSLIST)
+      // 3. 대분류별 표준활동 입력현황 (CLASSLIST)
       const classResponse = await fetchData('standard/dashBoard/list', getApiParams('CLASSLIST'));
       if (!classResponse.success) {
         errorMsgPopup(classResponse.message || '대분류 데이터를 가져오는 중 오류가 발생했습니다.');
@@ -101,21 +101,25 @@ const StandardDashboard = () => {
     return [
       {
         구분: '계',
+        대상인원: totalData.find(item => item.구분 === '계')?.['대상인원(명)'] || 0,
         입력인원: totalData.find(item => item.구분 === '계')?.['입력인원(명)'] || 0,
         입력시간: totalData.find(item => item.구분 === '계')?.['입력시간(h)'] || 0,
       },
       {
         구분: '선로',
+        대상인원: totalData.find(item => item.구분 === 'LINE')?.['대상인원(명)'] || 0,
         입력인원: totalData.find(item => item.구분 === 'LINE')?.['입력인원(명)'] || 0,
         입력시간: totalData.find(item => item.구분 === 'LINE')?.['입력시간(h)'] || 0,
       },
       {
         구분: '설계',
+        대상인원: totalData.find(item => item.구분 === 'DESIGN')?.['대상인원(명)'] || 0,
         입력인원: totalData.find(item => item.구분 === 'DESIGN')?.['입력인원(명)'] || 0,
         입력시간: totalData.find(item => item.구분 === 'DESIGN')?.['입력시간(h)'] || 0,
       },
       {
         구분: 'BIZ',
+        대상인원: totalData.find(item => item.구분 === 'BIZ')?.['대상인원(명)'] || 0,
         입력인원: totalData.find(item => item.구분 === 'BIZ')?.['입력인원(명)'] || 0,
         입력시간: totalData.find(item => item.구분 === 'BIZ')?.['입력시간(h)'] || 0,
       },
@@ -124,7 +128,7 @@ const StandardDashboard = () => {
 
   // 차트 렌더링
   useEffect(() => {
-    if (loading || userLoading || !totalData?.length || !orgData?.length || !classData?.length) return;
+    if (loading || userLoading || !totalData?.length || !tobeData?.length || !classData?.length) return;
 
     const timer = setTimeout(() => {
       // 1.1 Custom Gauge for 시간 (구분: 계)
@@ -205,70 +209,44 @@ const StandardDashboard = () => {
         }
       });
 
-      // 2.1-2.2 조직별 현황: 선로/설계 통합 바 (4), BIZ 바 (5)
-      const titles2 = ['선로/설계', 'BIZ'];
-      for (let i = 0; i < 2; i++) {
-        let seriesData, legendData, xAxisData;
-        if (i === 0) {
-          const lineData = orgData.filter(item => item.SECTIONCD === 'LINE');
-          const designData = orgData.filter(item => item.SECTIONCD === 'DESIGN');
-          seriesData = [
-            { 
-              name: '선로', 
-              type: 'bar', 
-              data: lineData.map(item => Number(item.WORKH)), 
-              itemStyle: { color: '#216DB2' },
-              label: {
-                show: true,
-                position: 'top',
-                formatter: '{c}',
-                fontSize: 9,
-                color: '#4a4a4a',
-              },
-            },
-            { 
-              name: '설계', 
-              type: 'bar', 
-              data: designData.map(item => Number(item.WORKH)), 
-              itemStyle: { color: '#2CBBB7' },
-              label: {
-                show: true,
-                position: 'top',
-                formatter: '{c}',
-                fontSize: 9,
-                color: '#4a4a4a',
-              },
-            },
-          ];
-          legendData = ['선로', '설계'];
-          xAxisData = lineData.map(item => item.ORGNM);
-        } else {
-          const bizData = orgData.filter(item => item.SECTIONCD === 'BIZ');
-          seriesData = [
-            { 
-              name: 'BIZ', 
-              type: 'bar', 
-              data: bizData.map(item => Number(item.WORKH)), 
-              itemStyle: { color: '#216DB2' },
-              label: {
-                show: true,
-                position: 'top',
-                formatter: '{c}',
-                fontSize: 9,
-                color: '#4a4a4a',
-              },
-            },
-          ];
-          legendData = ['BIZ'];
-          xAxisData = bizData.map(item => item.ORGNM);
-        }
-
+      // 2.1-2.3 추이 현황: 선로, 설계, BIZ 가로형 누적 바 차트
+      ['LINE', 'DESIGN', 'BIZ'].forEach((section, i) => {
         if (chartRefs[i + 4].current) {
           const chart = echarts.init(chartRefs[i + 4].current);
+          // SECTIONCD에 해당하는 데이터 필터링
+          const sectionData = tobeData.filter(item => item.SECTIONCD === section);
+          // MDATE 목록 추출 (고유값)
+          const mDates = [...new Set(sectionData.map(item => item.MDATE).filter(date => date))].sort();
+          // CLASSANM 목록 추출 (고유값)
+          const classNames = [...new Set(sectionData.map(item => item.CLASSANM).filter(name => name))];
+          // 색상 팔레트
+          const colors = [
+            '#216DB2', '#2CBBB7', '#1E5A99', '#3AC9C5',
+            '#2A7BCB', '#2cbab7', '#154A80', '#48D7D3'
+          ].slice(0, classNames.length);
+          // 시리즈 데이터 생성
+          const seriesData = classNames.map((className, idx) => ({
+            name: className,
+            type: 'bar',
+            stack: 'total', // 누적 바 설정
+            data: mDates.map(mDate => {
+              const item = sectionData.find(d => d.MDATE === mDate && d.CLASSANM === className);
+              return item ? Number(item.WORKH) : 0; // 데이터가 없으면 0
+            }),
+            itemStyle: { color: colors[idx] },
+            label: {
+              show: true,
+              position: 'inside',
+              formatter: (params) => params.value > 0 ? params.value.toFixed(0) : '',
+              fontSize: 9,
+              color: '#fff',
+            },
+          }));
+
           chart.setOption({
             grid: {
               show: false,
-              left: '5%',
+              left: '13%',
               right: '5%',
               top: '15%',
               bottom: '5%',
@@ -280,7 +258,9 @@ const StandardDashboard = () => {
               formatter: (params) => {
                 let result = `${params[0].name}<br/>`;
                 params.forEach(param => {
-                  result += `${param.seriesName}(h): ${param.data.toFixed(2)}<br/>`;
+                  if (param.value > 0) {
+                    result += `${param.seriesName}(h): ${param.value.toFixed(2)}<br/>`;
+                  }
                 });
                 return result;
               },
@@ -289,42 +269,39 @@ const StandardDashboard = () => {
               icon: 'circle',
               itemWidth: 12,
               itemHeight: 12,
-              data: legendData,
+              data: classNames,
               orient: 'horizontal',
               top: 0,
               left: 'center',
             },
             xAxis: {
-              type: 'category',
-              data: xAxisData,
-              axisLabel: {
-                rotate: 0, // 라벨 회전 제거 (가로로 표시)
-                fontSize: 12,
-                interval: 0, // 모든 라벨 표시
-                margin: 10, // 라벨과 축 사이 간격 조정
-              },
-            },
-            yAxis: {
               type: 'value',
               axisLabel: {
                 formatter: '{value}',
                 fontSize: 12,
-                margin: 5, // 라벨과 축 사이 거리 늘림
-                width: 100, // 라벨 너비 확보
-                overflow: 'none', // 텍스트 잘림 방지
+                margin: 10,
               },
               splitLine: { show: false },
             },
-            barWidth: '20%',
+            yAxis: {
+              type: 'category',
+              data: mDates, // Y축에 고정된 MDATE 표시
+              axisLabel: {
+                fontSize: 12,
+                interval: 0,
+                margin: 10,
+                formatter: (value) => value, // MDATE 그대로 표시
+              },
+            },
             series: seriesData,
           });
         }
-      }
+      });
 
       // 3.1-3.3 Pie with Rich Text Label (선로, 설계, BIZ)
       ['LINE', 'DESIGN', 'BIZ'].forEach((section, i) => {
-        if (chartRefs[i + 6]?.current) {
-          const chart = echarts.init(chartRefs[i + 6].current);
+        if (chartRefs[i + 7]?.current) {
+          const chart = echarts.init(chartRefs[i + 7].current);
           const data = classData
             .filter(item => item.SECTIONCD === section)
             .map(item => ({
@@ -332,17 +309,10 @@ const StandardDashboard = () => {
               value: Number(item.WORKH) || 0,
               time: Number(item.WORKH) || 0,
             }));
-          // #216DB2와 #2CBBB7 계열의 색상 팔레트
           const colors = [
-            '#216DB2', // 기본 블루
-            '#2CBBB7', // 기본 청록
-            '#1E5A99', // 블루 계열 어두운 톤
-            '#3AC9C5', // 청록 계열 밝은 톤
-            '#2A7BCB', // 블루 계열 중간 톤
-            '#2cbab7', // 청록 계열 중간 톤
-            '#154A80', // 블루 계열 더 어두운 톤
-            '#48D7D3', // 청록 계열 더 밝은 톤
-          ].slice(0, data.length); // 데이터 개수에 맞게 자름
+            '#216DB2', '#2CBBB7', '#1E5A99', '#3AC9C5',
+            '#2A7BCB', '#2cbab7', '#154A80', '#48D7D3'
+          ].slice(0, data.length);
           chart.setOption({
             tooltip: {
               trigger: 'item',
@@ -352,7 +322,8 @@ const StandardDashboard = () => {
               {
                 name: '업무 비율',
                 type: 'pie',
-                radius: [0, '60%'],
+                radius: ['40%', '70%'],
+                padAngle: 3,
                 color: colors,
                 label: {
                   formatter: '{abg|{b}}\n{hr|}\n{per|{d}%}  {value|{c}시간}',
@@ -369,11 +340,15 @@ const StandardDashboard = () => {
                 },
                 data: data,
                 emphasis: {
-                  itemStyle: {
-                    shadowBlur: 10,
-                    shadowOffsetX: 0,
-                    shadowColor: 'rgba(0, 0, 0, 0.5)',
+                  label: {
+                    show: true,
+                    color: '#4a4a4a',
+                    fontSize: 20,
+                    fontWeight: 'bold'
                   },
+                },
+                labelLine: {
+                  show: false
                 },
               },
             ],
@@ -386,7 +361,7 @@ const StandardDashboard = () => {
       clearTimeout(timer);
       chartRefs.forEach(ref => ref.current && echarts.dispose(ref.current));
     };
-  }, [totalData, orgData, classData, loading, userLoading]);
+  }, [totalData, tobeData, classData, loading, userLoading]);
 
   if (userLoading) {
     return <div>사용자 정보 로드 중...</div>;
@@ -438,7 +413,8 @@ const StandardDashboard = () => {
               <thead>
                 <tr>
                   <th>구분</th>
-                  <th>인원(명)</th>
+                  <th>대상인원(명)</th>
+                  <th>입력인원(명)</th>
                   <th>입력시간(h)</th>
                 </tr>
               </thead>
@@ -446,6 +422,7 @@ const StandardDashboard = () => {
                 {summaryData.map((item, index) => (
                   <tr key={index}>
                     <td>{item.구분}</td>
+                    <td>{item.대상인원}</td>
                     <td>{item.입력인원}</td>
                     <td>{item.입력시간}</td>
                   </tr>
@@ -456,15 +433,19 @@ const StandardDashboard = () => {
         </div>
       </div>
       <div className='chartRowWrap'>
-        <div className='chartTitle'>조직별 표준활동 입력현황</div>
-        <div className={styles.headquarterSection}>
+        <div className='chartTitle'>대분류별 표준활동 추이현황</div>
+        <div className={styles.fieldSection}>
           <div className={styles.subSection}>
-            <div className='subSecTitle'>선로/설계</div>
+            <div className='subSecTitle'>선로</div>
             <div ref={chartRefs[4]} className={styles.chart} />
           </div>
           <div className={styles.subSection}>
-            <div className='subSecTitle'>BIZ</div>
+            <div className='subSecTitle'>설계</div>
             <div ref={chartRefs[5]} className={styles.chart} />
+          </div>
+          <div className={styles.subSection}>
+            <div className='subSecTitle'>BIZ</div>
+            <div ref={chartRefs[6]} className={styles.chart} />
           </div>
         </div>
       </div>
@@ -473,15 +454,15 @@ const StandardDashboard = () => {
         <div className={styles.fieldSection}>
           <div className={styles.subSection}>
             <div className='subSecTitle'>선로</div>
-            <div ref={chartRefs[6]} className={styles.chart} />
-          </div>
-          <div className={styles.subSection}>
-            <div className='subSecTitle'>설계</div>
             <div ref={chartRefs[7]} className={styles.chart} />
           </div>
           <div className={styles.subSection}>
-            <div className='subSecTitle'>BIZ</div>
+            <div className='subSecTitle'>설계</div>
             <div ref={chartRefs[8]} className={styles.chart} />
+          </div>
+          <div className={styles.subSection}>
+            <div className='subSecTitle'>BIZ</div>
+            <div ref={chartRefs[9]} className={styles.chart} />
           </div>
         </div>
       </div>
