@@ -60,7 +60,7 @@ const StandardTeamInputStatistic = () => {
     if (!cellValue || parseFloat(cellValue) === 0) return;
 
     const rowData = cell.getRow().getData();
-    const sectionCd = hasPermission(user?.auth, 'oper') ? filters.classGubun : user?.standardSectionCd || 'LINE';
+    const sectionCd = rowData.SECTIONCD;
     const orgCd = rowData.ORGCD;
     setSelectedData({
       SECTIONCD: sectionCd,
@@ -114,7 +114,8 @@ const StandardTeamInputStatistic = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '월', field: 'MDATE', sorter: 'number', width: 100, frozen: true },
     { headerHozAlign: 'center', hozAlign: 'center', title: '팀코드', field: 'ORGCD', sorter: 'string', width: 100, frozen: true, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '팀정보', field: 'ORGNM', sorter: 'string', width: 120, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '팀인원(명)', field: 'EMPNOCNT', sorter: 'number', width: 100, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '대상인원(명)', field: 'TARGETCNT', sorter: 'number', width: 102, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '입력인원(명)', field: 'EMPNOCNT', sorter: 'number', width: 102, frozen: true },
     { headerHozAlign: 'center', hozAlign: 'center', title: '월누계', field: 'MONTH_TOTAL', sorter: 'number', width: 100, frozen: true },
     ...Array.from({ length: 31 }, (_, i) => {
       const day = String(i + 1).padStart(2, '0');
@@ -139,6 +140,18 @@ const StandardTeamInputStatistic = () => {
   const loadData = async () => {
     setLoading(true);
     setIsSearched(true);
+
+    // 날짜 범위 체크
+    if (filters.dayGubun === 'D') {
+      const maxMonths = 3;
+      const monthRange = common.checkMonthRange(filters.rangeStartDate, filters.rangeEndDate, maxMonths);
+      if (maxMonths <= monthRange) {
+        msgPopup(`${maxMonths}개월까지만 가능합니다.`);
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       const params = {
         pGUBUN: 'LIST',
