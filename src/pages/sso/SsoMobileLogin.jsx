@@ -24,11 +24,8 @@ const SsoMobileLogin = ({ setIsLoading }) => {
         return;
       }
 
-      console.log('token: ' + token);
-
       // token을 URL 인코딩
       const encodedToken = encodeURIComponent(token);
-      console.log('encodedToken: ' + encodedToken);
 
       const params = {
         token: token,
