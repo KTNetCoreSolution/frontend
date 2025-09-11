@@ -70,7 +70,8 @@ const App = () => {
   const location = useLocation();
 
   const isMobileDomain = window.location.host === MOBILE_DOMAIN;
-  const isMobile = isMobileDomain || location.pathname.startsWith(`${BASE_NAME}/mobile`);
+  const isMobile = isMobileDomain || location.pathname.startsWith(`${BASE_NAME}/mobile`) || (ENV === 'dev' && location.pathname.startsWith(`${BASE_NAME}/mobile`));
+
   const isLocal = ENV === 'local';
 
   useEffect(() => {
@@ -163,7 +164,7 @@ const App = () => {
             />
 
             {/* Local env mobile login */}
-            {isLocal && !isMobileDomain && (
+            {(isLocal || ENV === 'dev') && !isMobileDomain && (
               <Route
                 path="/mobile/Login"
                 element={
