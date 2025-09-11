@@ -166,7 +166,7 @@ const CarListInfoUpdateHist = () => {
     { title: '변경작업자사번', field: 'REG_EMPNO', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '변경작업자명', field: 'REG_EMPNM', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '변경일시', field: 'REGDT', width: 160, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '변경내역', field: 'CHG_DATA', minWidth: 180, headerHozAlign: 'left', hozAlign: 'center' },
+    { title: '변경내역', field: 'CHG_DATA', minWidth: 180, headerHozAlign: 'center', hozAlign: 'left' },
     { title: '임대여부', field: 'RENTALTYPE', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '차량번호', field: 'CARNO', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '차대번호', field: 'CARID', width: 150, headerHozAlign: 'center', hozAlign: 'center'},
@@ -193,7 +193,7 @@ const CarListInfoUpdateHist = () => {
     { title: '운전자(정)사번', field: 'PRIMARY_MANAGER_EMPNO', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '운전자(정)', field: 'PRIMARY_MANAGER_EMPNM', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '운전자(정)전화번호', field: 'PRIMARY_MANAGER_MOBILE', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차고지주소', field: 'PRIMARY_GARAGE_ADDR', headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '차고지주소', field: 'PRIMARY_GARAGE_ADDR', headerHozAlign: 'center', hozAlign: 'left' },
     { title: '안전관리자여부', field: 'SAFETY_MANAGER', headerHozAlign: 'center', hozAlign: 'center' },
     { title: '소화기보유', field: 'FIREEXTINGUISHER', headerHozAlign: 'center', hozAlign: 'center' },
     { title: '만26세미만운전자사번', field: 'UNDER26AGE_EMPNO', headerHozAlign: 'center', hozAlign: 'center' },
@@ -202,7 +202,7 @@ const CarListInfoUpdateHist = () => {
     { title: '만26세미만운전자변경기준일', field: 'UNDER26AGE_CHGDT', headerHozAlign: 'center', hozAlign: 'center' },
     { title: '카드번호', field: 'CARDNO', headerHozAlign: 'center', hozAlign: 'center' },
     { title: '유효기간', field: 'EXFIREDT', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '비고', field: 'NOTICE', headerHozAlign: 'left', hozAlign: 'center' },
+    { title: '비고', field: 'NOTICE', headerHozAlign: 'center', hozAlign: 'left' },
   ];
   
   // 데이터 로드 함수
