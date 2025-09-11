@@ -455,7 +455,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
 
     if(confirm("운행일지를 삭제하시겠습니까?")) {
       try {
-        const params = {pLOGDATE: logInfo.LOGDATE, pLOGSTTIME: logInfo.LOGSTTIME, pCARID: logInfo.CARID, pSEQ: item.SEQ};
+        const params = {pLOGDATE: logInfo.LOGDATE, pLOGSTTIME: logInfo.LOGSTTIME, pCARID: logInfo.CARID};
 
         const response = await fetchData('carlog/carLogDel', params);
 
@@ -855,7 +855,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
                     </div>
                     )}
                   </div>
-                </div>      
+                </div>
               </CommonPopup>
           </div>
         </div>

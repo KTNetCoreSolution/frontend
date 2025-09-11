@@ -136,6 +136,10 @@
   max-width: 100%;
 }
 
+.formControl2:disabled {
+  background-color: #e9ecef;
+}
+
 .formTitleLabel {
   padding-top:6px;
 }

@@ -4,7 +4,7 @@ import { useSwipeable } from 'react-swipeable';
 import useStore from '../../store/store';
 import commonUtils from '../../utils/common';
 import fileUtils from '../../utils/fileUtils';
-import { fetchData, fetchFileUpload } from "../../utils/dataUtils";
+import { fetchData } from "../../utils/dataUtils";
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import MobileMainUserMenu from '../../components/mobile/MobileMainUserMenu';
@@ -214,6 +214,18 @@ const MobileDrivingLog = () => {
     }
   };
 
+  const moveToRegLog = () => {
+    navigate('/mobile/MobileCarLogReg', { state: { carId: carId } });
+  };
+
+  const moveToConfirm = () => {
+    if (carInfo.REQCNT > 0) {
+      navigate('/mobile/MobileCarLogConfirm');      
+    } else {
+      alert('미결재건이 없습니다.');
+    }
+  }
+
   return (
       <div className="container-fluid p-0">
         <header className="bg-primary text-white p-3 d-flex justify-content-between align-items-center">
@@ -267,7 +279,7 @@ const MobileDrivingLog = () => {
             </div>
           </div>
           <div className="mb-2">
-            <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={(e) => alert('개발중')}>차량점검 및 일지작성</button>
+            <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={moveToRegLog}>차량점검 및 일지작성</button>
           </div>
           <div className={`d-flex ${styles.formDivNotiBox}`} onClick={(e) => navigate('/mobile/MobileCarNotice')} >
             <div className={styles.container}>              
@@ -277,7 +289,7 @@ const MobileDrivingLog = () => {
             </div>
             <div className={`${styles.arrowContainer}`}></div>
           </div>
-          <div className={`d-flex ${styles.formDivBtnBox}`} onClick={(e) => alert('개발중')} >
+          <div className={`d-flex ${styles.formDivBtnBox}`} onClick={moveToConfirm} >
             <div className={`${styles.container}`}>
               <label className={`${styles.formListTitle}`} >결재</label>
               <label className={`${styles.formList}`} >미결재 {carInfo.REQCNT} 건 있습니다.</label>

@@ -90,7 +90,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
 
         setChkCarId(data);
 
-        if(data.substring(0, 13) === 'ZZZZZZZZZZZZZ'){
+        if(data.substring(0, 4) === 'ZZZZ'){
           setVStyle({vDISPLAY: 'none', vBTNDEL: 'show', vDISABLED: ''});
         }
         else {

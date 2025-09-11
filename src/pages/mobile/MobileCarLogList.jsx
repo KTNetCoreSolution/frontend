@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../../store/store.js';
 import commonUtils from '../../utils/common.js';
@@ -81,6 +81,10 @@ const MobileCarLogList = () => {
       errorMsgPopup(error.message || '운행이력 조회 중 오류가 발생했습니다.');
     }
   };
+
+  const handleLogListClick = (item) => {
+    navigate('/mobile/MobileCarLogReg', { state: { carId: item.CARID, logDate: item.LOGDATE, logTime: item.LOGSTTIME, gubun: 'U' } });
+  };
   
   const totalCnt = list.length || 0;
   const totalPages = Math.ceil(totalCnt / itemsPerPage);
@@ -129,7 +133,7 @@ const MobileCarLogList = () => {
           </div>
         {currentList.length > 0 ? (
           currentList.map((item, index) => (
-          <div key={item.CARID} className={`${styles.formDivBox}`} onClick={(e) => handleNoticeClick(item)} >
+          <div key={item.CARID} className={`${styles.formDivBox}`} onClick={(e) => handleLogListClick(item)} >
             <div className={styles.container}>              
               <div className={`d-flex ${styles.formList}`} >
                 <span className={`${styles.formText}`} style={{width:50 + '%'}} >차량번호: {item.CARNO}</span>
