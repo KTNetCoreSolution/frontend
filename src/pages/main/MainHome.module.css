@@ -44,3 +44,104 @@
 .swiper-button-next {
   color: #000;
 }
+
+.boardContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.boardSection {
+  background: #fff;
+  width: 100%;
+  min-height: 300px;
+  padding: 10px;
+}
+
+.boardSectionGrap {
+  width: 20px;
+}
+
+.boardContent {
+  background: #fff;
+  width: 100%;
+  min-height: 300px;
+  padding: 10px;
+}
+
+.boardBox {
+  margin: 6px;
+}
+
+/* 탭 네비게이션 스타일 */
+.nav-tabs {
+  border-bottom: 1px solid #dee2e6;
+  display: inline-block; /* 또는 flex */
+  width: auto;
+  margin-bottom: 0;
+}
+
+.nav-tabs .nav-item {
+  display: inline-block;
+}
+
+.nav-tabs .nav-link {
+  color: #495057;
+  border: 1px solid transparent;
+  border-radius: 0.25rem 0.25rem 0 0;
+  padding: 0.5rem 1rem;
+  margin-bottom: -1px;
+  border-bottom: none; /* Bootstrap 기본 border-bottom 제거 */
+}
+
+.nav-tabs .nav-link:hover {
+  border-color: #e9ecef #e9ecef #dee2e6;
+}
+
+.nav-tabs .nav-link.active {
+  color: #007bff;
+  background-color: #fff;
+  border-color: #dee2e6 #dee2e6 #fff;
+  border-bottom: none; /* 활성 탭도 border-bottom 제거 */
+}
+
+.tab-content {
+  background: #fff;
+  padding: 10px;
+  border: 1px solid #dee2e6;
+  border-top: none; /* 탭과 내용 사이의 이중 선 제거 */
+  border-radius: 0 0 0.25rem 0.25rem;
+}
+
+/* 탭 헤더와 버튼 스타일 */
+.tabHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  flex-direction: row;
+}
+
+.boardBtn01 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #007bff;
+  margin: 0;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  white-space: nowrap;
+}
+
+.arrowIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* 탭 컨테이너를 위한 추가 스타일 */
+.tabHeader .nav-tabs {
+  flex-grow: 1;
+  max-width: calc(100% - 100px); /* 버튼 공간 확보 */
+}

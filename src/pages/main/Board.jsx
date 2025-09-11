@@ -1,18 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { fetchData } from '../../utils/dataUtils';
+import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import styles from './Board.module.css';
 
-const Board = ({ canWriteBoard, type = 'notice' }) => {
-  const navigate = useNavigate();
-  const [notices, setNotices] = useState([]);
+const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = true }) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [localNotices, setLocalNotices] = useState([]);
+  const [loading, setLoading] = useState(false);
   const itemsPerPage = 5;
   const maxPageButtons = 10;
 
   useEffect(() => {
     const fetchNotices = async () => {
-      const apiEndpoint = type === 'carnotice' ? 'carnotice/list' : 'notice/list';
+      setLoading(true);
+      const apiMap = {
+        notice: 'notice/list',
+        notice2: 'notice2/list',
+        carnotice: 'carnotice/list',
+        carnotice2: 'carnotice2/list',
+      };
+
+      const apiEndpoint = apiMap[type] || '';  // type에 따라 개별 엔드포인트 설정
       const params = {
         gubun: 'LIST',
         noticeId: '',
@@ -23,31 +31,36 @@ const Board = ({ canWriteBoard, type = 'notice' }) => {
         if (result.errCd === '00') {
           const mappedNotices = result.data.map((item) => ({
             id: item.NOTICEID,
-            noticeid: item.NOTICEID, // 명시적으로 noticeid 추가
+            noticeid: item.NOTICEID,
             title: item.TITLE,
             date: item.REGEDT,
           }));
-          setNotices(mappedNotices);
+          setLocalNotices(mappedNotices);
         } else {
-          console.error('Failed to fetch notices:', result.errMsg);
-          setNotices([]);
+          setLocalNotices([]);
         }
       } catch (e) {
         console.error('Error fetching notices:', e);
+        errorMsgPopup('공지사항을 불러오는 중 오류가 발생했습니다.');
+        setLocalNotices([]);
+      } finally {
+        setLoading(false);
       }
     };
     fetchNotices();
   }, [type]);
 
   const handleNoticeClick = (notice) => {
-    navigate('/main/boardView', { state: { noticeid: notice.noticeid, type } });
+    if (notice.noticeid) {
+      onView(notice.noticeid, type);
+    }
   };
 
-  const totalNotices = notices === null ? 0 : notices.length || 0;
+  const totalNotices = localNotices.length || 0;
   const totalPages = Math.ceil(totalNotices / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentNotices = notices === null ? [] : notices.slice(indexOfFirstItem, indexOfLastItem);
+  const currentNotices = localNotices.slice(indexOfFirstItem, indexOfLastItem);
 
   const halfMaxButtons = Math.floor(maxPageButtons / 2);
   let startPage = Math.max(1, currentPage - halfMaxButtons);
@@ -66,49 +79,62 @@ const Board = ({ canWriteBoard, type = 'notice' }) => {
     setCurrentPage(pageNumber);
   };
 
+  const textMap = {
+    notice: '표준활동 공지사항',
+    notice2: '표준활동 패치내역',
+    carnotice: '차량 공지사항',
+    carnotice2: '차량 과태료',
+  };
+
   return (
     <div className='boardBox'>
-      <div className="list-group-item d-flex justify-content-between align-items-center">
-        <h3 className='boardTitle'>
-          {type === 'carnotice' ? '차량관리' : '공지사항'}
-        </h3>
-        {canWriteBoard && (
-          <button
-            className='btn btn-primary'
-            onClick={() => navigate('/main/boardWrite', { state: { type } })}
-          >
-            등록
-          </button>
-        )}
-      </div>
-      <ul className='list-group contentContainer'>
-        {currentNotices.length > 0 ? (
-          currentNotices.map((notice, idx) => (
-            <li
-              key={idx}
-              className="list-group-item"
+      {showHeader && (
+        <div className='list-group-item d-flex justify-content-between align-items-center'>
+          <h3 className='boardTitle'>
+            {/*{textMap[type] || ''}*/}
+          </h3>
+          {canWriteBoard && (
+            <button
+              className='btn btn-primary'
+              onClick={() => onWrite(type)}
             >
-              <span
-                onClick={() => handleNoticeClick(notice)}
-                style={{ cursor: 'pointer' }}
+              등록
+            </button>
+          )}
+        </div>
+      )}
+      {loading ? (
+        <div className='text-center'>로딩 중...</div>
+      ) : (
+        <ul className='list-group contentContainer'>
+          {currentNotices.length > 0 ? (
+            currentNotices.map((notice, idx) => (
+              <li
+                key={idx}
+                className='list-group-item'
               >
-                <span className='me-2'>{totalNotices - (indexOfFirstItem + idx)}.</span>
-                <span>{notice.title}</span>
-              </span>
-              <div>
-                <span className='contentDate'>
-                  {notice.date || new Date().toLocaleDateString()}
+                <span
+                  onClick={() => handleNoticeClick(notice)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <span className='me-2'>{totalNotices - (indexOfFirstItem + idx)}.</span>
+                  <span className={`${styles.boardContentTitle}`}>{notice.title}</span>
                 </span>
-              </div>
-            </li>
-          ))
-        ) : (
-          <li className="list-group-item text-center">공지사항이 없습니다.</li>
-        )}
-      </ul>
+                <div>
+                  <span className='contentDate'>
+                    {notice.date || new Date().toLocaleDateString()}
+                  </span>
+                </div>
+              </li>
+            ))
+          ) : (
+            <li className='list-group-item text-center'>공지사항이 없습니다.</li>
+          )}
+        </ul>
+      )}
 
       {totalPages > 1 && (
-        <nav aria-label="Page navigation" className="mt-3">
+        <nav aria-label='Page navigation' className='mt-3'>
           <ul className={`pagination justify-content-center ${styles.pagination}`}>
             {totalPages > maxPageButtons && (
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
@@ -170,12 +196,6 @@ const Board = ({ canWriteBoard, type = 'notice' }) => {
           </ul>
         </nav>
       )}
-      {/* <button
-        className="btn btn-secondary me-2 mb-3 mt-5"
-        onClick={() => navigate('/main')}
-      >
-        뒤로 가기
-      </button> */}
     </div>
   );
 };

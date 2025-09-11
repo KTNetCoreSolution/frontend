@@ -1,0 +1,329 @@
+import React, { useState, useEffect } from 'react';
+import Modal from 'react-bootstrap/Modal';
+import { fetchData } from '../../../utils/dataUtils';
+import { errorMsgPopup } from '../../../utils/errorMsgPopup';
+import styles from '../Board.module.css';
+import { hasPermission } from '../../../utils/authUtils';
+import useStore from '../../../store/store';
+import ImageViewPopup from '../../../components/popup/ImageViewPopup';
+import TextViewPopup from '../../../components/popup/TextViewPopup';
+import fileUtils from '../../../utils/fileUtils';
+import styles2 from './BoardPopup.module.css';
+
+const BoardViewPopup = ({ show, onHide, noticeid, type = 'notice', onEdit }) => {
+  const { user } = useStore();
+  const canWriteBoard = user && hasPermission(user.auth, 'mainBoard');  // canModifyBoard를 canWriteBoard로 변경
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [files, setFiles] = useState([]);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedText, setSelectedText] = useState(null);
+  const [noticeDetails, setNoticeDetails] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const textMap = {
+    notice: '표준활동 공지사항',
+    notice2: '표준활동 패치내역',
+    carnotice: '차량 공지사항',
+    carnotice2: '차량 과태료',
+  };
+
+  const closeImagePopup = () => {
+    setSelectedImage(null);
+    setZoomLevel(1);
+  };
+
+  const closeTextPopup = () => {
+    setSelectedText(null);
+  };
+
+  useEffect(() => {
+    const fetchNoticeDetails = async () => {
+      if (!show || !noticeid) return;
+      setLoading(true);
+      try {
+        const apiMap = {  // apiMap으로 엔드포인트 매핑
+          notice: 'notice/list',
+          notice2: 'notice2/list',
+          carnotice: 'carnotice/list',
+          carnotice2: 'carnotice2/list',
+        };
+        const apiEndpoint = apiMap[type] || 'notice/list';
+        const result = await fetchData(apiEndpoint, { gubun: 'DETAIL', noticeId: noticeid, debug: 'F' });
+
+        if (result.errCd === '00' && result.data.length > 0) {
+          const detail = {
+            id: result.data[0].NOTICEID,
+            title: result.data[0].TITLE,
+            date: result.data[0].REGEDT,
+            regedBy: result.data[0].REGEDBY,
+            content: result.data[0].CONTENTS || '',
+          };
+          setNoticeDetails(detail);
+          setTitle(detail.title);
+          setContent(detail.content);
+        } else {
+          errorMsgPopup('공지사항 상세 정보를 불러오지 못했습니다.');
+        }
+      } catch (error) {
+        console.error('Error fetching notice details:', error);
+        errorMsgPopup('공지사항 상세 정보를 불러오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchFiles = async () => {
+      if (!show || !noticeid) return;
+      try {
+        const apiMap = {  // apiMap으로 엔드포인트 매핑
+          notice: 'notice/filelist',
+          notice2: 'notice2/filelist',
+          carnotice: 'carnotice/filelist',
+          carnotice2: 'carnotice2/filelist',
+        };
+        const apiEndpoint = apiMap[type] || 'notice/filelist';
+        const result = await fetchData(apiEndpoint, { gubun: 'LIST', noticeId: noticeid, fileId: '', debug: 'F' });
+
+        if (result.errCd === '00') {
+          const mappedFiles = result.data.map((file) => ({
+            fileId: file.FILEID,
+            noticeId: file.NOTICEID,
+            fileName: file.FILENM,
+            fileSize: file.FILESIZE || 0,
+          }));
+          setFiles(mappedFiles);
+        } else {
+          setFiles([]);
+        }
+      } catch (error) {
+        console.error('Error fetching files:', error);
+        errorMsgPopup('파일 목록을 불러오는 중 오류가 발생했습니다.');
+      }
+    };
+
+    fetchNoticeDetails();
+    fetchFiles();
+  }, [show, noticeid, type]);
+
+  const handleFileClick = async (file) => {
+    try {
+      const apiMap = {  // apiMap으로 엔드포인트 매핑
+        notice: 'notice/filelist',
+        notice2: 'notice2/filelist',
+        carnotice: 'carnotice/filelist',
+        carnotice2: 'carnotice2/filelist',
+      };
+      const apiEndpoint = apiMap[type] || 'notice/filelist';
+      const result = await fetchData(apiEndpoint, { gubun: 'DETAIL', noticeId: noticeid || '', fileId: file.fileId, debug: 'F' });
+      if (result.errCd === '00' && result.data.length > 0) {
+        const extension = fileUtils.getFileExtension(result.data[0].FILENM)?.toLowerCase();
+        const mimeType = fileUtils.mimeTypes[extension] || 'application/octet-stream';
+        const fileData = result.data[0].FILEDATA;
+
+        if (fileUtils.isImageFile(file)) {
+          const dataUrl = `data:${mimeType};base64,${fileData}`;
+          setSelectedImage({ src: dataUrl, fileName: result.data[0].FILENM });
+        } else if (fileUtils.isTextFile(file)) {
+          const textContent = fileUtils.decodeBase64ToText(fileData);
+          setSelectedText({ content: textContent, fileName: result.data[0].FILENM });
+        } else {
+          const link = document.createElement('a');
+          link.href = `data:${mimeType};base64,${fileData}`;
+          link.download = result.data[0].FILENM;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      } else {
+        errorMsgPopup('파일을 불러오지 못했습니다.');
+      }
+    } catch (error) {
+      console.error('Error fetching file:', error);
+      errorMsgPopup('파일을 불러오는 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleDownload = async (file) => {
+    try {
+      const apiMap = {  // apiMap으로 엔드포인트 매핑
+        notice: 'notice/filelist',
+        notice2: 'notice2/filelist',
+        carnotice: 'carnotice/filelist',
+        carnotice2: 'carnotice2/filelist',
+      };
+      const apiEndpoint = apiMap[type] || 'notice/filelist';
+      const result = await fetchData(apiEndpoint, { gubun: 'DETAIL', noticeId: noticeid || '', fileId: file.fileId, debug: 'F' });
+      if (result.errCd === '00' && result.data.length > 0) {
+        const fileData = result.data[0].FILEDATA;
+        const mimeType = fileUtils.mimeTypes[fileUtils.getFileExtension(file.fileName)] || 'application/octet-stream';
+        const link = document.createElement('a');
+        link.href = `data:${mimeType};base64,${fileData}`;
+        link.download = file.fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        errorMsgPopup('파일을 다운로드할 수 없습니다.');
+      }
+    } catch (error) {
+      console.error('Error fetching file for download:', error);
+      errorMsgPopup('파일 다운로드 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleDownloadAll = async () => {
+    if (files.length === 0) {
+      errorMsgPopup('다운로드할 파일이 없습니다.');
+      return;
+    }
+
+    for (const file of files) {
+      await handleDownload(file);
+    }
+  };
+
+  const getFileIcon = (file) => {
+    return <i className={`bi ${fileUtils.getFileIcon(file)} me-2`}></i>;
+  };
+
+  const handleZoomIn = () => {
+    setZoomLevel((prev) => Math.min(prev + 0.1, 3));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel((prev) => Math.max(prev - 0.1, 0.1));
+  };
+
+  return (
+    <Modal show={show} onHide={onHide} centered dialogClassName={styles2.customModal}>
+      <Modal.Header closeButton>
+        <Modal.Title>
+          {textMap[type] || ''} 상세
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body className={styles.modalBody}>
+        {loading ? (
+          <div>로딩 중...</div>
+        ) : (
+          <div className='boardWrap'>
+            <div>
+              <label className='form-label'>작성일</label>
+              <input
+                className={`form-control ${styles.formControl}`}
+                value={noticeDetails?.date || ''}
+                readOnly
+              />
+            </div>
+            <div>
+              <label className='form-label'>작성자</label>
+              <input
+                className={`form-control ${styles.formControl}`}
+                value={noticeDetails?.regedBy || ''}
+                readOnly
+              />
+            </div>
+            <div>
+              <label className='form-label'>제목</label>
+              <input
+                className={`form-control ${styles.formControl}`}
+                value={title}
+                readOnly
+              />
+            </div>
+            <div>
+              <label className='form-label'>내용</label>
+              <textarea
+                className={`form-control ${styles.formControl} ${styles.textarea}`}
+                rows='8'
+                value={content}
+                readOnly
+              />
+            </div>
+            <div>
+              <div className='attachLabelWrap'>
+                <label className='form-label'>
+                  <span>첨부파일</span>
+                </label>
+                {files.length > 0 && (
+                  <button
+                    className='downloadButton'
+                    onClick={handleDownloadAll}
+                  >
+                    전체 다운로드
+                  </button>
+                )}
+              </div>
+              {files?.length > 0 ? (
+                files.map((file, index) => (
+                  <div key={index} className='attachItem'>
+                    <div className='imageFile'>
+                      {(fileUtils.isImageFile(file) || fileUtils.isTextFile(file)) ? (
+                        <button
+                          onClick={() => handleFileClick(file)}
+                          className='txtBtn'
+                        >
+                          {getFileIcon(file)}
+                          {file.fileName} ({fileUtils.formatFileSize(file.fileSize)})
+                        </button>
+                      ) : (
+                        <button className='txtBtn'>
+                          {getFileIcon(file)}
+                          {file.fileName} ({fileUtils.formatFileSize(file.fileSize)})
+                        </button>
+                      )}
+                    </div>
+                    <button
+                      className='downloadButton'
+                      onClick={() => handleDownload(file)}
+                    >
+                      <i className='bi bi-download'></i> 다운로드
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className='noAttachItem'>첨부파일 없음</div>
+              )}
+            </div>
+            <div className='boardBottomBtnWrap'>
+              <button
+                className='btn btnSecondary'
+                onClick={onHide}
+              >
+                닫기
+              </button>
+              {canWriteBoard && (  // canWriteBoard로 변경 버튼 조건부 렌더링
+                <button
+                  className='btn btnPrimary'
+                  onClick={() => onEdit(noticeDetails, files)}
+                >
+                  변경 가기
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </Modal.Body>
+      {selectedImage && (
+        <ImageViewPopup
+          imageSrc={selectedImage.src}
+          fileName={selectedImage.fileName}
+          onClose={closeImagePopup}
+          zoomLevel={zoomLevel}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+        />
+      )}
+      {selectedText && (
+        <TextViewPopup
+          textContent={selectedText.content}
+          fileName={selectedText.fileName}
+          onClose={closeTextPopup}
+        />
+      )}
+    </Modal>
+  );
+};
+
+export default BoardViewPopup;
