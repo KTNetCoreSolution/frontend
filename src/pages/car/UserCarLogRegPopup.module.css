@@ -221,9 +221,10 @@
   color: #fff;
 }
 
-.safetyLabel{
-  font: bold 12px;
-  color:#26af0a;
+.safetyLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color:var(--bs-primary-color);
   margin-right:5px;
   cursor:pointer;
 }
@@ -235,21 +236,17 @@
 .safetyBox {
   width: 36px;
   height: 20px;
-  background: #f2f2f2;
+  background: var(--bs-primary-color);
   border-width: 2px;
   border-radius: 10px;
-  border: 1px solid transparent;
-  border-color: #9b9b9b;
   cursor:pointer;
 }
 
 .safetyCheck {
   width: 18px;
   height: 18px;
-  background: #22cc00;
+  background: #ffffff;
   border-radius: 9px;
-  border: 1px solid transparent;
-  border-color: #9b9b9b;
   margin-left: 16px;
   cursor:pointer;
 }

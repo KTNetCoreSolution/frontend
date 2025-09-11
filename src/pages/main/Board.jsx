@@ -135,11 +135,11 @@ const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = t
 
       {totalPages > 1 && (
         <nav aria-label='Page navigation' className='mt-3'>
-          <ul className={`pagination justify-content-center ${styles.pagination}`}>
+          <ul className='pagination'>
             {totalPages > maxPageButtons && (
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                 <button
-                  className={`page-link ${styles.pageLink}`}
+                  className='page-link'
                   onClick={() => handlePageChange(1)}
                   disabled={currentPage === 1}
                 >
@@ -149,7 +149,7 @@ const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = t
             )}
             <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
               <button
-                className={`page-link ${styles.pageLink}`}
+                className='page-link'
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
               >
@@ -162,7 +162,7 @@ const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = t
                 className={`page-item ${currentPage === page ? 'active' : ''}`}
               >
                 <button
-                  className={`page-link ${styles.pageLink}`}
+                  className='page-link'
                   onClick={() => handlePageChange(page)}
                 >
                   {page}

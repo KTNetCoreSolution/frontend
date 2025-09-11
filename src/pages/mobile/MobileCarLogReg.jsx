@@ -319,12 +319,12 @@ const MobileDrivingLog = () => {
 
   return (
     <div className="container-fluid p-0">
-      <header className="bg-primary text-white p-3 d-flex justify-content-between align-items-center">
+      <header className="header">
         <h1 className="h5 mb-0">운행일지등록</h1>
-        <button className="btn" onClick={handleToggleSidebar}>
+        <button className="btn text-white" onClick={handleToggleSidebar}>
           <i className="bi bi-list"></i>
         </button>
-      </header>  
+      </header>
       
       <MobileMainUserMenu show={showSidebar} handleClose={handleToggleSidebar} onLogout={handleLogout} />
 
@@ -332,102 +332,120 @@ const MobileDrivingLog = () => {
         <div style={{display: 'flex', marginTop:-5 + 'px', marginBottom:10 + 'px', marginRight:4 + 'px', justifyContent: 'flex-end'}}>
           <button className={`btn ${styles.btnReturn} ${styles.btn}`} style={{width: 80 + 'px'}} onClick={handleReturnPage}>{state?.gubun === 'U' ? '돌아가기' : '닫기' }</button>
         </div>
-        <div className={`${styles.formDivBox}`}>
+        <div className='formDivBox'>
           <div className={styles.container}>              
-            <div className={`d-flex ${styles.formList}`} >
-              <span className={`${styles.formSearchTitle}`} style={{width:100 + '%'}}>차량번호 : {logInfo.CARNO} </span>
+            <div className='formList'>
+              <span className='formSearchTitle'>차량번호 : {logInfo.CARNO} </span>
             </div>
-            <div className={`d-flex ${styles.formList}`} >
-              <span className={`${styles.formSearchTitle}`} style={{width:100 + '%', marginBottom:10 + 'px'}} >차대번호 : {logInfo.CARID} </span>
+            <div className='formList'>
+              <span className='formSearchTitle'>차대번호 : {logInfo.CARID} </span>
             </div>
-            <div className={`d-flex ${styles.formList}`} >
-              <span className={`${styles.formSearchTitle}`} >운행일시 </span>
-              <input type="date" ref={logDateRef} id="logDate" className={`${styles.formInput}`} value={logInfo.LOGDATE} disabled={gubun === 'I' ? '' : 'disabled'} style={{marginRight:5 + 'px'}} onChange={(e) => {handleLogDate(e)}} />
-              <select id="stTime" className={`form-select ${styles.formSelect}`} style={{marginRight:5 + 'px'}} defaultValue={logInfo.LOGSTTIME} disabled={gubun === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGSTTIME: e.target.value })}}>
-                {stTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
-              </select> ~ 
-              <select id="enTime" className={`form-select ${styles.formSelect}`} style={{marginLeft:5 + 'px'}} defaultValue={logInfo.LOGENTIME}  disabled={gubun === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGENTIME: e.target.value })}}>
-                {enTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
-              </select>
+            <div className='formList'>
+              <span className='formSearchTitle'>운행일시 </span>
+              <div className='d-flex flex-column gap-2'>
+                <input type="date" ref={logDateRef} id="logDate" className={`${styles.formInput}`} value={logInfo.LOGDATE} disabled={gubun === 'I' ? '' : 'disabled'} style={{marginRight:5 + 'px'}} onChange={(e) => {handleLogDate(e)}} />
+                <div className='d-flex flex-row align-items-center'>
+                  <select id="stTime" className={`form-select ${styles.formSelect}`} style={{marginRight:5 + 'px'}} defaultValue={logInfo.LOGSTTIME} disabled={gubun === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGSTTIME: e.target.value })}}>
+                    {stTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
+                  </select> ~ 
+                  <select id="enTime" className={`form-select ${styles.formSelect}`} style={{marginLeft:5 + 'px'}} defaultValue={logInfo.LOGENTIME}  disabled={gubun === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGENTIME: e.target.value })}}>
+                    {enTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div className={`${styles.formDivBox}`}>
+        <div className='formDivBox'>
           <div className={styles.container}>
-            <div className={`${styles.formList}`} >
-              <span className={`${styles.formSearchTitle}`} style={{width:100 + '%', fontSize:18 + 'px'}}>점검항목</span>
+            <div className='formList'>
+              <span className='formSearchTitle'>점검항목</span>
             </div>
-            <div className={`d-flex ${styles.formChkList}`} >
-              <span className={`${styles.formSearch}`} >차량파손</span>
-              <label className={`${styles.safetyLabel} ${isDamage ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Damage', !isDamage)}>{isDamage ? '양호' : '불량'}</label>
-              <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('Damage', !isDamage)}>
-                  <div className={`${styles.safetyCheck} ${isDamage ? '' : styles.bad}`}></div>
-              </div>
-            </div>
-            <div className={`d-flex ${styles.formChkList}`} >
-              <span className={`${styles.formSearch}`} >오일누수</span>
-              <label className={`${styles.safetyLabel} ${isOilLeak ? '' : styles.bad}`} onClick={() => handleSafetyCheck('OilLeak', !isOilLeak)}>{isOilLeak ? '양호' : '불량'}</label>
-              <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('OilLeak', !isOilLeak)}>
-                  <div className={`${styles.safetyCheck} ${isOilLeak ? '' : styles.bad}`}></div>
-              </div>
-            </div>
-            <div className={`d-flex ${styles.formChkList}`} >
-              <span className={`${styles.formSearch}`} >타이어</span>
-              <label className={`${styles.safetyLabel} ${isTire ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Tire', !isTire)}>{isTire ? '양호' : '불량'}</label>
-              <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('Tire', !isTire)}>
-                  <div className={`${styles.safetyCheck} ${isTire ? '' : styles.bad}`}></div>
-              </div>
-            </div>
-            <div className={`d-flex ${styles.formChkList}`} >
-              <span className={`${styles.formSearch}`} >적재물안전</span>
-              <label className={`${styles.safetyLabel} ${isLuggage ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Luggage', !isLuggage)}>{isLuggage ? '양호' : '불량'}</label>
-              <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('Luggage', !isLuggage)}>
-                  <div className={`${styles.safetyCheck} ${isLuggage ? '' : styles.bad}`}></div>
-              </div>
-            </div>
-            <div className={`d-flex ${styles.formChkList}`} >
-              <span className={`${styles.formSearch}`} >기타(직접기재)</span>
-              <label className={`${styles.safetyLabel} ${isEtc1 ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Etc1', !isEtc1)}>{isEtc1 ? '양호' : '불량'}</label>
-              <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('Etc1', !isEtc1)}>
-                  <div className={`${styles.safetyCheck} ${isEtc1 ? '' : styles.bad}`}></div>
-              </div>
-            </div>
-            <div className={`d-flex ${styles.formChkList}`} >
-              <span className={`${styles.formSearch}`} >특이사항(직전)</span>
-              <label className={`${styles.safetyLabel} ${isEtc2 ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Etc2', !isEtc2)}>{isEtc2 ? '양호' : '불량'}</label>
-              <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('Etc2', !isEtc2)}>
-                  <div className={`${styles.safetyCheck} ${isEtc2 ? '' : styles.bad}`}></div>
-              </div>
-            </div>
-            <div className={`${styles.formList}`} >
+            <ul class="formListData">
+              <li>
+                <span class="formLabel">차량파손</span>
+                <div className='safetyWrap'>
+                  <label className={`${styles.safetyLabel} ${isDamage ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Damage', !isDamage)}>{isDamage ? '양호' : '불량'}</label>
+                  <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('Damage', !isDamage)}>
+                      <div className={`${styles.safetyCheck} ${isDamage ? '' : styles.bad}`}></div>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <span class="formLabel">오일누수</span>
+                <div className='safetyWrap'>
+                  <label className={`${styles.safetyLabel} ${isOilLeak ? '' : styles.bad}`} onClick={() => handleSafetyCheck('OilLeak', !isOilLeak)}>{isOilLeak ? '양호' : '불량'}</label>
+                  <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('OilLeak', !isOilLeak)}>
+                    <div className={`${styles.safetyCheck} ${isOilLeak ? '' : styles.bad}`}></div>
+                  </div>
+                </div>  
+              </li>
+              <li>
+                <span class="formLabel">타이어</span>
+                <div className='safetyWrap'>
+                  <label className={`${styles.safetyLabel} ${isTire ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Tire', !isTire)}>{isTire ? '양호' : '불량'}</label>
+                  <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('Tire', !isTire)}>
+                      <div className={`${styles.safetyCheck} ${isTire ? '' : styles.bad}`}></div>
+                  </div>
+                </div>
+              </li> 
+              <li>
+                <span class="formLabel">적재물안전</span>
+                <div className='safetyWrap'>
+                  <label className={`${styles.safetyLabel} ${isLuggage ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Luggage', !isLuggage)}>{isLuggage ? '양호' : '불량'}</label>
+                  <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('Luggage', !isLuggage)}>
+                      <div className={`${styles.safetyCheck} ${isLuggage ? '' : styles.bad}`}></div>
+                  </div>
+                </div>
+              </li>       
+              <li>
+                <span class="formLabel">기타(직접기재)</span>
+                <div className='safetyWrap'>
+                  <label className={`${styles.safetyLabel} ${isEtc1 ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Etc1', !isEtc1)}>{isEtc1 ? '양호' : '불량'}</label>
+                  <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('Etc1', !isEtc1)}>
+                      <div className={`${styles.safetyCheck} ${isEtc1 ? '' : styles.bad}`}></div>
+                  </div>
+                </div>
+              </li>      
+              <li>
+                <span class="formLabel">특이사항(직전)</span>
+                <div className='safetyWrap'>
+                  <label className={`${styles.safetyLabel} ${isEtc2 ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Etc2', !isEtc2)}>{isEtc2 ? '양호' : '불량'}</label>
+                  <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('Etc2', !isEtc2)}>
+                      <div className={`${styles.safetyCheck} ${isEtc2 ? '' : styles.bad}`}></div>
+                  </div>
+                </div>
+              </li>                                                
+            </ul>
+            <div className='formList'>
               <textarea className={`${styles.formTextArea}`} rows="5" value={logInfo.SAFETYNOTE} maxLength={1500} placeholder="점검특이사항(차량불량사항이 있는 경우/특수문자 입력불가)" disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, SAFETYNOTE: e.target.value })}}  />
             </div>
           </div>
         </div>
-        <div className={`${styles.formDivBox}`}>
+        <div className='formDivBox'>
           <div className={styles.container}>
-            <div className={`d-flex ${styles.formList}`} >
-              <span className={`${styles.formSearchTitle}`} style={{width:70 + 'px'}}>운행자 : </span>
-              <span className={`${styles.formSearchTitle}`} style={{width:200 + 'px', marginLeft:5 + 'px'}}>{user?.empNm + ' (' + user?.empNo + ')'}</span>
+            <div className='formList'>
+              <span className='formSearchTitle' style={{width:70 + 'px'}}>운행자 : </span>
+              <span className='formSearchTitle' style={{width:200 + 'px', marginLeft:5 + 'px'}}>{user?.empNm + ' (' + user?.empNo + ')'}</span>
             </div>
-            <div className={`d-flex ${styles.formList}`} >
-              <span className={`${styles.formSearchTitle}`} style={{width:70 + 'px'}}>시작km : </span>
+            <div className='formList'>
+              <span className='formSearchTitle' style={{width:70 + 'px'}}>시작km : </span>
               <input type="number" className={`${styles.formInput}`} style={{width:120 + 'px'}} value={logInfo.STKM} disabled={gubun === 'I' ? logInfo.STKM === 0 ? '' : 'disabled' : 'disabled'} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, STKM: e.target.value })}} />
             </div>
-            <div className={`d-flex ${styles.formList}`} >
-              <span className={`${styles.formSearchTitle}`} style={{width:70 + 'px'}}>종료km : </span>
+            <div className='formList'>
+              <span className='formSearchTitle' style={{width:70 + 'px'}}>종료km : </span>
               <input type="number" className={`${styles.formInput}`} style={{width:120 + 'px'}} value={logInfo.ENKM} disabled={gubun === 'I' ? '' : 'disabled'} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, ENKM: e.target.value })}} />
             </div>
-            <div className={`d-flex ${styles.formList}`} >
-              <span className={`${styles.formSearchTitle}`} style={{width:70 + 'px'}}>운행거리 : </span>
-              <span className={`${styles.formSearchTitle}`} style={{width:120 + 'px', marginLeft:5 + 'px'}}>{logInfo.ENKM - logInfo.STKM}</span>
+            <div className='formList'>
+              <span className='formSearchTitle' style={{width:70 + 'px'}}>운행거리 : </span>
+              <span className='formSearchTitle' style={{width:120 + 'px', marginLeft:5 + 'px'}}>{logInfo.ENKM - logInfo.STKM}</span>
             </div>
-            <div className={`d-flex ${styles.formList}`} >
-              <span className={`${styles.formSearchTitle}`} style={{width:70 + 'px'}}>주유(ℓ) : </span>
+            <div className='formList'>
+              <span className='formSearchTitle' style={{width:70 + 'px'}}>주유(ℓ) : </span>
               <input type="number" className={`${styles.formInput}`} style={{width:120 + 'px'}} value={logInfo.FUEL} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, FUEL: e.target.value })}} />
             </div>
-            <div className={`d-flex ${styles.formList}`} >
-              <span className={`${styles.formSearchTitle}`} style={{width:70 + 'px'}}>비고 : </span>
+            <div className='formList'>
+              <span className='formSearchTitle' style={{width:70 + 'px'}}>비고 : </span>
               <input type="text" className={`${styles.formInput}`} style={{width:75 + '%', marginLeft:0}} value={logInfo.NOTE} onInput={(e) => {handleMaxLength(e, 1000)}} onChange={(e) => {setLogInfo({ ...logInfo, NOTE: e.target.value })}} />
             </div>
           </div>

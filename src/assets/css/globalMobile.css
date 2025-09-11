@@ -57,6 +57,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 
 .formLabel {
+  display: flex;
   font-size:14px;
   font-weight: 600;
   color: var(--bs-font-secondary-color);
@@ -96,6 +97,12 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 
 .formListData li {
   display: flex;
+  justify-content: space-between;
+}
+
+.formChkList {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
 }
 
@@ -786,6 +793,18 @@ body {
   margin-left: 0;
 }
 
+.formSearchTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color:#525252;
+  line-height: normal;
+  align-items: center;
+}
+
+.safetyWrap {
+  display: flex;
+  align-items: center;
+}
 
 /* Mobile portrait mode */
 @media (max-width: 768px) and (orientation: landscape) {

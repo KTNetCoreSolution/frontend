@@ -67,156 +67,153 @@ const MainHome = () => {
         </div>
       </div>
 
-      <div className='w-100'>
-        <div className={styles.boardContainer}>
-          <div className={styles.boardSection}>
-            <div className={styles.tabHeader}>
-              <ul className='nav nav-tabs' role='tablist'>
-                <li className='nav-item' role='presentation'>
-                  <button
-                    className={`nav-link ${activeTab === 'tab1' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('tab1')}
-                    type='button'
-                    role='tab'
-                    aria-controls='tab1'
-                    aria-selected={activeTab === 'tab1'}
-                  >
-                    표준활동 공지사항
-                  </button>
-                </li>
-                <li className='nav-item' role='presentation'>
-                  <button
-                    className={`nav-link ${activeTab === 'tab2' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('tab2')}
-                    type='button'
-                    role='tab'
-                    aria-controls='tab2'
-                    aria-selected={activeTab === 'tab2'}
-                  >
-                    표준활동 패치내역
-                  </button>
-                </li>
-              </ul>
-              <Button
-                variant='text'
-                onClick={() => handleNavigate(activeTab === 'tab1' ? 'notice' : 'notice2')}
-                className={styles.boardBtn01}
-              >
-                더보기
-                <img src={arrowRight} className={styles.arrowIcon} alt='arrow' />
-              </Button>
-            </div>
+      <div className='boardContainer'>
+        <div className='boardSection'>
+          <div className='tabHeader'>
+            <ul className='nav nav-tabs' role='tablist'>
+              <li className='nav-item' role='presentation'>
+                <button
+                  className={`nav-link ${activeTab === 'tab1' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('tab1')}
+                  type='button'
+                  role='tab'
+                  aria-controls='tab1'
+                  aria-selected={activeTab === 'tab1'}
+                >
+                  표준활동 공지사항
+                </button>
+              </li>
+              <li className='nav-item' role='presentation'>
+                <button
+                  className={`nav-link ${activeTab === 'tab2' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('tab2')}
+                  type='button'
+                  role='tab'
+                  aria-controls='tab2'
+                  aria-selected={activeTab === 'tab2'}
+                >
+                  표준활동 패치내역
+                </button>
+              </li>
+            </ul>
+            <Button
+              variant='text'
+              onClick={() => handleNavigate(activeTab === 'tab1' ? 'notice' : 'notice2')}
+              className='boardBtn01'
+            >
+              더보기
+              <img src={arrowRight} className='arrowIcon' alt='arrow' />
+            </Button>
+          </div>
 
-            <div className='tab-content'>
-              <div
-                className={`tab-pane fade ${activeTab === 'tab1' ? 'show active' : ''}`}
-                id='tab1'
-                role='tabpanel'
-                aria-labelledby='tab1'
-              >
-                <div className={styles.boardBox}>
-                  <Board
-                    key={`notice-${activeTab}`} // 탭 변경 시 강제 리렌더링
-                    canWriteBoard={canWriteBoard}
-                    type='notice'
-                    onWrite={() => handleWrite('notice')}
-                    onView={handleView}
-                    showHeader={false}
-                  />
-                </div>
+          <div className='tab-content'>
+            <div
+              className={`tab-pane fade ${activeTab === 'tab1' ? 'show active' : ''}`}
+              id='tab1'
+              role='tabpanel'
+              aria-labelledby='tab1'
+            >
+              <div className='boardBox'>
+                <Board
+                  key={`notice-${activeTab}`} // 탭 변경 시 강제 리렌더링
+                  canWriteBoard={canWriteBoard}
+                  type='notice'
+                  onWrite={() => handleWrite('notice')}
+                  onView={handleView}
+                  showHeader={false}
+                />
               </div>
-              <div
-                className={`tab-pane fade ${activeTab === 'tab2' ? 'show active' : ''}`}
-                id='tab2'
-                role='tabpanel'
-                aria-labelledby='tab2'
-              >
-                <div className={styles.boardBox}>
-                  <Board
-                    key={`notice2-${activeTab}`} // 탭 변경 시 강제 리렌더링
-                    canWriteBoard={canWriteBoard}
-                    type='notice2'
-                    onWrite={() => handleWrite('notice2')}
-                    onView={handleView}
-                    showHeader={false}
-                  />
-                </div>
+            </div>
+            <div
+              className={`tab-pane fade ${activeTab === 'tab2' ? 'show active' : ''}`}
+              id='tab2'
+              role='tabpanel'
+              aria-labelledby='tab2'
+            >
+              <div className='boardBox'>
+                <Board
+                  key={`notice2-${activeTab}`} // 탭 변경 시 강제 리렌더링
+                  canWriteBoard={canWriteBoard}
+                  type='notice2'
+                  onWrite={() => handleWrite('notice2')}
+                  onView={handleView}
+                  showHeader={false}
+                />
               </div>
             </div>
           </div>
-          <div className={styles.boardSectionGrap}></div>
-          <div className={styles.boardSection}>
-            <div className={styles.tabHeader}>
-              <ul className='nav nav-tabs' role='tablist'>
-                <li className='nav-item' role='presentation'>
-                  <button
-                    className={`nav-link ${activeCarTab === 'carTab1' ? 'active' : ''}`}
-                    onClick={() => setActiveCarTab('carTab1')}
-                    type='button'
-                    role='tab'
-                    aria-controls='carTab1'
-                    aria-selected={activeCarTab === 'carTab1'}
-                  >
-                    차량 공지사항
-                  </button>
-                </li>
-                <li className='nav-item' role='presentation'>
-                  <button
-                    className={`nav-link ${activeCarTab === 'carTab2' ? 'active' : ''}`}
-                    onClick={() => setActiveCarTab('carTab2')}
-                    type='button'
-                    role='tab'
-                    aria-controls='carTab2'
-                    aria-selected={activeCarTab === 'carTab2'}
-                  >
-                    차량 과태료
-                  </button>
-                </li>
-              </ul>
-              <Button
-                variant='text'
-                onClick={() => handleNavigate(activeCarTab === 'carTab1' ? 'carnotice' : 'carnotice2')}
-                className={styles.boardBtn01}
-              >
-                더보기
-                <img src={arrowRight} className={styles.arrowIcon} alt='arrow' />
-              </Button>
-            </div>
+        </div>
+        <div className='boardSection'>
+          <div className='tabHeader'>
+            <ul className='nav nav-tabs' role='tablist'>
+              <li className='nav-item' role='presentation'>
+                <button
+                  className={`nav-link ${activeCarTab === 'carTab1' ? 'active' : ''}`}
+                  onClick={() => setActiveCarTab('carTab1')}
+                  type='button'
+                  role='tab'
+                  aria-controls='carTab1'
+                  aria-selected={activeCarTab === 'carTab1'}
+                >
+                  차량 공지사항
+                </button>
+              </li>
+              <li className='nav-item' role='presentation'>
+                <button
+                  className={`nav-link ${activeCarTab === 'carTab2' ? 'active' : ''}`}
+                  onClick={() => setActiveCarTab('carTab2')}
+                  type='button'
+                  role='tab'
+                  aria-controls='carTab2'
+                  aria-selected={activeCarTab === 'carTab2'}
+                >
+                  차량 과태료
+                </button>
+              </li>
+            </ul>
+            <Button
+              variant='text'
+              onClick={() => handleNavigate(activeCarTab === 'carTab1' ? 'carnotice' : 'carnotice2')}
+              className='boardBtn01'
+            >
+              더보기
+              <img src={arrowRight} className='arrowIcon' alt='arrow' />
+            </Button>
+          </div>
 
-            <div className='tab-content'>
-              <div
-                className={`tab-pane fade ${activeCarTab === 'carTab1' ? 'show active' : ''}`}
-                id='carTab1'
-                role='tabpanel'
-                aria-labelledby='carTab1'
-              >
-                <div className={styles.boardBox}>
-                  <Board
-                    key={`carnotice-${activeCarTab}`} // 탭 변경 시 강제 리렌더링
-                    canWriteBoard={canWriteBoard}
-                    type='carnotice'
-                    onWrite={() => handleWrite('carnotice')}
-                    onView={handleView}
-                    showHeader={false}
-                  />
-                </div>
+          <div className='tab-content'>
+            <div
+              className={`tab-pane fade ${activeCarTab === 'carTab1' ? 'show active' : ''}`}
+              id='carTab1'
+              role='tabpanel'
+              aria-labelledby='carTab1'
+            >
+              <div className='boardBox'>
+                <Board
+                  key={`carnotice-${activeCarTab}`} // 탭 변경 시 강제 리렌더링
+                  canWriteBoard={canWriteBoard}
+                  type='carnotice'
+                  onWrite={() => handleWrite('carnotice')}
+                  onView={handleView}
+                  showHeader={false}
+                />
               </div>
-              <div
-                className={`tab-pane fade ${activeCarTab === 'carTab2' ? 'show active' : ''}`}
-                id='carTab2'
-                role='tabpanel'
-                aria-labelledby='carTab2'
-              >
-                <div className={styles.boardBox}>
-                  <Board
-                    key={`carnotice2-${activeCarTab}`} // 탭 변경 시 강제 리렌더링
-                    canWriteBoard={canWriteBoard}
-                    type='carnotice2'
-                    onWrite={() => handleWrite('carnotice2')}
-                    onView={handleView}
-                    showHeader={false}
-                  />
-                </div>
+            </div>
+            <div
+              className={`tab-pane fade ${activeCarTab === 'carTab2' ? 'show active' : ''}`}
+              id='carTab2'
+              role='tabpanel'
+              aria-labelledby='carTab2'
+            >
+              <div className='boardBox'>
+                <Board
+                  key={`carnotice2-${activeCarTab}`} // 탭 변경 시 강제 리렌더링
+                  canWriteBoard={canWriteBoard}
+                  type='carnotice2'
+                  onWrite={() => handleWrite('carnotice2')}
+                  onView={handleView}
+                  showHeader={false}
+                />
               </div>
             </div>
           </div>
