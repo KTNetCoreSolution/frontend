@@ -349,6 +349,12 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
     e.target.value = value.substring(0, maxlength);
   }
 
+  const handleNumberMaxLength = (e, maxlength) => {
+    const value = e.target.value;
+    
+    e.target.value = value.replace(/[^0-9]/g, '').substring(0, maxlength);
+  } 
+
   if (!show) return null;
   return (
     <Modal show={show} onHide={onHide} onParentSearch={onParentSearch} centered style={{overflowY: 'hidden'}} dialogClassName={styles.customModal}>
@@ -534,7 +540,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         <div className="row">
           <div className="col-6 d-flex">
             <label className="form-label w100" htmlFor="under26AgeJuminBirthNo">생년월일 </label>
-            <input type="number" value={carInfo.UNDER26AGEJUMINBTRTHNO} className={`form-control ${styles.formControl}`} id="under26AgeJuminBirthNo" placeholder="주민번호 앞자리" onInput={(e) => {handleMaxLength(e, 6)}} onChange={(e) => {setCarInfo({ ...carInfo, UNDER26AGEJUMINBTRTHNO: e.target.value })}}/>
+            <input type="text" value={carInfo.UNDER26AGEJUMINBTRTHNO} className={`form-control ${styles.formControl}`} id="under26AgeJuminBirthNo" placeholder="주민번호 앞자리" onInput={(e) => {handleNumberMaxLength(e, 6)}} onChange={(e) => {setCarInfo({ ...carInfo, UNDER26AGEJUMINBTRTHNO: e.target.value })}}/>
           </div>
           <div className="col-6 d-flex">
             <label className="form-label w100" htmlFor="primaryMngMobile">변경기준일 </label>
