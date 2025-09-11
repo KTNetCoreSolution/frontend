@@ -366,7 +366,7 @@ const StandardJobHistory = () => {
         filters={tableFilters}
         setFilters={setTableFilters}
         rowCount={rowCount}
-        onDownloadExcel={() => handleDownloadExcel(tableInstance.current, tableStatus, '입력세부현황.xlsx')}
+        onDownloadExcel={() => handleDownloadExcel(tableInstance.current, tableStatus, '업무내역조회.xlsx')}
         buttonStyles={styles}
       />
       <div className={styles.tableWrapper}>
