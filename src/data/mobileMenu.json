@@ -1,8 +1,7 @@
 [
   { "MENUID": "MMENU0001", "MENUNM": "나의 정보", "URL": "/mobile/MobileUserInfo", "ICON": "menu_m_userInfo.png", "children": [] },
   { "MENUID": "MMENU0002", "MENUNM": "운행일지", "URL": "/mobile/MobileDrivingLog", "ICON": "menu_m_drivingLog.png", "children": [] },
-  { "MENUID": "MMENU0004", "MENUNM": "차량예약", "URL": "/mobile/MobileCarReservation", "ICON": "menu_m_carReservation.png", "children": [] },
   { "MENUID": "MMENU0003", "MENUNM": "기동장비공지사항", "URL": "/mobile/MobileCarNotice", "ICON": "menu_m_workCarReport.png", "children": [] },
-  { "MENUID": "MMENU0005", "MENUNM": "운행이력", "URL": "/mobile/MobileCarLogList", "ICON": "menu_m_sharedCarLog.png", "children": [] },
-  { "MENUID": "MMENU0006", "MENUNM": "차량상태", "URL": "/mobile/MobileCarCheckStatus", "ICON": "menu_m_sharedCarLog.png", "children": [] }
+  { "MENUID": "MMENU0004", "MENUNM": "운행이력", "URL": "/mobile/MobileCarLogList", "ICON": "menu_m_carReservation.png", "children": [] },
+  { "MENUID": "MMENU0005", "MENUNM": "차량상태", "URL": "/mobile/MobileCarCheckStatus", "ICON": "menu_m_sharedCarLog.png", "children": [] }
 ]

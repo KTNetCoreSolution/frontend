@@ -1,6 +1,8 @@
 [
-  { "MENUID": "UMENU0001", "MENUNM": "HOME", "URL": "/mobile/Main", "children": [] },
-  { "MENUID": "UMENU0002", "MENUNM": "나의정보", "URL": "/mobile/MobileUserInfo", "children": [] },
-  { "MENUID": "UMENU0003", "MENUNM": "메뉴1 조회", "URL": "/mobile/MobileCsDetails", "children": [] },
-  { "MENUID": "UMENU0004", "MENUNM": "메뉴2 조회", "URL": "/mobile/MobileMotDetails", "children": [] }
+  { "MENUID": "UMENU0000", "MENUNM": "HOME", "URL": "/mobile/Main", "children": [] },
+  { "MENUID": "UMENU0001", "MENUNM": "나의 정보", "URL": "/mobile/MobileUserInfo", "children": [] },
+  { "MENUID": "UMENU0002", "MENUNM": "운행일지", "URL": "/mobile/MobileDrivingLog", "children": [] },
+  { "MENUID": "UMENU0003", "MENUNM": "기동장비공지사항", "URL": "/mobile/MobileCarNotice", "children": [] },
+  { "MENUID": "UMENU0004", "MENUNM": "운행이력", "URL": "/mobile/MobileCarLogList", "children": [] },
+  { "MENUID": "UMENU0005", "MENUNM": "차량상태", "URL": "/mobile/MobileCarCheckStatus", "children": [] }
 ]
