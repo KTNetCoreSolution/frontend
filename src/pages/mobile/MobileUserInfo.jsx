@@ -33,7 +33,7 @@ const handleLogout = async () => {
     <div className="container-fluid p-0">
       <header className="header">
         <h1 className="h5 mb-0">기본정보</h1>
-        <button className="btn" onClick={handleToggleSidebar}>
+        <button className="btn text-white" onClick={handleToggleSidebar}>
           <i className="bi bi-list"></i>
         </button>
       </header>

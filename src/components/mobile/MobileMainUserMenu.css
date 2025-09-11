@@ -33,20 +33,24 @@
   visibility: visible;
 }
 
-.custom-offcanvas-header {
+/* .custom-offcanvas-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   border-bottom: 1px solid #dee2e6;
 }
 
-.custom-offcanvas-close {
+.custom-offcanvas-header h5 {
+  margin-bottom: 0;
+} */
+
+/* .custom-offcanvas-close {
   background: none;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-}
+} */
 
 .custom-offcanvas-body {
   padding: 1rem;

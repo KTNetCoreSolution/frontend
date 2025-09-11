@@ -84,11 +84,12 @@ const StandardIntoStatistic = () => {
     classGubun: user?.standardSectionCd || 'LINE',
     classGubunTxt: user?.standardSectionCd === 'LINE' ? '선로' : user?.standardSectionCd === 'DESIGN' ? '설계' : user?.standardSectionCd === 'BIZ' ? 'BIZ' : '선로',
     monthDate: today.substring(0, 7),
-    ORGCD: '',
+    ORGCD: user?.orgCd || '',
     orgText: '',
     CLASSACD: 'all',
     CLASSBCD: 'all',
     CLASSCCD: 'all',
+    orgText: user?.orgNm || '',
   });
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
@@ -112,7 +113,7 @@ const StandardIntoStatistic = () => {
     if (!cellValue || parseFloat(cellValue) === 0) return;
 
     const rowData = cell.getRow().getData();
-    const sectionCd = hasPermission(user?.auth, 'oper') ? filters.classGubun : user?.standardSectionCd || 'LINE';
+    const sectionCd = rowData.SECTIONCD;
     const classCd = rowData.CLASSCCD || rowData.CLASSBCD || rowData.CLASSACD || '';
     const orgCd = rowData.ORGCD;
     const empNo = rowData.EMPNO;
@@ -307,6 +308,7 @@ const StandardIntoStatistic = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '월', field: 'MDATE', sorter: 'number', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '조직코드', field: 'ORGCD', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '사원번호', field: 'EMPNO', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '분류코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
     ...Array.from({ length: 31 }, (_, i) => {
       const day = String(i + 1).padStart(2, '0');
       return {
@@ -330,6 +332,17 @@ const StandardIntoStatistic = () => {
   const loadData = async () => {
     setLoading(true);
     setIsSearched(true);
+    // 날짜 범위 체크
+    if (filters.dayGubun === 'D') {
+      const maxMonths = 3;
+      const monthRange = common.checkMonthRange(filters.rangeStartDate, filters.rangeEndDate, maxMonths);
+      if (maxMonths <= monthRange) {
+        msgPopup(`${maxMonths}개월까지만 가능합니다.`);
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       const params = {
         pGUBUN: 'LIST',

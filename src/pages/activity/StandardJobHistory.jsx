@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../../store/store';
 import { hasPermission } from '../../utils/authUtils';
@@ -11,6 +11,7 @@ import { fetchData } from '../../utils/dataUtils';
 import { msgPopup } from '../../utils/msgPopup';
 import styles from '../../components/table/TableSearch.module.css';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
+import OrgSearchPopup from '../../components/popup/OrgSearchPopup';
 import common from '../../utils/common';
 
 const fn_CellNumber = { editor: 'number', editorParams: { min: 0 }, editable: true };
@@ -42,28 +43,48 @@ const filterTableFields = [
   { id: 'filterText', type: 'text', label: '', placeholder: '찾을 내용을 입력하세요', width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
 ];
 
-const StandardInputStatistic = () => {
+const StandardJobHistory = () => {
   const { user } = useStore();
   const navigate = useNavigate();
   const today = common.getTodayDate();
   const [filters, setFilters] = useState({
     classGubun: user?.standardSectionCd || 'LINE',
     classGubunTxt: user?.standardSectionCd === 'LINE' ? '선로' : user?.standardSectionCd === 'DESIGN' ? '설계' : user?.standardSectionCd === 'BIZ' ? 'BIZ' : '선로',
+    ORGCD: user?.orgCd || '',
     dayGubun: 'M',
     monthDate: today.substring(0, 7),
     rangeStartDate: today,
     rangeEndDate: today,
     CLASSCD: '',
+    orgText: user?.orgNm || '',
   });
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [isSearched, setIsSearched] = useState(false);
   const [tableStatus, setTableStatus] = useState('initializing');
+  const [showOrgPopup, setShowOrgPopup] = useState(false);
+  //const [selectedOrg, setSelectedOrg] = useState(user?.orgCd || '');
   const [rowCount, setRowCount] = useState(0);
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
   const isInitialRender = useRef(true);
+
+  // pGUBUN 동적 설정
+  const pGUBUN = useMemo(() => {
+    if (showOrgPopup) {
+      if (filters.classGubun === 'BIZ') {
+        return 'STABIZEMPNO';
+      } else if (filters.classGubun === 'DESIGN') {
+        return 'STADESIGNEMPNO';
+      } else if (filters.classGubun === 'LINE') {
+        return 'STALINEEMPNO';
+      }
+      return 'OPEREMPNO';
+    }
+    return 'OPEREMPNO';
+  }, [showOrgPopup, filters.classGubun]);
+  
 
   // 초기 searchConfig 설정
   const baseSearchConfig = {
@@ -86,6 +107,8 @@ const StandardInputStatistic = () => {
           { id: 'monthDate', type: 'month', row: 1, width: '74px', label: '', labelVisible: true, placeholder: '월 선택', enabled: false, defaultValue: today.substring(0, 7) },
           { id: 'rangeStartDate', type: 'startday', row: 1, width: '100px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: false, defaultValue: today },
           { id: 'rangeEndDate', type: 'endday', row: 1, width: '100px', label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', enabled: false, defaultValue: today },
+          { id: 'orgText', type: 'text', row: 1, label: '조직', labelVisible: true, placeholder: '조직 선택', enabled: false },
+          { id: 'orgPopupBtn', type: 'popupIcon', row: 1, label: '조직 선택', labelVisible: false, eventType: 'showOrgPopup', enabled: true },
         ],
       },
       {
@@ -146,9 +169,10 @@ const StandardInputStatistic = () => {
 
   const columns = [
     { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업일', field: 'DDATE', sorter: 'string', width: 100, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업일자', field: 'DDATE', sorter: 'string', width: 100, frozen: true },
     { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false, frozen: true },
     { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 100, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업자', field: 'EMPNM', sorter: 'string', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '조직1', field: 'ORGNM1', sorter: 'string', width: 130 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '조직2', field: 'ORGNM2', sorter: 'string', width: 130 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '조직3', field: 'ORGNM3', sorter: 'string', width: 130 },
@@ -156,31 +180,30 @@ const StandardInputStatistic = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '대분류', field: 'CLASSANM', sorter: 'string', width: 180 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '중분류', field: 'CLASSBNM', sorter: 'string', width: 180 },
     { headerHozAlign: 'center', hozAlign: 'left', title: '소분류', field: 'CLASSCNM', sorter: 'string', width: 220 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업건', field: 'WORKCNT', sorter: 'number', width: 130 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업건수', field: 'WORKCNT', sorter: 'number', width: 130 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '시작시간', field: 'STARTTM', sorter: 'string', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '종료시간', field: 'ENDTM', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKH', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업자', field: 'EMPNM', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무유형코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무유형', field: 'WORKNM', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '업무량(시간)', field: 'WORKH', sorter: 'string', width: 110 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 },
   ];
 
   const loadData = async () => {
     setLoading(true);
     setIsSearched(true);
 
-    // 날짜 범위 체크
-    if (filters.dayGubun === 'D') {
-      const maxMonths = 3;
-      const monthRange = common.checkMonthRange(filters.rangeStartDate, filters.rangeEndDate, maxMonths);
-      if (maxMonths <= monthRange) {
-        msgPopup(`${maxMonths}개월까지만 가능합니다.`);
-        setLoading(false);
-        return;
-      }
-    }
-    
     try {
+      // 날짜 범위 체크
+      if (filters.dayGubun === 'D') {
+        const maxMonths = 3;
+        const monthRange = common.checkMonthRange(filters.rangeStartDate, filters.rangeEndDate, maxMonths);
+        if (maxMonths <= monthRange) {
+          msgPopup(`${maxMonths}개월까지만 가능합니다.`);
+          setLoading(false);
+          return;
+        }
+      }
+
       const params = {
         pGUBUN: 'LIST',
         pSECTIONCD: hasPermission(user?.auth, 'oper')
@@ -193,7 +216,7 @@ const StandardInputStatistic = () => {
                 ? 'BIZ'
                 : 'LINE',
         pEMPNO: user?.empNo || '',
-        pORGCD: 'ALL',
+        pORGCD: filters.ORGCD || 'ALL',
         pDATEGUBUN: filters.dayGubun,
         pDATE1: filters.dayGubun === 'D' ? filters.rangeStartDate : filters.dayGubun === 'M' ? filters.monthDate : '',
         pDATE2: filters.dayGubun === 'D' ? filters.rangeEndDate : filters.dayGubun === 'M' ? filters.monthDate : '',
@@ -201,7 +224,7 @@ const StandardInputStatistic = () => {
         pDEBUG: 'F',
       };
 
-      const response = await fetchData('standard/inputStatistic/list', params);
+      const response = await fetchData('standard/jobHistory/list', params);
       if (!response.success) {
         errorMsgPopup(response.message || '데이터를 가져오는 중 오류가 발생했습니다.');
         return;
@@ -297,6 +320,8 @@ const StandardInputStatistic = () => {
   const handleDynamicEvent = (eventType, payload) => {
     if (eventType === 'search') {
       loadData();
+    } else if (eventType === 'showOrgPopup') {
+      setShowOrgPopup(true);
     } else if (eventType === 'selectChange') {
       const { id, value } = payload;
       setFilters((prev) => {
@@ -309,6 +334,18 @@ const StandardInputStatistic = () => {
         return newFilters;
       });
     }
+  };
+
+  const handleOrgConfirm = (selectedRows) => {
+    if (!selectedRows || selectedRows.length === 0) return;
+    const newOrgCd = selectedRows.map((row) => row.ORGCD).join(',');
+    const newOrgNm = selectedRows.map((row) => row.ORGNM).join(',');
+    setFilters((prev) => ({ ...prev, ORGCD: newOrgCd, orgText: newOrgNm }));
+    setShowOrgPopup(false);
+  };
+
+  const handleOrgCancel = () => {
+    setShowOrgPopup(false);
   };
 
   // user가 로드되기 전에는 로딩 상태 표시
@@ -329,7 +366,7 @@ const StandardInputStatistic = () => {
         filters={tableFilters}
         setFilters={setTableFilters}
         rowCount={rowCount}
-        onDownloadExcel={() => handleDownloadExcel(tableInstance.current, tableStatus, '입력세부현황.xlsx')}
+        onDownloadExcel={() => handleDownloadExcel(tableInstance.current, tableStatus, '업무내역조회.xlsx')}
         buttonStyles={styles}
       />
       <div className={styles.tableWrapper}>
@@ -337,8 +374,18 @@ const StandardInputStatistic = () => {
         {loading && <div>로딩 중...</div>}
         <div ref={tableRef} className={styles.tableSection} style={{ visibility: loading || tableStatus !== 'ready' ? 'hidden' : 'visible' }} />
       </div>
+      {showOrgPopup && (
+        <OrgSearchPopup
+          onClose={handleOrgCancel}
+          onConfirm={handleOrgConfirm}
+          initialSelectedOrgs={filters.ORGCD ? filters.ORGCD.split(',').filter(Boolean) : []}
+          pGUBUN={pGUBUN}
+          isMulti={true}
+          isChecked={false}
+        />
+      )}
     </div>
   );
 };
 
-export default StandardInputStatistic;
+export default StandardJobHistory;

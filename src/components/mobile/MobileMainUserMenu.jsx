@@ -74,12 +74,8 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
       >
         <div className="custom-offcanvas-header">
           <h5>메뉴</h5>
-          <button
-            className="custom-offcanvas-close"
-            onClick={handleClose}
-            aria-label="Close"
-          >
-            ×
+          <button type="button" class="btn text-white" onClick={handleClose} aria-label="Close">
+            <i class="bi bi-x"></i>
           </button>
         </div>
         <div className="custom-offcanvas-body">
@@ -87,7 +83,7 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
             {mobileUserMenu.map((item) => (
               <li
                 key={item.MENUID}
-                className={`list-group-item ${location.pathname === item.URL ? 'text-danger' : ''}`}
+                className={`list-group-item ${location.pathname === item.URL ? 'text-primary-custom' : ''}`}
                 onClick={() => handleMenuClick(item.URL)}
                 style={{ cursor: 'pointer' }}
               >

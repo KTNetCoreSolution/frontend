@@ -120,4 +120,29 @@ export default {
     const nowKST = nowUtc + offsetKST;  // 밀리초 단위로 계산된 한국 시간 타임스탬프
     return nowKST; // 숫자(밀리초 타임스탬프) 반환
   },
+
+  // 범위 일자 체크
+  checkMonthRange(startDate, endDate, maxMonths = 3) {
+    if (!startDate || !endDate) return maxMonths;
+
+    let start, end;
+    
+    // YYYY-MM-DD 형식 처리
+    if (startDate.includes('-') && startDate.split('-').length === 3) {
+      start = new Date(startDate);
+      end = new Date(endDate);
+    } 
+    // YYYY-MM 형식 처리
+    else if (startDate.includes('-') && startDate.split('-').length === 2) {
+      start = new Date(`${startDate}-01`);
+      end = new Date(`${endDate}-01`);
+    } else {
+      return maxMonths; // 잘못된 형식의 경우 기본값 반환
+    }
+
+    if (isNaN(start) || isNaN(end)) return maxMonths;
+
+    const monthsDiff = (end.getFullYear() - start.getFullYear()) * 12 + end.getMonth() - start.getMonth();
+    return Math.abs(monthsDiff) > maxMonths ? maxMonths : Math.abs(monthsDiff);
+  },
 };

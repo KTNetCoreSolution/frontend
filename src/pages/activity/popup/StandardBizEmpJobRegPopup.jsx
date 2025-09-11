@@ -285,8 +285,8 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
   const handleSave = async (action, index = -1) => {
     let params;
     if (action === 'register') {
-      // 회선번호+고객명 검증 (최대 150자)
-      const customerValidation = common.validateVarcharLength(formData.CUSTOMER, 150, "회선번호+고객명");
+      // 회선번호+고객명 검증 (최대 200자)
+      const customerValidation = common.validateVarcharLength(formData.CUSTOMER, 200, "회선번호+고객명");
       if (!customerValidation.valid) {
         errorMsgPopup(customerValidation.error);
         return;

@@ -86,56 +86,73 @@ const MobileCarCheckStatus = () => {
 
   return (
       <div className="container-fluid p-0">
-        <header className="bg-primary text-white p-3 d-flex justify-content-between align-items-center">
+        <header className="header">
           <h1 className="h5 mb-0">기동장비 차량상태</h1>
-          <button className="btn" onClick={handleToggleSidebar}>
+          <button className="btn text-white" onClick={handleToggleSidebar}>
             <i className="bi bi-list"></i>
           </button>
-        </header>  
-        
+        </header>        
         <MobileMainUserMenu show={showSidebar} handleClose={handleToggleSidebar} onLogout={handleLogout} />
 
         <div className="pageMain">
         {currentList.length > 0 ? (
           currentList.map((item, index) => (
-          <div key={item.CARID} className={`${styles.formDivBox}`} onClick={(e) => handleNoticeClick(item)} >
-            <div className={styles.container}>              
-              <div className={`d-flex ${styles.formList}`} >
-                <span className={`${styles.formText}`} style={{width:50 + '%'}} >차량번호: {item.CARNO}</span>
-                <span className={`${styles.formText}`} >차대번호: {item.CARID}</span>
-              </div>
-              <div className={`${styles.formList}`} >
-                {item.LOGDATE === "" ? (
-                  <span className={`${styles.formText}`}>점검이력없음</span>
+          <div key={item.CARID} className='formDivBox' onClick={(e) => handleNoticeClick(item)} >
+            <ul className='formListData'>          
+              <li>
+                <span className='formLabel'>차량번호</span>
+                <span className='formText'>{item.CARNO}</span>
+              </li>
+              <li>
+                <span className='formLabel'>차대번호</span>
+                <span className='formText'>{item.CARID}</span>
+              </li>
+              {item.LOGDATE === "" ? (
+                <li><span className='formLabel'>점검이력없음</span></li>
                 ) : (
-                  <span className={`${styles.formText}`}>마지막운행일시: {item.LOGDATE} {item.LOGSTTIME} ~ {item.LOGENTIME}</span>
-                )}
-              </div>
+                <li>
+                  <span className='formLabel'>마지막운행일시</span>
+                  <span className='formText'>{item.LOGDATE} {item.LOGSTTIME}~{item.LOGENTIME}</span>
+                </li>
+              )}
+
               {item.LOGDATE === "" ? ('') : (
-                <div className={`${styles.formList}`} >
-                  <span className={`${styles.formText}`}>차량파손:</span>
-                  <span className={`${styles.formText}`} style={{color: item.DAMAGE === '양호' ? '#22cc00' : 'red'}}>{item.DAMAGE}</span>
-                  <span className={`${styles.formText}`}>오일누수:</span>
-                  <span className={`${styles.formText}`} style={{color: item.OILLEAK === '양호' ? '#22cc00' : 'red'}}>{item.OILLEAK}</span>
-                  <span className={`${styles.formText}`}>타이어:</span>
-                  <span className={`${styles.formText}`} style={{color: item.TIRE === '양호' ? '#22cc00' : 'red'}}>{item.TIRE}</span>
-                </div>
+                <>
+                  <li>
+                    <span className='formLabel'>차량파손</span>
+                    <span className='formText' style={{color: item.DAMAGE === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.DAMAGE}</span>
+                  </li>
+                  <li>
+                    <span className='formLabel'>오일누수</span>
+                    <span className='formText' style={{color: item.OILLEAK === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.OILLEAK}</span>
+                  </li>
+                  <li>
+                    <span className='formLabel'>타이어</span>
+                    <span className='formText' style={{color: item.TIRE === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.TIRE}</span>
+                  </li>
+                </>
               )}
               {item.LOGDATE === "" ? ('') : (
-                <div className={`${styles.formList}`} >
-                  <span className={`${styles.formText}`}>적재물안전:</span>
-                  <span className={`${styles.formText}`} style={{color: item.LUGGAGE === '양호' ? '#22cc00' : 'red'}}>{item.LUGGAGE}</span>
-                  <span className={`${styles.formText}`}>기타:</span>
-                  <span className={`${styles.formText}`} style={{color: item.ETC1 === '양호' ? '#22cc00' : 'red'}}>{item.ETC1}</span>
-                  <span className={`${styles.formText}`}>특이사항:</span>
-                  <span className={`${styles.formText}`} style={{color: item.ETC2 === '양호' ? '#22cc00' : 'red'}}>{item.ETC2}</span>
-                </div>
+                <>
+                  <li>
+                    <span className='formLabel'>적재물안전</span>
+                    <span className='formText' style={{color: item.LUGGAGE === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.LUGGAGE}</span>
+                  </li>
+                  <li>
+                    <span className='formLabel'>기타</span>
+                    <span className='formText' style={{color: item.ETC1 === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.ETC1}</span>
+                  </li>
+                  <li>
+                    <span className='formLabel'>특이사항</span>
+                    <span className='formText' style={{color: item.ETC2 === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.ETC2}</span>
+                  </li>
+                </>
               )}
-            </div>
+            </ul>
           </div>
           ))
          ) : (
-          <li className="list-group-item text-center">조회된 목록이 없습니다.</li>
+          <div className="nodataWrap">조회된 목록이 없습니다.</div>
         )}
         {totalPages > 1 && (
           <nav aria-label="Page navigation" className="mt-3">

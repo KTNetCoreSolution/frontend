@@ -1,100 +1,38 @@
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useState, Suspense } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import useStore from '../../store/store';
-import { checkTokenValiditySimple } from '../../utils/authUtils';
-import { fetchData } from '../../utils/dataUtils';
+import MobileMainUserMenu from '../../components/mobile/MobileMainUserMenu';
 import logo from '../../assets/images/logo.png';
 import styles from './MobileMainLayout.module.css';
 // import '../../assets/css/globalMobile.css';
 
 const ENV = import.meta.env.VITE_ENV || 'local';
 const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
-const BASE_NAME = import.meta.env.VITE_BASE_NAME || '';
 
 const MobileMainLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, clearUser, clearMenu, loading } = useStore();
-  const [isChecking, setIsChecking] = useState(true);
-  
+  const { loading } = useStore();
+  const [showSidebar, setShowSidebar] = useState(false);
   const isMainPage = location.pathname === '/mobile/Main';
-  const isMobileDomain = window.location.host === MOBILE_DOMAIN;
-
-  // 60분 자동 로그아웃 (UI 없이 백그라운드 처리)
-  useEffect(() => {
-    if (!user || !user.expiresAt) {
-      return;
-    }
-
-    const updateTime = () => {
-      if (!user || !user.expiresAt) {
-        return;
-      }
-      const now = new Date().getTime();
-      const timeLeft = user.expiresAt - now;
-      if (timeLeft <= 0) {
-        handleLogout();
-      }
-    };
-
-    updateTime();
-    const timer = setInterval(updateTime, 1000);
-
-    return () => clearInterval(timer);
-  }, [user]);
-
-  useEffect(() => {
-    const verifyUser = async () => {
-      if (!user) {
-        setIsChecking(false);
-        sessionStorage.removeItem('user-storage');
-        navigate(ENV === 'local' && !isMobileDomain ? '/mobile/Login' : '/', { replace: true });
-        return;
-      }
-
-      const isValid = await checkTokenValiditySimple(clearUser);
-      if (!isValid) {
-        sessionStorage.removeItem('user-storage');
-        navigate(ENV === 'local' && !isMobileDomain ? '/mobile/Login' : '/', { replace: true });
-      }
-      setIsChecking(false);
-    };
-    verifyUser();
-  }, [user, navigate, clearUser]);
-
-  const handleLogout = async () => {
-    try {
-      await fetchData('auth/logout', {}, { withCredentials: true });
-      clearUser();
-      clearMenu();
-      sessionStorage.removeItem('user-storage');
-      navigate(ENV === 'local' && !isMobileDomain ? '/mobile/Login' : '/', { replace: true });
-    } catch (error) {
-      console.error('Logout error:', error);
-      clearUser();
-      clearMenu();
-      sessionStorage.removeItem('user-storage');
-      navigate(ENV === 'local' && !isMobileDomain ? '/mobile/Login' : '/', { replace: true });
-    }
-  };
-
-  if (isChecking || !user) {
-    return <div>Loading...</div>;
-  }
+  const handleToggleSidebar = () => { setShowSidebar(!showSidebar); };
 
   return (
     <div className="container">
       {isMainPage && (
-        <header className="header">
-          <div onClick={() => navigate('/mobile/Main')}>
-            <img src={logo} alt="Logo" className="logoImage" />
-          </div>
-          <button className={styles.logoutButton} onClick={handleLogout}>
-            Logout
-          </button>
-        </header>
+        <>
+          <header className="header">
+            <div onClick={() => navigate('/mobile/Main')}>
+              <img src={logo} alt="Logo" className="logoImage" />
+            </div>
+            <button className="btn text-white" onClick={handleToggleSidebar} aria-label="Toggle menu">
+              <i className="bi bi-list"></i>
+            </button>
+          </header>
+          <MobileMainUserMenu show={showSidebar} handleClose={handleToggleSidebar} />
+        </>
       )}
       {loading.isLoading && (
         <div className={styles.progressBarContainer}>

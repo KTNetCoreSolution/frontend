@@ -30,9 +30,9 @@ const MobileMotDetails = () => {
 
   return (
     <div className="container-fluid p-0">
-      <header className="bg-primary text-white p-3 d-flex justify-content-between align-items-center">
-        <h1 className="h5 mb-0">메뉴2 조회</h1>
-        <button className="btn" onClick={handleToggleSidebar}>
+      <header className="header">
+        <h1 className="h5 mb-0">메뉴1 조회</h1>
+        <button className="btn text-white" onClick={handleToggleSidebar}>
           <i className="bi bi-list"></i>
         </button>
       </header>

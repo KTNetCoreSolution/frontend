@@ -244,7 +244,7 @@ const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
       <Modal.Header closeButton>
         <Modal.Title>조직별 현황</Modal.Title>
       </Modal.Header>
-      <Modal.Body className={`${styles.modalBody} modal-body`}>
+      <Modal.Body className='modal-body'>
         <TableSearch
           filterFields={[
             {

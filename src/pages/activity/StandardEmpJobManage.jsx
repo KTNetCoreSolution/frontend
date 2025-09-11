@@ -13,6 +13,7 @@ import StandardEmpJobRegPopup from './popup/StandardEmpJobRegPopup';
 import StandardBizEmpJobRegPopup from './popup/StandardBizEmpJobRegPopup';
 import styles from '../../components/table/TableSearch.module.css';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
+import { msgPopup } from '../../utils/msgPopup';
 import common from '../../utils/common';
 
 const fn_CellNumber = { editor: 'number', editorParams: { min: 0 }, editable: true };
@@ -355,6 +356,17 @@ const StandardEmpJobManage = () => {
   const loadData = async () => {
     setLoading(true);
     setIsSearched(true);
+
+    if (filters.dayGubun === 'D') {
+      const maxMonths = 3;
+      const monthRange = common.checkMonthRange(filters.rangeStartDate, filters.rangeEndDate, maxMonths);
+      if (maxMonths <= monthRange) {
+        msgPopup(`${maxMonths}개월까지만 가능합니다.`);
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       const params = {
         pGUBUN: 'LIST',

@@ -89,29 +89,27 @@ const MobileCarNotice = () => {
 
   return (
       <div className="container-fluid p-0">
-        <header className="bg-primary text-white p-3 d-flex justify-content-between align-items-center">
+        <header className="header">
           <h1 className="h5 mb-0">기동장비 공지사항</h1>
-          <button className="btn" onClick={handleToggleSidebar}>
+          <button className="btn text-white" onClick={handleToggleSidebar}>
             <i className="bi bi-list"></i>
           </button>
-        </header>  
+        </header>
         
         <MobileMainUserMenu show={showSidebar} handleClose={handleToggleSidebar} onLogout={handleLogout} />
 
         <div className="pageMain">
         {currentNotices.length > 0 ? (
           currentNotices.map((item, index) => (
-          <div className={`${styles.formDivBox}`} onClick={(e) => handleNoticeClick(item)} >
-            <div className={styles.container}>              
-              <div key={item.NOTICEID} className={`d-flex ${styles.formList}`} >
-                <span className={`${styles.formTitle}`} >{totalNotices - (indexOfFirstItem + index)}. {item.title}</span>
-                <span className={`${styles.contentDate}`} >{item.date || new Date().toLocaleDateString()}</span>
-              </div>
+          <div className='formDivBox02' onClick={(e) => handleNoticeClick(item)} >
+            <div key={item.NOTICEID} className='formList'>
+              <span className='formTitle'>{totalNotices - (indexOfFirstItem + index)}. {item.title}</span>
+              <span className='contentDate'>{item.date || new Date().toLocaleDateString()}</span>
             </div>
           </div>
           ))
          ) : (
-          <li className="list-group-item text-center">공지사항이 없습니다.</li>
+          <div className="list-group-item text-center">공지사항이 없습니다.</div>
         )}
         {totalPages > 1 && (
           <nav aria-label="Page navigation" className="mt-3">

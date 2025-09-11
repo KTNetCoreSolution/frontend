@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import useStore from './store/store';
 import MainLayout from './components/main/MainLayout';
@@ -72,6 +72,28 @@ const App = () => {
   const isMobileDomain = window.location.host === MOBILE_DOMAIN;
   const isMobile = isMobileDomain || location.pathname.startsWith(`${BASE_NAME}/mobile`);
   const isLocal = ENV === 'local';
+
+  useEffect(() => {
+    const disableContextMenu = (e) => e.preventDefault();
+    const disableCtrlA = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') e.preventDefault();
+    };
+
+    document.addEventListener('selectstart', handleSelectStart);
+    document.addEventListener('contextmenu', disableContextMenu);
+    document.addEventListener('keydown', disableCtrlA);
+
+    return () => {
+      document.removeEventListener('selectstart', handleSelectStart);
+      document.removeEventListener('contextmenu', disableContextMenu);
+      document.removeEventListener('keydown', disableCtrlA);
+    };
+  }, []);
+
+  // selectstart 이벤트를 활용해 드래그 선택만 막음
+  const handleSelectStart = (e) => {
+    e.preventDefault();
+  };
 
   return (
     <ErrorMsgPopupProvider>

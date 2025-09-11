@@ -212,6 +212,18 @@ const StandardOrgStatistic = () => {
   const loadData = async () => {
     setLoading(true);
     setIsSearched(true);
+
+    // 날짜 범위 체크
+    if (filters.dayGubun === 'D') {
+      const maxMonths = 3;
+      const monthRange = common.checkMonthRange(filters.rangeStartDate, filters.rangeEndDate, maxMonths);
+      if (maxMonths <= monthRange) {
+        msgPopup(`${maxMonths}개월까지만 가능합니다.`);
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       const params = {
         pSECTIONCD: hasPermission(user?.auth, 'oper')
