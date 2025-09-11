@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import useStore from '../../store/store.js';
 import commonUtils from '../../utils/common.js';
 import { fetchData } from "../../utils/dataUtils.js";
+import { msgPopup } from '../../utils/msgPopup.js';
+import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import MobileMainUserMenu from '../../components/mobile/MobileMainUserMenu.jsx';
 import styles from './MobileCarLogList.module.css';
 import api from '../../utils/api.js';
@@ -86,11 +88,11 @@ const MobileCarLogList = () => {
     navigate('/mobile/MobileCarLogReg', { state: { carId: item.CARID, logDate: item.LOGDATE, logTime: item.LOGSTTIME, gubun: 'U' } });
   };
   
-  const totalCnt = list.length || 0;
+  const totalCnt = list === null ? 0 : list.length || 0;
   const totalPages = Math.ceil(totalCnt / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentList = list.slice(indexOfFirstItem, indexOfLastItem);
+  const currentList = list === null ? [] : list.slice(indexOfFirstItem, indexOfLastItem);
 
   const halfMaxButtons = Math.floor(maxPageButtons / 2);
   let startPage = Math.max(1, currentPage - halfMaxButtons);
@@ -133,7 +135,7 @@ const MobileCarLogList = () => {
           </div>
         {currentList.length > 0 ? (
           currentList.map((item, index) => (
-          <div key={item.CARID} className='formDivBox' onClick={(e) => handleNoticeClick(item)} >
+          <div key={item.CARID + '_' +item.ID} className='formDivBox' onClick={(e) => handleLogListClick(item)} >
             <ul className='formListData'>
               <li>
                 <span className='formLabel'>차량번호</span>  

@@ -112,8 +112,8 @@ const CarListInfoUpdateHist = () => {
       {
         type: 'search',
         fields: [
-          { id: 'startDate', type: 'startday', row: 1, label: '기간', labelVisible: true, placeholder: '시작일 선택', width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: todayDate },
-          { id: 'endDate', type: 'endday', row: 1, label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: todayDate },
+          { id: 'startDate', type: 'startday', row: 1, label: '기간', labelVisible: true, placeholder: '시작일 선택', width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: todayDate },
+          { id: 'endDate', type: 'endday', row: 1, label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: todayDate },
           { id: 'orgText', type: 'text', row: 1, label: '조직', labelVisible: true, placeholder: '조직 선택', width: '150px', height: '30px', backgroundColor: '#f0f0f0', color: '#000000', enabled: false },
           { id: 'orgPopupBtn', type: 'popupIcon', row: 1, label: '조직 선택', labelVisible: false, eventType: 'showOrgPopup', width: '30px', height: '30px', backgroundColor: '#f0f0f0', color: '#000000', enabled: true },
           { id: 'carno', type: 'text', row: 1, label: '차량번호', labelVisible: true, maxLength: 50, width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },

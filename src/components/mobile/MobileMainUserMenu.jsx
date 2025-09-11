@@ -74,8 +74,8 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
       >
         <div className="custom-offcanvas-header">
           <h5>메뉴</h5>
-          <button type="button" class="btn text-white" onClick={handleClose} aria-label="Close">
-            <i class="bi bi-x"></i>
+          <button type="button" className="btn text-white" onClick={handleClose} aria-label="Close">
+            <i className="bi bi-x"></i>
           </button>
         </div>
         <div className="custom-offcanvas-body">

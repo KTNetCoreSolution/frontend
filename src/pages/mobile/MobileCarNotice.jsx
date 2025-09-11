@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import useStore from '../../store/store.js';
 import commonUtils from '../../utils/common.js';
 import { fetchData } from "../../utils/dataUtils.js";
+import { msgPopup } from '../../utils/msgPopup.js';
+import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import MobileMainUserMenu from '../../components/mobile/MobileMainUserMenu.jsx';
 import styles from './MobileCarNotice.module.css';
 import api from '../../utils/api.js';
@@ -64,11 +66,11 @@ const MobileCarNotice = () => {
     //alert(notice.noticeid);
   };
   
-  const totalNotices = notices.length || 0;
+  const totalNotices = notices === null ? 0 : notices.length || 0;
   const totalPages = Math.ceil(totalNotices / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentNotices = notices.slice(indexOfFirstItem, indexOfLastItem);
+  const currentNotices = notices === null ? [] : notices.slice(indexOfFirstItem, indexOfLastItem);
 
   const halfMaxButtons = Math.floor(maxPageButtons / 2);
   let startPage = Math.max(1, currentPage - halfMaxButtons);

@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import useStore from '../../store/store.js';
 import commonUtils from '../../utils/common.js';
 import { fetchData } from "../../utils/dataUtils.js";
+import { msgPopup } from '../../utils/msgPopup.js';
+import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import MobileMainUserMenu from '../../components/mobile/MobileMainUserMenu.jsx';
 import styles from './MobileCarLogConfirm.module.css';
 import api from '../../utils/api.js';
@@ -101,7 +103,7 @@ const MobileCarLogConfirm = () => {
           errorMsgPopup(errMsg);
         } else {
           msgPopup('선택한 운행일지가 ' + confMsg + ' 되었습니다.');
-          await loadData();
+          await initializeComponent();
         }
       }
     } catch (err) {
@@ -131,7 +133,7 @@ const MobileCarLogConfirm = () => {
           errorMsgPopup(errMsg);
         } else {
           msgPopup("운행일지 일괄 승인 되었습니다.");
-          await loadData();
+          await initializeComponent();
         }
       }
     } catch (error) {
@@ -144,11 +146,11 @@ const MobileCarLogConfirm = () => {
     navigate('/mobile/MobileDrivingLog');
   };
   
-  const totalCnt = list.length || 0;
+  const totalCnt = list === null ? 0 : list.length || 0;
   const totalPages = Math.ceil(totalCnt / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentList = list.slice(indexOfFirstItem, indexOfLastItem);
+  const currentList = list === null ? [] : list.slice(indexOfFirstItem, indexOfLastItem);
 
   const halfMaxButtons = Math.floor(maxPageButtons / 2);
   let startPage = Math.max(1, currentPage - halfMaxButtons);
@@ -180,7 +182,7 @@ const MobileCarLogConfirm = () => {
 
         <div className="pageMain">
           <div style={{display: 'flex', marginTop:-5 + 'px', marginBottom:10 + 'px', marginRight:4 + 'px', justifyContent: 'flex-end'}}>
-            <button className={`btn ${styles.btnCheck} ${styles.btn}`} style={{width: 80 + 'px'}} onClick={(e) => handleConfrimAll(e)}>일괄승인</button>
+            <button className={`btn ${styles.btnCheck} ${styles.btn}`} style={{width: 80 + 'px', display: user?.levelCd === '41' ? 'block' : 'none' }} onClick={(e) => handleConfrimAll(e)}>일괄승인</button>
             <button className={`btn ${styles.btnReturn} ${styles.btn}`} style={{width: 80 + 'px'}} onClick={handleReturnPage}>돌아가기</button>
           </div>
           {currentList.length > 0 ? (

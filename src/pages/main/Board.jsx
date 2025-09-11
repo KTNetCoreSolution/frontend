@@ -43,11 +43,11 @@ const Board = ({ canWriteBoard, type = 'notice' }) => {
     navigate('/main/boardView', { state: { noticeid: notice.noticeid, type } });
   };
 
-  const totalNotices = notices.length || 0;
+  const totalNotices = notices === null ? 0 : notices.length || 0;
   const totalPages = Math.ceil(totalNotices / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentNotices = notices.slice(indexOfFirstItem, indexOfLastItem);
+  const currentNotices = notices === null ? [] : notices.slice(indexOfFirstItem, indexOfLastItem);
 
   const halfMaxButtons = Math.floor(maxPageButtons / 2);
   let startPage = Math.max(1, currentPage - halfMaxButtons);
