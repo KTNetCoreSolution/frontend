@@ -275,7 +275,7 @@ const CarListInfo = () => {
 
     // API 로 통신할 경우 fetchData()
     try {
-      const params = {pORGCD: selectedOrgRef.current, pCARID: '', pCARNO: currentFilters.carno || '', pSTATUS: currentFilters.mgmtstatus || '', pDEBUG: "F"};
+      const params = {pORGCD: selectedOrgRef.current, pCARID: '', pCARNO: currentFilters.carno || '', pSTATUS: currentFilters.mgmtstatus || '', pEMPNO: user?.empNo, pDEBUG: "F"};
 
       const response = await fetchData("car/listInfo", params);
       if (!response.success) {

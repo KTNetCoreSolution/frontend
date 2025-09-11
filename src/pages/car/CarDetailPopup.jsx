@@ -303,6 +303,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
 
     const carData = {
       pCARID: carId,
+      pEMPNO: user?.empNo,
       pDEBUG: 'F' 
     };
     
