@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -14,10 +14,23 @@ const MOBILE_DOMAIN = import.meta.env.VITE_MOBILE_DOMAIN || 'localhost:9090';
 const MobileMainLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { loading } = useStore();
+  const { loading, setLoading } = useStore();
   const [showSidebar, setShowSidebar] = useState(false);
   const isMainPage = location.pathname === '/mobile/Main';
   const handleToggleSidebar = () => { setShowSidebar(!showSidebar); };
+
+  // 경로 변화 감지: 뒤로 가기나 네비게이션 시 로딩 상태 리셋
+  useEffect(() => {
+    // 네비게이션이 완료된 후 (idle 상태 확인) 로딩 리셋
+    if (!loading.isLoading) return;  // 이미 false면 무시
+
+    const timer = setTimeout(() => {
+      setLoading({ isLoading: false, progress: 0 });  // 100ms 지연으로 네비게이션 완료 대기
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [location.pathname, loading.isLoading, setLoading]);
+
 
   return (
     <div className="container">
