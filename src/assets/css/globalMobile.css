@@ -617,6 +617,7 @@ body {
   padding: 1rem !important;
   height: calc(100vh - 56px);
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .nodataWrap {
