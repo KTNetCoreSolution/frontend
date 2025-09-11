@@ -83,61 +83,55 @@ const MobileDrivingLog = () => {
       if (!response.success) {
         throw new Error(response.errMsg || '운행일지 상세정보 조회 중 오류가 발생했습니다.');
       } else {
-        if (response.errMsg !== '' || response.data[0].errCd !== '00') {
-          let errMsg = response.errMsg;
-          if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
-          errorMsgPopup(errMsg);
+        const logDate = pGubun === 'I' ? response.data[0].LOGDATE <= todayDate ? todayDate : response.data[0].LOGDATE : response.data[0].LOGDATE;            
+        const logStTime = pGubun === 'I' ? response.data[0].LOGDATE === todayDate ? response.data[0].LOGENTIME : '09:00' : response.data[0].LOGSTTIME;
+        setStTime(timeOption(logStTime, 'S'));
+
+        const safetyNote = pGubun === 'I' ? '' : response.data[0].SAFETYNOTE;
+        const stKm = pGubun === 'I' ? response.data[0].ENKM || 0 : response.data[0].STKM;
+        const enKm = pGubun === 'I' ? 0 : response.data[0].ENKM;
+        const fuel = pGubun === 'I' ? 0 : response.data[0].FUEL;
+        const note = pGubun === 'I' ? '' : response.data[0].NOTE;
+        const empNo = pGubun === 'I' ? user?.empNo : response.data[0].EMPNO;
+        const empNm = pGubun === 'I' ? user?.empNm : response.data[0].EMPNM;
+        const delYn = response.data[0].DELYN;
+
+        setEnTime(timeOption(logStTime, 'E'));
+
+        let logEnTime = '09:00';
+
+        if (pGubun === 'I') {
+          timeOption(logInfo.LOGSTTIME, 'E').some(time => {
+            if (time > logStTime) {
+              logEnTime = time; 
+              return true;
+            }
+          });
         } else {
-          const logDate = pGubun === 'I' ? response.data[0].LOGDATE <= todayDate ? todayDate : response.data[0].LOGDATE : response.data[0].LOGDATE;            
-          const logStTime = pGubun === 'I' ? response.data[0].LOGDATE === todayDate ? response.data[0].LOGENTIME : '09:00' : response.data[0].LOGSTTIME;
-          setStTime(timeOption(logStTime, 'S'));
-
-          const safetyNote = pGubun === 'I' ? '' : response.data[0].SAFETYNOTE;
-          const stKm = pGubun === 'I' ? response.data[0].ENKM || 0 : response.data[0].STKM;
-          const enKm = pGubun === 'I' ? 0 : response.data[0].ENKM;
-          const fuel = pGubun === 'I' ? 0 : response.data[0].FUEL;
-          const note = pGubun === 'I' ? '' : response.data[0].NOTE;
-          const empNo = pGubun === 'I' ? user?.empNo : response.data[0].EMPNO;
-          const empNm = pGubun === 'I' ? user?.empNm : response.data[0].EMPNM;
-          const delYn = response.data[0].DELYN;
-
-          setEnTime(timeOption(logStTime, 'E'));
-
-          let logEnTime = '09:00';
-
-          if (pGubun === 'I') {
-            timeOption(logInfo.LOGSTTIME, 'E').some(time => {
-              if (time > logStTime) {
-                logEnTime = time; 
-                return true;
-              }
-            });
-          } else {
-            logEnTime = response.data[0].LOGENTIME;
-          }
-
-          setLogInfo({GUBUN:pGubun, CARID: state?.carId, CARNO: response.data[0].CARNO, LOGDATE: logDate, LOGSTTIME: logStTime, LOGENTIME: logEnTime, SAFETYNOTE: safetyNote, STKM: stKm, ENKM: enKm, FUEL: fuel, NOTE: note, EMPNO: empNo, EMPNM: empNm, DELYN: delYn});
-          setLastLogInfo({LOGDATE: response.data[0].LOGDATE, LOGSTTIME: response.data[0].LOGDATE, LOGENTIME: response.data[0].LOGENTIME});
-
-          const bDamage = response.data[0].DAMAGE === 'Y' || pGubun === 'I' ? true : false;
-          const bOilLeak = response.data[0].OILLEAK === 'Y' || pGubun === 'I' ? true : false;
-          const bTire = response.data[0].TIRE === 'Y' || pGubun === 'I' ? true : false;
-          const bLuggage = response.data[0].LUGGAGE === 'Y' || pGubun === 'I' ? true : false;
-          const bEtc1 = response.data[0].ETC1 === 'Y' || pGubun === 'I' ? true : false;
-          const bEtc2 = response.data[0].ETC2 === 'Y' || pGubun === 'I' ? true : false;
-
-          setIsDamage(bDamage);
-          setIsOilLeak(bOilLeak);
-          setIsTire(bTire);
-          setIsLuggage(bLuggage);
-          setIsEtc1(bEtc1);
-          setIsEtc2(bEtc2);
+          logEnTime = response.data[0].LOGENTIME;
         }
+
+        setLogInfo({GUBUN:pGubun, CARID: state?.carId, CARNO: response.data[0].CARNO, LOGDATE: logDate, LOGSTTIME: logStTime, LOGENTIME: logEnTime, SAFETYNOTE: safetyNote, STKM: stKm, ENKM: enKm, FUEL: fuel, NOTE: note, EMPNO: empNo, EMPNM: empNm, DELYN: delYn});
+        setLastLogInfo({LOGDATE: response.data[0].LOGDATE, LOGSTTIME: response.data[0].LOGDATE, LOGENTIME: response.data[0].LOGENTIME});
+
+        const bDamage = response.data[0].DAMAGE === 'Y' || pGubun === 'I' ? true : false;
+        const bOilLeak = response.data[0].OILLEAK === 'Y' || pGubun === 'I' ? true : false;
+        const bTire = response.data[0].TIRE === 'Y' || pGubun === 'I' ? true : false;
+        const bLuggage = response.data[0].LUGGAGE === 'Y' || pGubun === 'I' ? true : false;
+        const bEtc1 = response.data[0].ETC1 === 'Y' || pGubun === 'I' ? true : false;
+        const bEtc2 = response.data[0].ETC2 === 'Y' || pGubun === 'I' ? true : false;
+
+        setIsDamage(bDamage);
+        setIsOilLeak(bOilLeak);
+        setIsTire(bTire);
+        setIsLuggage(bLuggage);
+        setIsEtc1(bEtc1);
+        setIsEtc2(bEtc2);
       }
     } catch (error) {
       setCarId('');
       console.error('Registration error:', error);
-      errorMsgPopup(error.message || '운행일지 상세정보 조회 중 오류가 발생했습니다.');
+      alert(error.message || '운행일지 상세정보 조회 중 오류가 발생했습니다.');
     }
   };
   

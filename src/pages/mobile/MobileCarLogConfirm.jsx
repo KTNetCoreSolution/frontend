@@ -52,7 +52,7 @@ const MobileCarLogConfirm = () => {
       }
     } catch (error) {
       console.error('Registration error:', error);
-      errorMsgPopup(error.message || '운행이력 조회 중 오류가 발생했습니다.');
+      alert(error.message || '운행이력 조회 중 오류가 발생했습니다.');
     }
   };
     
