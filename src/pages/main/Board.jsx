@@ -117,11 +117,11 @@ const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = t
                   onClick={() => handleNoticeClick(notice)}
                   style={{ cursor: 'pointer' }}
                 >
-                  <span className='me-2'>{totalNotices - (indexOfFirstItem + idx)}.</span>
+                  {/* <span className='me-2'>{totalNotices - (indexOfFirstItem + idx)}.</span> */}
                   <span className={`${styles.boardContentTitle}`}>{notice.title}</span>
                 </span>
                 <div>
-                  <span className='contentDate'>
+                  <span className={`contentDate ${styles.boardContentDate}`}>
                     {notice.date || new Date().toLocaleDateString()}
                   </span>
                 </div>

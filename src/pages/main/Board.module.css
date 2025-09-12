@@ -15,6 +15,13 @@
   vertical-align: middle; /* 필요 시 */
 }
 
+.boardContentDate {
+  color: #fff;
+  background: #6d9aa0;
+  border-radius: 10px;
+  padding: 5px 10px;
+}
+
 .btnReg {
     background-color: #547574;
     border-color: #547574;
