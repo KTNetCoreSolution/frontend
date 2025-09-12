@@ -85,7 +85,6 @@ const StandardIntoStatistic = () => {
     classGubunTxt: user?.standardSectionCd === 'LINE' ? '선로' : user?.standardSectionCd === 'DESIGN' ? '설계' : user?.standardSectionCd === 'BIZ' ? 'BIZ' : '선로',
     monthDate: today.substring(0, 7),
     ORGCD: user?.orgCd || '',
-    orgText: '',
     CLASSACD: 'all',
     CLASSBCD: 'all',
     CLASSCCD: 'all',
@@ -271,9 +270,7 @@ const StandardIntoStatistic = () => {
       } catch (err) {
         console.error('분류 목록 로드 실패:', err);
         errorMsgPopup('분류 목록을 가져오는 중 오류가 발생했습니다.');
-     
-
- }
+      }
     };
     fetchClassData();
   }, [filters.classGubun, user]);
