@@ -181,7 +181,7 @@ const Login = () => {
             <div className='buttonGroup'>
               <div className='buttonEtcWrap'>
                 <div className='buttonEtcInnerWrap'>
-                  <button type="button" className='smallButton' onClick={handleJoinClick}>
+                  <button type="button" className='smallButton' style={{ visibility: 'hidden' }} onClick={handleJoinClick}>
                     회원가입
                   </button>
                   <button type="button" className='smallButton' onClick={handlePasswordChangeClick}>

@@ -166,6 +166,7 @@ const MobileLogin = () => {
                 <button
                   type="button"
                   className='smallButton'
+                  style={{ visibility: 'hidden' }}
                   onClick={handleJoinClick}
                 >
                   회원가입
