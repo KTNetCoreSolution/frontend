@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import useStore from '../../store/store';
 import { checkTokenValidity, hasPermission } from '../../utils/authUtils';
@@ -7,9 +7,21 @@ import arrowDown from '../../assets/images/icon_arrow_down_white.svg';
 
 const MenuItem = ({ item }) => {
   const [showChildren, setShowChildren] = useState(false);
+  const timeoutRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, setUser, clearUser } = useStore();
+
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current); // 기존 타임아웃 취소
+    setShowChildren(true);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setShowChildren(false);
+    }, 200); // 200ms 지연 후 숨김
+  };
 
   const hasValidPath = item.URL && item.URL.trim() !== '';
   const hasChildren =
@@ -38,8 +50,8 @@ const MenuItem = ({ item }) => {
   return (
     <li
       className={`menuItem ${hasChildren ? 'menu' : ''}`}
-      onMouseEnter={() => hasChildren && setShowChildren(true)}
-      onMouseLeave={() => hasChildren && setShowChildren(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {hasChildren ? (
         <>
