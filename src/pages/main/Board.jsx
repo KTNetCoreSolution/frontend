@@ -120,11 +120,9 @@ const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = t
                   {/* <span className='me-2'>{totalNotices - (indexOfFirstItem + idx)}.</span> */}
                   <span className={`${styles.boardContentTitle}`}>{notice.title}</span>
                 </span>
-                <div>
-                  <span className={`contentDate ${styles.boardContentDate}`}>
-                    {notice.date || new Date().toLocaleDateString()}
-                  </span>
-                </div>
+                <span className='contentDate'>
+                  {notice.date || new Date().toLocaleDateString()}
+                </span>
               </li>
             ))
           ) : (

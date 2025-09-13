@@ -647,8 +647,8 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
         <Modal.Title>운행일지 관리</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className={`mb-2 ${styles.formDiv}`} style={{display: `${vDisplay ? 'none' : 'block'}`}}>
-          <div className="mb-2 d-flex">
+        <div className='flex-column gap-2' style={{display: `${vDisplay ? 'none' : 'flex'}`}}>
+          <div>
             <label className="form-label flex-shrink-0 me-2" htmlFor="carId" style={{width:63 +'px', paddingTop:6 + 'px'}}>차량</label>
             <select id="carId" className={`form-select ${styles.formSelect}`} defaultValue={data.CARID} style={{width:200 +'px'}} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {searchCarInfo(e)}}>
               <option value="">선택하세요</option>
@@ -656,7 +656,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             </select>
             <button className={`btn btn-sm btn-danger flex-shrink-0 ms-auto`} style={{width:60 +'px', height: 36 + 'px', display:`${vDelBtnDisplay}`}} onClick={handleDelete}>삭제</button>
           </div>
-          <div className="mb-2" style={{minHeight: 245 + 'px'}}>
+          <div style={{minHeight: 245 + 'px'}}>
             <div className={styles.container}>
               <label className={`flex-shrink-0 me-2 ${styles.formCarNm}`}>{carInfo.CARNM}</label>
               <div className={`${styles.starBorder}`} style={{ position: 'absolute', top: '20px', left: '4px', zIndex: 1, display: `${vImgDisplay}`  }}>
@@ -665,7 +665,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
               <img src={carInfo.src} className={styles.carImage} />
             </div>
           </div>
-          <div className="mb-2">
+          <div>
             <div className={`${styles.formDivBox}`} style={{height: 58 + 'px'}} >
               <div className={styles.container}>
                 <label className={`flex-shrink-0 me-2 ${styles.formCarNm}`} style={{color:'#00c4b4', height:20 + 'px'}}>차고지</label>
@@ -673,7 +673,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
               </div>
             </div>
           </div>
-          <div className="mb-2">
+          <div>
             <div className={`${styles.formDivBox}`} style={{height: 45 + 'px'}} >
               <div className={`d-flex ${styles.container}`} >
                 <label className={`flex-shrink-0 me-2 ${styles.formManager}`} style={{color:'#525252', width: 100 + 'px'}}>운전자(정)</label>
@@ -685,7 +685,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
               </div>
             </div>
           </div>
-          <div className="mb-2">
+          <div>
             <div className="d-flex">
               <label className={`form-label flex-shrink-0 me-2 ${styles.formTitleLabel}`} htmlFor="logDate" style={{width:63 +'px'}}>운행일시</label>
               <input type="date" ref={logDateRef} id="logDate" className={`form-control ${styles.formControl}`} value={logInfo.LOGDATE} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} style={{width:120 +'px', marginRight:5 + 'px'}} onChange={(e) => {handleLogDate(e)}} />
@@ -698,11 +698,11 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
               </select>
             </div>
           </div>
-          <div className="mb-2">
+          <div>
               <button className={`btn ${styles.btnCheck} ${styles.btn}`} style={{ backgroundColor:vImgDisplay === 'flex' ? '#00c4b4' : '#909090'}} disabled={vImgDisplay === 'flex' ? '' : 'disabled'} onClick={(e) => setDisplay(!vDisplay)}>차량점검 및 {logInfo.GUBUN === 'I' ? '일지작성' : '운행결과'}</button>
           </div>
         </div>
-        <div className={`mb-2 ${styles.formDiv}`} style={{display: `${vDisplay ? 'block' : 'none'}`}}>
+        <div className='flex-column gap-2' style={{display: `${vDisplay ? 'flex' : 'none'}`}}>
           <div className="mb-2 d-flex">
             <label className="form-label" style={{fontWeight:'bold'}}>점검항목</label>
             <button className={`btn ${styles.btnCheck} ${styles.btn} ${styles.btnReturn}`} onClick={(e) => setDisplay(!vDisplay)}>이전</button>
@@ -759,7 +759,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             <textarea className={`${styles.formTextArea}`} rows="5" value={logInfo.SAFETYNOTE} maxLength={1500} placeholder="점검특이사항(차량불량사항이 있는 경우/특수문자 입력불가)" disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, SAFETYNOTE: e.target.value })}}  />
           </div>
         </div>
-        <div className={`mb-2 ${styles.formDiv}`} style={{display: `${vDisplay ? 'block' : 'none'}`}}>
+        <div className='flex-column gap-2' style={{display: `${vDisplay ? 'flex' : 'none'}`}}>
           <div className="mb-2">
             <div className="d-flex">
               <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:63 +'px'}}>운행일시</label>
@@ -859,7 +859,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
               </CommonPopup>
           </div>
         </div>
-        <div className='mb-2' style={{display: `${vDisplay ? 'flex' : 'none'}`}}>
+        <div className='gap-2' style={{display: `${vDisplay ? 'flex' : 'none'}`}}>
           <button className={`btn btn-secondary ${styles.btn}`} style={{ width:40 + 'px'}} onClick={onHide}>취소</button>
           <button className={`btn btn-primary ${styles.btn}`} style={{ width:40 + 'px', display: `${vSaveBtnDisplay}`}} onClick={handleSubmit}>저장</button>
           <button className={`btn btn-danger ${styles.btn}`} style={{ width:40 + 'px', display: `${vRejectBtnDisplay}`}} onClick={handleReject}>반려</button>

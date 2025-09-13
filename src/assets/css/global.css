@@ -1709,3 +1709,6 @@ textarea.form-control {
 }
 
 
+.contentDate {
+  color:var(--bs-font-secondary-color);
+}

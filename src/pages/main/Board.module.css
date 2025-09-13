@@ -16,10 +16,7 @@
 }
 
 .boardContentDate {
-  color: #fff;
-  background: #6d9aa0;
-  border-radius: 10px;
-  padding: 5px 10px;
+  color: var(--bs-font-secondary-color);
 }
 
 .btnReg {
