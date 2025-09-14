@@ -78,9 +78,9 @@ const filterTableFields = [
 // 기본 컬럼 정의
 const baseColumns = [
   { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
-  { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
-  { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 100 },
-  { headerHozAlign: 'center', hozAlign: 'center', title: '인원', field: 'EMPNOCNT', sorter: 'number', width: 100 },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false, frozen: true },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 100, frozen: true },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '인원', field: 'EMPNOCNT', sorter: 'number', width: 100, frozen: true },
   {
     headerHozAlign: 'center',
     hozAlign: 'center',
@@ -88,9 +88,12 @@ const baseColumns = [
     field: 'ORGNM',
     sorter: 'string',
     width: 130,
+    frozen: true,
     formatter: (cell) => {
       const value = cell.getValue();
-      if (value) {
+      const rowData = cell.getRow().getData();
+      const orgDownYn = rowData.ORGDOWNYN || '';
+      if (value && orgDownYn !== 'N') {
         cell.getElement().style.color = '#247db3';
         cell.getElement().style.cursor = 'pointer';
       } else {
@@ -102,7 +105,8 @@ const baseColumns = [
     cellClick: (e, cell, setSelectedOrgData, setShowOrgStatisticPopup, user) => {
       const value = cell.getValue();
       const rowData = cell.getRow().getData();
-      if (value) {
+      const orgDownYn = rowData.ORGDOWNYN || '';
+      if (value && orgDownYn !== 'N') {
         setSelectedOrgData({
           ...rowData,
           SECTIONCD: rowData.SECTIONCD || '',
@@ -113,7 +117,11 @@ const baseColumns = [
           DATEGB: rowData.pDATEGB || '',
           DATE1: rowData.pDATE1 || '',
           DATE2: rowData.pDATE2 || '',
-          CLASSCD: rowData.CLASSCD || '',
+          CLASSACD: rowData.pCLASSACD || 'all',
+          CLASSBCD: rowData.pCLASSBCD || 'all',
+          CLASSCCD: rowData.pCLASSCCD || 'all',
+          CLASSCOL: rowData.CLASSCOL || 'CLASSCCCD',
+          ORGDOWNYN: rowData.ORGDOWNYN || 'N',
         });
         setShowOrgStatisticPopup(true);
       }
@@ -125,6 +133,11 @@ const baseColumns = [
   { headerHozAlign: 'center', hozAlign: 'center', title: '조회일자2', field: 'pDATE2', sorter: 'string', width: 100, visible: false },
   { headerHozAlign: 'center', hozAlign: 'center', title: '조회조직레벨구분', field: 'pORGLEVELGB', sorter: 'string', width: 100, visible: false },
   { headerHozAlign: 'center', hozAlign: 'center', title: '조직레벨', field: 'ORGLEVEL', sorter: 'string', width: 100, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '조직하위유무', field: 'ORGDOWNYN', sorter: 'string', width: 100, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '조회분류코드A', field: 'pCLASSACD', sorter: 'string', width: 100, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '조회분류코드B', field: 'pCLASSBCD', sorter: 'string', width: 100, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '조회분류코드C', field: 'pCLASSCCD', sorter: 'string', width: 100, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '컬럼코드', field: 'CLASSCOL', sorter: 'string', width: 100, visible: false },
 ];
 
 const StandardOrgStatistic = () => {
@@ -142,7 +155,6 @@ const StandardOrgStatistic = () => {
     monthDate: today.substring(0, 7),
     rangeStartDate: today,
     rangeEndDate: today,
-    CLASSCD: '',
     ORGCD: user?.orgCd || '',orgText: user?.orgNm || '' });
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
@@ -156,7 +168,7 @@ const StandardOrgStatistic = () => {
   const [showStatisticPopup, setShowStatisticPopup] = useState(false);
   const [showOrgStatisticPopup, setShowOrgStatisticPopup] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
-  const [selectedOrgData, setSelectedOrgData] = useState(null); // 수정: 상태 정의 확인
+  const [selectedOrgData, setSelectedOrgData] = useState(null);
   const [dynamicColumns, setDynamicColumns] = useState([]);
 
   // useMemo로 옵션 최적화
@@ -217,15 +229,15 @@ const StandardOrgStatistic = () => {
                     ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true }]
                     : []
           ),
-          { id: 'selectBtn', type: 'button', label: '선택', labelVisible: false, eventType: 'showClassPopup', enabled: true }, // 분류 선택 버튼
-          { id: 'CLASSACD', type: 'select', row: 1, label: '대분류', labelVisible: true, options: [], enabled: true }, // 대분류 드롭다운
-          { id: 'CLASSBCD', type: 'select', row: 1, label: '중분류', labelVisible: true, options: [], enabled: true }, // 중분류 드롭다운
-          { id: 'CLASSCCD', type: 'select', row: 1, label: '소분류', labelVisible: true, options: [], enabled: true }, // 소분류 드롭다운
-          { id: 'dayGubunLbl', type: 'label', row: 2, label: '작업', labelVisible: false, enabled: true }, // 작업 라벨
-          { id: 'dayGubun', type: 'select', row: 2, label: '', labelVisible: false, options: [{ value: 'M', label: '월' }, { value: 'D', label: '일' }], defaultValue: 'M', enabled: true }, // 월/일 선택 드롭다운
-          { id: 'monthDate', type: 'month', row: 2, width:'74px', label: '', labelVisible: true, placeholder: '월 선택', enabled: false, defaultValue: today }, // 월 선택 입력 (dayGubun: 'M'일 때 표시)
-          { id: 'rangeStartDate', type: 'startday', row: 2, width:'100px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: false, defaultValue: today }, // 시작일 입력 (dayGubun: 'D'일 때 표시)
-          { id: 'rangeEndDate', type: 'endday', row: 2, width:'100px', label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', enabled: false, defaultValue: today }, // 종료일 입력 (dayGubun: 'D'일 때 표시)
+          { id: 'selectBtn', type: 'button', label: '선택', labelVisible: false, eventType: 'showClassPopup', enabled: true },
+          { id: 'CLASSACD', type: 'select', row: 1, label: '대분류', labelVisible: true, options: [], enabled: true },
+          { id: 'CLASSBCD', type: 'select', row: 1, label: '중분류', labelVisible: true, options: [], enabled: true },
+          { id: 'CLASSCCD', type: 'select', row: 1, label: '소분류', labelVisible: true, options: [], enabled: true },
+          { id: 'dayGubunLbl', type: 'label', row: 2, label: '작업', labelVisible: false, enabled: true },
+          { id: 'dayGubun', type: 'select', row: 2, label: '', labelVisible: false, options: [{ value: 'M', label: '월' }, { value: 'D', label: '일' }], defaultValue: 'M', enabled: true },
+          { id: 'monthDate', type: 'month', row: 2, width:'74px', label: '', labelVisible: true, placeholder: '월 선택', enabled: false, defaultValue: today },
+          { id: 'rangeStartDate', type: 'startday', row: 2, width:'100px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: false, defaultValue: today },
+          { id: 'rangeEndDate', type: 'endday', row: 2, width:'100px', label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', enabled: false, defaultValue: today },
           { id: 'orgText', type: 'text', row: 2, label: '조직', labelVisible: true, placeholder: '조직 선택', enabled: false },
           { id: 'orgPopupBtn', type: 'popupIcon', row: 2, label: '조직 선택', labelVisible: false, eventType: 'showOrgPopup', enabled: true },
         ],
@@ -318,7 +330,7 @@ const StandardOrgStatistic = () => {
           errorMsgPopup(response.message || '분류 목록을 가져오는 중 오류가 발생했습니다.');
           return;
         }
-        const fetchedClassData = Array.isArray(response.data) ?response.data : [];
+        const fetchedClassData = Array.isArray(response.data) ? response.data : [];
         setClassData(fetchedClassData);
       } catch (err) {
         console.error('분류 목록 로드 실패:', err);
@@ -348,7 +360,6 @@ const StandardOrgStatistic = () => {
         monthDate: prev.monthDate || today.substring(0, 7),
         rangeStartDate: prev.rangeStartDate || today,
         rangeEndDate: prev.rangeEndDate || today,
-        CLASSCD: prev.CLASSCD || '',
         CLASSACD: prev.CLASSACD || 'all',
         CLASSBCD: prev.CLASSBCD || 'all',
         CLASSCCD: prev.CLASSCCD || 'all',
@@ -390,13 +401,9 @@ const StandardOrgStatistic = () => {
         pDATEGB: filters.dayGubun,
         pDATE1: filters.dayGubun === 'D' ? filters.rangeStartDate : filters.dayGubun === 'M' ? filters.monthDate : '',
         pDATE2: filters.dayGubun === 'D' ? filters.rangeEndDate : filters.dayGubun === 'M' ? filters.monthDate : '',
-        pCLASSCD: (filters.CLASSCCD === '' || filters.CLASSCCD === 'all') 
-            ? ((filters.CLASSBCD === '' || filters.CLASSBCD === 'all') 
-                ? ((filters.CLASSACD === '' || filters.CLASSACD === 'all') 
-                    ? '' 
-                    : filters.CLASSACD) 
-                : filters.CLASSBCD) 
-            : filters.CLASSCCD,
+        pCLASSACD: filters.CLASSACD || 'all',
+        pCLASSBCD: filters.CLASSBCD || 'all',
+        pCLASSCCD: filters.CLASSCCD || 'all',
         pDEBUG: 'F',
       };
 
@@ -412,11 +419,28 @@ const StandardOrgStatistic = () => {
 
       // 동적 컬럼 생성
       const classData = Array.isArray(classResponse.data) ? classResponse.data : [];
-      const newDynamicColumns = classData.map(({ CLASSACD, CLASSANM }) => ({
+      let classKey = 'CLASSACD';
+      let classNameKey = 'CLASSANM';
+
+      if (classData.length > 0) {
+        const firstItem = classData[0];
+        if ('CLASSACD' in firstItem) {
+          classKey = 'CLASSACD';
+          classNameKey = 'CLASSANM';
+        } else if ('CLASSBCD' in firstItem) {
+          classKey = 'CLASSBCD';
+          classNameKey = 'CLASSBNM';
+        } else if ('CLASSCCD' in firstItem) {
+          classKey = 'CLASSCCD';
+          classNameKey = 'CLASSCNM';
+        }
+      }
+
+      const newDynamicColumns = classData.map((item) => ({
         headerHozAlign: 'center',
         hozAlign: 'center',
-        title: CLASSANM,
-        field: CLASSACD,
+        title: item[classNameKey],
+        field: item[classKey] || 'all',
         sorter: 'number',
         width: 200,
         visible: true,
@@ -438,7 +462,11 @@ const StandardOrgStatistic = () => {
           if (!isNaN(value) && value > 0) {
             setSelectedData({
               ...rowData,
-              CLASSCD: field,
+              CLASSACD: classKey === 'CLASSACD' ? field : rowData.pCLASSACD || 'all',
+              CLASSBCD: classKey === 'CLASSBCD' ? field : rowData.pCLASSBCD || 'all',
+              CLASSCCD: classKey === 'CLASSCCD' ? field : rowData.pCLASSCCD || 'all',
+              CLASSCOL: classKey,
+              DYNAMIC_COLUMN: field,
               SECTIONCD: rowData.SECTIONCD || '',
               DATEGB: rowData.pDATEGB || '',
               DATE1: rowData.pDATE1 || '',
@@ -639,7 +667,7 @@ const StandardOrgStatistic = () => {
           onConfirm={handleOrgConfirm}
           initialSelectedOrgs={filters.ORGCD ? filters.ORGCD.split(',').filter(Boolean) : []}
           pGUBUN={pGUBUN}
-          isMulti={true}
+          isMulti={false}
           isChecked={false}
         />
       )}
@@ -653,7 +681,7 @@ const StandardOrgStatistic = () => {
         show={showOrgStatisticPopup}
         onHide={() => setShowOrgStatisticPopup(false)}
         data={selectedOrgData ? [selectedOrgData] : []}
-        dynamicColumns={dynamicColumns} // 추가: 동적 컬럼 전달
+        dynamicColumns={dynamicColumns}
       />
     </div>
   );
