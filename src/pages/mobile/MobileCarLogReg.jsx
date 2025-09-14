@@ -333,25 +333,23 @@ const MobileDrivingLog = () => {
           <button className={`btn ${styles.btnReturn} ${styles.btn}`} style={{width: 80 + 'px'}} onClick={handleReturnPage}>{state?.gubun === 'U' ? '돌아가기' : '닫기' }</button>
         </div>
         <div className='formDivBox'>
-          <div className={styles.container}>              
-            <div className='formList'>
-              <span className='formSearchTitle'>차량번호 : {logInfo.CARNO} </span>
-            </div>
-            <div className='formList'>
-              <span className='formSearchTitle'>차대번호 : {logInfo.CARID} </span>
-            </div>
-            <div className='formList'>
-              <span className='formSearchTitle'>운행일시 </span>
-              <div className='d-flex flex-column gap-2'>
-                <input type="date" ref={logDateRef} id="logDate" className={`${styles.formInput}`} value={logInfo.LOGDATE} disabled={gubun === 'I' ? '' : 'disabled'} style={{marginRight:5 + 'px'}} onChange={(e) => {handleLogDate(e)}} />
-                <div className='d-flex flex-row align-items-center'>
-                  <select id="stTime" className={`form-select ${styles.formSelect}`} style={{marginRight:5 + 'px'}} defaultValue={logInfo.LOGSTTIME} disabled={gubun === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGSTTIME: e.target.value })}}>
-                    {stTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
-                  </select> ~ 
-                  <select id="enTime" className={`form-select ${styles.formSelect}`} style={{marginLeft:5 + 'px'}} defaultValue={logInfo.LOGENTIME}  disabled={gubun === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGENTIME: e.target.value })}}>
-                    {enTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
-                  </select>
-                </div>
+          <div className='formList'>
+            <span className='formSearchTitle'>차량번호 : {logInfo.CARNO} </span>
+          </div>
+          <div className='formList'>
+            <span className='formSearchTitle'>차대번호 : {logInfo.CARID} </span>
+          </div>
+          <div className='formList'>
+            <span className='formSearchTitle'>운행일시 </span>
+            <div className='d-flex gap-2'>
+              <input type="date" ref={logDateRef} id="logDate" className={`${styles.formInput}`} value={logInfo.LOGDATE} disabled={gubun === 'I' ? '' : 'disabled'} style={{marginRight:5 + 'px'}} onChange={(e) => {handleLogDate(e)}} />
+              <div className='d-flex flex-row align-items-center'>
+                <select id="stTime" className={`form-select ${styles.formSelect}`} style={{marginRight:5 + 'px'}} defaultValue={logInfo.LOGSTTIME} disabled={gubun === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGSTTIME: e.target.value })}}>
+                  {stTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
+                </select> ~ 
+                <select id="enTime" className={`form-select ${styles.formSelect}`} style={{marginLeft:5 + 'px'}} defaultValue={logInfo.LOGENTIME}  disabled={gubun === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGENTIME: e.target.value })}}>
+                  {enTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
+                </select>
               </div>
             </div>
           </div>
@@ -448,9 +446,11 @@ const MobileDrivingLog = () => {
               <input type="text" className={`${styles.formInput}`} style={{flex: 1, marginLeft:0}} value={logInfo.NOTE} onInput={(e) => {handleMaxLength(e, 1000)}} onChange={(e) => {setLogInfo({ ...logInfo, NOTE: e.target.value })}} />
             </div>
         </div>
-        <button className={`btn ${styles.btnCheck} ${styles.btn}`} style={{display: user?.empNo === logInfo.EMPNO ? 'block' : 'none'}} onClick={(e) => handleSubmit(e)}>운행일지 {gubun === 'I' ? '등록' : '수정'}</button>
-        <button className={`btn ${styles.btnCheck} ${styles.btn}`} style={{display: gubun === 'U' ? 'block' : 'none'}} onClick={() => handleMoveRecipt()}>주차장 영수증</button>
-        <button className={`btn ${styles.btnDelete} ${styles.btn}`} style={{display: logInfo.DELYN === 'Y' ? 'block' : 'none'}} onClick={(e) => handleDelete(e)}>운행일지 삭제</button>
+        <div className='d-flex flex-column gap-2'>
+          <button className={`btn ${styles.btnCheck} ${styles.btn}`} style={{display: user?.empNo === logInfo.EMPNO ? 'block' : 'none'}} onClick={(e) => handleSubmit(e)}>운행일지 {gubun === 'I' ? '등록' : '수정'}</button>
+          <button className={`btn ${styles.btnCheck} ${styles.btn}`} style={{display: gubun === 'U' ? 'block' : 'none'}} onClick={() => handleMoveRecipt()}>주차장 영수증</button>
+          <button className={`btn ${styles.btnDelete} ${styles.btn}`} style={{display: logInfo.DELYN === 'Y' ? 'block' : 'none'}} onClick={(e) => handleDelete(e)}>운행일지 삭제</button>
+        </div>
       </div>
     </div>
   );

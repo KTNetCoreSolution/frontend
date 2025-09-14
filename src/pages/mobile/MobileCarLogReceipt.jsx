@@ -236,28 +236,27 @@ const MobileCarLogReceipt = () => {
 
   return (
       <div className="container-fluid p-0">
-        <header className="bg-primary text-white p-3 d-flex justify-content-between align-items-center">
+        <header className="header">
           <h1 className="h5 mb-0">주차장 영수증</h1>
-          <button className="btn" onClick={handleToggleSidebar}>
+          <button className="btn text-white" onClick={handleToggleSidebar}>
             <i className="bi bi-list"></i>
           </button>
-        </header>  
-        
+        </header>        
         <MobileMainUserMenu show={showSidebar} handleClose={handleToggleSidebar} onLogout={handleLogout} />
 
         <div className="pageMain">
           <div style={{display: 'flex', marginTop:-5 + 'px', marginBottom:10 + 'px', marginRight:4 + 'px', justifyContent: 'flex-end'}}>
             <button className={`btn ${styles.btnReturn} ${styles.btn}`} style={{width: 80 + 'px'}} onClick={handleReturnPage}>{state?.gubun === 'U' ? '돌아가기' : '닫기' }</button>
           </div>
-          <div className="row" style={{display: `${vSaveBtnDisplay}`}}>
-            <div >
+          <div className="d-flex flex-column gap-3" style={{display: `${vSaveBtnDisplay}`}}>
               <input type="file" className={`form-control ${styles.formControl}`} accept="image/*" multiple
                 onChange={(e) => {
                   const selectedFiles = Array.from(e.target.files || []);
                   setImgUploadInfo({ FILES: selectedFiles });
                 }}/>
-              <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={(e) => handleUpload(e)}>영수증 등록</button>
-          </div>
+              <div>
+                <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={(e) => handleUpload(e)}>영수증 등록</button>
+              </div>
           <div className="row" style={{display: receiptList.length > 0 ? 'block' : 'none'}} >
             <button className="btn btn-sm btn-outline-primary" style={{marginBottom:10 + 'px', width:100 + 'px', marginRight:12 + 'px', float:'right'}} onClick={handleDownloadAll}>전체 다운로드</button>
           </div>
