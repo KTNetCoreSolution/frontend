@@ -105,7 +105,8 @@ const MobileCarNotice = () => {
           currentNotices.map((item, index) => (
           <div className='formDivBox02' onClick={(e) => handleNoticeClick(item)} >
             <div key={item.NOTICEID} className='formList'>
-              <span className='formTitle'>{totalNotices - (indexOfFirstItem + index)}. {item.title}</span>
+              {/* <span className='formTitle'>{totalNotices - (indexOfFirstItem + index)}. {item.title}</span> */}
+              <span className='formTitle'>{item.title}</span>
               <span className='contentDate'>{item.date || new Date().toLocaleDateString()}</span>
             </div>
           </div>
