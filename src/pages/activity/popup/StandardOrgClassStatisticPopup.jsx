@@ -93,7 +93,7 @@ const StandardOrgClassStatisticPopup = ({ show, onHide, data }) => {
 
     const loadData = async () => {
       if (
-        !data || !Array.isArray(data) || data.length === 0 ||!data[0] ||!data[0].SECTIONCD?.trim() ||!data[0].EMPNO?.trim() || !data[0].ORGCD?.trim() ||!data[0].DATEGB?.trim() ||!data[0].DATE1?.trim() ||!data[0].DATE2?.trim() ||!data[0].CLASSCD?.trim() ||!data[0].ORGLEVELGB?.trim()
+        !data || !Array.isArray(data) || data.length === 0 || !data[0] || !data[0].SECTIONCD?.trim() || !data[0].EMPNO?.trim() || !data[0].ORGCD?.trim() || !data[0].DATEGB?.trim() || !data[0].DATE1?.trim() || !data[0].DATE2?.trim()
       ) {
         if (isMounted) {
           setTableData([]);
@@ -109,16 +109,25 @@ const StandardOrgClassStatisticPopup = ({ show, onHide, data }) => {
       }
 
       try {
-         const params = {
+        const classCol = data[0].CLASSCOL || 'CLASSACD';
+        const dynamicClassKey =
+          classCol === 'CLASSACD' ? 'CLASSACD' :
+          classCol === 'CLASSBCD' ? 'CLASSBCD' :
+          classCol === 'CLASSCCD' ? 'CLASSCCD' : 'CLASSACD';
+        const dynamicColumn = data[0].DYNAMIC_COLUMN || 'all';
+
+        const params = {
           pGUBUN: 'DETAIL',
-          pSECTIONCD: data[0].SECTIONCD||'',
-          pEMPNO: data[0].EMPNO||'',
-          pORGCD: data[0].ORGCD||'',
-          pORGLEVELGB: data[0].ORGLEVELGB||'',
-          pDATEGB: data[0].DATEGB||'',
-          pDATE1: data[0].DATE1||'',
-          pDATE2: data[0].DATE2||'',
-          pCLASSCD: data[0].CLASSCD||'',
+          pSECTIONCD: data[0].SECTIONCD || '',
+          pEMPNO: data[0].EMPNO || '',
+          pORGCD: data[0].ORGCD || '',
+          pORGLEVELGB: data[0].ORGLEVELGB || '',
+          pDATEGB: data[0].DATEGB || '',
+          pDATE1: data[0].DATE1 || '',
+          pDATE2: data[0].DATE2 || '',
+          pCLASSACD: dynamicClassKey === 'CLASSACD' ? dynamicColumn : data[0].CLASSACD || 'all',
+          pCLASSBCD: dynamicClassKey === 'CLASSBCD' ? dynamicColumn : data[0].CLASSBCD || 'all',
+          pCLASSCCD: dynamicClassKey === 'CLASSCCD' ? dynamicColumn : data[0].CLASSCCD || 'all',
           pDEBUG: 'F',
         };
 

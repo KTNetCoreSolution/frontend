@@ -40,9 +40,9 @@ const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
   // 기본 컬럼 정의
   const baseColumns = [
     { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '인원', field: 'EMPNOCNT', sorter: 'number', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 100, frozen: true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '인원', field: 'EMPNOCNT', sorter: 'number', width: 100, frozen: true },
     {
       headerHozAlign: 'center',
       hozAlign: 'center',
@@ -50,9 +50,12 @@ const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
       field: 'ORGNM',
       sorter: 'string',
       width: 130,
+      frozen: true,
       formatter: (cell) => {
         const value = cell.getValue();
-        if (value) {
+        const rowData = cell.getRow().getData();
+        const orgDownYn = rowData.ORGDOWNYN || '';
+        if (value && orgDownYn !== 'N') {
           cell.getElement().style.color = '#247db3';
           cell.getElement().style.cursor = 'pointer';
         } else {
@@ -64,7 +67,8 @@ const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
       cellClick: async (e, cell) => {
         const value = cell.getValue();
         const rowData = cell.getRow().getData();
-        if (value) {
+        const orgDownYn = rowData.ORGDOWNYN || '';
+        if (value && orgDownYn !== 'N') {
           // 클릭한 row 데이터를 기반으로 데이터 로드
           await loadData({
             SECTIONCD: rowData.SECTIONCD || '',
@@ -74,7 +78,11 @@ const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
             DATEGB: rowData.pDATEGB || '',
             DATE1: rowData.pDATE1 || '',
             DATE2: rowData.pDATE2 || '',
-            CLASSCD: rowData.CLASSCD || '',
+            CLASSACD: rowData.pCLASSACD || 'all',
+            CLASSBCD: rowData.pCLASSBCD || 'all',
+            CLASSCCD: rowData.pCLASSCCD || 'all',
+            CLASSCOL: rowData.CLASSCOL || 'CLASSCCCD',
+            ORGDOWNYN: rowData.ORGDOWNYN || '', // ORGDOWNYN 받음 (API 호출 시 사용 안 함)
           });
         }
       },
@@ -84,6 +92,12 @@ const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '조회일자1', field: 'pDATE1', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '조회일자2', field: 'pDATE2', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '조회조직레벨구분', field: 'pORGLEVELGB', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조직레벨', field: 'ORGLEVEL', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조직하위유무', field: 'ORGDOWNYN', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조회분류코드A', field: 'pCLASSACD', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조회분류코드B', field: 'pCLASSBCD', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조회분류코드C', field: 'pCLASSCCD', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '컬럼코드', field: 'CLASSCOL', sorter: 'string', width: 100, visible: false },
   ];
 
   // 데이터 로드 함수
@@ -109,6 +123,8 @@ const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
         orgLevelGb = '';
       }
 
+      const originalParams = data[0] || {};
+
       const params = {
         pGUBUN: 'LIST',
         pSECTIONCD: dataParams.SECTIONCD || '',
@@ -118,7 +134,9 @@ const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
         pDATEGB: dataParams.DATEGB || '',
         pDATE1: dataParams.DATE1 || '',
         pDATE2: dataParams.DATE2 || '',
-        pCLASSCD: dataParams.CLASSCD || '',
+        pCLASSACD: originalParams.pCLASSACD || 'all', // 부모 데이터 유지
+        pCLASSBCD: originalParams.pCLASSBCD || 'all', // 부모 데이터 유지
+        pCLASSCCD: originalParams.pCLASSCCD || 'all', // 부모 데이터 유지
         pDEBUG: 'F',
       };
 
