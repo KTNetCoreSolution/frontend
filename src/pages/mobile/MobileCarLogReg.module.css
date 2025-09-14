@@ -31,10 +31,10 @@
 }
 
 .btnCheck {
-    width: 98% !important;
-    margin-left: 5px !important;
+    width: 100% !important;
+    /* margin-left: 5px !important;
     margin-right: 5px !important;
-    margin-bottom: 5px !important;
+    margin-bottom: 5px !important; */
     --bs-btn-color: #fff;
     --bs-btn-bg: #00c4b4;
     --bs-btn-border-color: #00c4b4;
@@ -160,7 +160,7 @@
 }
 
 .safetyLabel.bad{
-  color:red;
+  color: var(--bs-danger);
 }
 
 .safetyBox {
@@ -173,6 +173,9 @@
   border-radius: 15px;
   cursor:pointer;
 }
+.safetyBox.bad {
+  background: var(--bs-danger);
+}
 
 .safetyCheck {
   width: 26px;
@@ -184,11 +187,11 @@
 }
 
 .safetyCheck.bad {
-    background: #fc1f1f;
-    margin-left: 0;
+    background: #ffffff;
+    margin-left: 2px;
 }
 
 .formTextArea {
-  width: 97.5%; 
+  width: 100%; 
   font-size: 14px;
 }

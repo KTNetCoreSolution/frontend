@@ -647,47 +647,41 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
         <Modal.Title>운행일지 관리</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className='flex-column gap-2' style={{display: `${vDisplay ? 'none' : 'flex'}`}}>
-          <div>
-            <label className="form-label flex-shrink-0 me-2" htmlFor="carId" style={{width:63 +'px', paddingTop:6 + 'px'}}>차량</label>
+        <div className='flex-column justify-content-start gap-2' style={{display: `${vDisplay ? 'none' : 'flex'}`}}>
+          <div className='d-flex align-items-center'>
+            <label className="form-label flex-shrink-0" htmlFor="carId" style={{width:'63px'}}>차량</label>
             <select id="carId" className={`form-select ${styles.formSelect}`} defaultValue={data.CARID} style={{width:200 +'px'}} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {searchCarInfo(e)}}>
               <option value="">선택하세요</option>
               {carList.map((item) => <option key={item.CARID} value={item.CARID}>{item.CARNO}</option>)}
             </select>
-            <button className={`btn btn-sm btn-danger flex-shrink-0 ms-auto`} style={{width:60 +'px', height: 36 + 'px', display:`${vDelBtnDisplay}`}} onClick={handleDelete}>삭제</button>
+            <button className={`btn btn-sm btn-danger flex-shrink-0 ms-auto`} style={{width:60 +'px', display:`${vDelBtnDisplay}`}} onClick={handleDelete}>삭제</button>
           </div>
-          <div style={{minHeight: 245 + 'px'}}>
-            <div className={styles.container}>
-              <label className={`flex-shrink-0 me-2 ${styles.formCarNm}`}>{carInfo.CARNM}</label>
-              <div className={`${styles.starBorder}`} style={{ position: 'absolute', top: '20px', left: '4px', zIndex: 1, display: `${vImgDisplay}`  }}>
-                <button onClick={(e) => {handleBookMark(e)}} className={`${styles.star} ${isFilled ? styles.filled : ''}`}  />
+          <div className='my-3' style={{minHeight: '245px'}}>
+            <div className='d-flex flex-column gap-2'>
+              <div className='d-flex justify-content-center gap-2'>
+                <label>{carInfo.CARNM}</label>
+                <div className={`${styles.starBorder}`} style={{display: `${vImgDisplay}`}}>
+                  <button onClick={(e) => {handleBookMark(e)}} className={`${styles.star} ${isFilled ? styles.filled : ''}`}  />
+                </div>
               </div>
               <img src={carInfo.src} className={styles.carImage} />
             </div>
           </div>
-          <div>
-            <div className={`${styles.formDivBox}`} style={{height: 58 + 'px'}} >
-              <div className={styles.container}>
-                <label className={`flex-shrink-0 me-2 ${styles.formCarNm}`} style={{color:'#00c4b4', height:20 + 'px'}}>차고지</label>
-                <label className={`flex-shrink-0 me-2 ${styles.formCarNm}`} style={{color:'#525252', height:20 + 'px'}}>{carInfo.GARAGE_ADDR}</label>
-              </div>
-            </div>
+          <div className='d-flex'>
+            <label className='form-label' style={{width:'63px'}}>차고지</label>
+            <div>{carInfo.GARAGE_ADDR}</div>
           </div>
-          <div>
-            <div className={`${styles.formDivBox}`} style={{height: 45 + 'px'}} >
-              <div className={`d-flex ${styles.container}`} >
-                <label className={`flex-shrink-0 me-2 ${styles.formManager}`} style={{color:'#525252', width: 100 + 'px'}}>운전자(정)</label>
-                <label className={`flex-shrink-0 me-2 ${styles.formManager}`} style={{color:'#1a1a1a'}}>{carInfo.MANAGER_EMPNM}</label>
-              </div>
-              <div className={`d-flex ${styles.container}`}>
-                <label className={`flex-shrink-0 me-2 ${styles.formManager}`} style={{color:'#525252', width: 100 + 'px'}}>연락처</label>
-                <label className={`flex-shrink-0 me-2 ${styles.formManager}`} style={{color:'#1a1a1a'}}>{carInfo.MANAGER_MOBILE}</label>
-              </div>
-            </div>
+          <div className='d-flex'>
+            <label className='form-label' style={{width:'63px'}}>운전자(정)</label>
+            <div>{carInfo.MANAGER_EMPNM}</div>
           </div>
-          <div>
-            <div className="d-flex">
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formTitleLabel}`} htmlFor="logDate" style={{width:63 +'px'}}>운행일시</label>
+          <div className='d-flex'>
+            <label className='form-label' style={{width:'63px'}}>연락처</label>
+            <div>{carInfo.MANAGER_MOBILE}</div>
+          </div>
+          <div className='d-flex'>
+            <label className='form-label' style={{width:'63px'}}>운행일시</label>
+            <div className='d-flex'>
               <input type="date" ref={logDateRef} id="logDate" className={`form-control ${styles.formControl}`} value={logInfo.LOGDATE} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} style={{width:120 +'px', marginRight:5 + 'px'}} onChange={(e) => {handleLogDate(e)}} />
               <select id="stTime" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} defaultValue={logInfo.LOGSTTIME} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGSTTIME: e.target.value })}}>
                 {stTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
@@ -698,7 +692,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
               </select>
             </div>
           </div>
-          <div>
+          <div className='mt-3'>
               <button className={`btn ${styles.btnCheck} ${styles.btn}`} style={{ backgroundColor:vImgDisplay === 'flex' ? '#00c4b4' : '#909090'}} disabled={vImgDisplay === 'flex' ? '' : 'disabled'} onClick={(e) => setDisplay(!vDisplay)}>차량점검 및 {logInfo.GUBUN === 'I' ? '일지작성' : '운행결과'}</button>
           </div>
         </div>
@@ -708,50 +702,62 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             <button className={`btn ${styles.btnCheck} ${styles.btn} ${styles.btnReturn}`} onClick={(e) => setDisplay(!vDisplay)}>이전</button>
           </div>
           <div className="row">
-            <div className="col mb-2 d-flex" >
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:100 +'px'}}>차량파손</label>
-              <label className={`${styles.safetyLabel} ${isDamage ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Damage', !isDamage)}>{isDamage ? '양호' : '불량'}</label>
-              <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('Damage', !isDamage)}>
-                  <div className={`${styles.safetyCheck} ${isDamage ? '' : styles.bad}`}></div>
+            <div className="col d-flex" >
+              <label className='form-label' style={{width:'100px'}}>차량파손</label>
+              <div className='d-flex'>
+                <label className={`${styles.safetyLabel} ${isDamage ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Damage', !isDamage)}>{isDamage ? '양호' : '불량'}</label>
+                <div className={`${styles.safetyBox} ${isDamage ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Damage', !isDamage)}>
+                    <div className={`${styles.safetyCheck} ${isDamage ? '' : styles.bad}`}></div>
+                </div>
               </div>
             </div>
-            <div className="col mb-2 d-flex">
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:100 +'px'}}>오일누수</label>
-              <label className={`${styles.safetyLabel} ${isOilLeak ? '' : styles.bad}`} onClick={() => handleSafetyCheck('OilLeak', !isOilLeak)}>{isOilLeak ? '양호' : '불량'}</label>
-              <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('OilLeak', !isOilLeak)}>
-                  <div className={`${styles.safetyCheck} ${isOilLeak ? '' : styles.bad}`}></div>
-              </div>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col mb-2 d-flex">
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:100 +'px'}}>타이어</label>
-              <label className={`${styles.safetyLabel} ${isTire ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Tire', !isTire)}>{isTire ? '양호' : '불량'}</label>
-              <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('Tire', !isTire)}>
-                  <div className={`${styles.safetyCheck} ${isTire ? '' : styles.bad}`}></div>
-              </div>
-            </div>
-            <div className="col mb-2 d-flex">
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:100 +'px'}}>적재물안전</label>
-              <label className={`${styles.safetyLabel} ${isLuggage ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Luggage', !isLuggage)}>{isLuggage ? '양호' : '불량'}</label>
-              <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('Luggage', !isLuggage)}>
-                  <div className={`${styles.safetyCheck} ${isLuggage ? '' : styles.bad}`}></div>
+            <div className="col d-flex">
+              <label className='form-label' style={{width:'100px'}}>오일누수</label>
+              <div className='d-flex'>
+                <label className={`${styles.safetyLabel} ${isOilLeak ? '' : styles.bad}`} onClick={() => handleSafetyCheck('OilLeak', !isOilLeak)}>{isOilLeak ? '양호' : '불량'}</label>
+                <div className={`${styles.safetyBox} ${isOilLeak ? '' : styles.bad}`} onClick={() => handleSafetyCheck('OilLeak', !isOilLeak)}>
+                    <div className={`${styles.safetyCheck} ${isOilLeak ? '' : styles.bad}`}></div>
+                </div>
               </div>
             </div>
           </div>
           <div className="row">
-            <div className="col mb-2 d-flex">
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:100 +'px'}}>기타(직접기재)</label>
-              <label className={`${styles.safetyLabel} ${isEtc1 ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Etc1', !isEtc1)}>{isEtc1 ? '양호' : '불량'}</label>
-              <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('Etc1', !isEtc1)}>
-                  <div className={`${styles.safetyCheck} ${isEtc1 ? '' : styles.bad}`}></div>
+            <div className="col d-flex">
+              <label className='form-label' style={{width:'100px'}}>타이어</label>
+              <div className='d-flex'>
+                <label className={`${styles.safetyLabel} ${isTire ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Tire', !isTire)}>{isTire ? '양호' : '불량'}</label>
+                <div className={`${styles.safetyBox} ${isTire ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Tire', !isTire)}>
+                    <div className={`${styles.safetyCheck} ${isTire ? '' : styles.bad}`}></div>
+                </div>
               </div>
             </div>
-            <div className="col mb-2 d-flex">
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:100 +'px'}}>특이사항(직전)</label>
-              <label className={`${styles.safetyLabel} ${isEtc2 ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Etc2', !isEtc2)}>{isEtc2 ? '양호' : '불량'}</label>
-              <div className={`${styles.safetyBox}`} onClick={() => handleSafetyCheck('Etc2', !isEtc2)}>
-                  <div className={`${styles.safetyCheck} ${isEtc2 ? '' : styles.bad}`}></div>
+            <div className="col d-flex">
+              <label className='form-label' style={{width:'100px'}}>적재물안전</label>
+              <div className='d-flex'>
+                <label className={`${styles.safetyLabel} ${isLuggage ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Luggage', !isLuggage)}>{isLuggage ? '양호' : '불량'}</label>
+                <div className={`${styles.safetyBox} ${isLuggage ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Luggage', !isLuggage)}>
+                    <div className={`${styles.safetyCheck} ${isLuggage ? '' : styles.bad}`}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col d-flex">
+              <label className='form-label' style={{width:'100px'}}>기타(직접기재)</label>
+                <div className='d-flex'>
+                  <label className={`${styles.safetyLabel} ${isEtc1 ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Etc1', !isEtc1)}>{isEtc1 ? '양호' : '불량'}</label>
+                  <div className={`${styles.safetyBox} ${isEtc1 ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Etc1', !isEtc1)}>
+                      <div className={`${styles.safetyCheck} ${isEtc1 ? '' : styles.bad}`}></div>
+                  </div>
+              </div>
+            </div>
+            <div className="col d-flex">
+              <label className='form-label' style={{width:'100px'}}>특이사항(직전)</label>
+              <div className='d-flex'>
+                <label className={`${styles.safetyLabel} ${isEtc2 ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Etc2', !isEtc2)}>{isEtc2 ? '양호' : '불량'}</label>
+                <div className={`${styles.safetyBox} ${isEtc2 ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Etc2', !isEtc2)}>
+                    <div className={`${styles.safetyCheck} ${isEtc2 ? '' : styles.bad}`}></div>
+                </div>
               </div>
             </div>
           </div>
@@ -760,47 +766,33 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           </div>
         </div>
         <div className='flex-column gap-2' style={{display: `${vDisplay ? 'flex' : 'none'}`}}>
-          <div className="mb-2">
-            <div className="d-flex">
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:63 +'px'}}>운행일시</label>
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:100 +'%'}}>{logInfo.LOGDATE + ' ' + logInfo.LOGSTTIME + ' ~ ' + logInfo.LOGENTIME}</label>
-            </div>
+          <div className="d-flex">
+            <label className='form-label' style={{width:'100px'}}>운행일시</label>
+            <div className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:100 +'%'}}>{logInfo.LOGDATE + ' ' + logInfo.LOGSTTIME + ' ~ ' + logInfo.LOGENTIME}</div>
           </div>
-          <div className="mb-2">
-            <div className="d-flex">
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:63 +'px'}}>운행자</label>
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:100 +'%'}}>{user?.empNm + ' (' + user?.empNo + ')'}</label>
-            </div>
+          <div className="d-flex">
+            <label className='form-label' style={{width:'100px'}}>운행자</label>
+            <div className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:100 +'%'}}>{user?.empNm + ' (' + user?.empNo + ')'}</div>
           </div>
-          <div className="mb-2">
-            <div className="d-flex">
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:63 +'px'}}>시작km</label>
-              <input type="number" id="stKm" className={`form-control ${styles.formControl2}`} value={logInfo.STKM} disabled={logInfo.GUBUN === 'I' ? carInfo.STKM === 0 ? '' : 'disabled' : 'disabled'} style={{width:100 +'px'}} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, STKM: e.target.value })}} />
-            </div>
+          <div className="d-flex">
+            <label className='form-label' style={{width:'100px'}}>시작km</label>
+            <input type="number" id="stKm" className={`form-control ${styles.formControl2}`} value={logInfo.STKM} disabled={logInfo.GUBUN === 'I' ? carInfo.STKM === 0 ? '' : 'disabled' : 'disabled'} style={{width:100 +'px'}} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, STKM: e.target.value })}} />
           </div>
-          <div className="mb-2">
-            <div className="d-flex">
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:63 +'px'}}>종료km</label>
-              <input type="number" id="stKm" className={`form-control ${styles.formControl2}`} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} value={logInfo.ENKM} style={{width:100 +'px'}} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, ENKM: e.target.value })}} />
-            </div>
+          <div className="d-flex">
+            <label className='form-label' style={{width:'100px'}}>종료km</label>
+            <input type="number" id="stKm" className={`form-control ${styles.formControl2}`} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} value={logInfo.ENKM} style={{width:100 +'px'}} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, ENKM: e.target.value })}} />
           </div>
-          <div className="mb-2">
-            <div className="d-flex">
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:63 +'px'}}>주행거리</label>
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:100 +'%'}}>{logInfo.ENKM - logInfo.STKM}</label>
-            </div>
+          <div className="d-flex">
+            <label className='form-label' style={{width:'100px'}}>주행거리</label>
+            <div className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:100 +'%'}}>{logInfo.ENKM - logInfo.STKM}</div>
           </div>
-          <div className="mb-2">
-            <div className="d-flex">
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:63 +'px'}}>주유(ℓ)</label>
-              <input type="number" id="stKm" className={`form-control ${styles.formControl2}`} value={logInfo.FUEL} style={{width:100 +'px'}} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, FUEL: e.target.value })}} />
-            </div>
+          <div className="d-flex">
+            <label className='form-label' style={{width:'100px'}}>주유(ℓ)</label>
+            <input type="number" id="stKm" className={`form-control ${styles.formControl2}`} value={logInfo.FUEL} style={{width:100 +'px'}} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, FUEL: e.target.value })}} />
           </div>
-          <div className="mb-2">
-            <div className="d-flex">
-              <label className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:63 +'px'}}>비고</label>
-              <input type="text" id="notice" className={`form-control ${styles.formControl2}`} value={logInfo.NOTE} style={{width:100 +'%'}} onInput={(e) => {handleMaxLength(e, 1000)}} onChange={(e) => {setLogInfo({ ...logInfo, NOTE: e.target.value })}} />
-            </div>
+          <div className="d-flex">
+            <label className='form-label' style={{width:'100px'}}>비고</label>
+            <input type="text" id="notice" className={`form-control ${styles.formControl2}`} value={logInfo.NOTE} style={{width:100 +'%'}} onInput={(e) => {handleMaxLength(e, 1000)}} onChange={(e) => {setLogInfo({ ...logInfo, NOTE: e.target.value })}} />
           </div>
           <div className="mb-2">
             <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={(e) => carLogReceiptPopup()}>주차장 영수증첨부</button>
@@ -859,7 +851,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
               </CommonPopup>
           </div>
         </div>
-        <div className='gap-2' style={{display: `${vDisplay ? 'flex' : 'none'}`}}>
+        <div className='justify-content-center' style={{display: `${vDisplay ? 'flex' : 'none'}`}}>
           <button className={`btn btn-secondary ${styles.btn}`} style={{ width:40 + 'px'}} onClick={onHide}>취소</button>
           <button className={`btn btn-primary ${styles.btn}`} style={{ width:40 + 'px', display: `${vSaveBtnDisplay}`}} onClick={handleSubmit}>저장</button>
           <button className={`btn btn-danger ${styles.btn}`} style={{ width:40 + 'px', display: `${vRejectBtnDisplay}`}} onClick={handleReject}>반려</button>
