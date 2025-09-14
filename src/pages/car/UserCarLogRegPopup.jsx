@@ -702,7 +702,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             <button className={`btn ${styles.btnCheck} ${styles.btn} ${styles.btnReturn}`} onClick={(e) => setDisplay(!vDisplay)}>이전</button>
           </div>
           <div className="row">
-            <div className="col d-flex" >
+            <div className="col d-flex">
               <label className='form-label' style={{width:'100px'}}>차량파손</label>
               <div className='d-flex'>
                 <label className={`${styles.safetyLabel} ${isDamage ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Damage', !isDamage)}>{isDamage ? '양호' : '불량'}</label>
@@ -768,11 +768,11 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
         <div className='flex-column gap-2' style={{display: `${vDisplay ? 'flex' : 'none'}`}}>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>운행일시</label>
-            <div className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:100 +'%'}}>{logInfo.LOGDATE + ' ' + logInfo.LOGSTTIME + ' ~ ' + logInfo.LOGENTIME}</div>
+            <div className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`}>{logInfo.LOGDATE + ' ' + logInfo.LOGSTTIME + ' ~ ' + logInfo.LOGENTIME}</div>
           </div>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>운행자</label>
-            <div className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:100 +'%'}}>{user?.empNm + ' (' + user?.empNo + ')'}</div>
+            <div className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`}>{user?.empNm + ' (' + user?.empNo + ')'}</div>
           </div>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>시작km</label>
@@ -784,7 +784,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           </div>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>주행거리</label>
-            <div className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`} style={{width:100 +'%'}}>{logInfo.ENKM - logInfo.STKM}</div>
+            <div className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`}>{logInfo.ENKM - logInfo.STKM}</div>
           </div>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>주유(ℓ)</label>
@@ -792,7 +792,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           </div>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>비고</label>
-            <input type="text" id="notice" className={`form-control ${styles.formControl2}`} value={logInfo.NOTE} style={{width:100 +'%'}} onInput={(e) => {handleMaxLength(e, 1000)}} onChange={(e) => {setLogInfo({ ...logInfo, NOTE: e.target.value })}} />
+            <input type="text" id="notice" className={`form-control ${styles.formControl2}`} value={logInfo.NOTE} onInput={(e) => {handleMaxLength(e, 1000)}} onChange={(e) => {setLogInfo({ ...logInfo, NOTE: e.target.value })}} />
           </div>
           <div className="mb-2">
             <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={(e) => carLogReceiptPopup()}>주차장 영수증첨부</button>

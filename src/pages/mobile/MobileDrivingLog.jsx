@@ -237,16 +237,18 @@ const MobileDrivingLog = () => {
         <MobileMainUserMenu show={showSidebar} handleClose={handleToggleSidebar} onLogout={handleLogout} />
 
         <div className="pageMain">
-          <div className={`card ${styles.cardRadius}`}>
+          <div>
             <div className="p-1 align-items-center">
               <div {...handlers} className={styles.sliderContainer}>
                 <div className={styles.sliderWrapper} style={{transform: `translateX(-${currentIndex * 100}%)`}}>
                     {carList.map((item, index) =>  
                       <div key={item.CARID} className={styles.slide}>            
                         <div className={styles.container}>
-                            <label className={`flex-shrink-0 me-2 ${styles.formCarNm}`}>{carInfo.CARNM} - {carInfo.CARNO}</label>
-                            <div className={`${styles.starBorder}`} style={{ position: 'absolute', top: '20px', left: '4px', zIndex: 1 }}>
-                              <button onClick={(e) => {handleBookMark(e)}} className={`${styles.star} ${isFilled ? styles.filled : ''}`}  />
+                            <div className='d-flex justify-content-center gap-2'>
+                              <label className={`${styles.formCarNm}`}>{carInfo.CARNM} - {carInfo.CARNO}</label>
+                              <div className={`${styles.starBorder}`}>
+                                <button onClick={(e) => {handleBookMark(e)}} className={`${styles.star} ${isFilled ? styles.filled : ''}`}  />
+                              </div>
                             </div>
                             <img src={carInfo.src} className={styles.carImage} />
                         </div>
@@ -281,12 +283,11 @@ const MobileDrivingLog = () => {
             <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={moveToRegLog}>차량점검 및 일지작성</button>
           </div>
           <div className={`d-flex ${styles.formDivNotiBox}`} onClick={(e) => navigate('/mobile/MobileCarNotice')} >
-            <div className={styles.container}>              
+            <div className={styles.container}>      
               {boardList.map((item, index) =>  
-                <div key={item.NOTICEID} className={`d-flex ${index === 0 ? styles.formDivNotiICON : ''}`} ><div className={`${styles.formDivNotiList}`}>공지</div><label className={`${styles.formNotiList}`} >{item.SIMPLE_TITLE}</label></div>
+                <div key={item.NOTICEID} className={`d-flex ${index === 0 ? styles.formDivNotiICON : ''}`} ><label className={`${styles.formNotiList}`} >{item.SIMPLE_TITLE}</label></div>
               )}
             </div>
-            <div className={`${styles.arrowContainer}`}></div>
           </div>
           <div className={`d-flex ${styles.formDivBtnBox}`} onClick={moveToConfirm} >
             <div className={`${styles.container}`}>

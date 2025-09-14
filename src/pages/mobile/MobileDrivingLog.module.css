@@ -57,7 +57,7 @@
 }
 
 .formCarNm {
-  width: 100%;
+  /* width: 100%; */
   text-align: center;
   font-size: 14px;
   font-weight: bold;
@@ -101,7 +101,7 @@
 
 .formNotiList {
   width: 100%;
-  height: 20px;
+  /* height: 20px; */
   padding: 2px;
   text-align: left;
   font-size: 12px;

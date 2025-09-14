@@ -6,6 +6,9 @@ import { fetchData } from '../../utils/dataUtils';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import common from '../../utils/common';
 import styles from './StandardDashboard.module.css';
+import chartImg01 from '../../assets/images/chartImg01.svg';
+import chartImg02 from '../../assets/images/chartImg02.svg';
+import chartImg03 from '../../assets/images/chartImg03.svg';
 
 const StandardDashboard = () => {
   const { user } = useStore();
@@ -147,11 +150,12 @@ const StandardDashboard = () => {
             {
               type: 'text',
               left: 'center',
-              top: '48%',
+              top: '45%',
               style: {
                 text: `${percentValue}%`,
-                fontSize: 14,
+                fontSize: 18,
                 fontWeight: 'bold',
+                fill: '#216DB2',
               },
               z: 10,
             },
@@ -195,8 +199,9 @@ const StandardDashboard = () => {
                   show: true,
                   position: 'center',
                   formatter: `${percentValue}%`,
-                  fontSize: 14,
+                  fontSize: 18,
                   fontWeight: 'bold',
+                  color: '#2CBBB7', 
                 },
                 labelLine: { show: false },
                 data: [
@@ -248,8 +253,8 @@ const StandardDashboard = () => {
               show: false,
               left: '13%',
               right: '5%',
-              top: '15%',
-              bottom: '5%',
+              top: '25%',
+              bottom: '0%',
               height: '55%',
             },
             tooltip: {
@@ -272,7 +277,7 @@ const StandardDashboard = () => {
               data: classNames,
               orient: 'horizontal',
               top: 0,
-              left: 'center',
+              right: 0,
             },
             xAxis: {
               type: 'value',
@@ -374,7 +379,7 @@ const StandardDashboard = () => {
   return (
     <div className={`chartWrap ${styles.container} ${isFullscreen ? styles.fullscreen : ''}`}>
       <div className='chartRowWrap'>
-        <div className='chartTitle'>전사 표준활동 입력현황</div>
+        <div className='chartTitle'><img src={chartImg01} className='chartimgWrap' />전사 표준활동 입력현황</div>
         <div className='inputSection'>
           <div className='chartsContainer'>
             <div className='subSection'>
@@ -433,7 +438,7 @@ const StandardDashboard = () => {
         </div>
       </div>
       <div className='chartRowWrap'>
-        <div className='chartTitle'>대분류별 표준활동 추이현황</div>
+        <div className='chartTitle'><img src={chartImg02} className='chartimgWrap' />대분류별 표준활동 추이현황</div>
         <div className='fieldSection'>
           <div className='subSection'>
             <div className='subSecTitle'>선로</div>
@@ -450,7 +455,7 @@ const StandardDashboard = () => {
         </div>
       </div>
       <div className='chartRowWrap'>
-        <div className='chartTitle'>대분류별 표준활동 입력현황</div>
+        <div className='chartTitle'><img src={chartImg03} className='chartimgWrap' />대분류별 표준활동 입력현황</div>
         <div className='fieldSection'>
           <div className='subSection'>
             <div className='subSecTitle'>선로</div>

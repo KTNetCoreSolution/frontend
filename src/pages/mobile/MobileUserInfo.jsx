@@ -78,7 +78,7 @@ const handleLogout = async () => {
 
         <div className="tab-content mt-4">
           <div
-            className="tab-pane fade show active"
+            className="tab-pane fade show active formDivBox03"
             id="info"
             role="tabpanel"
             aria-labelledby="info-tab"
@@ -91,7 +91,7 @@ const handleLogout = async () => {
             </ul>
           </div>
           <div
-            className="tab-pane fade"
+            className="tab-pane fade formDivBox03"
             id="equipment"
             role="tabpanel"
             aria-labelledby="equipment-tab"

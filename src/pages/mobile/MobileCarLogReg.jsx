@@ -341,13 +341,13 @@ const MobileDrivingLog = () => {
           </div>
           <div className='formList'>
             <span className='formSearchTitle'>운행일시 </span>
-            <div className='d-flex gap-2'>
-              <input type="date" ref={logDateRef} id="logDate" className={`${styles.formInput}`} value={logInfo.LOGDATE} disabled={gubun === 'I' ? '' : 'disabled'} style={{marginRight:5 + 'px'}} onChange={(e) => {handleLogDate(e)}} />
-              <div className='d-flex flex-row align-items-center'>
-                <select id="stTime" className={`form-select ${styles.formSelect}`} style={{marginRight:5 + 'px'}} defaultValue={logInfo.LOGSTTIME} disabled={gubun === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGSTTIME: e.target.value })}}>
+            <div className='d-flex flex-column gap-2'>
+              <input type="date" ref={logDateRef} id="logDate" className={`${styles.formInput}`} value={logInfo.LOGDATE} disabled={gubun === 'I' ? '' : 'disabled'} onChange={(e) => {handleLogDate(e)}} />
+              <div className='d-flex flex-row align-items-center gap-2'>
+                <select id="stTime" className={`form-select ${styles.formSelect}`} defaultValue={logInfo.LOGSTTIME} disabled={gubun === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGSTTIME: e.target.value })}}>
                   {stTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
                 </select> ~ 
-                <select id="enTime" className={`form-select ${styles.formSelect}`} style={{marginLeft:5 + 'px'}} defaultValue={logInfo.LOGENTIME}  disabled={gubun === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGENTIME: e.target.value })}}>
+                <select id="enTime" className={`form-select ${styles.formSelect}`} defaultValue={logInfo.LOGENTIME}  disabled={gubun === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGENTIME: e.target.value })}}>
                   {enTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
                 </select>
               </div>
