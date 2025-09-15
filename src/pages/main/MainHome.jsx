@@ -113,16 +113,15 @@ const MainHome = () => {
               role='tabpanel'
               aria-labelledby='tab1'
             >
-              <div className='boardBox'>
-                <Board
-                  key={`notice-${activeTab}`} // 탭 변경 시 강제 리렌더링
-                  canWriteBoard={canWriteBoard}
-                  type='notice'
-                  onWrite={() => handleWrite('notice')}
-                  onView={handleView}
-                  showHeader={false}
-                />
-              </div>
+              <Board
+                key={`notice-${activeTab}`} // 탭 변경 시 강제 리렌더링
+                canWriteBoard={canWriteBoard}
+                type='notice'
+                onWrite={() => handleWrite('notice')}
+                onView={handleView}
+                showHeader={false}
+                pagination={false}
+              />
             </div>
             <div
               className={`tab-pane fade ${activeTab === 'tab2' ? 'show active' : ''}`}
@@ -130,16 +129,15 @@ const MainHome = () => {
               role='tabpanel'
               aria-labelledby='tab2'
             >
-              <div className='boardBox'>
-                <Board
-                  key={`notice2-${activeTab}`} // 탭 변경 시 강제 리렌더링
-                  canWriteBoard={canWriteBoard}
-                  type='notice2'
-                  onWrite={() => handleWrite('notice2')}
-                  onView={handleView}
-                  showHeader={false}
-                />
-              </div>
+              <Board
+                key={`notice2-${activeTab}`} // 탭 변경 시 강제 리렌더링
+                canWriteBoard={canWriteBoard}
+                type='notice2'
+                onWrite={() => handleWrite('notice2')}
+                onView={handleView}
+                showHeader={false}
+                pagination={false}
+              />
             </div>
           </div>
         </div>
@@ -188,16 +186,15 @@ const MainHome = () => {
               role='tabpanel'
               aria-labelledby='carTab1'
             >
-              <div className='boardBox'>
-                <Board
-                  key={`carnotice-${activeCarTab}`} // 탭 변경 시 강제 리렌더링
-                  canWriteBoard={canWriteBoard}
-                  type='carnotice'
-                  onWrite={() => handleWrite('carnotice')}
-                  onView={handleView}
-                  showHeader={false}
-                />
-              </div>
+              <Board
+                key={`carnotice-${activeCarTab}`} // 탭 변경 시 강제 리렌더링
+                canWriteBoard={canWriteBoard}
+                type='carnotice'
+                onWrite={() => handleWrite('carnotice')}
+                onView={handleView}
+                showHeader={false}
+                pagination={false}
+              />
             </div>
             <div
               className={`tab-pane fade ${activeCarTab === 'carTab2' ? 'show active' : ''}`}
@@ -205,16 +202,15 @@ const MainHome = () => {
               role='tabpanel'
               aria-labelledby='carTab2'
             >
-              <div className='boardBox'>
-                <Board
-                  key={`carnotice2-${activeCarTab}`} // 탭 변경 시 강제 리렌더링
-                  canWriteBoard={canWriteBoard}
-                  type='carnotice2'
-                  onWrite={() => handleWrite('carnotice2')}
-                  onView={handleView}
-                  showHeader={false}
-                />
-              </div>
+              <Board
+                key={`carnotice2-${activeCarTab}`} // 탭 변경 시 강제 리렌더링
+                canWriteBoard={canWriteBoard}
+                type='carnotice2'
+                onWrite={() => handleWrite('carnotice2')}
+                onView={handleView}
+                showHeader={false}
+                pagination={false}
+              />
             </div>
           </div>
         </div>

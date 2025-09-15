@@ -3,7 +3,7 @@ import { fetchData } from '../../utils/dataUtils';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import styles from './Board.module.css';
 
-const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = true }) => {
+const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = true, pagination = true }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [localNotices, setLocalNotices] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -87,12 +87,9 @@ const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = t
   };
 
   return (
-    <div className='boardBox'>
+    <div className='boardBox position-relative'>
       {showHeader && (
-        <div className='list-group-item d-flex justify-content-between align-items-center'>
-          <h3 className='boardTitle'>
-            {/*{textMap[type] || ''}*/}
-          </h3>
+        <div className='position-absolute bottom-0 end-0 mb-3'>
           {canWriteBoard && (
             <button
               className='btn btn-primary'
@@ -113,25 +110,24 @@ const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = t
                 key={idx}
                 className='list-group-item'
               >
-                <span
+                <div
                   onClick={() => handleNoticeClick(notice)}
-                  style={{ cursor: 'pointer' }}
+                  className='list-group-item-link'
                 >
-                  {/* <span className='me-2'>{totalNotices - (indexOfFirstItem + idx)}.</span> */}
                   <span className={`${styles.boardContentTitle}`}>{notice.title}</span>
-                </span>
-                <span className='contentDate'>
-                  {notice.date || new Date().toLocaleDateString()}
-                </span>
+                  <span className='contentDate'>
+                    {notice.date || new Date().toLocaleDateString()}
+                  </span>
+                </div>
               </li>
             ))
           ) : (
-            <li className='list-group-item text-center'>공지사항이 없습니다.</li>
+            <li className='list-group-item nodata'>공지사항이 없습니다.</li>
           )}
         </ul>
       )}
 
-      {totalPages > 1 && (
+      {pagination && totalPages > 1 && (
         <nav aria-label='Page navigation' className='mt-3'>
           <ul className='pagination'>
             {totalPages > maxPageButtons && (

@@ -34,6 +34,7 @@
   --bs-modal-footer-bg: #ffffff;
   --bs-modal-footer-border-width: 1px;
   --bs-border-color: #d4d4d6;
+  --bs-header-border-color: #252525;
 }
 
 /* Apply to body */
@@ -264,7 +265,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
   margin-left: auto;
   padding: calc(var(--bs-modal-padding) - var(--bs-modal-footer-gap) * 0.5);
@@ -612,7 +613,7 @@ border-color: #bd2130;
   width: auto;
   margin-bottom: 0;
   border-bottom: 0;
-  gap: 0.5rem;
+  gap: 1.25rem;
 }
 
 .nav-tabs .nav-item {
@@ -622,12 +623,12 @@ border-color: #bd2130;
 
 .nav-tabs .nav-link {
   font-size: 0.875rem;
-  color: #1E2124;
-  background: #ffffff;
-  border: 1px solid var(--bs-border-color);
-  height: 36px;
-  border-radius: 18px;
-  padding: 0.5rem 1rem;
+  font-weight: 600;
+  color: var(--bs-font-tertiary-color);
+  background: transparent;
+  border: unset;
+  border-radius: 0;
+  padding: 0.75rem 0;
 }
 
 .nav-tabs .nav-link:hover {
@@ -635,8 +636,9 @@ border-color: #bd2130;
 }
 
 .nav-tabs .nav-link.active {
-  color: #ffffff;
-  background-color: #1E2124;
+  font-weight: 700;
+  color: #197495;
+  border-bottom: 3px solid #197495;
 }
 
 /* 탭 헤더와 버튼 스타일 */
@@ -647,6 +649,7 @@ border-color: #bd2130;
   margin-bottom: 0;
   padding-bottom: 0;
   flex-direction: row;
+  border-bottom: 1px solid var(--bs-border-color);
 }
 
 .boardBtn01 {
@@ -656,7 +659,7 @@ border-color: #bd2130;
   font-size: 0.9rem;
   color: #007bff;
   margin: 0;
-  padding: 0.5rem 1rem;
+  padding: 0;
   border: none;
   background: none;
   white-space: nowrap;
@@ -675,7 +678,6 @@ border-color: #bd2130;
 /* 탭 컨테이너를 위한 추가 스타일 */
 .tabHeader .nav-tabs {
   flex-grow: 1;
-  max-width: calc(100% - 100px); /* 버튼 공간 확보 */
 }
 
 /* Secondary and tertiary menus in mobile */
@@ -885,6 +887,7 @@ button.boardBtn01 {
   font-size: 0.875rem !important;
   color: var(--bs-font-secondary-color);
   font-weight: 400;
+  padding: 0;
 }
 button.boardBtn01 .arrow-icon {
   display: inline-block;
@@ -1422,8 +1425,8 @@ textarea.form-control {
 }
 .boardBottomBtnWrap {
   display: flex;
-  gap: 8px;
-  justify-content: flex-end;
+  gap: 6px;
+  justify-content: center;
   margin-top: 2rem;
 }
 .boardBottomBtnWrap .btn {
@@ -1494,11 +1497,7 @@ textarea.form-control {
   gap: 0.5rem;
 }
 .boardBox .contentContainer {
-  padding: 1.5rem;
-  border-radius: 12px;
   gap: 0.75rem;
-  background: #ffffff;
-  height: 250px;
 }
 .boardBox .contentContainer > .list-group-item {
   display: flex;
@@ -1516,7 +1515,26 @@ textarea.form-control {
   border-bottom: 0;
   padding-bottom: 0;
 }
-
+.boardBox .contentContainer > .list-group-item .list-group-item-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  width: 100%;
+}
+.boardBox .contentContainer > .list-group-item.nodata {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.875rem;
+  text-align: center;
+}
+.tab-content:has(.nodata) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
 
 /* dashboard */
 .fieldSection {
@@ -1710,7 +1728,10 @@ textarea.form-control {
   flex-direction: column;
   width: 100%;
   min-height: 300px;
-  gap: 1rem;
+  gap: 1.25rem;
+  padding: 1rem 1.5rem 1.5rem;
+  background: #ffffff;
+  border-radius: 12px;
 }
 
 .boardContent {
