@@ -6,17 +6,16 @@ import { handleDownloadExcel } from '../../../utils/tableExcel';
 import TableSearch from '../../../components/table/TableSearch';
 import { fetchData } from '../../../utils/dataUtils';
 import { errorMsgPopup } from '../../../utils/errorMsgPopup';
-import styles from './StandardTeamOrgDayStatisticPopup.module.css';
+import styles from './StandardTeamInputEmpStatisticPopup.module.css';
 
-const StandardTeamOrgDayStatisticPopup = ({ show, onHide, data }) => {
+const StandardTeamInputEmpStatisticPopup = ({ show, onHide, data }) => {
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
   const [filters, setFilters] = useState(initialFilters([
     { id: "filterSelect", label: "", type: "select", options: [
       { value: "", label: "선택" },
-      { value: "CLASSANM", label: "대분류" },
-      { value: "CLASSBNM", label: "중분류" },
-      { value: "CLASSCNM", label: "소분류" }
+      { value: "EMPNM1", label: "대상인원" },
+      { value: "EMPNM2", label: "입력인원" }
     ]},
     { id: "filterText", label: "", type: "text", placeholder: "검색값을 입력하세요", width: "200px" },
   ]));
@@ -28,21 +27,15 @@ const StandardTeamOrgDayStatisticPopup = ({ show, onHide, data }) => {
 
   const columns = [
     { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업일자', field: 'DDATE', sorter: 'string', width: 100, frozen: true },
-    { headerHozAlign: 'center', title: '대분류코드', field: 'CLASSACD', hozAlign: 'center', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '대분류', field: 'CLASSANM', sorter: 'string', width: 180 },
-    { headerHozAlign: 'center', title: '중분류코드', field: 'CLASSBCD', hozAlign: 'center', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '중분류', field: 'CLASSBNM', sorter: 'string', width: 180 },
-    { headerHozAlign: 'center', title: '소분류코드', field: 'CLASSCCD', hozAlign: 'center', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'left', title: '소분류', field: 'CLASSCNM', sorter: 'string', width: 220 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '이름', field: 'EMPNM', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무', field: 'WORKNM', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업일시', field: 'WORKDT', sorter: 'string', width: 200 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '시작시간', field: 'STARTTM', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: 'BIZ입력키', field: 'BIZINPUTKEY', sorter: 'string', width: 100, visible: false },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '사원번호', field: 'EMPNO', sorter: 'string', width: 100, visible: false },
+    
+    { headerHozAlign: 'center', hozAlign: 'center', title: '대상인원사원번호', field: 'EMPNO1', sorter: 'string', width: 100, visible: false, frozen:true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '대상인원', field: 'EMPNM1', sorter: 'string', width: 100, frozen:true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '입력인원사원번호', field: 'EMPNO2', sorter: 'string', width: 100, visible: false, frozen:true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '입력인원', field: 'EMPNM2', sorter: 'string', width: 100, frozen:true },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조직코드', field: 'ORGCD', sorter: 'string', width: 130, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조직', field: 'ORGNM', sorter: 'string', width: 130 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '직책', field: 'LEVELNM', sorter: 'string', width: 130 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '퇴사유무', field: 'EXFIREYN', sorter: 'string', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간(시간)', field: 'WORKH', sorter: 'number', width: 120 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', width: 130 },
   ];
@@ -92,11 +85,7 @@ const StandardTeamOrgDayStatisticPopup = ({ show, onHide, data }) => {
     let isMounted = true;
 
     const loadData = async () => {
-      if (
-        !data || !Array.isArray(data) || data.length === 0 ||
-        !data[0] || !data[0].SECTIONCD || !data[0].DDATE ||
-        data[0].SECTIONCD.trim() === "" || data[0].DDATE.trim() === ""
-      ) {
+      if (!data) {
         if (isMounted) {
           setTableData([]);
           setHasSearched(false);
@@ -112,12 +101,12 @@ const StandardTeamOrgDayStatisticPopup = ({ show, onHide, data }) => {
 
       try {
         const params = {
-          pGUBUN: 'DETAIL',
+          pGUBUN: 'EMPDETAIL',
           pSECTIONCD: data[0].SECTIONCD||'',
           pEMPNO: data[0].EMPNO||'',
           pORGCD: data[0].ORGCD||'',
-          pDATE1: data[0].DDATE||'',
-          pCLASSCD: data[0].CLASSCD||'',
+          pDATE1: data[0].MDATE||'',
+          pCLASSCD: '',
           pDEBUG: 'F',
         };
 
@@ -177,9 +166,8 @@ const StandardTeamOrgDayStatisticPopup = ({ show, onHide, data }) => {
         tableInstance.current.setFilter(filterSelect, 'like', filterText);
       } else if (filterText) {
         tableInstance.current.setFilter([
-          { field: 'CLASSANM', type: 'like', value: filterText },
-          { field: 'CLASSBNM', type: 'like', value: filterText },
-          { field: 'CLASSCNM', type: 'like', value: filterText },
+          { field: 'EMPNM1', type: 'like', value: filterText },
+          { field: 'EMPNM2', type: 'like', value: filterText },
         ], 'or');
       } else {
         tableInstance.current.clearFilter();
@@ -191,7 +179,7 @@ const StandardTeamOrgDayStatisticPopup = ({ show, onHide, data }) => {
   }, [filters, tableStatus, loading]);
 
   const onDownloadExcel = () => {
-    handleDownloadExcel(tableInstance.current, tableStatus, '일별업무정보.xlsx');
+    handleDownloadExcel(tableInstance.current, tableStatus, '인원정보.xlsx');
   };
 
   const handleClose = () => {
@@ -201,16 +189,15 @@ const StandardTeamOrgDayStatisticPopup = ({ show, onHide, data }) => {
   return (
     <Modal show={show} onHide={onHide} centered dialogClassName={styles.customModal}>
       <Modal.Header closeButton>
-        <Modal.Title>일별 업무 정보</Modal.Title>
+        <Modal.Title>인원정보</Modal.Title>
       </Modal.Header>
       <Modal.Body className={`${styles.modalBody} modal-body`}>
         <TableSearch
           filterFields={[
             { id: 'filterSelect', label: '', type: 'select', options: [
               { value: '', label: '선택' },
-              { value: 'CLASSANM', label: '대분류' },
-              { value: 'CLASSBNM', label: '중분류' },
-              { value: 'CLASSCNM', label: '소분류' }
+              { value: 'EMPNM1', label: '대상인원' },
+              { value: 'EMPNM2', label: '입력인원' }
             ]},
             { id: 'filterText', label: '', type: 'text', placeholder: '검색값을 입력하세요', width: '200px' },
           ]}
@@ -233,4 +220,4 @@ const StandardTeamOrgDayStatisticPopup = ({ show, onHide, data }) => {
   );
 };
 
-export default StandardTeamOrgDayStatisticPopup;
+export default StandardTeamInputEmpStatisticPopup;

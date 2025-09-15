@@ -13,6 +13,7 @@ import styles from '../../components/table/TableSearch.module.css';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import common from '../../utils/common';
 import StandardTeamOrgDayStatisticPopup from './popup/StandardTeamOrgDayStatisticPopup';
+import StandardTeamInputEmpStatisticPopup from './popup/StandardTeamInputEmpStatisticPopup';
 
 const fn_CellNumber = { editor: 'number', editorParams: { min: 0 }, editable: true };
 
@@ -51,7 +52,9 @@ const StandardTeamInputStatistic = () => {
   const tableInstance = useRef(null);
   const isInitialRender = useRef(true);
   const [showStatisticPopup, setShowStatisticPopup] = useState(false);
+  const [showEmpStatisticPopup, setShowEmpStatisticPopup] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
+  const [selectedEmpData, setSelectedEmpData] = useState(null);
 
   // 공통 cellClick 핸들러
   const handleDayClick = (cell, day) => {
@@ -68,6 +71,20 @@ const StandardTeamInputStatistic = () => {
       DDATE: `${rowData.MDATE}${day.padStart(2, '0')}`,
     });
     setShowStatisticPopup(true);
+  };
+
+  const handleEmpClick = (e, cell) => {
+    const value = cell.getValue();
+    const rowData = cell.getRow().getData();
+    const sectionCd = rowData.SECTIONCD;
+    const orgCd = rowData.ORGCD;
+    const mDate = rowData.MDATE;
+    setSelectedEmpData({
+      SECTIONCD: sectionCd,
+      ORGCD: orgCd,
+      MDATE: mDate
+    });
+    setShowEmpStatisticPopup(true);
   };
 
   // 초기 searchConfig 설정
@@ -114,8 +131,26 @@ const StandardTeamInputStatistic = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '월', field: 'MDATE', sorter: 'number', width: 100, frozen: true },
     { headerHozAlign: 'center', hozAlign: 'center', title: '팀코드', field: 'ORGCD', sorter: 'string', width: 100, frozen: true, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '팀정보', field: 'ORGNM', sorter: 'string', width: 120, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '대상인원(명)', field: 'TARGETCNT', sorter: 'number', width: 102, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '입력인원(명)', field: 'EMPNOCNT', sorter: 'number', width: 102, frozen: true },
+    {
+      headerHozAlign: 'center', hozAlign: 'center', title: '대상인원(명)', field: 'EMPTARGETCNT', sorter: 'number', width: 102, frozen: true,
+      cellClick: (e, cell) => handleEmpClick(e, cell),
+      formatter: (cell) => {
+        const value = cell.getValue();
+        if (!value || parseFloat(value) === 0) return '';
+        return parseFloat(value).toFixed(2);
+      },
+      cellStyle: { color: '#247db3' },
+    },
+    {
+      headerHozAlign: 'center', hozAlign: 'center', title: '입력인원(명)', field: 'EMPINPUTCNT', sorter: 'number', width: 102, frozen: true,
+      cellClick: (e, cell) => handleEmpClick(e, cell),
+      formatter: (cell) => {
+        const value = cell.getValue();
+        if (!value || parseFloat(value) === 0) return '';
+        return parseFloat(value).toFixed(2);
+      },
+      cellStyle: { color: '#247db3' },
+    },
     { headerHozAlign: 'center', hozAlign: 'center', title: '월누계', field: 'MONTH_TOTAL', sorter: 'number', width: 100, frozen: true },
     ...Array.from({ length: 31 }, (_, i) => {
       const day = String(i + 1).padStart(2, '0');
@@ -298,6 +333,11 @@ const StandardTeamInputStatistic = () => {
         show={showStatisticPopup}
         onHide={() => setShowStatisticPopup(false)}
         data={selectedData ? [selectedData] : []}
+      />
+      <StandardTeamInputEmpStatisticPopup
+        show={showEmpStatisticPopup}
+        onHide={() => setShowEmpStatisticPopup(false)}
+        data={selectedEmpData ? [selectedEmpData] : []}
       />
     </div>
   );
