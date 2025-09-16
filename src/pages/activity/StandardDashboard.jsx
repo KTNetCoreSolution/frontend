@@ -50,6 +50,7 @@ const StandardDashboard = () => {
         구분: item.SECTIONCD === 'TOTAL' ? '계' : item.SECTIONCD,
         '대상인원(명)': Number(item.EMPTARGETCNT) || 0,
         '입력인원(명)': Number(item.EMPINPUTCNT) || 0,
+        '대상시간(h)': Number(item.TARGETWORKH) || 0,
         '입력시간(h)': Number(item.WORKH) || 0,
         '비율(%)': item.WORKH && item.SECTIONCD !== 'TOTAL'
           ? ((Number(item.WORKH) / Number(totalResponse.data.find(d => d.SECTIONCD === 'TOTAL')?.WORKH)) * 100).toFixed(2)
@@ -106,24 +107,28 @@ const StandardDashboard = () => {
         구분: '계',
         대상인원: totalData.find(item => item.구분 === '계')?.['대상인원(명)'] || 0,
         입력인원: totalData.find(item => item.구분 === '계')?.['입력인원(명)'] || 0,
+        대상시간: totalData.find(item => item.구분 === '계')?.['대상시간(h)'] || 0,
         입력시간: totalData.find(item => item.구분 === '계')?.['입력시간(h)'] || 0,
       },
       {
         구분: '선로',
         대상인원: totalData.find(item => item.구분 === 'LINE')?.['대상인원(명)'] || 0,
         입력인원: totalData.find(item => item.구분 === 'LINE')?.['입력인원(명)'] || 0,
+        대상시간: totalData.find(item => item.구분 === '계')?.['대상시간(h)'] || 0,
         입력시간: totalData.find(item => item.구분 === 'LINE')?.['입력시간(h)'] || 0,
       },
       {
         구분: '설계',
         대상인원: totalData.find(item => item.구분 === 'DESIGN')?.['대상인원(명)'] || 0,
         입력인원: totalData.find(item => item.구분 === 'DESIGN')?.['입력인원(명)'] || 0,
+        대상시간: totalData.find(item => item.구분 === '계')?.['대상시간(h)'] || 0,
         입력시간: totalData.find(item => item.구분 === 'DESIGN')?.['입력시간(h)'] || 0,
       },
       {
         구분: 'BIZ',
         대상인원: totalData.find(item => item.구분 === 'BIZ')?.['대상인원(명)'] || 0,
         입력인원: totalData.find(item => item.구분 === 'BIZ')?.['입력인원(명)'] || 0,
+        대상시간: totalData.find(item => item.구분 === '계')?.['대상시간(h)'] || 0,
         입력시간: totalData.find(item => item.구분 === 'BIZ')?.['입력시간(h)'] || 0,
       },
     ];
@@ -138,9 +143,9 @@ const StandardDashboard = () => {
       if (chartRefs[0].current) {
         const chart = echarts.init(chartRefs[0].current);
         const totalTimeEntry = totalData.find(item => item.구분 === '계');
-        const percentValue = totalTimeEntry ? totalTimeEntry['비율(%)'] : 0;
         const inputTime = totalTimeEntry ? totalTimeEntry['입력시간(h)'] : 0;
-        const targetTime = totalTimeEntry ? totalTimeEntry['총대상시간(h)'] : 0;
+        const targetTime = totalTimeEntry ? totalTimeEntry['대상시간(h)'] : 0;
+        const percentValue = targetTime > 0 ? ((inputTime / targetTime) * 100).toFixed(2) : 0;
 
         chart.setOption({
           tooltip: {
@@ -181,13 +186,13 @@ const StandardDashboard = () => {
       ['LINE', 'DESIGN', 'BIZ'].forEach((section, i) => {
         if (chartRefs[i + 1].current) {
           const item = totalData.find(item => item.구분 === section);
-          const percentValue = item ? item['비율(%)'] : 0;
           const inputTime = item ? item['입력시간(h)'] : 0;
-          const totalTime = totalData.find(item => item.구분 === '계')?.['입력시간(h)'] || 0;
+          const targetTime = item ? item['대상시간(h)'] : 0;
+          const percentValue = targetTime > 0 ? ((inputTime / targetTime) * 100).toFixed(2) : 0;
           const chart = echarts.init(chartRefs[i + 1].current);
           chart.setOption({
             tooltip: {
-              formatter: `총대상시간(h): ${totalTime}<br/> 입력시간(h): ${inputTime}`,
+              formatter: `총대상시간(h): ${targetTime}<br/> 입력시간(h): ${inputTime}`,
             },
             series: [
               {
@@ -201,7 +206,7 @@ const StandardDashboard = () => {
                   formatter: `${percentValue}%`,
                   fontSize: 18,
                   fontWeight: 'bold',
-                  color: '#2CBBB7', 
+                  color: '#2CBBB7',
                 },
                 labelLine: { show: false },
                 data: [
@@ -328,7 +333,7 @@ const StandardDashboard = () => {
                 name: '업무 비율',
                 type: 'pie',
                 radius: ['40%', '70%'],
-                padAngle: 3,
+                padAngle: 0,
                 color: colors,
                 label: {
                   formatter: '{abg|{b}}\n{hr|}\n{per|{d}%}  {value|{c}시간}',
@@ -342,6 +347,11 @@ const StandardDashboard = () => {
                     per: { color: '#212529', backgroundColor: 'transparent', padding: [6, 8] },
                     value: { color: '#212529', backgroundColor: 'transparent', padding: [6, 8] },
                   },
+                },
+                 itemStyle: {
+                  borderRadius: 0,
+                  borderColor: '#fff',
+                  borderWidth: 0
                 },
                 data: data,
                 emphasis: {
@@ -420,6 +430,7 @@ const StandardDashboard = () => {
                   <th>구분</th>
                   <th>대상인원(명)</th>
                   <th>입력인원(명)</th>
+                  <th>대상시간(h)</th>
                   <th>입력시간(h)</th>
                 </tr>
               </thead>
@@ -429,6 +440,7 @@ const StandardDashboard = () => {
                     <td>{item.구분}</td>
                     <td>{item.대상인원}</td>
                     <td>{item.입력인원}</td>
+                    <td>{item.대상시간}</td>
                     <td>{item.입력시간}</td>
                   </tr>
                 ))}
