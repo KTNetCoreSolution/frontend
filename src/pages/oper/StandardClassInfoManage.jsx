@@ -10,6 +10,8 @@ import { handleDownloadExcel } from "../../utils/tableExcel";
 import { fetchData } from "../../utils/dataUtils";
 import { errorMsgPopup } from "../../utils/errorMsgPopup";
 import { msgPopup } from "../../utils/msgPopup";
+import CommonPopup from "../../components/popup/CommonPopup";
+import common from "../../utils/common";
 import styles from "../../components/table/TableSearch.module.css";
 
 const fn_CellText = { editor: "input", editable: true };
@@ -29,15 +31,27 @@ const fn_CellButton = (label, className, onClick) => ({
     return wrapper;
   },
 });
-const fn_HandleCellEdit = (cell, field, setData, tableInstance) => {
-  const rowId = cell.getRow().getData().ID;
+
+const fn_HandleCellEdit = (cell, field, setAddRowData, setData, tableInstance) => {
+  const rowData = cell.getRow().getData();
   const newValue = cell.getValue();
+
+  // 추가 행인 경우
+  if (rowData.isAddRow) {
+    setTimeout(() => {
+      setAddRowData((prev) => ({ ...prev, [field]: newValue }));
+      if (tableInstance.current) tableInstance.current.redraw();
+    }, 0);
+    return;
+  }
+
+  // 일반 행인 경우
+  const rowId = rowData.ID;
   setTimeout(() => {
     setData((prevData) =>
-      prevData.map((row, index) => {
-        if (index === 0 && field !== "USEYN") return row; // 고정 행은 사용유무만 수정 가능
-        if (index === 0 || String(row.ID) === String(rowId)) {
-          return { ...row, [field]: newValue, isChanged: index !== 0 ? "Y" : row.isChanged };
+      prevData.map((row) => {
+        if (String(row.ID) === String(rowId)) {
+          return { ...row, [field]: newValue, isChanged: "Y" };
         }
         return row;
       })
@@ -46,49 +60,18 @@ const fn_HandleCellEdit = (cell, field, setData, tableInstance) => {
   }, 0);
 };
 
+const ADD_CONFIRM_MESSAGE = "추가하시겠습니까?";
+const EDIT_CONFIRM_MESSAGE = "변경하시겠습니까?";
+const DELETE_CONFIRM_MESSAGE = "삭제하시겠습니까?";
+
 const StandardClassInfoManage = () => {
   const { user } = useStore();
   const navigate = useNavigate();
 
   const searchConfig = {
     areas: [
-      {
-        type: "search",
-        fields: [
-          {
-            id: "classGubun",
-            type: "select",
-            row: 1,
-            label: "분야",
-            labelVisible: true,
-            options: [
-              { value: "LINE", label: "선로" },
-              { value: "DESIGN", label: "설계" },
-              { value: "BIZ", label: "BIZ" },
-            ],
-            defaultValue: "LINE",
-            enabled: true,
-            eventType: "selectChange",
-          },
-        ],
-      },
-      {
-        type: "buttons",
-        fields: [
-          {
-            id: "searchBtn",
-            type: "button",
-            row: 1,
-            label: "검색",
-            eventType: "search",
-            width: "80px",
-            height: "30px",
-            backgroundColor: "#00c4b4",
-            color: "#ffffff",
-            enabled: true,
-          },
-        ],
-      },
+      { type: "search", fields: [{ id: "classGubun", type: "select", row: 1, label: "분야", labelVisible: true, options: [{ value: "LINE", label: "선로" }, { value: "DESIGN", label: "설계" }, { value: "BIZ", label: "BIZ" }], defaultValue: "LINE", enabled: true, eventType: "selectChange" }] },
+      { type: "buttons", fields: [{ id: "searchBtn", type: "button", row: 1, label: "검색", eventType: "search", width: "80px", height: "30px", backgroundColor: "#00c4b4", color: "#ffffff", enabled: true }] },
     ],
   };
 
@@ -100,10 +83,12 @@ const StandardClassInfoManage = () => {
   const [filters, setFilters] = useState(initialFilters(searchConfig.areas.find((area) => area.type === "search").fields));
   const [tableFilters, setTableFilters] = useState(initialFilters(filterTableFields));
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([{ USEYN: "Y" }]); // 첫 번째 행은 고정 행, 사용유무 기본값 Y
+  const [addRowData, setAddRowData] = useState({ USEYN: "Y", SECTIONCD: "LINE", isAddRow: true });
+  const [data, setData] = useState([]);
   const [isSearched, setIsSearched] = useState(false);
   const [tableStatus, setTableStatus] = useState("initializing");
   const [rowCount, setRowCount] = useState(0);
+  const [showPopup, setShowPopup] = useState({ show: false, type: "", rowData: null });
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
   const isInitialRender = useRef(true);
@@ -117,51 +102,81 @@ const StandardClassInfoManage = () => {
       field: "actions",
       width: 120,
       formatter: (cell) => {
-        const rowIndex = cell.getRow().getPosition();
+        const rowData = cell.getData();
         const wrapper = document.createElement("div");
         wrapper.style.display = "flex";
         wrapper.style.justifyContent = "center";
         wrapper.style.alignItems = "center";
-        if (rowIndex === 1) {
-          // 첫 번째 행: 추가 버튼 (모든 페이지에서)
+        if (rowData.isAddRow) {
+          // 추가 행: 추가 버튼만 표시
           const addButton = document.createElement("button");
           addButton.className = `btn btn-sm btn-success`;
           addButton.innerText = "추가";
-          addButton.onclick = () => handleAdd(cell.getData());
+          addButton.onclick = () => setShowPopup({ show: true, type: "add", rowData });
           wrapper.appendChild(addButton);
         } else {
-          // 두 번째 행부터: 변경, 삭제 버튼
+          // 일반 행: 변경, 삭제 버튼 표시
           const editButton = document.createElement("button");
           editButton.className = `btn btn-sm btn-primary`;
           editButton.innerText = "변경";
           editButton.style.marginRight = "5px";
-          editButton.onclick = () => handleEdit(cell.getData());
+          editButton.onclick = () => setShowPopup({ show: true, type: "edit", rowData });
           wrapper.appendChild(editButton);
 
           const deleteButton = document.createElement("button");
           deleteButton.className = `btn btn-sm btn-danger`;
           deleteButton.innerText = "삭제";
-          deleteButton.onclick = () => handleDelete(cell.getData());
+          deleteButton.onclick = () => setShowPopup({ show: true, type: "delete", rowData });
           wrapper.appendChild(deleteButton);
         }
         return wrapper;
       },
     },
     { headerHozAlign: "center", hozAlign: "center", title: "ID", field: "ID", sorter: "string", width: 100, visible: false },
-    { headerHozAlign: "center", hozAlign: "center", title: "분야 코드", field: "SECTIONCD", sorter: "string", width: 120, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "SECTIONCD", setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "center", title: "대분류 코드", field: "CLASSACD", sorter: "string", width: 120, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSACD", setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "left", title: "대분류", field: "CLASSANM", sorter: "string", width: 150, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSANM", setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "center", title: "중분류 코드", field: "CLASSBCD", sorter: "string", width: 120, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSBCD", setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "left", title: "중분류", field: "CLASSBNM", sorter: "string", width: 150, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSBNM", setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "center", title: "소분류 코드", field: "CLASSCCD", sorter: "string", width: 120, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSCCD", setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "left", title: "소분류", field: "CLASSCNM", sorter: "string", width: 190, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSCNM", setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "left", title: "분류순서", field: "CLASSODR", sorter: "string", width: 190, ...fn_CellNumber, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSODR", setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "left", title: "업무부가설명", field: "DETAIL", sorter: "string", width: 250, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "DETAIL", setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "left", title: "단위문구", field: "UTYPE", sorter: "string", width: 200, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "UTYPE", setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "center", title: "사용유무", field: "USEYN", sorter: "string", width: 100, ...fn_CellSelect(["Y", "N"]), cellEdited: (cell) => fn_HandleCellEdit(cell, "USEYN", setData, tableInstance) },
+    { 
+      headerHozAlign: "center", hozAlign: "center", title: "분야 코드", field: "SECTIONCD", sorter: "string", width: 120, 
+      editor: "list", editorParams: { values: ["LINE", "DESIGN", "BIZ"], autocomplete: true }, 
+      cellEdited: (cell) => fn_HandleCellEdit(cell, "SECTIONCD", setAddRowData, setData, tableInstance) 
+    },
+    { headerHozAlign: "center", hozAlign: "center", title: "대분류 코드", field: "CLASSACD", sorter: "string", width: 120, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSACD", setAddRowData, setData, tableInstance) },
+    { headerHozAlign: "center", hozAlign: "left", title: "대분류", field: "CLASSANM", sorter: "string", width: 150, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSANM", setAddRowData, setData, tableInstance) },
+    { headerHozAlign: "center", hozAlign: "center", title: "중분류 코드", field: "CLASSBCD", sorter: "string", width: 120, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSBCD", setAddRowData, setData, tableInstance) },
+    { headerHozAlign: "center", hozAlign: "left", title: "중분류", field: "CLASSBNM", sorter: "string", width: 150, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSBNM", setAddRowData, setData, tableInstance) },
+    { 
+      headerHozAlign: "center", 
+      hozAlign: "center", 
+      title: "소분류 코드", 
+      field: "CLASSCCD", 
+      sorter: "string", 
+      width: 120, 
+      formatter: (cell) => {
+        const rowData = cell.getData();
+        const wrapper = document.createElement("div");
+        wrapper.style.display = "flex";
+        wrapper.style.justifyContent = "center";
+        wrapper.style.alignItems = "center";
+        wrapper.style.height = "100%";
+        if (!rowData.isAddRow) {
+          wrapper.style.backgroundColor = "#e1e1e1"; // 리스트 행에 연한 회색 배경
+          wrapper.contentEditable = false; // 리스트 행에서 readonly 설정
+        }
+        wrapper.innerText = cell.getValue() || "";
+        return wrapper;
+      },
+      ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSCCD", setAddRowData, setData, tableInstance)
+    },
+    { headerHozAlign: "center", hozAlign: "left", title: "소분류", field: "CLASSCNM", sorter: "string", width: 190, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSCNM", setAddRowData, setData, tableInstance) },
+    { headerHozAlign: "center", hozAlign: "center", title: "분류순서", field: "CLASSODR", sorter: "string", width: 100, ...fn_CellNumber, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSODR", setAddRowData, setData, tableInstance) },
+    { headerHozAlign: "center", hozAlign: "left", title: "업무부가설명", field: "DETAIL", sorter: "string", width: 250, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "DETAIL", setAddRowData, setData, tableInstance) },
+    { headerHozAlign: "center", hozAlign: "left", title: "단위문구", field: "UTYPE", sorter: "string", width: 200, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "UTYPE", setAddRowData, setData, tableInstance) },
+    { headerHozAlign: "center", hozAlign: "center", title: "BIZMCODE", field: "BIZMCODE", sorter: "string", width: 120, ...fn_CellNumber, cellEdited: (cell) => fn_HandleCellEdit(cell, "BIZMCODE", setAddRowData, setData, tableInstance) },
+    { 
+      headerHozAlign: "center", hozAlign: "center", title: "사용유무", field: "USEYN", sorter: "string", width: 100, 
+      editor: "list", editorParams: { values: ["Y", "N"], autocomplete: true }, 
+      cellEdited: (cell) => fn_HandleCellEdit(cell, "USEYN", setAddRowData, setData, tableInstance) 
+    },
   ];
 
-  // 필드 이름과 타이틀 매핑 객체
   const fieldToTitleMap = columns.reduce((map, column) => {
     if (column.field && column.title) {
       map[column.field] = column.title;
@@ -169,18 +184,14 @@ const StandardClassInfoManage = () => {
     return map;
   }, {});
 
-  // 필수 필드 검증 및 오류 메시지 생성 함수
   const validateRequiredFields = (rowData, requiredFields) => {
     const missingFields = requiredFields.filter((field) => {
       const value = rowData[field];
-      // CLASSODR은 숫자 타입이므로 별도 처리
       if (field === "CLASSODR") {
         return value == null || value === "";
       }
-      // 문자열 필드에 대해 trim 적용
       return typeof value === "string" ? !value.trim() : !value;
     });
-    // 타이틀로 변환
     return missingFields.map((field) => fieldToTitleMap[field] || field);
   };
 
@@ -188,32 +199,24 @@ const StandardClassInfoManage = () => {
     setLoading(true);
     setIsSearched(true);
     try {
-      const params = {
-        pGUBUN: filters.classGubun || "",
-        DEBUG: "F",
-      };
+      const params = { pGUBUN: filters.classGubun || "", DEBUG: "F" };
       const response = await fetchData("oper/standard/class/list", params);
       if (!response.success) {
         errorMsgPopup(response.message || "데이터를 가져오는 중 오류가 발생했습니다.");
-        setData([{ USEYN: "Y" }]);
+        setData([]);
         return;
       }
       if (response.errMsg !== "") {
-        setData([{ USEYN: "Y" }]);
+        setData([]);
         return;
       }
       const responseData = Array.isArray(response.data) ? response.data : [];
-      const leveledData = responseData.map((row) => ({
-        ...row,
-        isDeleted: "N",
-        isChanged: "N",
-        isAdded: "N",
-      }));
-      setData([{ USEYN: "Y" }, ...leveledData]); // 첫 번째 행은 고정 행
+      const leveledData = responseData.map((row) => ({ ...row, isDeleted: "N", isChanged: "N", isAdded: "N", isAddRow: false }));
+      setData(leveledData);
     } catch (err) {
       console.error("데이터 로드 실패:", err);
       errorMsgPopup(err.response?.data?.message || "데이터를 가져오는 중 오류가 발생했습니다.");
-      setData([{ USEYN: "Y" }]);
+      setData([]);
     } finally {
       setLoading(false);
     }
@@ -233,13 +236,13 @@ const StandardClassInfoManage = () => {
       try {
         tableInstance.current = createTable(tableRef.current, columns, [], {
           editable: true,
-          frozenRows: 1,
           rowFormatter: (row) => {
             const rowData = row.getData();
+            const rowElement = row.getElement();
             if (rowData.isChanged === "Y") {
-              row.getElement().style.backgroundColor = "#fff3cd"; // 노란색 배경
+              rowElement.style.backgroundColor = "#fff3cd"; // 노란색 배경
             } else {
-              row.getElement().style.backgroundColor = ""; // 기본 배경
+              rowElement.style.backgroundColor = ""; // 기본 배경
             }
           },
         });
@@ -268,18 +271,24 @@ const StandardClassInfoManage = () => {
     const table = tableInstance.current;
     if (!table || tableStatus !== "ready" || loading) return;
     if (table.rowManager?.renderer) {
-      table.setData(data);
-      if (isSearched && data.length === 1 && !loading) {
-        tableInstance.current.alert("검색 결과 없음", "info");
+      table.setData([...data]); // 기존 데이터 설정
+      table.addRow({ ...addRowData }, true); // 추가 행을 맨 위에 추가
+      // 첫 번째 행(추가 행)을 고정
+      table.getRows().forEach((row, index) => {
+        if (index === 0) {
+          row.freeze(); // 첫 번째 행 고정
+        } 
+      });
+      if (isSearched && data.length === 0 && !loading) {
+        table.alert("검색 결과 없음", "info");
       } else {
-        tableInstance.current.clearAlert();
-        const rows = tableInstance.current.getDataCount();
-        setRowCount(rows - 1); // 고정 행 제외
+        table.clearAlert();
       }
+      setRowCount(data.length);
     } else {
       console.warn("renderer가 아직 초기화되지 않았습니다.");
     }
-  }, [data, loading, tableStatus, isSearched]);
+  }, [data, loading, tableStatus, isSearched, addRowData]);
 
   useEffect(() => {
     if (isInitialRender.current || !tableInstance.current || tableStatus !== "ready" || loading) return;
@@ -311,83 +320,78 @@ const StandardClassInfoManage = () => {
   };
 
   const handleAdd = async () => {
-    const firstRow = data[0];
-    const requiredFields = [
-      "SECTIONCD",
-      "CLASSACD",
-      "CLASSANM",
-      "CLASSBCD",
-      "CLASSBNM",
-      "CLASSCCD",
-      "CLASSCNM",
-      "CLASSODR",
-      "USEYN",
-    ];
-    const missingFields = validateRequiredFields(firstRow, requiredFields);
+    const requiredFields = ["SECTIONCD", "CLASSACD", "CLASSANM", "CLASSBCD", "CLASSBNM", "CLASSCCD", "CLASSCNM", "CLASSODR", "USEYN"];
+    const missingFields = validateRequiredFields(addRowData, requiredFields);
     if (missingFields.length > 0) {
       errorMsgPopup(`다음 필드를 입력해주세요: ${missingFields.join(", ")}`);
       return;
     }
 
+    let validation = common.validateVarcharLength(addRowData.CLASSACD, 300, "대분류코드");
+    if (!validation.valid) {
+      errorMsgPopup(validation.error);
+      return;
+    }
+
+    validation = common.validateVarcharLength(addRowData.CLASSANM, 300, "대분류");
+    if (!validation.valid) {
+      errorMsgPopup(validation.error);
+      return;
+    }
+
     setLoading(true);
     try {
-      const newRow = {
-        SECTIONCD: firstRow.SECTIONCD || "",
-        CLASSACD: firstRow.CLASSACD || "",
-        CLASSANM: firstRow.CLASSANM || "",
-        CLASSBCD: firstRow.CLASSBCD || "",
-        CLASSBNM: firstRow.CLASSBNM || "",
-        CLASSCCD: firstRow.CLASSCCD || "",
-        CLASSCNM: firstRow.CLASSCNM || "",
-        CLASSODR: firstRow.CLASSODR || "",
-        DETAIL: firstRow.DETAIL || "",
-        UTYPE: firstRow.UTYPE || "",
-        USEYN: firstRow.USEYN || "Y",
-        isDeleted: "N",
-        isChanged: "N",
+      const newRow = { 
+        SECTIONCD: addRowData.SECTIONCD || "LINE", 
+        CLASSACD: addRowData.CLASSACD || "", 
+        CLASSANM: addRowData.CLASSANM || "", 
+        CLASSBCD: addRowData.CLASSBCD || "", 
+        CLASSBNM: addRowData.CLASSBNM || "", 
+        CLASSCCD: addRowData.CLASSCCD || "", 
+        CLASSCNM: addRowData.CLASSCNM || "", 
+        CLASSODR: addRowData.CLASSODR || "", 
+        DETAIL: addRowData.DETAIL || "", 
+        UTYPE: addRowData.UTYPE || "", 
+        USEYN: addRowData.USEYN || "Y", 
+        isDeleted: "N", 
+        isChanged: "N", 
         isAdded: "Y",
+        isAddRow: false 
       };
-      const params = {
-        pGUBUN: "I",
-        pSECTIONCD: newRow.SECTIONCD || "",
-        pCLASSACD: newRow.CLASSACD || "",
-        pCLASSANM: newRow.CLASSANM || "",
-        pCLASSBCD: newRow.CLASSBCD || "",
-        pCLASSBNM: newRow.CLASSBNM || "",
-        pCLASSCCD: newRow.CLASSCCD || "",
-        pCLASSCNM: newRow.CLASSCNM || "",
-        pCLASSODR: newRow.CLASSODR || "",
-        pDETAIL: newRow.DETAIL || "",
-        pUTYPE: newRow.UTYPE || "",
-        pUSEYN: newRow.USEYN || "",
-        pEMPNO: user?.empNo || "",
+      const params = { 
+        pGUBUN: "I", 
+        pSECTIONCD: newRow.SECTIONCD || "", 
+        pCLASSACD: newRow.CLASSACD || "", 
+        pCLASSANM: newRow.CLASSANM || "", 
+        pCLASSBCD: newRow.CLASSBCD || "", 
+        pCLASSBNM: newRow.CLASSBNM || "", 
+        pCLASSCCD: newRow.CLASSCCD || "", 
+        pCLASSCNM: newRow.CLASSCNM || "", 
+        pCLASSODR: newRow.CLASSODR || "", 
+        pDETAIL: newRow.DETAIL || "", 
+        pUTYPE: newRow.UTYPE || "", 
+        pUSEYN: newRow.USEYN || "", 
+        pEMPNO: user?.empNo || "" 
       };
       const response = await fetchData("oper/standard/class/save", params);
       if (!response.success) {
         throw new Error(response.message || "추가 실패");
       }
-      setData((prevData) => [prevData[0], { ...newRow, ID: response.data?.ID || newRow.ID }, ...prevData.slice(1)]);
+      const newId = response.data?.ID || `temp_${Date.now()}`;
+      setData((prevData) => [{ ...newRow, ID: newId }, ...prevData]);
+      setAddRowData({ USEYN: "Y", SECTIONCD: "LINE", isAddRow: true }); // 추가 행 초기화
       msgPopup("추가가 성공적으로 완료되었습니다.");
     } catch (err) {
       console.error("추가 실패:", err);
       errorMsgPopup(err.message || "추가 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
+      setShowPopup({ show: false, type: "", rowData: null });
     }
   };
 
   const handleEdit = async (rowData) => {
-    const requiredFields = [
-      "SECTIONCD",
-      "CLASSACD",
-      "CLASSANM",
-      "CLASSBCD",
-      "CLASSBNM",
-      "CLASSCCD",
-      "CLASSCNM",
-      "CLASSODR",
-      "USEYN",
-    ];
+    const requiredFields = ["SECTIONCD", "CLASSACD", "CLASSANM", "CLASSBCD", "CLASSBNM", "CLASSCCD", "CLASSCNM", "CLASSODR", "USEYN"];
     const missingFields = validateRequiredFields(rowData, requiredFields);
     if (missingFields.length > 0) {
       errorMsgPopup(`다음 필드를 입력해주세요: ${missingFields.join(", ")}`);
@@ -396,36 +400,33 @@ const StandardClassInfoManage = () => {
 
     setLoading(true);
     try {
-      const params = {
-        pGUBUN: "U",
-        pSECTIONCD: rowData.SECTIONCD || "",
-        pCLASSACD: rowData.CLASSACD || "",
-        pCLASSANM: rowData.CLASSANM || "",
-        pCLASSBCD: rowData.CLASSBCD || "",
-        pCLASSBNM: rowData.CLASSBNM || "",
-        pCLASSCCD: rowData.CLASSCCD || "",
-        pCLASSCNM: rowData.CLASSCNM || "",
-        pCLASSODR: rowData.CLASSODR || "",
-        pDETAIL: rowData.DETAIL || "",
-        pUTYPE: rowData.UTYPE || "",
-        pUSEYN: rowData.USEYN || "",
-        pEMPNO: user?.empNo || "",
+      const params = { 
+        pGUBUN: "U", 
+        pSECTIONCD: rowData.SECTIONCD || "", 
+        pCLASSACD: rowData.CLASSACD || "", 
+        pCLASSANM: rowData.CLASSANM || "", 
+        pCLASSBCD: rowData.CLASSBCD || "", 
+        pCLASSBNM: rowData.CLASSBNM || "", 
+        pCLASSCCD: rowData.CLASSCCD || "", 
+        pCLASSCNM: rowData.CLASSCNM || "", 
+        pCLASSODR: rowData.CLASSODR || "", 
+        pDETAIL: rowData.DETAIL || "", 
+        pUTYPE: rowData.UTYPE || "", 
+        pUSEYN: rowData.USEYN || "", 
+        pEMPNO: user?.empNo || "" 
       };
       const response = await fetchData("oper/standard/class/save", params);
       if (!response.success) {
         throw new Error(response.message || "변경 실패");
       }
-      setData((prevData) =>
-        prevData.map((row, index) =>
-          index === 0 || row.ID !== rowData.ID ? row : { ...row, isChanged: "N" }
-        )
-      );
+      setData((prevData) => prevData.map((row) => String(row.ID) === String(rowData.ID) ? { ...row, isChanged: "N" } : row));
       msgPopup("변경이 성공적으로 완료되었습니다.");
     } catch (err) {
       console.error("변경 실패:", err);
       errorMsgPopup(err.message || "변경 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
+      setShowPopup({ show: false, type: "", rowData: null });
     }
   };
 
@@ -439,33 +440,48 @@ const StandardClassInfoManage = () => {
 
     setLoading(true);
     try {
-      const params = {
-        pGUBUN: "D",
-        pSECTIONCD: rowData.SECTIONCD || "",
-        pCLASSACD: rowData.CLASSACD || "",
-        pCLASSANM: rowData.CLASSANM || "",
-        pCLASSBCD: rowData.CLASSBCD || "",
-        pCLASSBNM: rowData.CLASSBNM || "",
-        pCLASSCCD: rowData.CLASSCCD || "",
-        pCLASSCNM: rowData.CLASSCNM || "",
-        pCLASSODR: rowData.CLASSODR || "",
-        pDETAIL: rowData.DETAIL || "",
-        pUTYPE: rowData.UTYPE || "",
-        pUSEYN: rowData.USEYN || "",
-        pEMPNO: user?.empNo || "",
+      const params = { 
+        pGUBUN: "D", 
+        pSECTIONCD: rowData.SECTIONCD || "", 
+        pCLASSACD: rowData.CLASSACD || "", 
+        pCLASSANM: rowData.CLASSANM || "", 
+        pCLASSBCD: rowData.CLASSBCD || "", 
+        pCLASSBNM: rowData.CLASSBNM || "", 
+        pCLASSCCD: rowData.CLASSCCD || "", 
+        pCLASSCNM: rowData.CLASSCNM || "", 
+        pCLASSODR: rowData.CLASSODR || "", 
+        pDETAIL: rowData.DETAIL || "", 
+        pUTYPE: rowData.UTYPE || "", 
+        pUSEYN: rowData.USEYN || "", 
+        pEMPNO: user?.empNo || "" 
       };
       const response = await fetchData("oper/standard/class/save", params);
       if (!response.success) {
         throw new Error(response.message || "삭제 실패");
       }
-      setData((prevData) => prevData.filter((row, index) => index === 0 || row.ID !== rowData.ID));
+      setData((prevData) => prevData.filter((row) => String(row.ID) !== String(rowData.ID)));
       msgPopup("삭제가 성공적으로 완료되었습니다.");
     } catch (err) {
       console.error("삭제 실패:", err);
       errorMsgPopup(err.message || "삭제 중 오류가 발생했습니다.");
     } finally {
       setLoading(false);
+      setShowPopup({ show: false, type: "", rowData: null });
     }
+  };
+
+  const handlePopupConfirm = () => {
+    if (showPopup.type === "add") {
+      handleAdd();
+    } else if (showPopup.type === "edit") {
+      handleEdit(showPopup.rowData);
+    } else if (showPopup.type === "delete") {
+      handleDelete(showPopup.rowData);
+    }
+  };
+
+  const handlePopupCancel = () => {
+    setShowPopup({ show: false, type: "", rowData: null });
   };
 
   return (
@@ -493,6 +509,24 @@ const StandardClassInfoManage = () => {
           style={{ visibility: loading || tableStatus !== "ready" ? "hidden" : "visible" }}
         />
       </div>
+      
+      {/* 확인 팝업만 표시 */}
+      <CommonPopup
+        show={showPopup.show}
+        onHide={handlePopupCancel}
+        title="확인"
+        requiresConfirm={false}
+        buttons={[
+          { label: "취소", className: `${styles.btn} ${styles.btnSecondary} btn btn-secondary`, action: handlePopupCancel },
+          { 
+            label: showPopup.type === "add" ? "추가" : showPopup.type === "edit" ? "변경" : "삭제", 
+            className: `${styles.btn} ${styles.btnPrimary} btn text-bg-success`, 
+            action: handlePopupConfirm 
+          },
+        ]}
+      >
+        {showPopup.type === "add" ? ADD_CONFIRM_MESSAGE : showPopup.type === "edit" ? EDIT_CONFIRM_MESSAGE : DELETE_CONFIRM_MESSAGE}
+      </CommonPopup>
     </div>
   );
 };

@@ -249,17 +249,19 @@ const StandardDashboard = () => {
               const item = sectionData.find(d => d.MDATE === mDate && d.CLASSANM === className);
               const workH = item ? Number(item.WORKH) : 0;
               const totalWorkH = totalWorkHByDate[dateIdx];
-              return totalWorkH > 0 ? Math.min(((workH / totalWorkH) * 100).toFixed(2), 100) : 0; // 100% 초과 방지
+              return totalWorkH > 0 ? Math.min(((workH / totalWorkH) * 100).toFixed(2), 100) : 0;
             }),
             itemStyle: { color: colors[idx] },
             label: {
               show: true,
-              position: 'inside',
-              formatter: (params) => params.value > 0 ? `${Math.min(params.value, 100)}%` : '', // 라벨 100% 제한
+              formatter: (params) => params.value > 0 ? `${Math.min(params.value, 100)}%` : '',
               fontSize: 9,
               color: '#fff',
+              overflow: 'none', // 라벨이 잘리지 않도록 설정
+              textBorderColor: '#171717', // 텍스트 가독성을 위해 테두리 추가
+              textBorderWidth: 1.5,
             },
-            z: 5 // 바의 z값 설정
+            z: 5
           }));
           // 간격 선 생성 (폴리곤 제거로 인해 주석 처리)
           const grid = {
