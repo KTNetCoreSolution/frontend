@@ -155,12 +155,24 @@ const StandardDashboard = () => {
             {
               type: 'text',
               left: 'center',
-              top: '45%',
+              top: '38%',
               style: {
                 text: `${percentValue}%`,
                 fontSize: 18,
                 fontWeight: 'bold',
                 fill: '#216DB2',
+              },
+              z: 10,
+            },
+            {
+              type: 'text',
+              left: 'center',
+              top: '58%',
+              style: {
+                text: '전체',
+                fontSize: 14,
+                fontWeight: 'bold',
+                fill: '#555',
               },
               z: 10,
             },
@@ -183,7 +195,7 @@ const StandardDashboard = () => {
       }
 
       // 1.2-1.4 Stage Speed Gauge for 시간 (선로, 설계, BIZ)
-      ['LINE', 'DESIGN', 'BIZ'].forEach((section, i) => {
+      ['선로', '설계', 'BIZ'].forEach((section, i) => {
         if (chartRefs[i + 1].current) {
           const item = totalData.find(item => item.구분 === section);
           const inputTime = item ? item['입력시간(h)'] : 0;
@@ -194,24 +206,54 @@ const StandardDashboard = () => {
             tooltip: {
               formatter: `대상시간(h): ${targetTime}<br/> 입력시간(h): ${inputTime}`,
             },
+            graphic: [
+              {
+                type: 'text',
+                left: 'center',
+                top: '38%',
+                style: {
+                  text: `${percentValue}%`,
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                  fill: '#2CBBB7',
+                },
+                z: 10,
+              },
+              {
+                type: 'text',
+                left: 'center',
+                top: '58%',
+                style: {
+                  text: item?.구분 || section,
+                  fontSize: 14,
+                  fontWeight: 'normal',
+                  fill: '#333',
+                },
+                z: 10,
+              },
+            ],            
             series: [
               {
                 name: item?.구분 || section,
                 type: 'pie',
                 radius: ['70%', '90%'],
                 avoidLabelOverlap: false,
-                label: {
-                  show: true,
-                  position: 'center',
-                  formatter: `${percentValue}%`,
-                  fontSize: 18,
-                  fontWeight: 'bold',
-                  color: '#2CBBB7',
-                },
+                // label: {
+                //   show: true,
+                //   position: 'center',
+                //   formatter: `${percentValue}%`,
+                //   fontSize: 18,
+                //   fontWeight: 'bold',
+                //   color: '#2CBBB7',
+                // },
                 labelLine: { show: false },
+                // data: [
+                //   { value: percentValue, name: '사용', itemStyle: { color: '#2CBBB7' } },
+                //   { value: 100 - percentValue, name: '남음', itemStyle: { color: '#eee' } },
+                // ],
                 data: [
-                  { value: percentValue, name: '사용', itemStyle: { color: '#2CBBB7' } },
-                  { value: 100 - percentValue, name: '남음', itemStyle: { color: '#eee' } },
+                  { value: percentValue, itemStyle: { color: '#2CBBB7' } },
+                  { value: 100 - percentValue, itemStyle: { color: '#eee' } },
                 ],
               },
             ],
@@ -410,24 +452,16 @@ const StandardDashboard = () => {
   return (
     <div className={`chartWrap ${styles.container} ${isFullscreen ? styles.fullscreen : ''}`}>
       <div className='chartRowWrap'>
-        <div className='chartTitle'><img src={chartImg01} className='chartimgWrap' />전사 표준활동 입력현황</div>
         <div className='inputSection'>
           <div className='chartsContainer'>
-            <div className='subSection'>
-              <div className='subSecTitle'>전체</div>
-              <div ref={chartRefs[0]} className='chart' />
-            </div>
-            <div className='subSection'>
-              <div className='subSecTitle'>선로</div>
-              <div ref={chartRefs[1]} className='chart' />
-            </div>
-            <div className='subSection'>
-              <div className='subSecTitle'>설계</div>
-              <div ref={chartRefs[2]} className='chart' />
-            </div>
-            <div className='subSection'>
-              <div className='subSecTitle'>BIZ</div>
-              <div ref={chartRefs[3]} className='chart' />
+            <div className='subSection d-flex justify-content-between'>
+              <div className='chartTitle' style={{height: '30px'}}>전사 표준활동 입력현황</div>
+              <div className='d-flex flex-row'>
+                <div ref={chartRefs[0]} className='chart' style={{ width: '25%', height: '150px' }}/>
+                <div ref={chartRefs[1]} className='chart' style={{ width: '25%', height: '150px' }}/>
+                <div ref={chartRefs[2]} className='chart' style={{ width: '25%', height: '150px' }}/>
+                <div ref={chartRefs[3]} className='chart' style={{ width: '25%', height: '150px' }}/>
+              </div>
             </div>
           </div>
           <div className='rightInfo'>
@@ -471,7 +505,7 @@ const StandardDashboard = () => {
         </div>
       </div>
       <div className='chartRowWrap'>
-        <div className='chartTitle'><img src={chartImg02} className='chartimgWrap' />대분류별 표준활동 추이현황</div>
+        <div className='chartTitle'>{/* <img src={chartImg02} className='chartimgWrap' /> */}대분류별 표준활동 추이현황</div>
         <div className='fieldSection'>
           <div className='subSection'>
             <div className='subSecTitle'>선로</div>
@@ -488,7 +522,7 @@ const StandardDashboard = () => {
         </div>
       </div>
       <div className='chartRowWrap'>
-        <div className='chartTitle'><img src={chartImg03} className='chartimgWrap' />대분류별 표준활동 입력현황</div>
+        <div className='chartTitle'>{/* <img src={chartImg03} className='chartimgWrap' /> */}대분류별 표준활동 입력현황</div>
         <div className='fieldSection'>
           <div className='subSection'>
             <div className='subSecTitle'>선로</div>
