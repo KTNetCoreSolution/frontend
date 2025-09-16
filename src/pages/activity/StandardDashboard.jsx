@@ -114,21 +114,21 @@ const StandardDashboard = () => {
         구분: '선로',
         대상인원: totalData.find(item => item.구분 === 'LINE')?.['대상인원(명)'] || 0,
         입력인원: totalData.find(item => item.구분 === 'LINE')?.['입력인원(명)'] || 0,
-        대상시간: totalData.find(item => item.구분 === '계')?.['대상시간(h)'] || 0,
+        대상시간: totalData.find(item => item.구분 === 'LINE')?.['대상시간(h)'] || 0,
         입력시간: totalData.find(item => item.구분 === 'LINE')?.['입력시간(h)'] || 0,
       },
       {
         구분: '설계',
         대상인원: totalData.find(item => item.구분 === 'DESIGN')?.['대상인원(명)'] || 0,
         입력인원: totalData.find(item => item.구분 === 'DESIGN')?.['입력인원(명)'] || 0,
-        대상시간: totalData.find(item => item.구분 === '계')?.['대상시간(h)'] || 0,
+        대상시간: totalData.find(item => item.구분 === 'DESIGN')?.['대상시간(h)'] || 0,
         입력시간: totalData.find(item => item.구분 === 'DESIGN')?.['입력시간(h)'] || 0,
       },
       {
         구분: 'BIZ',
         대상인원: totalData.find(item => item.구분 === 'BIZ')?.['대상인원(명)'] || 0,
         입력인원: totalData.find(item => item.구분 === 'BIZ')?.['입력인원(명)'] || 0,
-        대상시간: totalData.find(item => item.구분 === '계')?.['대상시간(h)'] || 0,
+        대상시간: totalData.find(item => item.구분 === 'BIZ')?.['대상시간(h)'] || 0,
         입력시간: totalData.find(item => item.구분 === 'BIZ')?.['입력시간(h)'] || 0,
       },
     ];
@@ -149,7 +149,7 @@ const StandardDashboard = () => {
 
         chart.setOption({
           tooltip: {
-            formatter: `총대상시간(h): ${targetTime}<br/>입력시간(h): ${inputTime}`,
+            formatter: `대상시간(h): ${targetTime}<br/>입력시간(h): ${inputTime}`,
           },
           graphic: [
             {
@@ -192,7 +192,7 @@ const StandardDashboard = () => {
           const chart = echarts.init(chartRefs[i + 1].current);
           chart.setOption({
             tooltip: {
-              formatter: `총대상시간(h): ${targetTime}<br/> 입력시간(h): ${inputTime}`,
+              formatter: `대상시간(h): ${targetTime}<br/> 입력시간(h): ${inputTime}`,
             },
             series: [
               {
@@ -231,35 +231,53 @@ const StandardDashboard = () => {
           const classNames = [...new Set(sectionData.map(item => item.CLASSANM).filter(name => name))];
           // 색상 팔레트
           const colors = [
-            '#216DB2', '#2CBBB7', '#1E5A99', '#3AC9C5',
+            '#4977a9', '#0ca8df', '#1E5A99', '#23827f',
             '#2A7BCB', '#2cbab7', '#154A80', '#48D7D3'
           ].slice(0, classNames.length);
-          // 시리즈 데이터 생성
+          // 데이터 정규화: 각 MDATE의 총 WORKH 계산
+          const totalWorkHByDate = mDates.map(mDate => {
+            return sectionData
+              .filter(d => d.MDATE === mDate)
+              .reduce((sum, item) => sum + (Number(item.WORKH) || 0), 0);
+          });
+          // 시리즈 데이터 생성 (정규화된 비율로 변환, 100% 초과 방지)
           const seriesData = classNames.map((className, idx) => ({
             name: className,
             type: 'bar',
-            stack: 'total', // 누적 바 설정
-            data: mDates.map(mDate => {
+            stack: 'total',
+            data: mDates.map((mDate, dateIdx) => {
               const item = sectionData.find(d => d.MDATE === mDate && d.CLASSANM === className);
-              return item ? Number(item.WORKH) : 0; // 데이터가 없으면 0
+              const workH = item ? Number(item.WORKH) : 0;
+              const totalWorkH = totalWorkHByDate[dateIdx];
+              return totalWorkH > 0 ? Math.min(((workH / totalWorkH) * 100).toFixed(2), 100) : 0; // 100% 초과 방지
             }),
             itemStyle: { color: colors[idx] },
             label: {
               show: true,
               position: 'inside',
-              formatter: (params) => params.value > 0 ? params.value.toFixed(0) : '',
+              formatter: (params) => params.value > 0 ? `${Math.min(params.value, 100)}%` : '', // 라벨 100% 제한
               fontSize: 9,
               color: '#fff',
             },
+            z: 5 // 바의 z값 설정
           }));
+          // 간격 선 생성 (폴리곤 제거로 인해 주석 처리)
+          const grid = {
+            left: 60,
+            right: 50,
+            top: 50,
+            bottom: 50
+          };
+          const gridWidth = chart.getWidth() - grid.left - grid.right;
+          const gridHeight = chart.getHeight() - grid.top - grid.bottom;
 
           chart.setOption({
             grid: {
               show: false,
-              left: '13%',
-              right: '5%',
-              top: '25%',
-              bottom: '0%',
+              left: grid.left,
+              right: grid.right,
+              top: grid.top,
+              bottom: grid.bottom,
               height: '55%',
             },
             tooltip: {
@@ -269,7 +287,7 @@ const StandardDashboard = () => {
                 let result = `${params[0].name}<br/>`;
                 params.forEach(param => {
                   if (param.value > 0) {
-                    result += `${param.seriesName}(h): ${param.value.toFixed(2)}<br/>`;
+                    result += `${param.seriesName}: ${Math.min(param.value, 100)}%<br/>`;
                   }
                 });
                 return result;
@@ -282,12 +300,13 @@ const StandardDashboard = () => {
               data: classNames,
               orient: 'horizontal',
               top: 0,
-              right: 0,
+              right: 32,
             },
             xAxis: {
               type: 'value',
+              max: 100, // 100% 초과 방지
               axisLabel: {
-                formatter: '{value}',
+                formatter: '{value}%',
                 fontSize: 12,
                 margin: 10,
               },
@@ -295,12 +314,12 @@ const StandardDashboard = () => {
             },
             yAxis: {
               type: 'category',
-              data: mDates, // Y축에 고정된 MDATE 표시
+              data: mDates,
               axisLabel: {
                 fontSize: 12,
                 interval: 0,
                 margin: 10,
-                formatter: (value) => value, // MDATE 그대로 표시
+                formatter: (value) => value,
               },
             },
             series: seriesData,
