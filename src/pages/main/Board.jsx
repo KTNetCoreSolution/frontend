@@ -88,18 +88,6 @@ const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = t
 
   return (
     <div className='boardBox position-relative'>
-      {showHeader && (
-        <div className='position-absolute bottom-0 end-0 mb-3'>
-          {canWriteBoard && (
-            <button
-              className='btn btn-primary'
-              onClick={() => onWrite(type)}
-            >
-              등록
-            </button>
-          )}
-        </div>
-      )}
       {loading ? (
         <div className='text-center'>로딩 중...</div>
       ) : (
@@ -127,69 +115,83 @@ const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = t
         </ul>
       )}
 
-      {pagination && totalPages > 1 && (
-        <nav aria-label='Page navigation' className='mt-3'>
-          <ul className='pagination'>
-            {totalPages > maxPageButtons && (
+      <>
+        {pagination && totalPages > 1 && (
+          <nav aria-label='Page navigation' className='mt-3'>
+            <ul className='pagination'>
+              {totalPages > maxPageButtons && (
+                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                  <button
+                    className='page-link'
+                    onClick={() => handlePageChange(1)}
+                    disabled={currentPage === 1}
+                  >
+                    &lt;&lt;
+                  </button>
+                </li>
+              )}
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                 <button
                   className='page-link'
-                  onClick={() => handlePageChange(1)}
+                  onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
                 >
-                  &lt;&lt;
+                  Prev
                 </button>
               </li>
-            )}
-            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-              <button
-                className='page-link'
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                Prev
-              </button>
-            </li>
-            {pageNumbers.map((page) => (
-              <li
-                key={page}
-                className={`page-item ${currentPage === page ? 'active' : ''}`}
-              >
-                <button
-                  className='page-link'
-                  onClick={() => handlePageChange(page)}
+              {pageNumbers.map((page) => (
+                <li
+                  key={page}
+                  className={`page-item ${currentPage === page ? 'active' : ''}`}
                 >
-                  {page}
-                </button>
-              </li>
-            ))}
-            <li
-              className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}
-            >
-              <button
-                className={`page-link ${styles.pageLink}`}
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </button>
-            </li>
-            {totalPages > maxPageButtons && (
+                  <button
+                    className='page-link'
+                    onClick={() => handlePageChange(page)}
+                  >
+                    {page}
+                  </button>
+                </li>
+              ))}
               <li
                 className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}
               >
                 <button
                   className={`page-link ${styles.pageLink}`}
-                  onClick={() => handlePageChange(totalPages)}
+                  onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
                 >
-                  &gt;&gt;
+                  Next
                 </button>
               </li>
-            )}
-          </ul>
-        </nav>
-      )}
+              {totalPages > maxPageButtons && (
+                <li
+                  className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}
+                >
+                  <button
+                    className={`page-link ${styles.pageLink}`}
+                    onClick={() => handlePageChange(totalPages)}
+                    disabled={currentPage === totalPages}
+                  >
+                    &gt;&gt;
+                  </button>
+                </li>
+              )}
+            </ul>
+          </nav>
+        )}
+        {showHeader && (
+          <div className='d-flex justify-content-end mt-2'>
+          {canWriteBoard && (
+            <button
+              className='btn btn-primary'
+              onClick={() => onWrite(type)}
+            >
+              등록
+            </button>
+          )}
+          </div>
+        )}
+      </>
     </div>
   );
 };

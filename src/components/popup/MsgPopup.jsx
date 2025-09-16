@@ -21,7 +21,7 @@ const MsgPopup = ({ show, onHide, message }) => {
               <button type="button" className='btnClose btn-close' onClick={onHide}></button>
             </div>
             <div className='modalBody modal-body'>
-              <div className={styles.modalBodyMsg} dangerouslySetInnerHTML={{ __html: common.formatMessageWithLineBreaks(message) }}></div>
+              <div className='modalBodyMsg' dangerouslySetInnerHTML={{ __html: common.formatMessageWithLineBreaks(message) }}></div>
             </div>
             <div className='modalFooter modal-footer'>
               <button type="button" className='btn btn-secondary btnSecondaryCustom' onClick={onHide}>

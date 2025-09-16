@@ -90,6 +90,14 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   gap: 10px;
 }
 
+.formList02 {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .formListData {
   display: flex;
   flex-direction: column;
@@ -192,6 +200,15 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 .form-control + .btn, .form-select + .btn {
   margin-left: 4px !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background-position: right 2px center;
+  background-repeat: no-repeat;
+  width: 16px;
+}
+input[type="date"] {
+  padding-right: 0;
 }
 
 /* Buttons */
@@ -323,6 +340,23 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .custom-select, .custom-file-label {
   font-size: var(--bs-body-font-size) !important;
   padding: calc(0.375rem * var(--bs-scaling)) !important;
+}
+
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.modalContent {
+  width: 100%;
+}
+.modalBodyMsg {
+  line-height: 1.2;
+  text-align: center;
 }
 
 /* Mobile-specific adjustments */

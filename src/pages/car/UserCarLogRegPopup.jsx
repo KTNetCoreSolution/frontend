@@ -681,12 +681,12 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           </div>
           <div className='d-flex'>
             <label className='form-label' style={{width:'63px'}}>운행일시</label>
-            <div className='d-flex'>
+            <div className='d-flex gap-1'>
               <input type="date" ref={logDateRef} id="logDate" className={`form-control ${styles.formControl}`} value={logInfo.LOGDATE} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} style={{width:120 +'px', marginRight:5 + 'px'}} onChange={(e) => {handleLogDate(e)}} />
               <select id="stTime" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} defaultValue={logInfo.LOGSTTIME} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGSTTIME: e.target.value })}}>
                 {stTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
               </select>
-              <label style={{width:16 +'px', paddingTop:8 + 'px', textAlign:'center'}}> ~ </label>
+              <label> ~ </label>
               <select id="enTime" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} defaultValue={logInfo.LOGENTIME}  disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGENTIME: e.target.value })}}>
                 {enTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
               </select>
