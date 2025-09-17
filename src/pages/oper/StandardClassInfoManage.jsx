@@ -61,7 +61,7 @@ const fn_HandleCellEdit = (cell, field, setAddRowData, setData, tableInstance) =
 };
 
 const ADD_CONFIRM_MESSAGE = "추가하시겠습니까?";
-const EDIT_CONFIRM_MESSAGE = "변경하시겠습니까?";
+const EDIT_CONFIRM_MESSAGE = "대분류코드, 중분류코드, 대분류, 중분류는 이미 존재하는 것으로 입력되어야 하며,<br>소분류코드는 키값으로 변경할 수 없습니다.<br>존재하는 대분류코드, 중분류코드에 대해 대분류, 중분류 문구가 변경되면<br>대분류, 중분류는 전체 반영됩니다.<br>변경하시겠습니까?";
 const DELETE_CONFIRM_MESSAGE = "삭제하시겠습니까?";
 
 const StandardClassInfoManage = () => {
@@ -134,18 +134,18 @@ const StandardClassInfoManage = () => {
     },
     { headerHozAlign: "center", hozAlign: "center", title: "ID", field: "ID", sorter: "string", width: 100, visible: false },
     { 
-      headerHozAlign: "center", hozAlign: "center", title: "분야 코드", field: "SECTIONCD", sorter: "string", width: 120, 
+      headerHozAlign: "center", hozAlign: "center", title: "분야코드", field: "SECTIONCD", sorter: "string", width: 120, 
       editor: "list", editorParams: { values: ["LINE", "DESIGN", "BIZ"], autocomplete: true }, 
       cellEdited: (cell) => fn_HandleCellEdit(cell, "SECTIONCD", setAddRowData, setData, tableInstance) 
     },
-    { headerHozAlign: "center", hozAlign: "center", title: "대분류 코드", field: "CLASSACD", sorter: "string", width: 120, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSACD", setAddRowData, setData, tableInstance) },
+    { headerHozAlign: "center", hozAlign: "center", title: "대분류코드", field: "CLASSACD", sorter: "string", width: 120, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSACD", setAddRowData, setData, tableInstance) },
     { headerHozAlign: "center", hozAlign: "left", title: "대분류", field: "CLASSANM", sorter: "string", width: 150, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSANM", setAddRowData, setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "center", title: "중분류 코드", field: "CLASSBCD", sorter: "string", width: 120, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSBCD", setAddRowData, setData, tableInstance) },
+    { headerHozAlign: "center", hozAlign: "center", title: "중분류코드", field: "CLASSBCD", sorter: "string", width: 120, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSBCD", setAddRowData, setData, tableInstance) },
     { headerHozAlign: "center", hozAlign: "left", title: "중분류", field: "CLASSBNM", sorter: "string", width: 150, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSBNM", setAddRowData, setData, tableInstance) },
     { 
       headerHozAlign: "center", 
       hozAlign: "center", 
-      title: "소분류 코드", 
+      title: "소분류코드", 
       field: "CLASSCCD", 
       sorter: "string", 
       width: 120, 
@@ -213,6 +213,9 @@ const StandardClassInfoManage = () => {
       const responseData = Array.isArray(response.data) ? response.data : [];
       const leveledData = responseData.map((row) => ({ ...row, isDeleted: "N", isChanged: "N", isAdded: "N", isAddRow: false }));
       setData(leveledData);
+      // 검색된 데이터의 SECTIONCD 값으로 추가 행의 SECTIONCD 설정
+      const sectionCd = filters.classGubun || "LINE"; // 검색 조건의 classGubun 사용
+      setAddRowData((prev) => ({ ...prev, SECTIONCD: sectionCd, isAddRow: true }));
     } catch (err) {
       console.error("데이터 로드 실패:", err);
       errorMsgPopup(err.response?.data?.message || "데이터를 가져오는 중 오류가 발생했습니다.");
@@ -236,6 +239,7 @@ const StandardClassInfoManage = () => {
       try {
         tableInstance.current = createTable(tableRef.current, columns, [], {
           editable: true,
+          movableRows: false,
           rowFormatter: (row) => {
             const rowData = row.getData();
             const rowElement = row.getElement();
@@ -319,6 +323,29 @@ const StandardClassInfoManage = () => {
     }
   };
 
+  const validateFieldsLength = (rowData) => {
+    const fieldValidations = [
+      { field: "CLASSACD", maxLength: 8, label: "대분류코드" },
+      { field: "CLASSANM", maxLength: 150, label: "대분류" },
+      { field: "CLASSBCD", maxLength: 8, label: "중분류코드" },
+      { field: "CLASSBNM", maxLength: 150, label: "중분류" },
+      { field: "CLASSCCD", maxLength: 8, label: "소분류코드" },
+      { field: "CLASSCNM", maxLength: 200, label: "소분류" },
+      { field: "DETAIL", maxLength: 300, label: "업무부가설명" },
+      { field: "BIZMCODE", maxLength: 10, label: "BIZMCODE" },
+      { field: "UTYPE", maxLength: 100, label: "단위문구" },
+    ];
+
+    for (const { field, maxLength, label } of fieldValidations) {
+      const validation = common.validateVarcharLength(rowData[field], maxLength, label);
+      if (!validation.valid) {
+        errorMsgPopup(validation.error);
+        return false;
+      }
+    }
+    return true;
+  };
+
   const handleAdd = async () => {
     const requiredFields = ["SECTIONCD", "CLASSACD", "CLASSANM", "CLASSBCD", "CLASSBNM", "CLASSCCD", "CLASSCNM", "CLASSODR", "USEYN"];
     const missingFields = validateRequiredFields(addRowData, requiredFields);
@@ -327,15 +354,7 @@ const StandardClassInfoManage = () => {
       return;
     }
 
-    let validation = common.validateVarcharLength(addRowData.CLASSACD, 300, "대분류코드");
-    if (!validation.valid) {
-      errorMsgPopup(validation.error);
-      return;
-    }
-
-    validation = common.validateVarcharLength(addRowData.CLASSANM, 300, "대분류");
-    if (!validation.valid) {
-      errorMsgPopup(validation.error);
+    if (!validateFieldsLength(addRowData)) {
       return;
     }
 
@@ -351,6 +370,7 @@ const StandardClassInfoManage = () => {
         CLASSCNM: addRowData.CLASSCNM || "", 
         CLASSODR: addRowData.CLASSODR || "", 
         DETAIL: addRowData.DETAIL || "", 
+        BIZMCODE: addRowData.BIZMCODE || "", 
         UTYPE: addRowData.UTYPE || "", 
         USEYN: addRowData.USEYN || "Y", 
         isDeleted: "N", 
@@ -369,6 +389,7 @@ const StandardClassInfoManage = () => {
         pCLASSCNM: newRow.CLASSCNM || "", 
         pCLASSODR: newRow.CLASSODR || "", 
         pDETAIL: newRow.DETAIL || "", 
+        pBIZMCODE: newRow.BIZMCODE || "", 
         pUTYPE: newRow.UTYPE || "", 
         pUSEYN: newRow.USEYN || "", 
         pEMPNO: user?.empNo || "" 
@@ -376,7 +397,15 @@ const StandardClassInfoManage = () => {
       const response = await fetchData("oper/standard/class/save", params);
       if (!response.success) {
         throw new Error(response.message || "추가 실패");
+      } else {
+        if (response.errMsg !== '' || (response.data[0] && response.data[0].errCd !== '00')) {
+          let errMsg = response.errMsg;
+          if (response.data[0] && response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+          msgPopup(errMsg);
+          return;
+        }
       }
+
       const newId = response.data?.ID || `temp_${Date.now()}`;
       setData((prevData) => [{ ...newRow, ID: newId }, ...prevData]);
       setAddRowData({ USEYN: "Y", SECTIONCD: "LINE", isAddRow: true }); // 추가 행 초기화
@@ -390,11 +419,29 @@ const StandardClassInfoManage = () => {
     }
   };
 
+  // handleEdit 함수 수정
   const handleEdit = async (rowData) => {
     const requiredFields = ["SECTIONCD", "CLASSACD", "CLASSANM", "CLASSBCD", "CLASSBNM", "CLASSCCD", "CLASSCNM", "CLASSODR", "USEYN"];
     const missingFields = validateRequiredFields(rowData, requiredFields);
     if (missingFields.length > 0) {
       errorMsgPopup(`다음 필드를 입력해주세요: ${missingFields.join(", ")}`);
+      return;
+    }
+
+    if (!validateFieldsLength(rowData)) {
+      return;
+    }
+
+    // CLASSCCD와 ID 비교
+    if (rowData.CLASSCCD !== rowData.ID) {
+      errorMsgPopup("소분류코드는 변경할 수 없습니다.");
+      // CLASSCCD를 ID 값으로 업데이트
+      rowData.CLASSCCD = rowData.ID;
+      setData((prevData) =>
+        prevData.map((row) =>
+          String(row.ID) === String(rowData.ID) ? { ...row, CLASSCCD: rowData.ID, isChanged: "Y" } : row
+        )
+      );
       return;
     }
 
@@ -411,6 +458,7 @@ const StandardClassInfoManage = () => {
         pCLASSCNM: rowData.CLASSCNM || "", 
         pCLASSODR: rowData.CLASSODR || "", 
         pDETAIL: rowData.DETAIL || "", 
+        pBIZMCODE: rowData.BIZMCODE || "", 
         pUTYPE: rowData.UTYPE || "", 
         pUSEYN: rowData.USEYN || "", 
         pEMPNO: user?.empNo || "" 
@@ -418,7 +466,15 @@ const StandardClassInfoManage = () => {
       const response = await fetchData("oper/standard/class/save", params);
       if (!response.success) {
         throw new Error(response.message || "변경 실패");
+      } else {
+        if (response.errMsg !== '' || (response.data[0] && response.data[0].errCd !== '00')) {
+          let errMsg = response.errMsg;
+          if (response.data[0] && response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+          msgPopup(errMsg);
+          return;
+        }
       }
+      
       setData((prevData) => prevData.map((row) => String(row.ID) === String(rowData.ID) ? { ...row, isChanged: "N" } : row));
       msgPopup("변경이 성공적으로 완료되었습니다.");
     } catch (err) {
@@ -438,6 +494,19 @@ const StandardClassInfoManage = () => {
       return;
     }
 
+    // CLASSCCD와 ID 비교
+    if (rowData.CLASSCCD !== rowData.ID) {
+      errorMsgPopup("소분류코드는 변경할 수 없습니다.");
+      // CLASSCCD를 ID 값으로 업데이트
+      rowData.CLASSCCD = rowData.ID;
+      setData((prevData) =>
+        prevData.map((row) =>
+          String(row.ID) === String(rowData.ID) ? { ...row, CLASSCCD: rowData.ID, isChanged: "Y" } : row
+        )
+      );
+      return;
+    }
+
     setLoading(true);
     try {
       const params = { 
@@ -451,6 +520,7 @@ const StandardClassInfoManage = () => {
         pCLASSCNM: rowData.CLASSCNM || "", 
         pCLASSODR: rowData.CLASSODR || "", 
         pDETAIL: rowData.DETAIL || "", 
+        pBIZMCODE: rowData.BIZMCODE || "", 
         pUTYPE: rowData.UTYPE || "", 
         pUSEYN: rowData.USEYN || "", 
         pEMPNO: user?.empNo || "" 
@@ -458,7 +528,15 @@ const StandardClassInfoManage = () => {
       const response = await fetchData("oper/standard/class/save", params);
       if (!response.success) {
         throw new Error(response.message || "삭제 실패");
+      } else {
+        if (response.errMsg !== '' || (response.data[0] && response.data[0].errCd !== '00')) {
+          let errMsg = response.errMsg;
+          if (response.data[0] && response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+          msgPopup(errMsg);
+          return;
+        }
       }
+
       setData((prevData) => prevData.filter((row) => String(row.ID) !== String(rowData.ID)));
       msgPopup("삭제가 성공적으로 완료되었습니다.");
     } catch (err) {
@@ -525,7 +603,7 @@ const StandardClassInfoManage = () => {
           },
         ]}
       >
-        {showPopup.type === "add" ? ADD_CONFIRM_MESSAGE : showPopup.type === "edit" ? EDIT_CONFIRM_MESSAGE : DELETE_CONFIRM_MESSAGE}
+        <div dangerouslySetInnerHTML={{ __html: showPopup.type === "add" ? ADD_CONFIRM_MESSAGE : showPopup.type === "edit" ? EDIT_CONFIRM_MESSAGE : DELETE_CONFIRM_MESSAGE }} />
       </CommonPopup>
     </div>
   );
