@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MobileMainUserMenu from '../../components/mobile/MobileMainUserMenu';
 import api from '../../utils/api';
 import common from '../../utils/common';
 import useStore from '../../store/store';
+import { msgPopup } from "../../utils/msgPopup";
 
 const MobileUserInfo = () => {
   const navigate = useNavigate();
@@ -13,6 +14,11 @@ const MobileUserInfo = () => {
   const handleToggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
+
+  useEffect(() => {
+    msgPopup("작업중입니다.");
+    navigate('/mobile/Main');
+  }, [navigate]);
 
 const handleLogout = async () => {
   try {

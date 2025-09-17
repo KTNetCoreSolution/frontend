@@ -4,5 +4,7 @@
   { "MENUID": "UMENU0002", "MENUNM": "운행일지", "URL": "/mobile/MobileDrivingLog", "children": [] },
   { "MENUID": "UMENU0003", "MENUNM": "기동장비공지사항", "URL": "/mobile/MobileCarNotice", "children": [] },
   { "MENUID": "UMENU0004", "MENUNM": "운행이력", "URL": "/mobile/MobileCarLogList", "children": [] },
-  { "MENUID": "UMENU0005", "MENUNM": "차량상태", "URL": "/mobile/MobileCarCheckStatus", "children": [] }
+  { "MENUID": "UMENU0005", "MENUNM": "차량상태", "URL": "/mobile/MobileCarCheckStatus", "children": [] },
+  { "MENUID": "MMENU0006", "MENUNM": "표준활동[선로,설계]", "URL": "/mobile/MobileStandardCommonLog", "children": [] },
+  { "MENUID": "MMENU0007", "MENUNM": "표준활동[Biz]", "URL": "/mobile/MobileStandardBizLog", "children": [] }
 ]
