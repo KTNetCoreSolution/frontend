@@ -35,29 +35,52 @@ const fn_CellButton = (label, className, onClick) => ({
 const fn_HandleCellEdit = (cell, field, setAddRowData, setData, tableInstance) => {
   const rowData = cell.getRow().getData();
   const newValue = cell.getValue();
+  const table = tableInstance.current;
+
+  // 실제 스크롤 컨테이너 참조
+  const scrollContainer = table ? table.element.querySelector('.tabulator-tableholder') : null;
+  const scrollTop = scrollContainer ? scrollContainer.scrollTop : 0;
+
+  // 편집 모드 종료
+  if (table && table.modules.edit.currentCell) {
+    table.modules.edit.currentCell = false;
+  }
+
+  // 셀 배경색 초기화
+  cell.getElement().style.backgroundColor = "#ffffff";
 
   // 추가 행인 경우
   if (rowData.isAddRow) {
-    setTimeout(() => {
-      setAddRowData((prev) => ({ ...prev, [field]: newValue }));
-      if (tableInstance.current) tableInstance.current.redraw();
-    }, 0);
+    setAddRowData((prev) => ({ ...prev, [field]: newValue }));
+    if (table) {
+      cell.getRow().update({ [field]: newValue });
+      if (scrollContainer) {
+        setTimeout(() => {
+          scrollContainer.scrollTop = scrollTop;
+        }, 0);
+      }
+    }
     return;
   }
 
   // 일반 행인 경우
   const rowId = rowData.ID;
-  setTimeout(() => {
-    setData((prevData) =>
-      prevData.map((row) => {
-        if (String(row.ID) === String(rowId)) {
-          return { ...row, [field]: newValue, isChanged: "Y" };
-        }
-        return row;
-      })
-    );
-    if (tableInstance.current) tableInstance.current.redraw();
-  }, 0);
+  setData((prevData) =>
+    prevData.map((row) => {
+      if (String(row.ID) === String(rowId)) {
+        return { ...row, [field]: newValue, isChanged: "Y" };
+      }
+      return row;
+    })
+  );
+  if (table) {
+    cell.getRow().update({ [field]: newValue, isChanged: "Y" });
+    if (scrollContainer) {
+      setTimeout(() => {
+        scrollContainer.scrollTop = scrollTop;
+      }, 0);
+    }
+  }
 };
 
 const ADD_CONFIRM_MESSAGE = "추가하시겠습니까?";
@@ -70,7 +93,10 @@ const StandardClassInfoManage = () => {
 
   const searchConfig = {
     areas: [
-      { type: "search", fields: [{ id: "classGubun", type: "select", row: 1, label: "분야", labelVisible: true, options: [{ value: "LINE", label: "선로" }, { value: "DESIGN", label: "설계" }, { value: "BIZ", label: "BIZ" }], defaultValue: "LINE", enabled: true, eventType: "selectChange" }] },
+      { type: "search", fields: [
+        { id: "classGubun", type: "select", row: 1, label: "분야", labelVisible: true, options: [{ value: "LINE", label: "선로" }, { value: "DESIGN", label: "설계" }, { value: "BIZ", label: "BIZ" }], defaultValue: "LINE", enabled: true, eventType: "selectChange" },
+        { id: 'msgLabel', type: 'label', row: 2, label: '입력 중일때는 초록색 배경입니다. [추가], [변경], [삭제] 버튼은 입력 중인 초록색 배경색일 경우는 더블클릭하셔야 합니다.', labelVisible: true, width: '800px', height: '30px', backgroundColor: '#ffffff', color: '#d62424', enabled: true },
+      ] },
       { type: "buttons", fields: [{ id: "searchBtn", type: "button", row: 1, label: "검색", eventType: "search", width: "80px", height: "30px", backgroundColor: "#00c4b4", color: "#ffffff", enabled: true }] },
     ],
   };
@@ -108,14 +134,12 @@ const StandardClassInfoManage = () => {
         wrapper.style.justifyContent = "center";
         wrapper.style.alignItems = "center";
         if (rowData.isAddRow) {
-          // 추가 행: 추가 버튼만 표시
           const addButton = document.createElement("button");
           addButton.className = `btn btn-sm btn-success`;
           addButton.innerText = "추가";
           addButton.onclick = () => setShowPopup({ show: true, type: "add", rowData });
           wrapper.appendChild(addButton);
         } else {
-          // 일반 행: 변경, 삭제 버튼 표시
           const editButton = document.createElement("button");
           editButton.className = `btn btn-sm btn-primary`;
           editButton.innerText = "변경";
@@ -136,12 +160,43 @@ const StandardClassInfoManage = () => {
     { 
       headerHozAlign: "center", hozAlign: "center", title: "분야코드", field: "SECTIONCD", sorter: "string", width: 120, 
       editor: "list", editorParams: { values: ["LINE", "DESIGN", "BIZ"], autocomplete: true }, 
-      cellEdited: (cell) => fn_HandleCellEdit(cell, "SECTIONCD", setAddRowData, setData, tableInstance) 
+      cellEdited: (cell) => fn_HandleCellEdit(cell, "SECTIONCD", setAddRowData, setData, tableInstance),
+      cellEditing: (cell) => {
+        cell.getElement().style.backgroundColor = "#e6ffe6";
+      }
     },
-    { headerHozAlign: "center", hozAlign: "center", title: "대분류코드", field: "CLASSACD", sorter: "string", width: 120, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSACD", setAddRowData, setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "left", title: "대분류", field: "CLASSANM", sorter: "string", width: 150, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSANM", setAddRowData, setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "center", title: "중분류코드", field: "CLASSBCD", sorter: "string", width: 120, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSBCD", setAddRowData, setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "left", title: "중분류", field: "CLASSBNM", sorter: "string", width: 150, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSBNM", setAddRowData, setData, tableInstance) },
+    { 
+      headerHozAlign: "center", hozAlign: "center", title: "대분류코드", field: "CLASSACD", sorter: "string", width: 120, 
+      ...fn_CellText, 
+      cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSACD", setAddRowData, setData, tableInstance),
+      cellEditing: (cell) => {
+        cell.getElement().style.backgroundColor = "#e6ffe6";
+      }
+    },
+    { 
+      headerHozAlign: "center", hozAlign: "left", title: "대분류", field: "CLASSANM", sorter: "string", width: 150, 
+      ...fn_CellText, 
+      cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSANM", setAddRowData, setData, tableInstance),
+      cellEditing: (cell) => {
+        cell.getElement().style.backgroundColor = "#e6ffe6";
+      }
+    },
+    { 
+      headerHozAlign: "center", hozAlign: "center", title: "중분류코드", field: "CLASSBCD", sorter: "string", width: 120, 
+      ...fn_CellText, 
+      cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSBCD", setAddRowData, setData, tableInstance),
+      cellEditing: (cell) => {
+        cell.getElement().style.backgroundColor = "#e6ffe6";
+      }
+    },
+    { 
+      headerHozAlign: "center", hozAlign: "left", title: "중분류", field: "CLASSBNM", sorter: "string", width: 150, 
+      ...fn_CellText, 
+      cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSBNM", setAddRowData, setData, tableInstance),
+      cellEditing: (cell) => {
+        cell.getElement().style.backgroundColor = "#e6ffe6";
+      }
+    },
     { 
       headerHozAlign: "center", 
       hozAlign: "center", 
@@ -157,23 +212,65 @@ const StandardClassInfoManage = () => {
         wrapper.style.alignItems = "center";
         wrapper.style.height = "100%";
         if (!rowData.isAddRow) {
-          wrapper.style.backgroundColor = "#e1e1e1"; // 리스트 행에 연한 회색 배경
-          wrapper.contentEditable = false; // 리스트 행에서 readonly 설정
+          wrapper.style.backgroundColor = "#e1e1e1";
+          wrapper.contentEditable = false;
         }
         wrapper.innerText = cell.getValue() || "";
         return wrapper;
       },
-      ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSCCD", setAddRowData, setData, tableInstance)
+      ...fn_CellText, 
+      cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSCCD", setAddRowData, setData, tableInstance),
+      cellEditing: (cell) => {
+        cell.getElement().style.backgroundColor = "#e6ffe6";
+      }
     },
-    { headerHozAlign: "center", hozAlign: "left", title: "소분류", field: "CLASSCNM", sorter: "string", width: 190, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSCNM", setAddRowData, setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "center", title: "분류순서", field: "CLASSODR", sorter: "string", width: 100, ...fn_CellNumber, cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSODR", setAddRowData, setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "left", title: "업무부가설명", field: "DETAIL", sorter: "string", width: 250, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "DETAIL", setAddRowData, setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "left", title: "단위문구", field: "UTYPE", sorter: "string", width: 200, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "UTYPE", setAddRowData, setData, tableInstance) },
-    { headerHozAlign: "center", hozAlign: "center", title: "BIZMCODE", field: "BIZMCODE", sorter: "string", width: 120, ...fn_CellNumber, cellEdited: (cell) => fn_HandleCellEdit(cell, "BIZMCODE", setAddRowData, setData, tableInstance) },
+    { 
+      headerHozAlign: "center", hozAlign: "left", title: "소분류", field: "CLASSCNM", sorter: "string", width: 190, 
+      ...fn_CellText, 
+      cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSCNM", setAddRowData, setData, tableInstance),
+      cellEditing: (cell) => {
+        cell.getElement().style.backgroundColor = "#e6ffe6";
+      }
+    },
+    { 
+      headerHozAlign: "center", hozAlign: "center", title: "분류순서", field: "CLASSODR", sorter: "string", width: 100, 
+      ...fn_CellNumber, 
+      cellEdited: (cell) => fn_HandleCellEdit(cell, "CLASSODR", setAddRowData, setData, tableInstance),
+      cellEditing: (cell) => {
+        cell.getElement().style.backgroundColor = "#e6ffe6";
+      }
+    },
+    { 
+      headerHozAlign: "center", hozAlign: "left", title: "업무부가설명", field: "DETAIL", sorter: "string", width: 250, 
+      ...fn_CellText, 
+      cellEdited: (cell) => fn_HandleCellEdit(cell, "DETAIL", setAddRowData, setData, tableInstance),
+      cellEditing: (cell) => {
+        cell.getElement().style.backgroundColor = "#e6ffe6";
+      }
+    },
+    { 
+      headerHozAlign: "center", hozAlign: "left", title: "단위문구", field: "UTYPE", sorter: "string", width: 200, 
+      ...fn_CellText, 
+      cellEdited: (cell) => fn_HandleCellEdit(cell, "UTYPE", setAddRowData, setData, tableInstance),
+      cellEditing: (cell) => {
+        cell.getElement().style.backgroundColor = "#e6ffe6";
+      }
+    },
+    { 
+      headerHozAlign: "center", hozAlign: "center", title: "BIZMCODE", field: "BIZMCODE", sorter: "string", width: 120, 
+      ...fn_CellNumber, 
+      cellEdited: (cell) => fn_HandleCellEdit(cell, "BIZMCODE", setAddRowData, setData, tableInstance),
+      cellEditing: (cell) => {
+        cell.getElement().style.backgroundColor = "#e6ffe6";
+      }
+    },
     { 
       headerHozAlign: "center", hozAlign: "center", title: "사용유무", field: "USEYN", sorter: "string", width: 100, 
       editor: "list", editorParams: { values: ["Y", "N"], autocomplete: true }, 
-      cellEdited: (cell) => fn_HandleCellEdit(cell, "USEYN", setAddRowData, setData, tableInstance) 
+      cellEdited: (cell) => fn_HandleCellEdit(cell, "USEYN", setAddRowData, setData, tableInstance),
+      cellEditing: (cell) => {
+        cell.getElement().style.backgroundColor = "#e6ffe6";
+      }
     },
   ];
 
@@ -213,8 +310,7 @@ const StandardClassInfoManage = () => {
       const responseData = Array.isArray(response.data) ? response.data : [];
       const leveledData = responseData.map((row) => ({ ...row, isDeleted: "N", isChanged: "N", isAdded: "N", isAddRow: false }));
       setData(leveledData);
-      // 검색된 데이터의 SECTIONCD 값으로 추가 행의 SECTIONCD 설정
-      const sectionCd = filters.classGubun || "LINE"; // 검색 조건의 classGubun 사용
+      const sectionCd = filters.classGubun || "LINE";
       setAddRowData((prev) => ({ ...prev, SECTIONCD: sectionCd, isAddRow: true }));
     } catch (err) {
       console.error("데이터 로드 실패:", err);
@@ -244,9 +340,9 @@ const StandardClassInfoManage = () => {
             const rowData = row.getData();
             const rowElement = row.getElement();
             if (rowData.isChanged === "Y") {
-              rowElement.style.backgroundColor = "#fff3cd"; // 노란색 배경
+              rowElement.style.backgroundColor = "#fff3cd";
             } else {
-              rowElement.style.backgroundColor = ""; // 기본 배경
+              rowElement.style.backgroundColor = "";
             }
           },
         });
@@ -275,12 +371,11 @@ const StandardClassInfoManage = () => {
     const table = tableInstance.current;
     if (!table || tableStatus !== "ready" || loading) return;
     if (table.rowManager?.renderer) {
-      table.setData([...data]); // 기존 데이터 설정
-      table.addRow({ ...addRowData }, true); // 추가 행을 맨 위에 추가
-      // 첫 번째 행(추가 행)을 고정
+      table.setData([...data]);
+      table.addRow({ ...addRowData }, true);
       table.getRows().forEach((row, index) => {
         if (index === 0) {
-          row.freeze(); // 첫 번째 행 고정
+          row.freeze();
         } 
       });
       if (isSearched && data.length === 0 && !loading) {
@@ -331,10 +426,14 @@ const StandardClassInfoManage = () => {
       { field: "CLASSBNM", maxLength: 150, label: "중분류" },
       { field: "CLASSCCD", maxLength: 8, label: "소분류코드" },
       { field: "CLASSCNM", maxLength: 200, label: "소분류" },
-      { field: "DETAIL", maxLength: 300, label: "업무부가설명" },
-      { field: "BIZMCODE", maxLength: 10, label: "BIZMCODE" },
-      { field: "UTYPE", maxLength: 100, label: "단위문구" },
     ];
+
+    if (rowData.DETAIL && rowData.DETAIL.trim()) {
+      fieldValidations.push({ field: "DETAIL", maxLength: 300, label: "업무부가설명" });
+    }
+    if (rowData.UTYPE && rowData.UTYPE.trim()) {
+      fieldValidations.push({ field: "UTYPE", maxLength: 100, label: "단위문구" });
+    }
 
     for (const { field, maxLength, label } of fieldValidations) {
       const validation = common.validateVarcharLength(rowData[field], maxLength, label);
@@ -406,10 +505,14 @@ const StandardClassInfoManage = () => {
         }
       }
 
-      const newId = response.data?.ID || `temp_${Date.now()}`;
-      setData((prevData) => [{ ...newRow, ID: newId }, ...prevData]);
-      setAddRowData({ USEYN: "Y", SECTIONCD: "LINE", isAddRow: true }); // 추가 행 초기화
+      // 서버에서 반환된 ID를 newRow에 추가
+      const newId = response.data?.[0]?.ID || addRowData.CLASSCCD;
+      setData((prevData) => [{ ...newRow, ID: newId, CLASSCCD: newId }, ...prevData]);
+      setAddRowData({ USEYN: "Y", SECTIONCD: "LINE", isAddRow: true });
       msgPopup("추가가 성공적으로 완료되었습니다.");
+
+      // /list API 호출
+      await loadData();
     } catch (err) {
       console.error("추가 실패:", err);
       errorMsgPopup(err.message || "추가 중 오류가 발생했습니다.");
@@ -419,7 +522,6 @@ const StandardClassInfoManage = () => {
     }
   };
 
-  // handleEdit 함수 수정
   const handleEdit = async (rowData) => {
     const requiredFields = ["SECTIONCD", "CLASSACD", "CLASSANM", "CLASSBCD", "CLASSBNM", "CLASSCCD", "CLASSCNM", "CLASSODR", "USEYN"];
     const missingFields = validateRequiredFields(rowData, requiredFields);
@@ -432,10 +534,8 @@ const StandardClassInfoManage = () => {
       return;
     }
 
-    // CLASSCCD와 ID 비교
     if (rowData.CLASSCCD !== rowData.ID) {
       errorMsgPopup("소분류코드는 변경할 수 없습니다.");
-      // CLASSCCD를 ID 값으로 업데이트
       rowData.CLASSCCD = rowData.ID;
       setData((prevData) =>
         prevData.map((row) =>
@@ -477,6 +577,9 @@ const StandardClassInfoManage = () => {
       
       setData((prevData) => prevData.map((row) => String(row.ID) === String(rowData.ID) ? { ...row, isChanged: "N" } : row));
       msgPopup("변경이 성공적으로 완료되었습니다.");
+
+      // /list API 호출
+      await loadData();
     } catch (err) {
       console.error("변경 실패:", err);
       errorMsgPopup(err.message || "변경 중 오류가 발생했습니다.");
@@ -494,10 +597,8 @@ const StandardClassInfoManage = () => {
       return;
     }
 
-    // CLASSCCD와 ID 비교
     if (rowData.CLASSCCD !== rowData.ID) {
       errorMsgPopup("소분류코드는 변경할 수 없습니다.");
-      // CLASSCCD를 ID 값으로 업데이트
       rowData.CLASSCCD = rowData.ID;
       setData((prevData) =>
         prevData.map((row) =>
@@ -539,6 +640,9 @@ const StandardClassInfoManage = () => {
 
       setData((prevData) => prevData.filter((row) => String(row.ID) !== String(rowData.ID)));
       msgPopup("삭제가 성공적으로 완료되었습니다.");
+
+      // /list API 호출
+      await loadData();
     } catch (err) {
       console.error("삭제 실패:", err);
       errorMsgPopup(err.message || "삭제 중 오류가 발생했습니다.");
@@ -588,7 +692,6 @@ const StandardClassInfoManage = () => {
         />
       </div>
       
-      {/* 확인 팝업만 표시 */}
       <CommonPopup
         show={showPopup.show}
         onHide={handlePopupCancel}
