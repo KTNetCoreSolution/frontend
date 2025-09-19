@@ -8,7 +8,7 @@ import './MobileMainUserMenu.css';
 const MobileMainUserMenu = ({ show, handleClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUser } = useStore();
+  const { user, setUser } = useStore();
   const offcanvasRef = useRef(null);
 
   // Validate props
@@ -43,7 +43,7 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
       const response = await fetchDataGet('auth/live?extend=true', {}, { withCredentials: true });
       if (response.success && response.data) {
         setUser({
-          ...response.data.user,
+          ...user,
           expiresAt: response.data.expiresAt * 1000, // 초를 밀리초로 변환
         });
       }

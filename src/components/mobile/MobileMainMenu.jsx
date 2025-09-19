@@ -8,7 +8,7 @@ const images = import.meta.glob('../../assets/images/*', { eager: true, query: '
 
 const MobileMainMenu = () => {
   const navigate = useNavigate();
-  const { setUser } = useStore();
+  const { user, setUser } = useStore();
 
   const handleMenuClick = async (path) => {
     try {
@@ -16,7 +16,7 @@ const MobileMainMenu = () => {
       const response = await fetchDataGet('auth/live?extend=true', {}, { withCredentials: true });
       if (response.success && response.data) {
         setUser({
-          ...response.data.user,
+          ...user,
           expiresAt: response.data.expiresAt * 1000, // 초를 밀리초로 변환
         });
       }
