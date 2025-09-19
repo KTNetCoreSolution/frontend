@@ -181,10 +181,10 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
                       value={filters[field.id] || ''}
                       onChange={(e) => handleChangeWithValidation(e, field)}
                       style={{
-                        // width: getStyleValue(field.width, defaultStyles.width),
-                        // height: getStyleValue(field.height, defaultStyles.height),
-                        // backgroundColor: getStyleValue(field.backgroundColor, defaultStyles.backgroundColor),
-                        // color: getStyleValue(field.color, defaultStyles.color),
+                        width: getStyleValue(field.width, defaultStyles.width),
+                        height: getStyleValue(field.height, defaultStyles.height),
+                        backgroundColor: getStyleValue(field.backgroundColor, defaultStyles.backgroundColor),
+                        color: getStyleValue(field.color, defaultStyles.color),
                         // boxSizing: 'border-box',
                         // margin: 0,
                       }}

@@ -205,14 +205,14 @@ const StandardIntoStatistic = () => {
         type: 'search',
         fields: [
           { id: 'classGubunLbl', type: 'label', row: 1, label: '분야', labelVisible: false, enabled: true },
-          ...(hasPermission(user?.auth, 'oper')
+          ...(hasPermission(user?.auth, 'standardOper')
             ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true }]
             : user?.standardSectionCd === 'LINE'
-              ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true }]
+              ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true, width:'60px' }]
               : user?.standardSectionCd === 'DESIGN'
-                ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '설계', labelVisible: false, enabled: true }]
+                ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '설계', labelVisible: false, enabled: true, width:'60px' }]
                 : user?.standardSectionCd === 'BIZ'
-                  ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true }]
+                  ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true, width:'60px' }]
                   : []),
           { id: 'monthDate', type: 'month', row: 1, width: '74px', label: '월', labelVisible: true, placeholders: '월 선택', enabled: true, defaultValue: today.substring(0, 7) },
           { id: 'orgText', type: 'text', row: 1, label: '조직', labelVisible: true, placeholder: '조직 선택', enabled: false },
@@ -248,7 +248,7 @@ const StandardIntoStatistic = () => {
       if (!filters.classGubun) return;
       try {
         const params = {
-          pGUBUN: hasPermission(user?.auth, 'oper')
+          pGUBUN: hasPermission(user?.auth, 'standardOper')
             ? filters.classGubun
             : user?.standardSectionCd === 'LINE'
               ? 'LINE'
@@ -343,7 +343,7 @@ const StandardIntoStatistic = () => {
     try {
       const params = {
         pGUBUN: 'LIST',
-        pSECTIONCD: hasPermission(user?.auth, 'oper')
+        pSECTIONCD: hasPermission(user?.auth, 'standardOper')
           ? filters.classGubun
           : user?.standardSectionCd === 'LINE'
             ? 'LINE'
