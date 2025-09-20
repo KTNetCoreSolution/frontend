@@ -1754,8 +1754,8 @@ textarea.form-control {
   border-radius: 12px; */
 }
 
-.subSection .chartTitle {
-  color: #ffffff;
+.subSectionSearch .chartTitle {
+  color: #bce6f7;
 }
 
 .chartTitle {
@@ -1764,7 +1764,7 @@ textarea.form-control {
   font-family: "kt", sans-serif;
   font-size: 1rem;
   font-weight: 400;
-  color: #bce6f7;
+  color: #ffffff;
   margin-bottom: 1rem !important;
 }
 
