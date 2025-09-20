@@ -1,42 +1,254 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSwipeable } from 'react-swipeable';
 import useStore from '../../store/store';
-import commonUtils from '../../utils/common';
-import fileUtils from '../../utils/fileUtils';
 import { fetchData } from "../../utils/dataUtils";
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
+import { hasPermission } from '../../utils/authUtils';
 import MobileMainUserMenu from '../../components/mobile/MobileMainUserMenu';
-import styles from './MobileStandardCommonLog.Module.css';
+import MobileStandardCommonLogReg from './MobileStandardCommonLogReg';
+import Modal from 'react-bootstrap/Modal';
+import styles from './MobileStandardCommonLog.module.css';
 import api from '../../utils/api';
+import common from "../../utils/common";
 
 const MobileStandardCommonLog = () => {
-  const { user } = useStore();
-  const { clearUser } = useStore();
+  const { user, clearUser } = useStore();
   const navigate = useNavigate();
+  
   const [showSidebar, setShowSidebar] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [preIndex, setPreIndex] = useState(0);
-  const [carId, setCarId] = useState('');
-  const [carList, setCarList] = useState([]);
-  const [boardList, setBoardList] = useState([]);
-  const [carInfo, setCarInfo] = useState({CARNO: '', CARNM: '', MANAGER_EMPNM: '', MANAGER_MOBILE: '', GARAGE_ADDR: '', src: null, bookMark: false, REQCNT: 0});
-  const [isFilled, setIsFilled] = useState(false);
+  const [registeredList, setRegisteredList] = useState([]);
+  const [workDate, setWorkDate] = useState(common.getTodayDate());
+  const [isButtonVisible, setIsButtonVisible] = useState(true);
+  const [classGubun, setClassGubun] = useState(user?.standardSectionCd || 'LINE');
+  const [classData, setClassData] = useState([]);
+  const [workTypeOptions, setWorkTypeOptions] = useState([]);
+  const [showRegModal, setShowRegModal] = useState(false);
 
-  const handleToggleSidebar = () => {
-    setShowSidebar(!showSidebar);
+  // useEffect(() => {
+  //   msgPopup("작업중입니다.");
+  //   navigate('/mobile/Main');
+  // }, [navigate]);
+
+
+  // 시간 옵션 생성 함수
+  const generateTimeOptions = (isWeekly = false, startTime = null, isEnd = false) => {
+    const options = [];
+    const startHour = isWeekly ? 9 : 0;
+    const endHour = isWeekly ? (isEnd ? 18 : 17) : 23;
+    for (let h = startHour; h <= endHour; h++) {
+      options.push(`${h.toString().padStart(2, '0')}:00`);
+      if (h < endHour || (h === endHour && (!isWeekly || !isEnd))) {
+        options.push(`${h.toString().padStart(2, '0')}:30`);
+      }
+    }
+    if (isEnd && !isWeekly) {
+      options.push('23:59');
+    }
+    if (isEnd && startTime) {
+      const startMin = parseInt(startTime.split(':')[0]) * 60 + parseInt(startTime.split(':')[1]);
+      return options.filter((time) => {
+        const [h, m] = time.split(':').map(Number);
+        const timeMin = (h === 24 ? 24 : h) * 60 + m;
+        return timeMin > startMin;
+      });
+    }
+    return options;
   };
 
+  // 종료 시간 옵션 생성
+  const getListEndTimeOptions = (startTime) => generateTimeOptions(false, startTime, true);
+
+  // 시간 문자열을 분 단위로 변환
+  const timeToMinutes = (time) => {
+    const [h, m] = time.split(':').map(Number);
+    return (h === 24 ? 24 : h) * 60 + m;
+  };
+
+  // 시간 범위 유효성 검사 (점심 시간 등 입력 불가 시간 확인)
+  const isInvalidTimeRange = (start, end) => {
+    const startMin = timeToMinutes(start);
+    const endMin = timeToMinutes(end);
+    const lunchStart = timeToMinutes(classData[0]?.BSTARTDT || '12:00');
+    const lunchEnd = timeToMinutes(classData[0]?.BENDDT || '13:00');
+    return startMin < lunchEnd && endMin > lunchStart;
+  };
+
+  // 시간 중복 검사
+  const checkTimeOverlap = (newStart, newEnd, excludeIndex = -1) => {
+    const newStartMin = timeToMinutes(newStart);
+    const newEndMin = timeToMinutes(newEnd);
+    return registeredList.some((item, i) => {
+      if (i === excludeIndex) return false;
+      if (item.CLASSCNM !== registeredList[excludeIndex]?.CLASSCNM || item.WORKDATE !== registeredList[excludeIndex]?.WORKDATE) return false;
+      const itemStartMin = timeToMinutes(item.STARTTIME);
+      const itemEndMin = timeToMinutes(item.ENDTIME);
+      return (
+        (newStartMin < itemEndMin && newEndMin > itemStartMin) ||
+        (newStartMin >= itemStartMin && newEndMin <= itemEndMin)
+      );
+    });
+  };
+
+  // classData 가져오기
+  const fetchClassData = async (gubun) => {
+    try {
+      const params = {
+        pGUBUN: gubun,
+        pDEBUG: 'F',
+      };
+      const response = await fetchData('standard/classinfoList', params);
+      if (!response.success) {
+        msgPopup(response.message || '분류 목록을 가져오는 중 오류가 발생했습니다.');
+        return;
+      }
+      const fetchedClassData = Array.isArray(response.data) ? response.data : [];
+      setClassData(fetchedClassData);
+    } catch (err) {
+      console.error('분류 목록 로드 실패:', err);
+      errorMsgPopup(err.response?.data?.message || '분류 목록을 가져오는 중 오류가 발생했습니다.');
+    }
+  };
+
+  // WORKTYPE 옵션 가져오기
+  const fetchWorkTypeOptions = async () => {
+    try {
+      const params = {
+        pGUBUN: 'WORKTYPE',
+        pDEBUG: 'F',
+      };
+      const response = await fetchData('standard/ddlList', params);
+      if (!response.success) {
+        msgPopup(response.message || 'WORKTYPE 옵션을 가져오는 중 오류가 발생했습니다.');
+        return;
+      }
+      const fetchedOptions = Array.isArray(response.data) ? response.data : [];
+      setWorkTypeOptions(fetchedOptions.map((item) => ({ value: String(item.DDLCD), label: item.DDLNM })));
+    } catch (err) {
+      console.error('WORKTYPE 옵션 로드 실패:', err);
+      msgPopup(err.response?.data?.message || 'WORKTYPE 옵션을 가져오는 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 등록 리스트 가져오기
+  const fetchRegisteredList = async (date) => {
+    try {
+      const params = {
+        pGUBUN: 'LIST',
+        pEMPNO: user?.empNo || '',
+        pDATE1: date,
+        pSECTIONCD: classGubun,
+        pDEBUG: 'F',
+      };
+      const response = await fetchData('standard/empJob/common/reg/list', params);
+      if (!response.success) {
+        msgPopup(response.message || '등록 리스트를 가져오는 중 오류가 발생했습니다.');
+        return;
+      }
+      const fetchedData = Array.isArray(response.data) ? response.data : [];
+      const mappedData = fetchedData
+        .filter((item) => item.DDATE !== '')
+        .map((item) => ({
+          CLASSACD: item.CLASSACD || '',
+          CLASSBCD: item.CLASSBCD || '',
+          CLASSCCD: item.CLASSCCD || '',
+          CLASSANM: item.CLASSANM || '',
+          CLASSBNM: item.CLASSBNM || '',
+          CLASSCNM: item.CLASSCNM || '',
+          NAME: '긴급민원',
+          WORKTYPE: String(item.WORKCD) || '',
+          WORKDATE: item.DDATE || '',
+          STARTTIME: item.STARTTM || '',
+          ORGIN_STARTTM: item.STARTTM || '',
+          ENDTIME: item.ENDTM || '',
+          WORKHOURS: item.WORKH || 0,
+          QUANTITY: item.WORKCNT || '0',
+          WORKDATETIME: `${item.DDATE} ${item.STARTTM} ~ ${item.ENDTM}`,
+          WORKNM: item.WORKNM || '',
+        }));
+      setRegisteredList(mappedData);
+      if (response.data && response.data[0] && response.data[0].MODIFYN === 'N') {
+        setIsButtonVisible(false);
+      } else {
+        setIsButtonVisible(true);
+      }
+    } catch (err) {
+      console.error('등록 리스트 로드 실패:', err);
+      errorMsgPopup(err.response?.data?.message || '등록 리스트를 가져오는 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 수정 및 삭제 처리
+  const handleSave = async (action, index) => {
+    const item = registeredList[index];
+
+    // 건(구간/본/개소) 유효성 검사
+    const quantityValidation = common.validateVarcharLength(String(item.QUANTITY), 10, "건(구간/본/개소)");
+    if (!quantityValidation.valid) {
+      errorMsgPopup(quantityValidation.error);
+      return;
+    }
+
+    // 시간 범위 검사
+    if (timeToMinutes(item.STARTTIME) >= timeToMinutes(item.ENDTIME)) {
+      msgPopup('종료시간이 시작시간보다 큽니다.');
+      return;
+    }
+
+    // 점심 시간대 입력 불가 검사
+    if (isInvalidTimeRange(item.STARTTIME, item.ENDTIME)) {
+      msgPopup(`${classData[0]?.BSTARTDT || '12:00'} ~ ${classData[0]?.BENDDT || '13:00'} 입력 불가 시간입니다.`);
+      return;
+    }
+
+    // 시간 중복 검사
+    if (checkTimeOverlap(item.STARTTIME, item.ENDTIME, index)) {
+      msgPopup('오류!\n이미 입력한 업무시간입니다.!!');
+      return;
+    }
+
+    try {
+      const params = {
+        pGUBUN: action === 'update' ? 'U' : 'D',
+        pDATE1: item.WORKDATE,
+        pDATE2: item.WORKDATE,
+        pORGIN_STARTTM: item.ORGIN_STARTTM,
+        pSTARTTM: item.STARTTIME,
+        pENDTM: item.ENDTIME,
+        pCLASSCD: item.CLASSCCD,
+        pWORKCD: item.WORKTYPE,
+        pWORKCNT: item.QUANTITY,
+        pEMPNO: user?.empNo || '',
+        pSECTIONCD: classGubun,
+        pDEBUG: 'F',
+      };
+
+      const response = await fetchData('standard/empJob/common/reg/save', params);
+      if (!response.success) {
+        msgPopup(response.message || `${action === 'update' ? '수정' : '삭제'} 중 오류가 발생했습니다.`);
+        return;
+      }
+
+      await fetchRegisteredList(item.WORKDATE);
+      msgPopup(`${action === 'update' ? '수정' : '삭제'} 완료`);
+    } catch (err) {
+      console.error(`${action === 'update' ? '수정' : '삭제'} 실패:`, err);
+      errorMsgPopup(err.response?.data?.message || `${action === 'update' ? '수정' : '삭제'} 중 오류가 발생했습니다.`);
+    }
+  };
+
+  // 초기 데이터 로드
   useEffect(() => {
-    msgPopup("작업중입니다.");
-    navigate('/mobile/Main');
-  }, [navigate]);
+    fetchClassData(classGubun);
+    fetchWorkTypeOptions();
+    fetchRegisteredList(workDate);
+  }, [classGubun, workDate]);
+
+  const handleToggleSidebar = () => setShowSidebar(!showSidebar);
 
   const handleLogout = async () => {
     try {
-      const response = await api.post(commonUtils.getServerUrl('auth/logout'), {});
+      const response = await api.post(common.getServerUrl('auth/logout'), {});
       if (response) {
         clearUser();
         navigate('/mobile/Login');
@@ -48,275 +260,206 @@ const MobileStandardCommonLog = () => {
     }
   };
 
-  const initializeComponent = async () => {
-    // Component에 들어갈 데이터 로딩
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    try {
-      const params = { pEMPNO: user?.empNo, pDEBUG: "F" };
-      const response = await fetchData('carlogM/userCarList', params);
-
-      if (!response.success) {
-        throw new Error(response.errMsg || '차량목록 조회 중 오류가 발생했습니다.');
-      } else {
-        setCarList(response.data);
-        if (response.data.length > 0) {
-          getCarImgInfo(response.data[0].CARID);
-        }
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      errorMsgPopup(error.message || '차량목록 조회 중 오류가 발생했습니다.');
-    }
-
-    try {
-      const params = { pDEBUG: "F" };
-      const response = await fetchData('carlogM/carNoticeList', params);
-
-      if (!response.success) {
-        throw new Error(response.errMsg || '차량관리 공지사항 조회 중 오류가 발생했습니다.');
-      } else {
-        setBoardList(response.data);
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      errorMsgPopup(error.message || '차량관리 공지사항 조회 중 오류가 발생했습니다.');
-    }
-  };
-    
-  useEffect(() => {
-    // 컴포넌트 언마운트 시 테이블 정리
-    initializeComponent();
-    //return () => {
-    //};
-  }, []);
-  
-  
-  const calculateActiveIndex = (index) => {
-    if (index === 0) {
-      return 0; // 첫 페이지
-    } else if (index === carList.length - 1) {
-      return Math.min(9, carList.length - 1); // 마지막 페이지
-    } else if (carList.length > 10 && index < 9) {
-      // 페이지가 10개 초과일 때
-      if (activeIndex === 1 && index <= preIndex) {
-        return 1; // currentIndex가 1일 때는 첫 도트
-      }
-      else if (index > activeIndex && index >= preIndex) {
-        return activeIndex + 1; // currentIndex가 9 이하일 때는 1:1 매핑
-      } else {
-        return activeIndex - 1; // currentIndex가 9 초과일 때는 9번째 도트 유지
-      }
-    } else if (carList.length > 10 && index >= 9) { 
-      if (activeIndex === 1) {
-        return 1; // currentIndex가 1일 때는 첫 도트
-      }
-      else if (index > preIndex) {
-        return 8; // currentIndex가 9 초과일 때는 도트 하나씩 이동
-      } else if (index <= preIndex) { 
-        return activeIndex - 1; // currentIndex가 9 초과일 때는 도트 하나씩 이동
-      } else {
-        return 1; // currentIndex가 1일 때는 첫 도트
-      }
-    } else {
-      return index - 1; // 직전 도트
-    }
+  const handleRowChange = (index, field, value) => {
+    setRegisteredList((prev) =>
+      prev.map((item, i) =>
+        i === index
+          ? {
+              ...item,
+              [field]: value,
+              ...(field === 'STARTTIME'
+                ? {
+                    ENDTIME:
+                      timeToMinutes(value) >= timeToMinutes(item.ENDTIME)
+                        ? getListEndTimeOptions(value)[0] || item.ENDTIME
+                        : item.ENDTIME,
+                    WORKDATETIME: `${item.WORKDATE} ${value} ~ ${
+                      timeToMinutes(value) >= timeToMinutes(item.ENDTIME)
+                        ? getListEndTimeOptions(value)[0] || item.ENDTIME
+                        : item.ENDTIME
+                    }`,
+                  }
+                : field === 'ENDTIME'
+                ? {
+                    WORKDATETIME: `${item.WORKDATE} ${item.STARTTIME} ~ ${value}`,
+                  }
+                : {}),
+            }
+          : item
+      )
+    );
   };
 
-  const handlers = useSwipeable({
-    onSwiped: () => {
-    },
-    onSwipedLeft: () => {
-      const index = currentIndex + 1;
-      if (currentIndex < carList.length - 1) {
-        setCurrentIndex(index);
-        const carId = carList[index].CARID;
-        getCarImgInfo(carId);
-        setPreIndex(currentIndex);
-        setActiveIndex(calculateActiveIndex(index));
-      }
-    },
-    onSwipedRight: () => {
-      const index = currentIndex - 1;
-      if (currentIndex > 0) {
-        setCurrentIndex(index);
-        const carId = carList[index].CARID;
-        getCarImgInfo(carId);
-        setPreIndex(currentIndex);
-        setActiveIndex(calculateActiveIndex(index));
-      };
-    },
-    trackTouch: true,
-    trackMouse: true, // 마우스 드래그도 지원 (선택 사항)
-  });
-    
-  const handleBookMark = async (e) => {
-    e.preventDefault();  
-
-    try{
-      const gubun = !isFilled ? 'I' : 'D';
-      const params = {pGUBUN: gubun, pEMPNO: user?.empNo, pCARID: carId};
-      
-      const response = await fetchData('carlog/carBookMarkTransaction', params);
-
-      if (!response.success) {
-        throw new Error(response.errMsg || '차량 즐겨찾기 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
-      } else {
-        if (response.errMsg !== '' || response.data[0].errCd !== '00') {
-          let errMsg = response.errMsg;
-
-          if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
-
-          errorMsgPopup(errMsg);
-        } else {
-          setIsFilled(!isFilled);
-        }
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      errorMsgPopup(error.message || '차량 즐겨찾기 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
-    }
+  // 모달 열기
+  const moveToReg = () => {
+    setShowRegModal(true);
   };
 
-  const getCarImgInfo = async (carId) => {
-    setCarId(carId);
-    //alert(carId);
-    try{      
-      const params = { pEMPNO: user?.empNo, pCARID: carId, pDEBUG: "F" };
-      const response = await fetchData('carlogM/carInfo', params);
-
-      if (!response.success) {
-        throw new Error(response.errMsg || '차량정보 조회 중 오류가 발생했습니다.');
-      } else {
-        if (response.errMsg !== '' || response.data[0].errCd !== '00') {
-          let errMsg = response.errMsg;
-          if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
-          errorMsgPopup(errMsg);
-        } else {
-          const extension = fileUtils.getFileExtension(response.data[0].IMGNM)?.toLowerCase();
-          const mimeType = fileUtils.mimeTypes[extension] || 'application/octet-stream';
-          const fileData = response.data[0].IMGDATA;
-
-          const dataUrl = `data:${mimeType};base64,${fileData}`;
-          const carNo = response.data[0].CARNO;
-          const carNm = response.data[0].CARNM;
-          const managerEmpNm = response.data[0].PRIMARY_MANAGER_EMPNM;
-          const managerMobile = response.data[0].PRIMARY_MANAGER_MOBILE;
-          const garageAddr = response.data[0].PRIMARY_GARAGE_ADDR;
-          const reqCnt = response.data[0].REQCNT;
-          
-          const bBookMark = response.data[0].BOOKMARK === 'Y' ? true : false;
-          
-          setCarInfo({CARNO: carNo, CARNM: carNm, MANAGER_EMPNM: managerEmpNm, MANAGER_MOBILE: managerMobile, GARAGE_ADDR: garageAddr, src: dataUrl, bookMark: bBookMark, REQCNT: reqCnt});
-          setIsFilled(bBookMark);
-        }
-
-      }
-    } catch (error) {
-      setCarId('');
-      console.error('Registration error:', error);
-      errorMsgPopup(error.message || '차량정보 조회 중 오류가 발생했습니다.');
-    }
+  // 모달 닫기
+  const handleRegModalClose = () => {
+    setShowRegModal(false);
   };
 
-  const moveToRegLog = () => {
-    navigate('/mobile/MobileCarLogReg', { state: { carId: carId } });
+  // 등록 후 리스트 새로고침
+  const handleRegSubmit = async () => {
+    await fetchRegisteredList(workDate);
+    setShowRegModal(false);
   };
-
-  const moveToConfirm = () => {
-    if (carInfo.REQCNT > 0) {
-      navigate('/mobile/MobileCarLogConfirm');      
-    } else {
-      alert('미결재건이 없습니다.');
-    }
-  }
 
   return (
-      <div className="container-fluid p-0">
-        <header className="header">
-          <h1 className="h5 mb-0">표준활동[선로,설계]</h1>
-          <button className="btn text-white" onClick={handleToggleSidebar}>
-            <i className="bi bi-list"></i>
-          </button>
-        </header>        
-        <MobileMainUserMenu show={showSidebar} handleClose={handleToggleSidebar} onLogout={handleLogout} />
+    <div className="container-fluid p-0">
+      <header className="header">
+        <h1 className="h5 mb-0">표준활동[선로,설계]</h1>
+        <button className="btn text-white" onClick={handleToggleSidebar}>
+          <i className="bi bi-list"></i>
+        </button>
+      </header>
+      <MobileMainUserMenu show={showSidebar} handleClose={handleToggleSidebar} onLogout={handleLogout} />
 
-        <div className="pageMain">
+      <div className={`pageMain ${styles.pageMain}`}>
+        <div className={styles.formInputGroup}>
           <div>
-            <div className="p-1 align-items-center">
-              <div {...handlers} className={styles.sliderContainer}>
-                <div className={styles.sliderWrapper} style={{transform: `translateX(-${currentIndex * 100}%)`}}>
-                    {carList.map((item, index) =>  
-                      <div key={item.CARID} className={styles.slide}>            
-                        <div className={styles.container}>
-                            <div className='d-flex justify-content-center gap-2'>
-                              <label className={`${styles.formCarNm}`}>{carInfo.CARNM} - {carInfo.CARNO}</label>
-                              <div className={`${styles.starBorder}`}>
-                                <button onClick={(e) => {handleBookMark(e)}} className={`${styles.star} ${isFilled ? styles.filled : ''}`}  />
-                              </div>
-                            </div>
-                            <img src={carInfo.src} className={styles.carImage} />
-                        </div>
-                      </div>
-                    )}
-                </div>
-              </div>
-              <div className={styles.dotNavigation}>
-                {carList.slice(0, Math.min(10, carList.length)).map((item, index) => (
-                  <span key={index} className={`dot ${index === activeIndex ? styles.dotActive : styles.dot}`}></span>
-                ))}
-              </div>
-            </div>
+            <label>일자: </label>
+            <input
+              type="date"
+              value={workDate}
+              onChange={(e) => setWorkDate(e.target.value)}
+              className={styles.formDate}
+            />
           </div>
-          <div className={`${styles.formDivBox}`} >
-            <div className={styles.container}>
-              <label className={`${styles.formGarageTitle}`} >차고지</label>
-              <label className={`${styles.formGarage}`} >{carInfo.GARAGE_ADDR}</label>
-            </div>
-          </div>
-          <div className={`${styles.formDivBox}`} >
-            <div className={`d-flex ${styles.container}`} >
-              <label className={`${styles.formManagerTitle}`} >운전자(정)</label>
-              <label className={`${styles.formManager}`}>{carInfo.MANAGER_EMPNM}</label>
-            </div>
-            <div className={`d-flex ${styles.container}`}>
-              <label className={`${styles.formManagerTitle}`}>연락처</label>
-              <label className={`${styles.formManager}`}>{carInfo.MANAGER_MOBILE}</label>
-            </div>
-          </div>
-          <div className="mb-2">
-            <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={moveToRegLog}>차량점검 및 일지작성</button>
-          </div>
-          <div className={`d-flex ${styles.formDivNotiBox}`} onClick={(e) => navigate('/mobile/MobileCarNotice')} >
-            <div className={styles.container}>      
-              {boardList.map((item, index) =>  
-                <div key={item.NOTICEID} className={`d-flex ${index === 0 ? styles.formDivNotiICON : ''}`} ><label className={`${styles.formNotiList}`} >{item.SIMPLE_TITLE}</label></div>
-              )}
-            </div>
-          </div>
-          <div className={`d-flex ${styles.formDivBtnBox}`} onClick={moveToConfirm} >
-            <div className={`${styles.container}`}>
-              <label className={`${styles.formListTitle}`} >결재</label>
-              <label className={`${styles.formList}`} >미결재 {carInfo.REQCNT} 건 있습니다.</label>
-            </div>
-            <div className={`${styles.arrowContainer}`}></div>
-          </div>
-          <div className={`d-flex ${styles.formDivBtnBox}`} onClick={(e) => navigate('/mobile/MobileCarLogList')} >
-            <div className={`${styles.container}`}>
-              <label className={`${styles.formListTitle}`} >운행이력</label>
-              <label className={`${styles.formList}`} >내 운행이력을 확인합니다.</label>
-            </div>
-            <div className={`${styles.arrowContainer}`}></div>
-          </div>
-          <div className={`d-flex ${styles.formDivBtnBox}`} onClick={(e) => navigate('/mobile/MobileCarCheckStatus')} >
-            <div className={`${styles.container}`}>
-              <label className={`${styles.formListTitle}`} >차량상태</label>
-              <label className={`${styles.formList}`} >내 조직의 차량상태를 확인합니다</label>
-            </div>
-            <div className={`${styles.arrowContainer}`}></div>
+          <div>
+            <label>분야: </label>
+            {hasPermission(user?.auth, 'standardOper') ? (
+              <select
+                value={classGubun}
+                onChange={(e) => setClassGubun(e.target.value)}
+                className={styles.formSelect}
+              >
+                <option value="LINE">선로</option>
+                <option value="DESIGN">설계</option>
+              </select>
+            ) : (
+              <input
+                type="text"
+                value={
+                  user?.standardSectionCd === 'LINE'
+                    ? '선로'
+                    : user?.standardSectionCd === 'DESIGN'
+                    ? '설계'
+                    : ''
+                }
+                disabled
+                className={styles.formInputDisabled}
+              />
+            )}
           </div>
         </div>
+
+        <div className="mb-4">
+          <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={moveToReg}>
+            표준활동 등록
+          </button>
+        </div>
+        <h5>※ 등록 리스트 ({workDate})</h5>
+        <table className={styles.listTable}>
+          <thead>
+            <tr>
+              <th className={styles.listTh1}>시간</th>
+              <th className={styles.listTh2}>소분류</th>
+              <th className={styles.listTh3}>건</th>
+              <th className={styles.listTh4}>근무형태</th>
+              <th className={styles.listTh5}>작업</th>
+            </tr>
+          </thead>
+          <tbody>
+            {registeredList.map((item, index) => (
+              <tr key={index}>
+                <td>
+                  <select
+                    value={item.STARTTIME}
+                    onChange={(e) => handleRowChange(index, 'STARTTIME', e.target.value)}
+                    className={styles.listSelect}
+                  >
+                    {generateTimeOptions(false).map((time) => (
+                      <option key={time} value={time}>
+                        {time}
+                      </option>
+                    ))}
+                  </select>
+                  ~
+                  <select
+                    value={item.ENDTIME}
+                    onChange={(e) => handleRowChange(index, 'ENDTIME', e.target.value)}
+                    className={styles.listSelect}
+                  >
+                    {getListEndTimeOptions(item.STARTTIME).map((time) => (
+                      <option key={time} value={time}>
+                        {time}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td>{item.CLASSCNM}</td>
+                <td>
+                  <input
+                    type="number"
+                    value={item.QUANTITY}
+                    onChange={(e) => handleRowChange(index, 'QUANTITY', e.target.value)}
+                    min="0"
+                    className={`${styles.quantityInput}`}
+                  />
+                </td>
+                <td>
+                  <select
+                    value={item.WORKTYPE || ''}
+                    onChange={(e) => handleRowChange(index, 'WORKTYPE', e.target.value)}
+                    className={styles.listSelect2}
+                  >
+                    <option value="">선택</option>
+                    {workTypeOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td>
+                  {isButtonVisible && (
+                    <>
+                      <button
+                        className={`${styles.btn} ${styles.listBtn} btn-secondary`}
+                        onClick={() => handleSave('update', index)}
+                      >
+                        수정
+                      </button>
+                      <button
+                        className={`${styles.btn} ${styles.listBtn} btn-primary`}
+                        onClick={() => handleSave('delete', index)}
+                      >
+                        삭제
+                      </button>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
+
+      <Modal show={showRegModal} onHide={handleRegModalClose} centered className={styles.customModal}>
+        <Modal.Body className={styles.modalBody}>
+          <MobileStandardCommonLogReg
+            workDate={workDate}
+            classGubun={classGubun}
+            classData={classData}
+            workTypeOptions={workTypeOptions}
+            onHide={handleRegModalClose}
+            onSubmit={handleRegSubmit}
+          />
+        </Modal.Body>
+      </Modal>
+    </div>
   );
 };
 
