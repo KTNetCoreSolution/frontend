@@ -9,6 +9,7 @@ import styles from './StandardDashboard.module.css';
 import chartImg01 from '../../assets/images/chartImg01.svg';
 import chartImg02 from '../../assets/images/chartImg02.svg';
 import chartImg03 from '../../assets/images/chartImg03.svg';
+import visualImg from '../../assets/images/dashboardImg.svg';
 
 const StandardDashboard = () => {
   const { user } = useStore();
@@ -160,14 +161,14 @@ const StandardDashboard = () => {
                 text: `${percentValue}%`,
                 fontSize: 18,
                 fontWeight: 'bold',
-                fill: '#216DB2',
+                fill: '#208bec',
               },
               z: 10,
             },
             {
               type: 'text',
               left: 'center',
-              top: '58%',
+              top: '56%',
               style: {
                 text: '전체',
                 fontSize: 14,
@@ -187,7 +188,7 @@ const StandardDashboard = () => {
               label: { show: false, position: 'center' },
               labelLine: { show: false },
               data: [
-                { value: percentValue, name: '진행률', itemStyle: { color: '#216DB2', borderRadius: '50%' } },
+                { value: percentValue, name: '진행률', itemStyle: { color: '#208bec', borderRadius: '50%' } },
                 { value: 100 - percentValue, name: '남은 영역', itemStyle: { color: '#262a3b' } },
               ],
             },
@@ -216,14 +217,14 @@ const StandardDashboard = () => {
                   text: `${percentValue}%`,
                   fontSize: 18,
                   fontWeight: 'bold',
-                  fill: '#2CBBB7',
+                  fill: '#1cd6d1',
                 },
                 z: 10,
               },
               {
                 type: 'text',
                 left: 'center',
-                top: '58%',
+                top: '56%',
                 style: {
                   text: item?.구분 || section,
                   fontSize: 14,
@@ -254,8 +255,8 @@ const StandardDashboard = () => {
                 //   { value: 100 - percentValue, name: '남음', itemStyle: { color: '#eee' } },
                 // ],
                 data: [
-                  { value: percentValue, itemStyle: { color: '#2CBBB7', borderRadius: '50%' } },
-                  { value: 100 - percentValue, itemStyle: { color: '#262a3b' } },
+                  { value: percentValue, itemStyle: { color: '#1cd6d1', borderRadius: '50%' } },
+                  { value: 100 - percentValue, itemStyle: { color: '#2d3348' } },
                 ],
               },
             ],
@@ -291,21 +292,39 @@ const StandardDashboard = () => {
               .reduce((sum, item) => sum + (Number(item.WORKH) || 0), 0);
           });
           // 시리즈 데이터 생성 (정규화된 비율로 변환, 100% 초과 방지)
+          const topBorder = 6;
+          const bottomBorder = 0;
           const seriesData = classNames.map((className, idx) => ({
             name: className,
             type: 'bar',
+            barWidth: 80,
             stack: 'total',
+            itemStyle: {
+              color: colors[idx]
+            },
             data: mDates.map((mDate, dateIdx) => {
               const item = sectionData.find(d => d.MDATE === mDate && d.CLASSANM === className);
               const workH = item ? Number(item.WORKH) : 0;
               const totalWorkH = totalWorkHByDate[dateIdx];
-              return totalWorkH > 0 ? Math.min(((workH / totalWorkH) * 100).toFixed(2), 100) : 0;
+              const value = totalWorkH > 0 ? Math.min(((workH / totalWorkH) * 100).toFixed(2), 100) : 0;
+              const valuesForDate = classNames.map((cn) => {
+              const d = sectionData.find(d => d.MDATE === mDate && d.CLASSANM === cn);
+              return d ? Number(d.WORKH) : 0;
+              });
+              const topIndex = valuesForDate.findLastIndex(v => v > 0);
+              const isTop = idx === topIndex;
+              return {
+                value,
+                itemStyle: {
+                  color: colors[idx],
+                  borderRadius: isTop ? [topBorder, topBorder, bottomBorder, bottomBorder] : [0, 0, 0, 0]
+                }
+              };
             }),
-            itemStyle: { color: colors[idx], borderRadius: 4 },
             label: {
               show: true,
               formatter: (params) => params.value > 0 ? `${Math.min(params.value, 100)}%` : '',
-              fontSize: 9,
+              fontSize: 11,
               color: '#fff',
               overflow: 'none', // 라벨이 잘리지 않도록 설정
               // textBorderColor: '#171717', // 텍스트 가독성을 위해 테두리 추가
@@ -343,7 +362,7 @@ const StandardDashboard = () => {
               right: grid.right,
               top: grid.top,
               bottom: grid.bottom,
-              height: '55%',
+              height: '80%',
             },
             tooltip: {
               trigger: 'axis',
@@ -371,7 +390,7 @@ const StandardDashboard = () => {
                 opacity: '.7'
               },
             },
-            xAxis: {
+            yAxis: {
               type: 'value',
               max: 100, // 100% 초과 방지
               axisLabel: {
@@ -381,7 +400,7 @@ const StandardDashboard = () => {
               },
               splitLine: { show: false },
             },
-            yAxis: {
+            xAxis: {
               type: 'category',
               data: mDates,
               axisLabel: {
@@ -455,6 +474,7 @@ const StandardDashboard = () => {
                 },
                  itemStyle: {
                   borderRadius: 4,
+                  borderWidth: 3,
                   borderColor: '#1f2330'
                 },
                 data: data,
@@ -494,32 +514,44 @@ const StandardDashboard = () => {
     <div className={`chartWrap ${styles.container} ${isFullscreen ? styles.fullscreen : ''}`}>
       <div className='chartRowWrap'>
         <div className='inputSection'>
-          <div className='chartsContainer'>
-            <div className='subSection d-flex justify-content-between'>
+          <div className='subSectionSearch'>
+            <img src={visualImg} className='visualImg' />
+            <div className='formWrap'>
               <div className='chartTitle' style={{height: '30px'}}>전사 표준활동 입력현황</div>
-              <div className='d-flex flex-row'>
-                <div ref={chartRefs[0]} className='chart' style={{ width: '25%', height: '150px' }}/>
-                <div ref={chartRefs[1]} className='chart' style={{ width: '25%', height: '150px' }}/>
-                <div ref={chartRefs[2]} className='chart' style={{ width: '25%', height: '150px' }}/>
-                <div ref={chartRefs[3]} className='chart' style={{ width: '25%', height: '150px' }}/>
-              </div>
-            </div>
-          </div>
-          <div className='rightInfo'>
-            <div className='rightHeader'>
-              <div className='subSecTitle'>소계</div>
               <div className='formGroup'>
-                <input
+                {/* <input
                   type="month"
                   value={month}
                   onChange={e => setMonth(e.target.value)}
-                  className={styles.monthInput}
-                />
+                  className='monthInput'
+                /> */}
+                <div className="month-input-wrapper">
+                  <input
+                    type="month"
+                    value={month}
+                    onChange={(e) => setMonth(e.target.value)}
+                    className="monthInput"
+                  />
+                  <span className="calendar-icon">
+                    <i className="bi bi-calendar3"></i>
+                  </span>
+                </div>
                 <button className='refreshButton' onClick={() => user && loadData()}>
                   <i className="bi bi-arrow-repeat"></i>
                 </button>
               </div>
             </div>
+
+          </div>
+          <div className='subSection'>
+            <div className='d-flex flex-row gap-3'>
+              <div ref={chartRefs[0]} className='chart' style={{ width: '25%', height: '150px' }}/>
+              <div ref={chartRefs[1]} className='chart' style={{ width: '25%', height: '150px' }}/>
+              <div ref={chartRefs[2]} className='chart' style={{ width: '25%', height: '150px' }}/>
+              <div ref={chartRefs[3]} className='chart' style={{ width: '25%', height: '150px' }}/>
+            </div>
+          </div>
+          <div className='subSection'>
             <table className='gridTable'>
               <thead>
                 <tr>
@@ -550,15 +582,15 @@ const StandardDashboard = () => {
         <div className='fieldSection'>
           <div className='subSection'>
             {/* <div className='subSecTitle'>선로</div> */}
-            <div ref={chartRefs[4]} className='chart' />
+            <div ref={chartRefs[4]} className='chartBar' />
           </div>
           <div className='subSection'>
             {/* <div className='subSecTitle'>설계</div> */}
-            <div ref={chartRefs[5]} className='chart' />
+            <div ref={chartRefs[5]} className='chartBar' />
           </div>
           <div className='subSection'>
             {/* <div className='subSecTitle'>BIZ</div> */}
-            <div ref={chartRefs[6]} className='chart' />
+            <div ref={chartRefs[6]} className='chartBar' />
           </div>
         </div>
       </div>
