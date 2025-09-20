@@ -156,10 +156,10 @@ const StandardDashboard = () => {
             {
               type: 'text',
               left: 'center',
-              top: '38%',
+              top: '36%',
               style: {
                 text: `${percentValue}%`,
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: 'bold',
                 fill: '#208bec',
               },
@@ -168,10 +168,10 @@ const StandardDashboard = () => {
             {
               type: 'text',
               left: 'center',
-              top: '56%',
+              top: '54%',
               style: {
                 text: '전체',
-                fontSize: 14,
+                fontSize: 12,
                 fontWeight: 'normal',
                 fill: '#ffffff',
                 opacity: '.7'
@@ -212,10 +212,10 @@ const StandardDashboard = () => {
               {
                 type: 'text',
                 left: 'center',
-                top: '38%',
+                top: '36%',
                 style: {
                   text: `${percentValue}%`,
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: 'bold',
                   fill: '#1cd6d1',
                 },
@@ -224,10 +224,10 @@ const StandardDashboard = () => {
               {
                 type: 'text',
                 left: 'center',
-                top: '56%',
+                top: '54%',
                 style: {
                   text: item?.구분 || section,
-                  fontSize: 14,
+                  fontSize: 12,
                   fontWeight: 'normal',
                   fill: '#ffffff',
                   opacity: '.7'
@@ -544,11 +544,11 @@ const StandardDashboard = () => {
 
           </div>
           <div className='subSection'>
-            <div className='d-flex flex-row gap-3'>
-              <div ref={chartRefs[0]} className='chart' style={{ width: '25%', height: '150px' }}/>
-              <div ref={chartRefs[1]} className='chart' style={{ width: '25%', height: '150px' }}/>
-              <div ref={chartRefs[2]} className='chart' style={{ width: '25%', height: '150px' }}/>
-              <div ref={chartRefs[3]} className='chart' style={{ width: '25%', height: '150px' }}/>
+            <div className='d-flex flex-row justify-center gap-3'>
+              <div ref={chartRefs[0]} className='chart' style={{ width: '130px', height: '130px' }}/>
+              <div ref={chartRefs[1]} className='chart' style={{ width: '130px', height: '130px' }}/>
+              <div ref={chartRefs[2]} className='chart' style={{ width: '130px', height: '130px' }}/>
+              <div ref={chartRefs[3]} className='chart' style={{ width: '130px', height: '130px' }}/>
             </div>
           </div>
           <div className='subSection'>
@@ -578,7 +578,7 @@ const StandardDashboard = () => {
         </div>
       </div>
       <div className='chartRowWrap'>
-        <div className='chartTitle'>{/* <img src={chartImg02} className='chartimgWrap' /> */}대분류별 표준활동 추이현황</div>
+        <div className='chartTitle'>대분류별 표준활동 추이현황</div>
         <div className='fieldSection'>
           <div className='subSection'>
             {/* <div className='subSecTitle'>선로</div> */}
@@ -595,7 +595,7 @@ const StandardDashboard = () => {
         </div>
       </div>
       <div className='chartRowWrap'>
-        <div className='chartTitle'>{/* <img src={chartImg03} className='chartimgWrap' /> */}대분류별 표준활동 입력현황</div>
+        <div className='chartTitle'>대분류별 표준활동 입력현황</div>
         <div className='fieldSection'>
           <div className='subSection'>
             {/* <div className='subSecTitle'>선로</div> */}
