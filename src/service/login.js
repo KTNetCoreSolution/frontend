@@ -68,9 +68,9 @@ export const performSsoLogin = (gubun, params, navigate) => {
       } else if (response.errMsg !== '') {
         return { success: false, errMsg: response.errMsg };
       } else {
-        if (response.data.user.pwdChgYn === 'Y') {
-          return response;
-        }
+        // if (response.data.user.pwdChgYn === 'Y') {
+        //   return response;
+        // }
         const { setUser } = useStore.getState();
         setUser({
           ...response.data.user,
@@ -94,9 +94,9 @@ export const performSsoLoginCheck = (gubun, params, navigate) => {
       } else if (response.errMsg !== '') {
         return { success: false, errMsg: response.errMsg };
       } else {
-        if (response.data.user.pwdChgYn === 'Y') {
-          return response;
-        }
+        // if (response.data.user.pwdChgYn === 'Y') {
+        //   return response;
+        // }
         const { setUser } = useStore.getState();
         setUser({
           ...response.data.user,
