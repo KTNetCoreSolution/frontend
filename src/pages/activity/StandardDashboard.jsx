@@ -460,16 +460,17 @@ const StandardDashboard = () => {
                 padAngle: 0,
                 color: colors,
                 label: {
+                  // show: false,
+                  // position: 'center'
                   formatter: '{abg|{b}}\n{hr|}\n{per|{d}%}  {value|{c}시간}',
                   backgroundColor: '#262a3b',
-                  // borderColor: '#8C8D8E',
-                  // borderWidth: 1,
-                  borderRadius: 4,
+                  padding: 6,
+                  borderRadius: 8,
                   rich: {
                     abg: { color: '#ffffff', lineHeight: 22, align: 'center', padding: [6, 8] },
-                    hr: { borderColor: '#8C8D8E', width: '100%', borderWidth: 1, height: 0 },
+                    hr: { borderColor: 'rgba(125, 125, 125, .3)', width: '100%', borderWidth: 1, height: 0 },
                     per: { color: '#ffffff', backgroundColor: 'transparent', padding: [6, 8] },
-                    value: { color: '#ffffff', backgroundColor: 'transparent', padding: [6, 8] },
+                    value: { color: '#bce6f7', backgroundColor: 'transparent', padding: [6, 8] },
                   },
                 },
                  itemStyle: {
@@ -482,7 +483,7 @@ const StandardDashboard = () => {
                   label: {
                     show: true,
                     color: '#4a4a4a',
-                    fontSize: 20,
+                    fontSize: 14,
                     fontWeight: 'bold'
                   },
                 },
@@ -544,7 +545,7 @@ const StandardDashboard = () => {
 
           </div>
           <div className='subSection'>
-            <div className='d-flex flex-row justify-center gap-3'>
+            <div className='d-flex flex-row justify-content-center gap-3'>
               <div ref={chartRefs[0]} className='chart' style={{ width: '130px', height: '130px' }}/>
               <div ref={chartRefs[1]} className='chart' style={{ width: '130px', height: '130px' }}/>
               <div ref={chartRefs[2]} className='chart' style={{ width: '130px', height: '130px' }}/>

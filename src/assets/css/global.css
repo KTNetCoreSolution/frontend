@@ -613,7 +613,7 @@ border-color: #bd2130;
   width: auto;
   margin-bottom: 0;
   border-bottom: 0;
-  gap: 1.25rem;
+  gap: 0.5rem;
 }
 
 .nav-tabs .nav-item {
@@ -624,11 +624,12 @@ border-color: #bd2130;
 .nav-tabs .nav-link {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--bs-font-tertiary-color);
-  background: transparent;
+  color: var(--bs-font-secondary-color);
+  /* background: #effcff; */
   border: unset;
-  border-radius: 0;
-  padding: 0.75rem 0;
+  /* border-radius: 18px;
+  padding: 0.5rem 1rem; */
+  height: 36px;
 }
 
 .nav-tabs .nav-link:hover {
@@ -637,8 +638,8 @@ border-color: #bd2130;
 
 .nav-tabs .nav-link.active {
   font-weight: 700;
-  color: #197495;
-  border-bottom: 3px solid #197495;
+  color: #237FB3;
+  border-bottom: 2px solid #237FB3;
 }
 
 /* 탭 헤더와 버튼 스타일 */
@@ -649,7 +650,7 @@ border-color: #bd2130;
   margin-bottom: 0;
   padding-bottom: 0;
   flex-direction: row;
-  border-bottom: 1px solid var(--bs-border-color);
+  border-bottom: 1px solid #d4d4d6;
 }
 
 .boardBtn01 {
@@ -877,7 +878,26 @@ border-color: #bd2130;
   color: #197495;
   line-height: 150%;
 }
-
+h2.boardTitle {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--bs-font-color);
+  width: 100%;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0;
+  gap: 1rem;
+  background: #F4F7FC;
+  border-radius: 10px;
+}
+h2.boardTitle .boardTitleImg {
+  width: 36px;
+  height: 36px;
+  background: #ffffff;
+  padding: 4px;
+  border-radius: 18px;
+}
 h3.boardTitle {
   font-size: 1rem !important;
   color: var(--bs-font-color);
@@ -885,14 +905,18 @@ h3.boardTitle {
 }
 button.boardBtn01 {
   font-size: 0.875rem !important;
-  color: var(--bs-font-secondary-color);
-  font-weight: 400;
+  color: #237FB3;
+  font-weight: 500;
+  letter-spacing: normal;
+  line-height: 1;
   padding: 0;
+  gap: 2px;
+  min-width: unset;
 }
-button.boardBtn01 .arrow-icon {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
+button.boardBtn01 .more-icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
 }
 
 .cardMain {
@@ -1502,18 +1526,18 @@ textarea.form-control {
   gap: 0.5rem;
 }
 .boardBox .contentContainer {
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 .boardBox .contentContainer > .list-group-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
   border: none;
-  padding: 0;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--bs-border-color);
-  border-radius: 0;
-  background: transparent;
+  /* border-radius: 8px; */
+  padding: 0.75rem 0;
+  /* padding-bottom: 0.75rem; */
+  border-bottom: 1px solid #ebebeb;
+  /* background: #f7f8fc; */
   font-size: 0.875rem;
 }
 .boardBox .contentContainer > .list-group-item:last-child {
@@ -1607,6 +1631,7 @@ textarea.form-control {
   color: #fff;
   line-height: 1;
   padding: 0;
+  width: 100%;
 }
 .subSectionSearch .formGroup input.monthInput::-webkit-calendar-picker-indicator {
   opacity: 0;
@@ -1829,34 +1854,31 @@ textarea.form-control {
 
 
 
-
-
-
 .mainContentWrap .boardContainer {
   display: flex;
-  flex-direction: row;
   gap: 1rem;
 }
-
 .mainContentWrap .boardContainer .boardSection {
   display: flex;
   flex-direction: column;
   width: 100%;
   min-height: 300px;
   gap: 1.25rem;
-  padding: 1rem 1.5rem 1.5rem;
+  padding: 1.5rem;
   background: #ffffff;
   border-radius: 12px;
 }
-
+.mainContentWrap .boardContainer .boardSection .tabWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
 .boardContent {
   background: #fff;
   width: 100%;
   min-height: 300px;
   padding: 10px;
 }
-
-
 .contentDate {
   color:var(--bs-font-secondary-color);
 }
