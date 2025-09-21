@@ -33,6 +33,73 @@ export const performLogin = async (gubun, empNo, empPwd, captchaInput, navigate,
   return null;
 };
 
+export const performMobileLogin = async (accessAuthId, empNo, empPwd, captchaInput, navigate, setError) => {
+  try {
+    
+    const response = await fetchData('auth/login', { empNo, empPwd, captchaInput }, {}, 'N', false);
+    
+    if (!response.success) {
+      throw new Error(response.errMsg || '아이디, 비밀번호 또는 캡챠가 잘못되었습니다.');
+    } else {
+      if (response.errMsg !== '') {
+        setError(response.errMsg);
+      } else {
+        if (response.data.user.pwdChgYn === 'Y') {
+          return response;
+        }
+
+        if(accessAuthId !== '')
+        {
+          if (accessAuthId !== response.data.user.auth)
+          {
+            setError('접근권한이 없습니다.');
+            return response;
+          }
+        }
+
+        const { setUser } = useStore.getState();
+        setUser({
+          ...response.data.user,
+          expiresAt: response.data.expiresAt * 1000,
+        });
+
+        navigate('/mobile/main', { replace: true })
+      }
+    }
+  } catch (error) {
+    console.error('Login error:', error.message);
+    setError(error.message || '로그인에 실패했습니다. 다시 시도해주세요.');
+  }
+  return null;
+};
+
+export const performMobileLoginAccess = async (setError) => {
+  let response = null;
+
+  try {
+
+    const params = {
+        pGUBUN: 'LIST',
+        pDEBUG: 'F',
+    };
+    
+    response = await fetchData('auth/mLogin/access/list', params, {}, 'N', false);
+    
+    if (!response.success) {
+      throw new Error(response.errMsg || '접근권한이 없습니다.');
+    } else {
+      if (response.errMsg !== '') {
+        setError(response.errMsg);
+      } 
+
+    }
+  } catch (error) {
+    console.error('Login error:', error.message);
+    setError(error.message || '접근권한이 없습니다.');
+  }
+  return response;
+};
+
 /*
 export const performSsoLogin = async (gubun, params, navigate) => {
   try {
