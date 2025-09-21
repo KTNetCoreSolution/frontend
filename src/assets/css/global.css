@@ -622,14 +622,14 @@ border-color: #bd2130;
 }
 
 .nav-tabs .nav-link {
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--bs-font-secondary-color);
   /* background: #effcff; */
   border: unset;
   /* border-radius: 18px;
   padding: 0.5rem 1rem; */
-  height: 36px;
+  height: 40px;
 }
 
 .nav-tabs .nav-link:hover {
