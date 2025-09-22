@@ -252,7 +252,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
             </div>
             <div className={styles.formInputGroup}>
               <label>대분류:</label>
-              <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange} className={styles.formSelect}>
+              <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange} className={styles.listSelect}>
                 {class1Options.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
@@ -262,7 +262,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
             </div>
             <div className={styles.formInputGroup}>
               <label>중분류:</label>
-              <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange} className={styles.formSelect}>
+              <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange} className={styles.listSelect}>
                 {class2Options.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
@@ -272,7 +272,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
             </div>
             <div className={styles.formInputGroup}>
               <label>소분류:</label>
-              <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange} className={styles.formSelect}>
+              <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange} className={styles.listSelect}>
                 {class3Options.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
@@ -297,7 +297,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
                 onChange={handleChange}
                 placeholder="건수 입력"
                 min="0"
-                className={styles.formInput}
+                className={styles.quantityInput}
               />
               <label>
                 중복건: <input type="checkbox" name="isDuplicate" checked={formData.isDuplicate} onChange={handleChange} />
@@ -305,7 +305,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
             </div>
             <div className={styles.formInputGroup}>
               <label>근무형태:</label>
-              <select name="WORKTYPE" value={formData.WORKTYPE} onChange={handleChange} className={styles.formSelect}>
+              <select name="WORKTYPE" value={formData.WORKTYPE} onChange={handleChange} className={styles.listSelect}>
                 <option value="">선택</option>
                 {workTypeOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -321,7 +321,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
             </div>
             <div className={styles.formInputGroup}>
               <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.formDate} />
-              <select name="STARTTIME" value={formData.STARTTIME} onChange={handleChange} className={styles.formSelect}>
+              <select name="STARTTIME" value={formData.STARTTIME} onChange={handleChange} className={styles.formTime}>
                 {formTimeOptions.map((time) => (
                   <option key={time} value={time}>
                     {time}
@@ -329,7 +329,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
                 ))}
               </select>
               ~
-              <select name="ENDTIME" value={formData.ENDTIME} onChange={handleChange} className={styles.formSelect}>
+              <select name="ENDTIME" value={formData.ENDTIME} onChange={handleChange} className={styles.formTime}>
                 {formEndTimeOptions.map((time) => (
                   <option key={time} value={time}>
                     {time}

@@ -35,42 +35,47 @@ export const performLogin = async (gubun, empNo, empPwd, captchaInput, navigate,
 
 export const performMobileLogin = async (accessAuthId, empNo, empPwd, captchaInput, navigate, setError) => {
   try {
-    
     const response = await fetchData('auth/login', { empNo, empPwd, captchaInput }, {}, 'N', false);
-    
+
     if (!response.success) {
-      throw new Error(response.errMsg || '아이디, 비밀번호 또는 캡챠가 잘못되었습니다.');
+      setError(response.errMsg || '아이디, 비밀번호 또는 캡챠가 잘못되었습니다.');
+      return null;
     } else {
       if (response.errMsg !== '') {
         setError(response.errMsg);
+        return null;
       } else {
-        if (response.data.user.pwdChgYn === 'Y') {
-          return response;
-        }
-
-        if(accessAuthId !== '')
-        {
-          if (accessAuthId !== response.data.user.auth)
-          {
+        // 접근권한 체크
+        if (accessAuthId !== '') {
+          if (accessAuthId !== response.data.user.auth) {
             setError('접근권한이 없습니다.');
-            return response;
+            return null;
           }
         }
 
+        // 비밀번호 변경 필요 시 response 반환
+        if (response.data.user.pwdChgYn === 'Y') {
+          setError(''); // 에러 메시지 클리어
+          return response;
+        }
+
+        // 로그인 성공 및 상태 업데이트
         const { setUser } = useStore.getState();
         setUser({
           ...response.data.user,
           expiresAt: response.data.expiresAt * 1000,
         });
 
-        navigate('/mobile/main', { replace: true })
+        navigate('/mobile/main', { replace: true });
+        setError(''); // 에러 메시지 클리어
+        return response;
       }
     }
   } catch (error) {
     console.error('Login error:', error.message);
     setError(error.message || '로그인에 실패했습니다. 다시 시도해주세요.');
+    return null;
   }
-  return null;
 };
 
 export const performMobileLoginAccess = async (setError) => {

@@ -101,7 +101,7 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable, gubun }) => {
   return (
     <>
       <div className={styles.overlay} onClick={onHide}></div>
-      <div className='modal show d-block' tabIndex="-1">
+      <div className='modal show d-block' tabIndex="-1" style={{zIndex: 1050}}>
         <div className='modal-dialog-centered'>
           <div className='modal-content'>
             <div className='modal-header'>

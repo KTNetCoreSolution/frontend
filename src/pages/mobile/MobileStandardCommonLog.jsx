@@ -25,12 +25,6 @@ const MobileStandardCommonLog = () => {
   const [workTypeOptions, setWorkTypeOptions] = useState([]);
   const [showRegModal, setShowRegModal] = useState(false);
 
-  // useEffect(() => {
-  //   msgPopup("작업중입니다.");
-  //   navigate('/mobile/Main');
-  // }, [navigate]);
-
-
   // 시간 옵션 생성 함수
   const generateTimeOptions = (isWeekly = false, startTime = null, isEnd = false) => {
     const options = [];
@@ -361,90 +355,96 @@ const MobileStandardCommonLog = () => {
           </button>
         </div>
         <h5>※ 등록 리스트 ({workDate})</h5>
-        <table className={styles.listTable}>
-          <thead>
-            <tr>
-              <th className={styles.listTh1}>시간</th>
-              <th className={styles.listTh2}>소분류</th>
-              <th className={styles.listTh3}>건</th>
-              <th className={styles.listTh4}>근무형태</th>
-              <th className={styles.listTh5}>작업</th>
-            </tr>
-          </thead>
-          <tbody>
-            {registeredList.map((item, index) => (
-              <tr key={index}>
-                <td>
-                  <select
-                    value={item.STARTTIME}
-                    onChange={(e) => handleRowChange(index, 'STARTTIME', e.target.value)}
-                    className={styles.listSelect}
-                  >
-                    {generateTimeOptions(false).map((time) => (
-                      <option key={time} value={time}>
-                        {time}
-                      </option>
-                    ))}
-                  </select>
-                  ~
-                  <select
-                    value={item.ENDTIME}
-                    onChange={(e) => handleRowChange(index, 'ENDTIME', e.target.value)}
-                    className={styles.listSelect}
-                  >
-                    {getListEndTimeOptions(item.STARTTIME).map((time) => (
-                      <option key={time} value={time}>
-                        {time}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>{item.CLASSCNM}</td>
-                <td>
-                  <input
-                    type="number"
-                    value={item.QUANTITY}
-                    onChange={(e) => handleRowChange(index, 'QUANTITY', e.target.value)}
-                    min="0"
-                    className={`${styles.quantityInput}`}
-                  />
-                </td>
-                <td>
-                  <select
-                    value={item.WORKTYPE || ''}
-                    onChange={(e) => handleRowChange(index, 'WORKTYPE', e.target.value)}
-                    className={styles.listSelect2}
-                  >
-                    <option value="">선택</option>
-                    {workTypeOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </td>
-                <td>
-                  {isButtonVisible && (
-                    <>
+        {registeredList.length > 0 ? (
+          registeredList.map((item, index) => (
+            <div key={index} className={styles.formDivBox}>
+              <ul className={styles.formList}>
+                <li>
+                  <span className={styles.formLabel}>시간</span>
+                  <span className={styles.formText}>
+                    <select
+                      value={item.STARTTIME}
+                      onChange={(e) => handleRowChange(index, 'STARTTIME', e.target.value)}
+                      className={styles.listSelect}
+                    >
+                      {generateTimeOptions(false).map((time) => (
+                        <option key={time} value={time}>
+                          {time}
+                        </option>
+                      ))}
+                    </select>
+                    ~
+                    <select
+                      value={item.ENDTIME}
+                      onChange={(e) => handleRowChange(index, 'ENDTIME', e.target.value)}
+                      className={styles.listSelect}
+                    >
+                      {getListEndTimeOptions(item.STARTTIME).map((time) => (
+                        <option key={time} value={time}>
+                          {time}
+                        </option>
+                      ))}
+                    </select>
+                  </span>
+                </li>
+                <li>
+                  <span className={styles.formLabel}>소분류</span>
+                  <span className={styles.formText}>{item.CLASSCNM}</span>
+                </li>
+                <li>
+                  <span className={styles.formLabel}>건</span>
+                  <span className={styles.formText}>
+                    <input
+                      type="number"
+                      value={item.QUANTITY}
+                      onChange={(e) => handleRowChange(index, 'QUANTITY', e.target.value)}
+                      min="0"
+                      className={styles.quantityInput}
+                    />
+                  </span>
+                </li>
+                <li>
+                  <span className={styles.formLabel}>근무형태</span>
+                  <span className={styles.formText}>
+                    <select
+                      value={item.WORKTYPE || ''}
+                      onChange={(e) => handleRowChange(index, 'WORKTYPE', e.target.value)}
+                      className={styles.listSelect2}
+                    >
+                      <option value="">선택</option>
+                      {workTypeOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </span>
+                </li>
+                {isButtonVisible && (
+                  <li>
+                    <span className={styles.formLabel}>작업</span>
+                    <span className={styles.formText}>
                       <button
-                        className={`${styles.btn} ${styles.listBtn} btn-secondary`}
+                        className={`${styles.btn} btn-secondary`}
                         onClick={() => handleSave('update', index)}
                       >
                         수정
                       </button>
                       <button
-                        className={`${styles.btn} ${styles.listBtn} btn-primary`}
+                        className={`${styles.btn} btn-primary`}
                         onClick={() => handleSave('delete', index)}
                       >
                         삭제
                       </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                    </span>
+                  </li>
+                )}
+              </ul>
+            </div>
+          ))
+        ) : (
+          <div className="nodataWrap">조회된 목록이 없습니다.</div>
+        )}
       </div>
 
       <Modal show={showRegModal} onHide={handleRegModalClose} centered className={styles.customModal}>

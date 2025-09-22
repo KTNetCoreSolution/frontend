@@ -100,9 +100,9 @@ const MobileLogin = () => {
     e.preventDefault();
     setError('');
 
-    const response = await performMobileLogin(accessAuthId, empNo, empPwd, captchaInput, navigate, (error) => {
-      errorMsgPopup(error);
-    });
+    const response = await performMobileLogin(accessAuthId, empNo, empPwd, captchaInput, navigate, (error) => { 
+      if (error) errorMsgPopup(error); }
+    );
 
     if (response && response.data.user.pwdChgYn === 'Y') {
       setIsManualPasswordChange(false);
