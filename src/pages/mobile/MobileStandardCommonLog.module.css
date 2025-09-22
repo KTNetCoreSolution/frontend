@@ -1,0 +1,170 @@
+.pageMain {
+  border: 1px solid #d3d3d3;
+  background-color: #f9f9f9;
+}
+
+.listTable {
+  font-size: 12px;
+  border: #cecaca 1px solid;
+  border-width: 1px;
+  background: #ffffff;
+}
+
+.listTable th, .listTable td {
+  border: #d8d8d8 1px solid !important;
+  text-align: center;
+}
+
+.listTable th {
+  background: #ececec;
+}
+
+.listBtn {
+  padding: 2px !important;
+  margin: 0 !important;
+}
+
+.listTh1 {
+  border: #808080 1px solid;
+  width: 100px;
+}
+
+.listTh3 {
+  width: 32px;
+}
+
+.listTh4 {
+  width: 50px;
+}
+
+.listTh5 {
+  width: 26px;
+}
+
+.listSelect {
+  font-size: 12px;
+  width: 40px;
+  padding: 0;
+}
+
+.listSelect2 {
+  font-size: 12px;
+  width: 44px;
+}
+
+.quantityInput {
+  font-size: 12px;
+  width: 30px;
+  padding: 0;
+  text-align: right;
+}
+
+
+.listSelect, .listSelect2 {
+  -webkit-appearance: none; /* 사파리(iOS)와 크롬에서 기본 스타일 제거 */
+  -moz-appearance: none; /* 파이어폭스에서 기본 스타일 제거 */
+  appearance: none !important; /* 표준 */
+  
+  background: transparent; /* 배경 제거 */
+  padding: 0 !important;
+  
+  overflow-y: auto; /* 세로 스크롤 가능하도록 설정 */
+  scrollbar-width: none; /* Firefox에서 스크롤바 숨김 */
+  -ms-overflow-style: none; /* IE 10+ 스크롤바 숨김 */
+}
+
+/* 크롬, 사파리, 엣지용 스크롤바 숨기기 */
+select::-webkit-scrollbar {
+  display: none;
+}
+
+.formDivBox {
+  margin-top: 6px;
+  padding: 5px;
+  display: block;
+  border: 1px solid #d3d3d3;
+  border-radius: 10px;
+  background-color: #f5f5f5;
+}
+
+.formInputGroup {
+  display: flex;
+  align-items: center; /* 세로 가운데 정렬 */
+  white-space: nowrap;
+  gap: 10px; /* 사이 간격 */
+  border-bottom: #525252 1px solid;
+  padding: 10px;
+}
+
+.formDate {
+  width: 114px;
+  margin-left: 10px;
+}
+
+.formInputDisabled {
+  width: 100px;
+  margin-left: 10px;
+  text-align: center;
+  background: #fff;
+  font-weight: 600;
+}
+
+.formInput {
+  width: 100px;
+  margin-left: 10px;
+  text-align: center;
+}
+
+.formSelect {
+  width: 100px;
+  margin-left: 10px;
+  text-align: center;
+}
+
+
+.btn {
+  padding: 6px 12px;
+  margin-right: 10px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center !important;
+}
+
+.btnCheck {
+    width: 100%;
+    height: 40px;
+    margin-top: 6px !important;
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #00c4b4;
+    --bs-btn-border-color: #00c4b4;
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: #00c4b4;
+    --bs-btn-hover-border-color: #00c4b4;
+    --bs-btn-focus-shadow-rgb: 49, 132, 253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: #00c4b4;
+    --bs-btn-active-border-color: #00c4b4;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #00c4b4;
+    --bs-btn-disabled-border-color: #00c4b4;
+}
+
+.modal
+{
+  min-width: 90vw;
+}
+
+.modalBody {
+  padding: 0;
+  margin: 0;
+}
+
+.customModal {
+  width: 100% !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  margin: 0 auto;
+}

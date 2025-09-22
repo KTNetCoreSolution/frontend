@@ -2,13 +2,14 @@ import React, { useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useStore from '../../store/store';
 import { fetchDataGet } from '../../utils/dataUtils';
+import { mobileMenuStandardPermission } from '../../utils/authUtils';
 import mobileUserMenu from '../../data/mobileUserMenu.json';
 import './MobileMainUserMenu.css';
 
 const MobileMainUserMenu = ({ show, handleClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setUser } = useStore();
+  const { user, setUser } = useStore();
   const offcanvasRef = useRef(null);
 
   // Validate props
@@ -43,7 +44,7 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
       const response = await fetchDataGet('auth/live?extend=true', {}, { withCredentials: true });
       if (response.success && response.data) {
         setUser({
-          ...response.data.user,
+          ...user,
           expiresAt: response.data.expiresAt * 1000, // 초를 밀리초로 변환
         });
       }
@@ -54,6 +55,8 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
     navigate(path);
     handleClose();
   };
+
+  const filteredUserMenu = mobileUserMenu.filter((item) => mobileMenuStandardPermission(user?.auth, user?.standardSectionCd, item.MENUID));
 
   if (!isValidProps) {
     return null;
@@ -80,7 +83,7 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
         </div>
         <div className="custom-offcanvas-body">
           <ul className="list-group">
-            {mobileUserMenu.map((item) => (
+            {filteredUserMenu.map((item) => (
               <li
                 key={item.MENUID}
                 className={`list-group-item ${location.pathname === item.URL ? 'text-primary-custom' : ''}`}

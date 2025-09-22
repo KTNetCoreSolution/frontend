@@ -6,6 +6,10 @@ import { fetchData } from '../../utils/dataUtils';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import common from '../../utils/common';
 import styles from './StandardDashboard.module.css';
+import chartImg01 from '../../assets/images/chartImg01.svg';
+import chartImg02 from '../../assets/images/chartImg02.svg';
+import chartImg03 from '../../assets/images/chartImg03.svg';
+import visualImg from '../../assets/images/dashboardImg.svg';
 
 const StandardDashboard = () => {
   const { user } = useStore();
@@ -47,6 +51,7 @@ const StandardDashboard = () => {
         구분: item.SECTIONCD === 'TOTAL' ? '계' : item.SECTIONCD,
         '대상인원(명)': Number(item.EMPTARGETCNT) || 0,
         '입력인원(명)': Number(item.EMPINPUTCNT) || 0,
+        '대상시간(h)': Number(item.TARGETWORKH) || 0,
         '입력시간(h)': Number(item.WORKH) || 0,
         '비율(%)': item.WORKH && item.SECTIONCD !== 'TOTAL'
           ? ((Number(item.WORKH) / Number(totalResponse.data.find(d => d.SECTIONCD === 'TOTAL')?.WORKH)) * 100).toFixed(2)
@@ -103,24 +108,28 @@ const StandardDashboard = () => {
         구분: '계',
         대상인원: totalData.find(item => item.구분 === '계')?.['대상인원(명)'] || 0,
         입력인원: totalData.find(item => item.구분 === '계')?.['입력인원(명)'] || 0,
+        대상시간: totalData.find(item => item.구분 === '계')?.['대상시간(h)'] || 0,
         입력시간: totalData.find(item => item.구분 === '계')?.['입력시간(h)'] || 0,
       },
       {
         구분: '선로',
         대상인원: totalData.find(item => item.구분 === 'LINE')?.['대상인원(명)'] || 0,
         입력인원: totalData.find(item => item.구분 === 'LINE')?.['입력인원(명)'] || 0,
+        대상시간: totalData.find(item => item.구분 === 'LINE')?.['대상시간(h)'] || 0,
         입력시간: totalData.find(item => item.구분 === 'LINE')?.['입력시간(h)'] || 0,
       },
       {
         구분: '설계',
         대상인원: totalData.find(item => item.구분 === 'DESIGN')?.['대상인원(명)'] || 0,
         입력인원: totalData.find(item => item.구분 === 'DESIGN')?.['입력인원(명)'] || 0,
+        대상시간: totalData.find(item => item.구분 === 'DESIGN')?.['대상시간(h)'] || 0,
         입력시간: totalData.find(item => item.구분 === 'DESIGN')?.['입력시간(h)'] || 0,
       },
       {
         구분: 'BIZ',
         대상인원: totalData.find(item => item.구분 === 'BIZ')?.['대상인원(명)'] || 0,
         입력인원: totalData.find(item => item.구분 === 'BIZ')?.['입력인원(명)'] || 0,
+        대상시간: totalData.find(item => item.구분 === 'BIZ')?.['대상시간(h)'] || 0,
         입력시간: totalData.find(item => item.구분 === 'BIZ')?.['입력시간(h)'] || 0,
       },
     ];
@@ -135,23 +144,37 @@ const StandardDashboard = () => {
       if (chartRefs[0].current) {
         const chart = echarts.init(chartRefs[0].current);
         const totalTimeEntry = totalData.find(item => item.구분 === '계');
-        const percentValue = totalTimeEntry ? totalTimeEntry['비율(%)'] : 0;
         const inputTime = totalTimeEntry ? totalTimeEntry['입력시간(h)'] : 0;
-        const targetTime = totalTimeEntry ? totalTimeEntry['총대상시간(h)'] : 0;
+        const targetTime = totalTimeEntry ? totalTimeEntry['대상시간(h)'] : 0;
+        const percentValue = targetTime > 0 ? ((inputTime / targetTime) * 100).toFixed(2) : 0;
 
         chart.setOption({
           tooltip: {
-            formatter: `총대상시간(h): ${targetTime}<br/>입력시간(h): ${inputTime}`,
+            formatter: `대상시간(h): ${targetTime}<br/>입력시간(h): ${inputTime}`,
           },
           graphic: [
             {
               type: 'text',
               left: 'center',
-              top: '48%',
+              top: '36%',
               style: {
                 text: `${percentValue}%`,
-                fontSize: 14,
+                fontSize: 16,
                 fontWeight: 'bold',
+                fill: '#208bec',
+              },
+              z: 10,
+            },
+            {
+              type: 'text',
+              left: 'center',
+              top: '54%',
+              style: {
+                text: '전체',
+                fontSize: 12,
+                fontWeight: 'normal',
+                fill: '#ffffff',
+                opacity: '.7'
               },
               z: 10,
             },
@@ -159,14 +182,14 @@ const StandardDashboard = () => {
           series: [
             {
               type: 'pie',
-              radius: ['70%', '90%'],
+              radius: ['60%', '90%'],
               center: ['50%', '50%'],
               avoidLabelOverlap: false,
               label: { show: false, position: 'center' },
               labelLine: { show: false },
               data: [
-                { value: percentValue, name: '진행률', itemStyle: { color: '#216DB2' } },
-                { value: 100 - percentValue, name: '남은 영역', itemStyle: { color: '#eee' } },
+                { value: percentValue, name: '진행률', itemStyle: { color: '#208bec', borderRadius: '50%' } },
+                { value: 100 - percentValue, name: '남은 영역', itemStyle: { color: '#262a3b' } },
               ],
             },
           ],
@@ -174,34 +197,66 @@ const StandardDashboard = () => {
       }
 
       // 1.2-1.4 Stage Speed Gauge for 시간 (선로, 설계, BIZ)
-      ['LINE', 'DESIGN', 'BIZ'].forEach((section, i) => {
+      ['선로', '설계', 'BIZ'].forEach((section, i) => {
         if (chartRefs[i + 1].current) {
           const item = totalData.find(item => item.구분 === section);
-          const percentValue = item ? item['비율(%)'] : 0;
           const inputTime = item ? item['입력시간(h)'] : 0;
-          const totalTime = totalData.find(item => item.구분 === '계')?.['입력시간(h)'] || 0;
+          const targetTime = item ? item['대상시간(h)'] : 0;
+          const percentValue = targetTime > 0 ? ((inputTime / targetTime) * 100).toFixed(2) : 0;
           const chart = echarts.init(chartRefs[i + 1].current);
           chart.setOption({
             tooltip: {
-              formatter: `총대상시간(h): ${totalTime}<br/> 입력시간(h): ${inputTime}`,
+              formatter: `대상시간(h): ${targetTime}<br/> 입력시간(h): ${inputTime}`,
             },
+            graphic: [
+              {
+                type: 'text',
+                left: 'center',
+                top: '36%',
+                style: {
+                  text: `${percentValue}%`,
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  fill: '#1cd6d1',
+                },
+                z: 10,
+              },
+              {
+                type: 'text',
+                left: 'center',
+                top: '54%',
+                style: {
+                  text: item?.구분 || section,
+                  fontSize: 12,
+                  fontWeight: 'normal',
+                  fill: '#ffffff',
+                  opacity: '.7'
+                },
+                z: 10,
+              },
+            ],            
             series: [
               {
                 name: item?.구분 || section,
                 type: 'pie',
-                radius: ['70%', '90%'],
+                radius: ['60%', '90%'],
                 avoidLabelOverlap: false,
-                label: {
-                  show: true,
-                  position: 'center',
-                  formatter: `${percentValue}%`,
-                  fontSize: 14,
-                  fontWeight: 'bold',
-                },
+                // label: {
+                //   show: true,
+                //   position: 'center',
+                //   formatter: `${percentValue}%`,
+                //   fontSize: 18,
+                //   fontWeight: 'bold',
+                //   color: '#2CBBB7',
+                // },
                 labelLine: { show: false },
+                // data: [
+                //   { value: percentValue, name: '사용', itemStyle: { color: '#2CBBB7' } },
+                //   { value: 100 - percentValue, name: '남음', itemStyle: { color: '#eee' } },
+                // ],
                 data: [
-                  { value: percentValue, name: '사용', itemStyle: { color: '#2CBBB7' } },
-                  { value: 100 - percentValue, name: '남음', itemStyle: { color: '#eee' } },
+                  { value: percentValue, itemStyle: { color: '#1cd6d1', borderRadius: '50%' } },
+                  { value: 100 - percentValue, itemStyle: { color: '#2d3348' } },
                 ],
               },
             ],
@@ -213,6 +268,12 @@ const StandardDashboard = () => {
       ['LINE', 'DESIGN', 'BIZ'].forEach((section, i) => {
         if (chartRefs[i + 4].current) {
           const chart = echarts.init(chartRefs[i + 4].current);
+          const sectionTitleMap = {
+            LINE: '선로',
+            DESIGN: '설계',
+            BIZ: 'BIZ'
+          };
+          const dynamicTitle = sectionTitleMap[section] || section;
           // SECTIONCD에 해당하는 데이터 필터링
           const sectionData = tobeData.filter(item => item.SECTIONCD === section);
           // MDATE 목록 추출 (고유값)
@@ -221,36 +282,87 @@ const StandardDashboard = () => {
           const classNames = [...new Set(sectionData.map(item => item.CLASSANM).filter(name => name))];
           // 색상 팔레트
           const colors = [
-            '#216DB2', '#2CBBB7', '#1E5A99', '#3AC9C5',
-            '#2A7BCB', '#2cbab7', '#154A80', '#48D7D3'
+            '#026DBD', '#24ACE0', '#22CCC9', '#95E5E6',
+            '#14B7B3', '#3A6B8D'
           ].slice(0, classNames.length);
-          // 시리즈 데이터 생성
+          // 데이터 정규화: 각 MDATE의 총 WORKH 계산
+          const totalWorkHByDate = mDates.map(mDate => {
+            return sectionData
+              .filter(d => d.MDATE === mDate)
+              .reduce((sum, item) => sum + (Number(item.WORKH) || 0), 0);
+          });
+          // 시리즈 데이터 생성 (정규화된 비율로 변환, 100% 초과 방지)
+          const topBorder = 6;
+          const bottomBorder = 0;
           const seriesData = classNames.map((className, idx) => ({
             name: className,
             type: 'bar',
-            stack: 'total', // 누적 바 설정
-            data: mDates.map(mDate => {
+            barWidth: 80,
+            stack: 'total',
+            itemStyle: {
+              color: colors[idx]
+            },
+            data: mDates.map((mDate, dateIdx) => {
               const item = sectionData.find(d => d.MDATE === mDate && d.CLASSANM === className);
-              return item ? Number(item.WORKH) : 0; // 데이터가 없으면 0
+              const workH = item ? Number(item.WORKH) : 0;
+              const totalWorkH = totalWorkHByDate[dateIdx];
+              const value = totalWorkH > 0 ? Math.min(((workH / totalWorkH) * 100).toFixed(2), 100) : 0;
+              const valuesForDate = classNames.map((cn) => {
+              const d = sectionData.find(d => d.MDATE === mDate && d.CLASSANM === cn);
+              return d ? Number(d.WORKH) : 0;
+              });
+              const topIndex = valuesForDate.findLastIndex(v => v > 0);
+              const isTop = idx === topIndex;
+              return {
+                value,
+                itemStyle: {
+                  color: colors[idx],
+                  borderRadius: isTop ? [topBorder, topBorder, bottomBorder, bottomBorder] : [0, 0, 0, 0]
+                }
+              };
             }),
-            itemStyle: { color: colors[idx] },
             label: {
               show: true,
-              position: 'inside',
-              formatter: (params) => params.value > 0 ? params.value.toFixed(0) : '',
-              fontSize: 9,
+              formatter: (params) => params.value > 0 ? `${Math.min(params.value, 100)}%` : '',
+              fontSize: 11,
               color: '#fff',
+              overflow: 'none', // 라벨이 잘리지 않도록 설정
+              // textBorderColor: '#171717', // 텍스트 가독성을 위해 테두리 추가
+              // textBorderWidth: 1.5,
             },
+            z: 5
           }));
+          // 간격 선 생성 (폴리곤 제거로 인해 주석 처리)
+          const grid = {
+            left: 60,
+            right: 50,
+            top: 60,
+            bottom: 50
+          };
+          // const gridWidth = chart.getWidth() - grid.left - grid.right;
+          // const gridHeight = chart.getHeight() - grid.top - grid.bottom;
 
           chart.setOption({
+            title: {
+              // text: item?.구분 || section, // 원하는 타이틀 텍스트
+              text: dynamicTitle,
+              left: 'left',
+              top: 'top',
+              textStyle: {
+                fontSize: 16,
+                fontWeight: 'normal',
+                fontFamily: 'Pretendard Variable',
+                color: '#ffffff',
+                opacity: '.7'
+              },
+            },
             grid: {
               show: false,
-              left: '13%',
-              right: '5%',
-              top: '15%',
-              bottom: '5%',
-              height: '55%',
+              left: grid.left,
+              right: grid.right,
+              top: grid.top,
+              bottom: grid.bottom,
+              height: '80%',
             },
             tooltip: {
               trigger: 'axis',
@@ -259,7 +371,7 @@ const StandardDashboard = () => {
                 let result = `${params[0].name}<br/>`;
                 params.forEach(param => {
                   if (param.value > 0) {
-                    result += `${param.seriesName}(h): ${param.value.toFixed(2)}<br/>`;
+                    result += `${param.seriesName}: ${Math.min(param.value, 100)}%<br/>`;
                   }
                 });
                 return result;
@@ -272,25 +384,30 @@ const StandardDashboard = () => {
               data: classNames,
               orient: 'horizontal',
               top: 0,
-              left: 'center',
+              right: 32,
+              textStyle: {
+                color: '#ffffff',
+                opacity: '.7'
+              },
             },
-            xAxis: {
+            yAxis: {
               type: 'value',
+              max: 100, // 100% 초과 방지
               axisLabel: {
-                formatter: '{value}',
+                formatter: '{value}%',
                 fontSize: 12,
                 margin: 10,
               },
               splitLine: { show: false },
             },
-            yAxis: {
+            xAxis: {
               type: 'category',
-              data: mDates, // Y축에 고정된 MDATE 표시
+              data: mDates,
               axisLabel: {
                 fontSize: 12,
                 interval: 0,
                 margin: 10,
-                formatter: (value) => value, // MDATE 그대로 표시
+                formatter: (value) => value,
               },
             },
             series: seriesData,
@@ -302,6 +419,12 @@ const StandardDashboard = () => {
       ['LINE', 'DESIGN', 'BIZ'].forEach((section, i) => {
         if (chartRefs[i + 7]?.current) {
           const chart = echarts.init(chartRefs[i + 7].current);
+          const sectionTitleMap = {
+            LINE: '선로',
+            DESIGN: '설계',
+            BIZ: 'BIZ'
+          };
+          const dynamicTitle = sectionTitleMap[section] || section;         
           const data = classData
             .filter(item => item.SECTIONCD === section)
             .map(item => ({
@@ -310,10 +433,21 @@ const StandardDashboard = () => {
               time: Number(item.WORKH) || 0,
             }));
           const colors = [
-            '#216DB2', '#2CBBB7', '#1E5A99', '#3AC9C5',
-            '#2A7BCB', '#2cbab7', '#154A80', '#48D7D3'
+            '#026DBD', '#24ACE0', '#22CCC9', '#95E5E6'
           ].slice(0, data.length);
           chart.setOption({
+            title: {
+              text: dynamicTitle,
+              left: 'left',
+              top: 'top',
+              textStyle: {
+                fontSize: 16,
+                fontWeight: 'normal',
+                fontFamily: 'Pretendard Variable',
+                color: '#ffffff',
+                opacity: '.7'
+              },
+            },
             tooltip: {
               trigger: 'item',
               formatter: '<b>{b}</b> <br/>시간(h): {c}<br/>비율(%): {d}',
@@ -323,27 +457,33 @@ const StandardDashboard = () => {
                 name: '업무 비율',
                 type: 'pie',
                 radius: ['40%', '70%'],
-                padAngle: 3,
+                padAngle: 0,
                 color: colors,
                 label: {
+                  // show: false,
+                  // position: 'center'
                   formatter: '{abg|{b}}\n{hr|}\n{per|{d}%}  {value|{c}시간}',
-                  backgroundColor: '#ffffff',
-                  borderColor: '#8C8D8E',
-                  borderWidth: 1,
-                  borderRadius: 4,
+                  backgroundColor: '#262a3b',
+                  padding: 6,
+                  borderRadius: 8,
                   rich: {
-                    abg: { color: '#6E7079', lineHeight: 22, align: 'center' },
-                    hr: { borderColor: '#8C8D8E', width: '100%', borderWidth: 1, height: 0 },
-                    per: { color: '#212529', backgroundColor: 'transparent', padding: [6, 8] },
-                    value: { color: '#212529', backgroundColor: 'transparent', padding: [6, 8] },
+                    abg: { color: '#ffffff', lineHeight: 22, align: 'center', padding: [6, 8] },
+                    hr: { borderColor: 'rgba(125, 125, 125, .3)', width: '100%', borderWidth: 1, height: 0 },
+                    per: { color: '#ffffff', backgroundColor: 'transparent', padding: [6, 8] },
+                    value: { color: '#bce6f7', backgroundColor: 'transparent', padding: [6, 8] },
                   },
+                },
+                 itemStyle: {
+                  borderRadius: 4,
+                  borderWidth: 3,
+                  borderColor: '#1f2330'
                 },
                 data: data,
                 emphasis: {
                   label: {
                     show: true,
                     color: '#4a4a4a',
-                    fontSize: 20,
+                    fontSize: 14,
                     fontWeight: 'bold'
                   },
                 },
@@ -374,47 +514,52 @@ const StandardDashboard = () => {
   return (
     <div className={`chartWrap ${styles.container} ${isFullscreen ? styles.fullscreen : ''}`}>
       <div className='chartRowWrap'>
-        <div className='chartTitle'>전사 표준활동 입력현황</div>
         <div className='inputSection'>
-          <div className='chartsContainer'>
-            <div className='subSection'>
-              <div className='subSecTitle'>전체</div>
-              <div ref={chartRefs[0]} className='chart' />
-            </div>
-            <div className='subSection'>
-              <div className='subSecTitle'>선로</div>
-              <div ref={chartRefs[1]} className='chart' />
-            </div>
-            <div className='subSection'>
-              <div className='subSecTitle'>설계</div>
-              <div ref={chartRefs[2]} className='chart' />
-            </div>
-            <div className='subSection'>
-              <div className='subSecTitle'>BIZ</div>
-              <div ref={chartRefs[3]} className='chart' />
-            </div>
-          </div>
-          <div className='rightInfo'>
-            <div className='rightHeader'>
-              <div className='subSecTitle'>소계</div>
+          <div className='subSectionSearch'>
+            <img src={visualImg} className='visualImg' />
+            <div className='formWrap'>
+              <div className='chartTitle' style={{height: '30px'}}>전사 표준활동 입력현황</div>
               <div className='formGroup'>
-                <input
+                {/* <input
                   type="month"
                   value={month}
                   onChange={e => setMonth(e.target.value)}
-                  className={styles.monthInput}
-                />
+                  className='monthInput'
+                /> */}
+                <div className="month-input-wrapper">
+                  <input
+                    type="month"
+                    value={month}
+                    onChange={(e) => setMonth(e.target.value)}
+                    className="monthInput"
+                  />
+                  <span className="calendar-icon">
+                    <i className="bi bi-calendar3"></i>
+                  </span>
+                </div>
                 <button className='refreshButton' onClick={() => user && loadData()}>
                   <i className="bi bi-arrow-repeat"></i>
                 </button>
               </div>
             </div>
+
+          </div>
+          <div className='subSection'>
+            <div className='d-flex flex-row justify-content-center gap-3'>
+              <div ref={chartRefs[0]} className='chart' style={{ width: '130px', height: '130px' }}/>
+              <div ref={chartRefs[1]} className='chart' style={{ width: '130px', height: '130px' }}/>
+              <div ref={chartRefs[2]} className='chart' style={{ width: '130px', height: '130px' }}/>
+              <div ref={chartRefs[3]} className='chart' style={{ width: '130px', height: '130px' }}/>
+            </div>
+          </div>
+          <div className='subSection'>
             <table className='gridTable'>
               <thead>
                 <tr>
                   <th>구분</th>
                   <th>대상인원(명)</th>
                   <th>입력인원(명)</th>
+                  <th>대상시간(h)</th>
                   <th>입력시간(h)</th>
                 </tr>
               </thead>
@@ -424,6 +569,7 @@ const StandardDashboard = () => {
                     <td>{item.구분}</td>
                     <td>{item.대상인원}</td>
                     <td>{item.입력인원}</td>
+                    <td>{item.대상시간}</td>
                     <td>{item.입력시간}</td>
                   </tr>
                 ))}
@@ -436,16 +582,16 @@ const StandardDashboard = () => {
         <div className='chartTitle'>대분류별 표준활동 추이현황</div>
         <div className='fieldSection'>
           <div className='subSection'>
-            <div className='subSecTitle'>선로</div>
-            <div ref={chartRefs[4]} className='chart' />
+            {/* <div className='subSecTitle'>선로</div> */}
+            <div ref={chartRefs[4]} className='chartBar' />
           </div>
           <div className='subSection'>
-            <div className='subSecTitle'>설계</div>
-            <div ref={chartRefs[5]} className='chart' />
+            {/* <div className='subSecTitle'>설계</div> */}
+            <div ref={chartRefs[5]} className='chartBar' />
           </div>
           <div className='subSection'>
-            <div className='subSecTitle'>BIZ</div>
-            <div ref={chartRefs[6]} className='chart' />
+            {/* <div className='subSecTitle'>BIZ</div> */}
+            <div ref={chartRefs[6]} className='chartBar' />
           </div>
         </div>
       </div>
@@ -453,15 +599,15 @@ const StandardDashboard = () => {
         <div className='chartTitle'>대분류별 표준활동 입력현황</div>
         <div className='fieldSection'>
           <div className='subSection'>
-            <div className='subSecTitle'>선로</div>
+            {/* <div className='subSecTitle'>선로</div> */}
             <div ref={chartRefs[7]} className='chart' />
           </div>
           <div className='subSection'>
-            <div className='subSecTitle'>설계</div>
+            {/* <div className='subSecTitle'>설계</div> */}
             <div ref={chartRefs[8]} className='chart' />
           </div>
           <div className='subSection'>
-            <div className='subSecTitle'>BIZ</div>
+            {/* <div className='subSecTitle'>BIZ</div> */}
             <div ref={chartRefs[9]} className='chart' />
           </div>
         </div>

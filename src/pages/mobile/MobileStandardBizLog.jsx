@@ -1,17 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSwipeable } from 'react-swipeable';
-import useStore from '../../store/store';
-import commonUtils from '../../utils/common';
-import fileUtils from '../../utils/fileUtils';
-import { fetchData } from "../../utils/dataUtils";
+import useStore from '../../store/store.js';
+import commonUtils from '../../utils/common.js';
+import fileUtils from '../../utils/fileUtils.js';
+import { fetchData } from "../../utils/dataUtils.js";
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
-import MobileMainUserMenu from '../../components/mobile/MobileMainUserMenu';
-import styles from './MobileDrivingLog.Module.css';
-import api from '../../utils/api';
+import MobileMainUserMenu from '../../components/mobile/MobileMainUserMenu.jsx';
+import styles from './MobileStandardBizLog.Module.css';
+import api from '../../utils/api.js';
 
-const MobileDrivingLog = () => {
+const MobileStandardBizLog = () => {
   const { user } = useStore();
   const { clearUser } = useStore();
   const navigate = useNavigate();
@@ -28,6 +28,11 @@ const MobileDrivingLog = () => {
   const handleToggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
+
+  useEffect(() => {
+    msgPopup("작업중입니다.");
+    navigate('/mobile/Main');
+  }, [navigate]);
 
   const handleLogout = async () => {
     try {
@@ -229,7 +234,7 @@ const MobileDrivingLog = () => {
   return (
       <div className="container-fluid p-0">
         <header className="header">
-          <h1 className="h5 mb-0">운행일지</h1>
+          <h1 className="h5 mb-0">표준활동[Biz]</h1>
           <button className="btn text-white" onClick={handleToggleSidebar}>
             <i className="bi bi-list"></i>
           </button>
@@ -315,4 +320,4 @@ const MobileDrivingLog = () => {
   );
 };
 
-export default MobileDrivingLog;
+export default MobileStandardBizLog;

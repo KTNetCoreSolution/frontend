@@ -15,7 +15,10 @@ import Board from './Board';
 import BoardMainPopup from './popup/BoardMainPopup';
 import BoardWritePopup from './popup/BoardWritePopup';
 import BoardViewPopup from './popup/BoardViewPopup';
-import arrowRight from '../../assets/images/icon_arrow_right.svg';
+import moreImg from '../../assets/images/icon_plus.svg';
+import boardTitleImg01 from '../../assets/images/icon_board_01.png';
+import boardTitleImg02 from '../../assets/images/icon_board_02.png';
+// import arrowRight from '../../assets/images/icon_arrow_right.svg';
 
 const MainHome = () => {
   const { user } = useStore();
@@ -67,10 +70,14 @@ const MainHome = () => {
         </div>
       </div>
 
-      <div className='w-100'>
-        <div className={styles.boardContainer}>
-          <div className={styles.boardSection}>
-            <div className={styles.tabHeader}>
+      <div className='boardContainer'>
+        <div className='boardSection'>
+          <h2 className='boardTitle'>
+            <img src={boardTitleImg01} className='boardTitleImg' />
+            <span>표준활동</span>
+          </h2>
+          <div className='tabWrapper'>
+            <div className='tabHeader'>
               <ul className='nav nav-tabs' role='tablist'>
                 <li className='nav-item' role='presentation'>
                   <button
@@ -81,7 +88,7 @@ const MainHome = () => {
                     aria-controls='tab1'
                     aria-selected={activeTab === 'tab1'}
                   >
-                    표준활동 공지사항
+                    공지사항
                   </button>
                 </li>
                 <li className='nav-item' role='presentation'>
@@ -93,20 +100,19 @@ const MainHome = () => {
                     aria-controls='tab2'
                     aria-selected={activeTab === 'tab2'}
                   >
-                    표준활동 패치내역
+                    패치내역
                   </button>
                 </li>
               </ul>
               <Button
                 variant='text'
                 onClick={() => handleNavigate(activeTab === 'tab1' ? 'notice' : 'notice2')}
-                className={styles.boardBtn01}
+                className='boardBtn01'
               >
                 더보기
-                <img src={arrowRight} className={styles.arrowIcon} alt='arrow' />
+                <img src={moreImg} className='more-icon' alt='더보기' />
               </Button>
             </div>
-
             <div className='tab-content'>
               <div
                 className={`tab-pane fade ${activeTab === 'tab1' ? 'show active' : ''}`}
@@ -114,16 +120,15 @@ const MainHome = () => {
                 role='tabpanel'
                 aria-labelledby='tab1'
               >
-                <div className={styles.boardBox}>
-                  <Board
-                    key={`notice-${activeTab}`} // 탭 변경 시 강제 리렌더링
-                    canWriteBoard={canWriteBoard}
-                    type='notice'
-                    onWrite={() => handleWrite('notice')}
-                    onView={handleView}
-                    showHeader={false}
-                  />
-                </div>
+                <Board
+                  key={`notice-${activeTab}`} // 탭 변경 시 강제 리렌더링
+                  canWriteBoard={canWriteBoard}
+                  type='notice'
+                  onWrite={() => handleWrite('notice')}
+                  onView={handleView}
+                  showHeader={false}
+                  pagination={false}
+                />
               </div>
               <div
                 className={`tab-pane fade ${activeTab === 'tab2' ? 'show active' : ''}`}
@@ -131,22 +136,26 @@ const MainHome = () => {
                 role='tabpanel'
                 aria-labelledby='tab2'
               >
-                <div className={styles.boardBox}>
-                  <Board
-                    key={`notice2-${activeTab}`} // 탭 변경 시 강제 리렌더링
-                    canWriteBoard={canWriteBoard}
-                    type='notice2'
-                    onWrite={() => handleWrite('notice2')}
-                    onView={handleView}
-                    showHeader={false}
-                  />
-                </div>
+                <Board
+                  key={`notice2-${activeTab}`} // 탭 변경 시 강제 리렌더링
+                  canWriteBoard={canWriteBoard}
+                  type='notice2'
+                  onWrite={() => handleWrite('notice2')}
+                  onView={handleView}
+                  showHeader={false}
+                  pagination={false}
+                />
               </div>
             </div>
           </div>
-          <div className={styles.boardSectionGrap}></div>
-          <div className={styles.boardSection}>
-            <div className={styles.tabHeader}>
+        </div>
+        <div className='boardSection'>
+          <h2 className='boardTitle'>
+            <img src={boardTitleImg02} className='boardTitleImg' />
+            <span>차량</span>
+          </h2>
+          <div className='tabWrapper'>
+            <div className='tabHeader'>
               <ul className='nav nav-tabs' role='tablist'>
                 <li className='nav-item' role='presentation'>
                   <button
@@ -157,7 +166,7 @@ const MainHome = () => {
                     aria-controls='carTab1'
                     aria-selected={activeCarTab === 'carTab1'}
                   >
-                    차량 공지사항
+                    공지사항
                   </button>
                 </li>
                 <li className='nav-item' role='presentation'>
@@ -169,20 +178,19 @@ const MainHome = () => {
                     aria-controls='carTab2'
                     aria-selected={activeCarTab === 'carTab2'}
                   >
-                    차량 과태료
+                    과태료
                   </button>
                 </li>
               </ul>
               <Button
                 variant='text'
                 onClick={() => handleNavigate(activeCarTab === 'carTab1' ? 'carnotice' : 'carnotice2')}
-                className={styles.boardBtn01}
+                className='boardBtn01'
               >
                 더보기
-                <img src={arrowRight} className={styles.arrowIcon} alt='arrow' />
+                <img src={moreImg} className='more-icon' alt='더보기' />
               </Button>
             </div>
-
             <div className='tab-content'>
               <div
                 className={`tab-pane fade ${activeCarTab === 'carTab1' ? 'show active' : ''}`}
@@ -190,16 +198,15 @@ const MainHome = () => {
                 role='tabpanel'
                 aria-labelledby='carTab1'
               >
-                <div className={styles.boardBox}>
-                  <Board
-                    key={`carnotice-${activeCarTab}`} // 탭 변경 시 강제 리렌더링
-                    canWriteBoard={canWriteBoard}
-                    type='carnotice'
-                    onWrite={() => handleWrite('carnotice')}
-                    onView={handleView}
-                    showHeader={false}
-                  />
-                </div>
+                <Board
+                  key={`carnotice-${activeCarTab}`} // 탭 변경 시 강제 리렌더링
+                  canWriteBoard={canWriteBoard}
+                  type='carnotice'
+                  onWrite={() => handleWrite('carnotice')}
+                  onView={handleView}
+                  showHeader={false}
+                  pagination={false}
+                />
               </div>
               <div
                 className={`tab-pane fade ${activeCarTab === 'carTab2' ? 'show active' : ''}`}
@@ -207,16 +214,15 @@ const MainHome = () => {
                 role='tabpanel'
                 aria-labelledby='carTab2'
               >
-                <div className={styles.boardBox}>
-                  <Board
-                    key={`carnotice2-${activeCarTab}`} // 탭 변경 시 강제 리렌더링
-                    canWriteBoard={canWriteBoard}
-                    type='carnotice2'
-                    onWrite={() => handleWrite('carnotice2')}
-                    onView={handleView}
-                    showHeader={false}
-                  />
-                </div>
+                <Board
+                  key={`carnotice2-${activeCarTab}`} // 탭 변경 시 강제 리렌더링
+                  canWriteBoard={canWriteBoard}
+                  type='carnotice2'
+                  onWrite={() => handleWrite('carnotice2')}
+                  onView={handleView}
+                  showHeader={false}
+                  pagination={false}
+                />
               </div>
             </div>
           </div>

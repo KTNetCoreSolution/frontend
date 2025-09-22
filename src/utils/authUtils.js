@@ -7,6 +7,7 @@ const PERMISSION_MAP = {
   main: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', '', null],
   mainhome: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', 'AUTH0005', 'AUTH0006', 'AUTH0007', 'AUTH0008', 'AUTH0009', '', null],
   oper: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', '', null],
+  standardOper: ['AUTH0001', 'AUTH0002', '', null],
   mainBoard: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', '', null],
   permissions: ['AUTH0001'],
   tabulatorDirect: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', '', null],
@@ -16,6 +17,19 @@ export function hasPermission(userAuth, screen) {
   if (!userAuth || !screen) return false;
   const allowedAuths = PERMISSION_MAP[screen] || DEFAULT_READ_PERMISSIONS;
   return allowedAuths.includes(userAuth);
+}
+
+export function mobileMenuStandardPermission(userAuth, standardSectionCd, menuId) {
+  if (hasPermission(userAuth, 'standardOper')) {
+    return true;
+  }
+  if (standardSectionCd === 'LINE' || standardSectionCd === 'DESIGN') {
+    return menuId !== 'MMENU0007'; // 표준활동[Biz] 제외
+  }
+  if (standardSectionCd === 'BIZ') {
+    return menuId !== 'MMENU0006'; // 표준활동 제외
+  }
+  return true;
 }
 
 export async function checkTokenValidity(navigate, user, setUser, clearUser) {

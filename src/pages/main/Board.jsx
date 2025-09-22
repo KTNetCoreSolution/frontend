@@ -3,7 +3,7 @@ import { fetchData } from '../../utils/dataUtils';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import styles from './Board.module.css';
 
-const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = true }) => {
+const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = true, pagination = true }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [localNotices, setLocalNotices] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -87,22 +87,7 @@ const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = t
   };
 
   return (
-    <div className='boardBox'>
-      {showHeader && (
-        <div className='list-group-item d-flex justify-content-between align-items-center'>
-          <h3 className='boardTitle'>
-            {/*{textMap[type] || ''}*/}
-          </h3>
-          {canWriteBoard && (
-            <button
-              className='btn btn-primary'
-              onClick={() => onWrite(type)}
-            >
-              등록
-            </button>
-          )}
-        </div>
-      )}
+    <div className='boardBox position-relative'>
       {loading ? (
         <div className='text-center'>로딩 중...</div>
       ) : (
@@ -113,14 +98,11 @@ const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = t
                 key={idx}
                 className='list-group-item'
               >
-                <span
+                <div
                   onClick={() => handleNoticeClick(notice)}
-                  style={{ cursor: 'pointer' }}
+                  className='list-group-item-link'
                 >
-                  <span className='me-2'>{totalNotices - (indexOfFirstItem + idx)}.</span>
                   <span className={`${styles.boardContentTitle}`}>{notice.title}</span>
-                </span>
-                <div>
                   <span className='contentDate'>
                     {notice.date || new Date().toLocaleDateString()}
                   </span>
@@ -128,74 +110,88 @@ const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = t
               </li>
             ))
           ) : (
-            <li className='list-group-item text-center'>공지사항이 없습니다.</li>
+            <li className='list-group-item nodata'>공지사항이 없습니다.</li>
           )}
         </ul>
       )}
 
-      {totalPages > 1 && (
-        <nav aria-label='Page navigation' className='mt-3'>
-          <ul className={`pagination justify-content-center ${styles.pagination}`}>
-            {totalPages > maxPageButtons && (
+      <>
+        {pagination && totalPages > 1 && (
+          <nav aria-label='Page navigation' className='mt-3'>
+            <ul className='pagination'>
+              {totalPages > maxPageButtons && (
+                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                  <button
+                    className='page-link'
+                    onClick={() => handlePageChange(1)}
+                    disabled={currentPage === 1}
+                  >
+                    &lt;&lt;
+                  </button>
+                </li>
+              )}
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                 <button
-                  className={`page-link ${styles.pageLink}`}
-                  onClick={() => handlePageChange(1)}
+                  className='page-link'
+                  onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
                 >
-                  &lt;&lt;
+                  Prev
                 </button>
               </li>
-            )}
-            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-              <button
-                className={`page-link ${styles.pageLink}`}
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                Prev
-              </button>
-            </li>
-            {pageNumbers.map((page) => (
-              <li
-                key={page}
-                className={`page-item ${currentPage === page ? 'active' : ''}`}
-              >
-                <button
-                  className={`page-link ${styles.pageLink}`}
-                  onClick={() => handlePageChange(page)}
+              {pageNumbers.map((page) => (
+                <li
+                  key={page}
+                  className={`page-item ${currentPage === page ? 'active' : ''}`}
                 >
-                  {page}
-                </button>
-              </li>
-            ))}
-            <li
-              className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}
-            >
-              <button
-                className={`page-link ${styles.pageLink}`}
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </button>
-            </li>
-            {totalPages > maxPageButtons && (
+                  <button
+                    className='page-link'
+                    onClick={() => handlePageChange(page)}
+                  >
+                    {page}
+                  </button>
+                </li>
+              ))}
               <li
                 className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}
               >
                 <button
                   className={`page-link ${styles.pageLink}`}
-                  onClick={() => handlePageChange(totalPages)}
+                  onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
                 >
-                  &gt;&gt;
+                  Next
                 </button>
               </li>
-            )}
-          </ul>
-        </nav>
-      )}
+              {totalPages > maxPageButtons && (
+                <li
+                  className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}
+                >
+                  <button
+                    className={`page-link ${styles.pageLink}`}
+                    onClick={() => handlePageChange(totalPages)}
+                    disabled={currentPage === totalPages}
+                  >
+                    &gt;&gt;
+                  </button>
+                </li>
+              )}
+            </ul>
+          </nav>
+        )}
+        {showHeader && (
+          <div className='d-flex justify-content-end mt-2'>
+          {canWriteBoard && (
+            <button
+              className='btn btn-primary'
+              onClick={() => onWrite(type)}
+            >
+              등록
+            </button>
+          )}
+          </div>
+        )}
+      </>
     </div>
   );
 };

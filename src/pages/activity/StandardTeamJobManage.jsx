@@ -78,14 +78,14 @@ const StandardTeamJobManage = () => {
         type: 'search',
         fields: [
           { id: 'classGubunLbl', type: 'label', row: 1, label: '분야', labelVisible: false, enabled: true },
-          ...(hasPermission(user?.auth, 'oper')
+          ...(hasPermission(user?.auth, 'standardOper')
             ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true, eventType: 'selectChange' }]
             : user?.standardSectionCd === 'LINE'
-              ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true }]
+              ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true, width:'60px' }]
               : user?.standardSectionCd === 'DESIGN'
-                ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '설계', labelVisible: false, enabled: true }]
+                ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '설계', labelVisible: false, enabled: true, width:'60px' }]
                 : user?.standardSectionCd === 'BIZ'
-                  ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true }]
+                  ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true, width:'60px' }]
                   : []),
           { id: 'rangeStartDate', type: 'day', row: 1, width: '100px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: true, defaultValue: today },
         ],
@@ -202,7 +202,7 @@ const StandardTeamJobManage = () => {
   // classGubun 변경 시 컬럼 가시성 제어
   useEffect(() => {
     if (tableInstance.current && tableStatus === 'ready') {
-      const isBiz = hasPermission(user?.auth, 'oper') ? filters.classGubun === 'BIZ' : user?.standardSectionCd === 'BIZ';
+      const isBiz = hasPermission(user?.auth, 'standardOper') ? filters.classGubun === 'BIZ' : user?.standardSectionCd === 'BIZ';
 
       // LINE, DESIGN 컬럼
       if(isBiz)
@@ -244,7 +244,7 @@ const StandardTeamJobManage = () => {
     try {
       const params = {
         pGUBUN: 'LIST',
-        pSECTIONCD: hasPermission(user?.auth, 'oper')
+        pSECTIONCD: hasPermission(user?.auth, 'standardOper')
           ? filters.classGubun
           : user?.standardSectionCd === 'LINE'
             ? 'LINE'

@@ -229,13 +229,27 @@
     padding: 5px;
   }
 
+  .subMenu {
+    position: absolute;
+    top: 100%; /* 부모 바로 아래 */
+    left: 0;
+    display: none; /* 기본 숨김 */
+    z-index: 1002;
+    /* 추가: 호버 갭 방지 */
+    margin-top: -5px; /* 부모와 겹치게 위로 올림 */
+  }
+
+  .menuItem:hover .subMenu {
+    display: block; /* 호버 시 강제 표시 (JS와 병행) */
+  }
+
   .menuItem::before {
     content: '';
     position: absolute;
     top: 100%; /* Below the menu item */
     left: 0;
     width: 100%; /* Match the width of the parent */
-    height: 20px; /* Extend the hover area downward (adjust as needed) */
+    height: 10px; /* 호버 영역 아래로 10px 확장 */
     background: transparent;
     z-index: 1001; /* Above other elements */
   }

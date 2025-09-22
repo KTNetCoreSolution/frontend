@@ -43,7 +43,10 @@ body {
 
 /* 기존 스타일 유지 및 모바일 조정 */
 .list-group-item {
-  background-color: #fff !important;
+  background-color: unset;
+  border: unset;
+  border-radius: 0;
+  padding: 0.5rem 0;
 }
 
 /* Text elements */
@@ -57,6 +60,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 
 .formLabel {
+  display: flex;
   font-size:14px;
   font-weight: 600;
   color: var(--bs-font-secondary-color);
@@ -86,6 +90,14 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   gap: 10px;
 }
 
+.formList02 {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 5px;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .formListData {
   display: flex;
   flex-direction: column;
@@ -99,6 +111,12 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   justify-content: space-between;
 }
 
+.formChkList {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .formDivBox {
   margin-bottom: 15px;
   padding: 12px;
@@ -109,13 +127,29 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 
 .formDivBox02 {
   border-bottom: 1px solid #cccccc;
-  padding: 16px 0;
+  padding: 1rem 0;
 }
 
 .formDivBox02 .formList {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.formDivBox03 {
+  padding: 0.5rem 1rem;
+  display: block;
+  border-radius: 10px;
+  background-color: #f3f5f7;
+}
+
+.formDivBox03 .list-group .list-group-item {
+  border-bottom: 1px solid #cccccc;
+  padding: 0.75rem 0;
+}
+
+.formDivBox03 .list-group .list-group-item:last-child {
+  border-bottom: 0;
 }
 
 .formTitle {
@@ -166,6 +200,15 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 .form-control + .btn, .form-select + .btn {
   margin-left: 4px !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background-position: right 2px center;
+  background-repeat: no-repeat;
+  width: 16px;
+}
+input[type="date"] {
+  padding-right: 0;
 }
 
 /* Buttons */
@@ -264,6 +307,9 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .modal-footer {
   justify-content: center;
 }
+.modal-footer-inner {
+  margin-top: 1rem;
+}
 
 /* Navbars and navs */
 .nav-link, .navbar-brand, .navbar-text {
@@ -294,6 +340,23 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .custom-select, .custom-file-label {
   font-size: var(--bs-body-font-size) !important;
   padding: calc(0.375rem * var(--bs-scaling)) !important;
+}
+
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.modalContent {
+  width: 100%;
+}
+.modalBodyMsg {
+  line-height: 1.2;
+  text-align: center;
 }
 
 /* Mobile-specific adjustments */
@@ -786,6 +849,18 @@ body {
   margin-left: 0;
 }
 
+.formSearchTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color:#525252;
+  line-height: normal;
+  align-items: center;
+}
+
+.safetyWrap {
+  display: flex;
+  align-items: center;
+}
 
 /* Mobile portrait mode */
 @media (max-width: 768px) and (orientation: landscape) {

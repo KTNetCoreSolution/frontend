@@ -2,13 +2,14 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../../store/store';
 import { fetchDataGet } from '../../utils/dataUtils';
+import { mobileMenuStandardPermission } from '../../utils/authUtils';
 import mobileMenu from '../../data/mobileMenu.json';
 
 const images = import.meta.glob('../../assets/images/*', { eager: true, query: '?url', import: 'default' });
 
 const MobileMainMenu = () => {
   const navigate = useNavigate();
-  const { setUser } = useStore();
+  const { user, setUser } = useStore();
 
   const handleMenuClick = async (path) => {
     try {
@@ -16,7 +17,7 @@ const MobileMainMenu = () => {
       const response = await fetchDataGet('auth/live?extend=true', {}, { withCredentials: true });
       if (response.success && response.data) {
         setUser({
-          ...response.data.user,
+          ...user,
           expiresAt: response.data.expiresAt * 1000, // 초를 밀리초로 변환
         });
       }
@@ -31,10 +32,12 @@ const MobileMainMenu = () => {
     navigate(normalizedPath);
   };
 
+  const filteredMenu = mobileMenu.filter((item) => mobileMenuStandardPermission(user?.auth, user?.standardSectionCd, item.MENUID));
+
   return (
     <div className="container-fluid p-0">
       <div className="row row-cols-2 g-3">
-        {mobileMenu.map((item) => {
+        {filteredMenu.map((item) => {
           const imgSrc = images[`../../assets/images/${item.ICON}`];
           return (
             <div key={item.MENUID}>

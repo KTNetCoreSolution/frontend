@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../../store/store';
 import { hasPermission } from '../../utils/authUtils';
@@ -14,37 +14,73 @@ import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import common from '../../utils/common';
 import StandardOrgClassStatisticPopup from './popup/StandardOrgClassStatisticPopup';
 import StandardOrgStatisticPopup from './popup/StandardOrgStatisticPopup';
-
-const fn_CellNumber = { editor: 'number', editorParams: { min: 0 }, editable: true };
+import OrgSearchPopup from '../../components/popup/OrgSearchPopup';
+import StandardClassSelectPopup from './popup/StandardClassSelectPopup';
 
 // getFieldOptions 함수
-const getFieldOptions = (fieldId) => {
-  if (fieldId === 'filterSelect') {
-    return [
-      { value: '', label: '선택' },
-      { value: 'ORGNM', label: '조직' },
-    ];
+const getFieldOptions = (fieldId, dependentValue = '', classData) => {
+  if (!Array.isArray(classData)) return [];
+
+  const uniqueMap = new Map();
+
+  if (fieldId === 'CLASSACD') {
+    classData.forEach((item) => {
+      if (item.CLASSACD && item.CLASSANM && !uniqueMap.has(item.CLASSACD)) {
+        uniqueMap.set(item.CLASSACD, { value: item.CLASSACD, label: item.CLASSANM });
+      }
+    });
+    return [{ value: 'all', label: '==대분류==' }, ...Array.from(uniqueMap.values())];
   }
+
+  if (fieldId === 'CLASSBCD') {
+    if (!dependentValue || dependentValue === 'all') {
+      return [{ value: 'all', label: '==중분류==' }];
+    }
+    classData
+      .filter((item) => item.CLASSACD === dependentValue)
+      .forEach((item) => {
+        if (item.CLASSBCD && item.CLASSBNM && !uniqueMap.has(item.CLASSBCD)) {
+          uniqueMap.set(item.CLASSBCD, { value: item.CLASSBCD, label: item.CLASSBNM });
+        }
+      });
+    return [{ value: 'all', label: '==중분류==' }, ...Array.from(uniqueMap.values())];
+  }
+
+  if (fieldId === 'CLASSCCD') {
+    if (!dependentValue || dependentValue === 'all') {
+      return [{ value: 'all', label: '==소분류==' }];
+    }
+    classData
+      .filter((item) => item.CLASSBCD === dependentValue)
+      .forEach((item) => {
+        if (item.CLASSCCD && item.CLASSCNM && !uniqueMap.has(item.CLASSCCD)) {
+          uniqueMap.set(item.CLASSCCD, { value: item.CLASSCCD, label: item.CLASSCNM });
+        }
+      });
+    return [{ value: 'all', label: '==소분류==' }, ...Array.from(uniqueMap.values())];
+  }
+
   if (fieldId === 'dayGubun') {
     return [
       { value: 'M', label: '월' },
       { value: 'D', label: '일' },
     ];
   }
+
   return [];
 };
 
 const filterTableFields = [
-  { id: 'filterSelect', type: 'select', label: '', options: getFieldOptions('filterSelect'), width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
-  { id: 'filterText', type: 'text', label: '', placeholder: '찾을 내용을 입력하세요', width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
+    { id: 'filterSelect', type: 'select', label: '', options: [{ value: '', label: '선택' }, { value: 'ORGNM', label: '조직' }], width: '150px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
+    { id: 'filterText', type: 'text', label: '', placeholder: '찾을 내용을 입력하세요', width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
 ];
 
 // 기본 컬럼 정의
 const baseColumns = [
   { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
-  { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
-  { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 100 },
-  { headerHozAlign: 'center', hozAlign: 'center', title: '인원', field: 'EMPNOCNT', sorter: 'number', width: 100 },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false, frozen: true },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 100, frozen: true },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '인원', field: 'EMPNOCNT', sorter: 'number', width: 100, frozen: true },
   {
     headerHozAlign: 'center',
     hozAlign: 'center',
@@ -52,9 +88,12 @@ const baseColumns = [
     field: 'ORGNM',
     sorter: 'string',
     width: 130,
+    frozen: true,
     formatter: (cell) => {
       const value = cell.getValue();
-      if (value) {
+      const rowData = cell.getRow().getData();
+      const orgDownYn = rowData.ORGDOWNYN || '';
+      if (value && orgDownYn !== 'N') {
         cell.getElement().style.color = '#247db3';
         cell.getElement().style.cursor = 'pointer';
       } else {
@@ -66,7 +105,8 @@ const baseColumns = [
     cellClick: (e, cell, setSelectedOrgData, setShowOrgStatisticPopup, user) => {
       const value = cell.getValue();
       const rowData = cell.getRow().getData();
-      if (value) {
+      const orgDownYn = rowData.ORGDOWNYN || '';
+      if (value && orgDownYn !== 'N') {
         setSelectedOrgData({
           ...rowData,
           SECTIONCD: rowData.SECTIONCD || '',
@@ -77,7 +117,11 @@ const baseColumns = [
           DATEGB: rowData.pDATEGB || '',
           DATE1: rowData.pDATE1 || '',
           DATE2: rowData.pDATE2 || '',
-          CLASSCD: rowData.CLASSCD || '',
+          CLASSACD: rowData.pCLASSACD || 'all',
+          CLASSBCD: rowData.pCLASSBCD || 'all',
+          CLASSCCD: rowData.pCLASSCCD || 'all',
+          CLASSCOL: rowData.CLASSCOL || 'CLASSCCCD',
+          ORGDOWNYN: rowData.ORGDOWNYN || 'N',
         });
         setShowOrgStatisticPopup(true);
       }
@@ -89,21 +133,29 @@ const baseColumns = [
   { headerHozAlign: 'center', hozAlign: 'center', title: '조회일자2', field: 'pDATE2', sorter: 'string', width: 100, visible: false },
   { headerHozAlign: 'center', hozAlign: 'center', title: '조회조직레벨구분', field: 'pORGLEVELGB', sorter: 'string', width: 100, visible: false },
   { headerHozAlign: 'center', hozAlign: 'center', title: '조직레벨', field: 'ORGLEVEL', sorter: 'string', width: 100, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '조직하위유무', field: 'ORGDOWNYN', sorter: 'string', width: 100, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '조회분류코드A', field: 'pCLASSACD', sorter: 'string', width: 100, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '조회분류코드B', field: 'pCLASSBCD', sorter: 'string', width: 100, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '조회분류코드C', field: 'pCLASSCCD', sorter: 'string', width: 100, visible: false },
+  { headerHozAlign: 'center', hozAlign: 'center', title: '컬럼코드', field: 'CLASSCOL', sorter: 'string', width: 100, visible: false },
 ];
 
 const StandardOrgStatistic = () => {
   const { user } = useStore();
   const navigate = useNavigate();
   const today = common.getTodayDate();
+  const [showOrgPopup, setShowOrgPopup] = useState(false);
+  const [showClassPopup, setShowClassPopup] = useState(false);
+  const [classData, setClassData] = useState([]);
   const [filters, setFilters] = useState({
+    CLASSACD: 'all', CLASSBCD: 'all', CLASSCCD: 'all',
     classGubun: user?.standardSectionCd || 'LINE',
     classGubunTxt: user?.standardSectionCd === 'LINE' ? '선로' : user?.standardSectionCd === 'DESIGN' ? '설계' : user?.standardSectionCd === 'BIZ' ? 'BIZ' : '선로',
     dayGubun: 'M',
     monthDate: today.substring(0, 7),
     rangeStartDate: today,
     rangeEndDate: today,
-    CLASSCD: '',
-  });
+    ORGCD: user?.orgCd || '',orgText: user?.orgNm || '' });
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -116,10 +168,39 @@ const StandardOrgStatistic = () => {
   const [showStatisticPopup, setShowStatisticPopup] = useState(false);
   const [showOrgStatisticPopup, setShowOrgStatisticPopup] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
-  const [selectedOrgData, setSelectedOrgData] = useState(null); // 수정: 상태 정의 확인
+  const [selectedOrgData, setSelectedOrgData] = useState(null);
   const [dynamicColumns, setDynamicColumns] = useState([]);
 
-    // ORGNM 컬럼에 상태 전달
+  // useMemo로 옵션 최적화
+  const updatedClass1Options = useMemo(
+    () => getFieldOptions('CLASSACD', '', classData),
+    [classData]
+  );
+  const updatedClass2Options = useMemo(
+    () => getFieldOptions('CLASSBCD', filters.CLASSACD, classData),
+    [filters.CLASSACD, classData]
+  );
+  const updatedClass3Options = useMemo(
+    () => getFieldOptions('CLASSCCD', filters.CLASSBCD, classData),
+    [filters.CLASSBCD, classData]
+  );
+
+  // pGUBUN 동적 설정
+  const pGUBUN = useMemo(() => {
+    if (showOrgPopup) {
+      if (filters.classGubun === 'BIZ') {
+        return 'STABIZEMPNO';
+      } else if (filters.classGubun === 'DESIGN') {
+        return 'STADESIGNEMPNO';
+      } else if (filters.classGubun === 'LINE') {
+        return 'STALINEEMPNO';
+      }
+      return 'OPEREMPNO';
+    }
+    return 'OPEREMPNO';
+  }, [showOrgPopup, filters.classGubun]);
+
+  // ORGNM 컬럼에 상태 전달
   const updatedBaseColumns = baseColumns.map((column) => {
     if (column.field === 'ORGNM') {
       return {
@@ -137,20 +218,28 @@ const StandardOrgStatistic = () => {
         type: 'search',
         fields: [
           { id: 'classGubunLbl', type: 'label', row: 1, label: '분야', labelVisible: false, enabled: true },
-          ...(hasPermission(user?.auth, 'oper')
-            ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true }]
-            : user?.standardSectionCd === 'LINE'
-              ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true }]
-              : user?.standardSectionCd === 'DESIGN'
-                ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '설계', labelVisible: false, enabled: true }]
-                : user?.standardSectionCd === 'BIZ'
-                  ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true }]
-                  : []),
-          { id: 'dayGubunLbl', type: 'label', row: 1, label: '작업', labelVisible: false, enabled: true },
-          { id: 'dayGubun', type: 'select', row: 1, label: '', labelVisible: false, options: getFieldOptions('dayGubun'), defaultValue: 'M', enabled: true },
-          { id: 'monthDate', type: 'month', row: 1, width: '74px', label: '', labelVisible: true, placeholder: '월 선택', enabled: false, defaultValue: today.substring(0, 7) },
-          { id: 'rangeStartDate', type: 'startday', row: 1, width: '100px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: false, defaultValue: today },
-          { id: 'rangeEndDate', type: 'endday', row: 1, width: '100px', label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', enabled: false, defaultValue: today },
+          ...(
+            hasPermission(user?.auth, 'standardOper')
+              ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true }]
+              : user?.standardSectionCd === 'LINE'
+                ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true, width:'60px' }]
+                : user?.standardSectionCd === 'DESIGN'
+                  ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '설계', labelVisible: false, enabled: true, width:'60px' }]
+                  : user?.standardSectionCd === 'BIZ'
+                    ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true, width:'60px' }]
+                    : []
+          ),
+          { id: 'selectBtn', type: 'button', label: '선택', labelVisible: false, eventType: 'showClassPopup', enabled: true },
+          { id: 'CLASSACD', type: 'select', row: 1, label: '대분류', labelVisible: true, options: [], enabled: true },
+          { id: 'CLASSBCD', type: 'select', row: 1, label: '중분류', labelVisible: true, options: [], enabled: true },
+          { id: 'CLASSCCD', type: 'select', row: 1, label: '소분류', labelVisible: true, options: [], enabled: true },
+          { id: 'dayGubunLbl', type: 'label', row: 2, label: '작업', labelVisible: false, enabled: true },
+          { id: 'dayGubun', type: 'select', row: 2, label: '', labelVisible: false, options: [{ value: 'M', label: '월' }, { value: 'D', label: '일' }], defaultValue: 'M', enabled: true },
+          { id: 'monthDate', type: 'month', row: 2, width:'74px', label: '', labelVisible: true, placeholder: '월 선택', enabled: false, defaultValue: today },
+          { id: 'rangeStartDate', type: 'startday', row: 2, width:'100px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: false, defaultValue: today },
+          { id: 'rangeEndDate', type: 'endday', row: 2, width:'100px', label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', enabled: false, defaultValue: today },
+          { id: 'orgText', type: 'text', row: 2, label: '조직', labelVisible: true, placeholder: '조직 선택', enabled: false },
+          { id: 'orgPopupBtn', type: 'popupIcon', row: 2, label: '조직 선택', labelVisible: false, eventType: 'showOrgPopup', enabled: true },
         ],
       },
       {
@@ -168,20 +257,88 @@ const StandardOrgStatistic = () => {
     setSearchConfig((prev) => {
       const newAreas = prev.areas.map((area) => {
         if (area.type !== 'search') return area;
-        const baseFields = baseSearchConfig.areas.find((a) => a.type === 'search').fields;
-        const newFields = baseFields.filter((field) => {
-          if (filters.dayGubun === 'M') {
-            return field.id !== 'rangeStartDate' && field.id !== 'rangeEndDate';
-          } else if (filters.dayGubun === 'D') {
-            return field.id !== 'monthDate';
-          }
-          return true;
+        const newFields = area.fields.map((field) => {
+          if (field.id === 'CLASSACD') return { ...field, options: updatedClass1Options };
+          if (field.id === 'CLASSBCD') return { ...field, options: updatedClass2Options };
+          if (field.id === 'CLASSCCD') return { ...field, options: updatedClass3Options };
+          return field;
         });
         return { ...area, fields: newFields };
       });
       return { ...prev, areas: newAreas };
     });
+  }, [updatedClass1Options, updatedClass2Options, updatedClass3Options]);
+  
+  useEffect(() => {
+    setSearchConfig((prev) => {
+      const newAreas = prev.areas.map((area) => {
+        if (area.type !== 'search') return area;
+        const baseFields = baseSearchConfig.areas.find((a) => a.type === 'search').fields;
+        const currentFields = prev.areas.find((a) => a.type === 'search').fields;
+        const newFields = baseFields
+          .filter((field) => {
+            if (filters.dayGubun === 'M') {
+              return field.id !== 'rangeStartDate' && field.id !== 'rangeEndDate';
+            } else if (filters.dayGubun === 'D') {
+              return field.id !== 'monthDate';
+            }
+            return true;
+          })
+          .map((field) => {
+            const currentField = currentFields.find((f) => f.id === field.id);
+            if (['CLASSACD', 'CLASSBCD', 'CLASSCCD'].includes(field.id) && currentField?.options) {
+              return { ...field, options: currentField.options };
+            }
+            return field;
+          });
+        return { ...area, fields: newFields };
+      });
+      return { ...prev, areas: newAreas };
+    });
   }, [filters.dayGubun]);
+
+  // classData API 호출
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      monthDate: prev.monthDate || today.substring(0, 7),
+    }));
+    const initialTableFilters = initialFilters(filterTableFields);
+    setTableFilters(initialTableFilters);
+  }, [today, filterTableFields]);
+
+  // classData API 호출
+  useEffect(() => {
+    const fetchClassData = async () => {
+      if (!filters.classGubun) return;
+      try {
+        const params = {
+          pGUBUN: hasPermission(user?.auth, 'standardOper')
+            ? filters.classGubun
+            : user?.standardSectionCd === 'LINE'
+              ? 'LINE'
+              : user?.standardSectionCd === 'DESIGN'
+                ? 'DESIGN'
+                : user?.standardSectionCd === 'BIZ'
+                  ? 'BIZ'
+                  : 'LINE',
+          pDEBUG: 'F',
+        };
+
+        const response = await fetchData('standard/classinfoList', params);
+        if (!response.success) {
+          errorMsgPopup(response.message || '분류 목록을 가져오는 중 오류가 발생했습니다.');
+          return;
+        }
+        const fetchedClassData = Array.isArray(response.data) ? response.data : [];
+        setClassData(fetchedClassData);
+      } catch (err) {
+        console.error('분류 목록 로드 실패:', err);
+        errorMsgPopup('분류 목록을 가져오는 중 오류가 발생했습니다.');
+      }
+    };
+    fetchClassData();
+  }, [filters.classGubun, user]);
 
   // filters 초기화
   useEffect(() => {
@@ -203,7 +360,10 @@ const StandardOrgStatistic = () => {
         monthDate: prev.monthDate || today.substring(0, 7),
         rangeStartDate: prev.rangeStartDate || today,
         rangeEndDate: prev.rangeEndDate || today,
-        CLASSCD: prev.CLASSCD || '',
+        CLASSACD: prev.CLASSACD || 'all',
+        CLASSBCD: prev.CLASSBCD || 'all',
+        CLASSCCD: prev.CLASSCCD || 'all',
+        dayGubun: prev.dayGubun || 'M',
       };
     });
     setTableFilters(initialFilters(filterTableFields));
@@ -226,7 +386,7 @@ const StandardOrgStatistic = () => {
 
     try {
       const params = {
-        pSECTIONCD: hasPermission(user?.auth, 'oper')
+        pSECTIONCD: hasPermission(user?.auth, 'standardOper')
           ? filters.classGubun
           : user?.standardSectionCd === 'LINE'
             ? 'LINE'
@@ -236,12 +396,14 @@ const StandardOrgStatistic = () => {
                 ? 'BIZ'
                 : 'LINE',
         pEMPNO: user?.empNo || '',
-        pORGCD: '',
+        pORGCD: filters.ORGCD || 'ALL',
         pORGLEVELGB: '1',
         pDATEGB: filters.dayGubun,
         pDATE1: filters.dayGubun === 'D' ? filters.rangeStartDate : filters.dayGubun === 'M' ? filters.monthDate : '',
         pDATE2: filters.dayGubun === 'D' ? filters.rangeEndDate : filters.dayGubun === 'M' ? filters.monthDate : '',
-        pCLASSCD: filters.CLASSCD,
+        pCLASSACD: filters.CLASSACD || 'all',
+        pCLASSBCD: filters.CLASSBCD || 'all',
+        pCLASSCCD: filters.CLASSCCD || 'all',
         pDEBUG: 'F',
       };
 
@@ -257,11 +419,28 @@ const StandardOrgStatistic = () => {
 
       // 동적 컬럼 생성
       const classData = Array.isArray(classResponse.data) ? classResponse.data : [];
-      const newDynamicColumns = classData.map(({ CLASSACD, CLASSANM }) => ({
+      let classKey = 'CLASSACD';
+      let classNameKey = 'CLASSANM';
+
+      if (classData.length > 0) {
+        const firstItem = classData[0];
+        if ('CLASSACD' in firstItem) {
+          classKey = 'CLASSACD';
+          classNameKey = 'CLASSANM';
+        } else if ('CLASSBCD' in firstItem) {
+          classKey = 'CLASSBCD';
+          classNameKey = 'CLASSBNM';
+        } else if ('CLASSCCD' in firstItem) {
+          classKey = 'CLASSCCD';
+          classNameKey = 'CLASSCNM';
+        }
+      }
+
+      const newDynamicColumns = classData.map((item) => ({
         headerHozAlign: 'center',
         hozAlign: 'center',
-        title: CLASSANM,
-        field: CLASSACD,
+        title: item[classNameKey],
+        field: item[classKey] || 'all',
         sorter: 'number',
         width: 200,
         visible: true,
@@ -283,7 +462,11 @@ const StandardOrgStatistic = () => {
           if (!isNaN(value) && value > 0) {
             setSelectedData({
               ...rowData,
-              CLASSCD: field,
+              CLASSACD: classKey === 'CLASSACD' ? field : rowData.pCLASSACD || 'all',
+              CLASSBCD: classKey === 'CLASSBCD' ? field : rowData.pCLASSBCD || 'all',
+              CLASSCCD: classKey === 'CLASSCCD' ? field : rowData.pCLASSCCD || 'all',
+              CLASSCOL: classKey,
+              DYNAMIC_COLUMN: field,
               SECTIONCD: rowData.SECTIONCD || '',
               DATEGB: rowData.pDATEGB || '',
               DATE1: rowData.pDATE1 || '',
@@ -409,10 +592,18 @@ const StandardOrgStatistic = () => {
   const handleDynamicEvent = (eventType, payload) => {
     if (eventType === 'search') {
       loadData();
+    } else if (eventType === 'showClassPopup') {
+      setShowClassPopup(true);
+    } else if (eventType === 'showOrgPopup') {
+      setShowOrgPopup(true);
     } else if (eventType === 'selectChange') {
       const { id, value } = payload;
       setFilters((prev) => {
-        const newFilters = { ...prev, [id]: value };
+        const newFilters = {
+          ...prev,
+          [id]: value,
+          ...(id === 'CLASSACD' ? { CLASSBCD: 'all', CLASSCCD: 'all' } : id === 'CLASSBCD' ? { CLASSCCD: 'all' } : {}),
+        };
         if (id === 'dayGubun') {
           newFilters.monthDate = value === 'M' ? today.substring(0, 7) : '';
           newFilters.rangeStartDate = value === 'D' ? today : '';
@@ -421,6 +612,28 @@ const StandardOrgStatistic = () => {
         return newFilters;
       });
     }
+  };
+
+  const handleOrgConfirm = (selectedRows) => {
+    if (!selectedRows || selectedRows.length === 0) return;
+    const newOrgCd = selectedRows.map((row) => row.ORGCD).join(',');
+    const newOrgNm = selectedRows.map((row) => row.ORGNM).join(',');
+    setFilters((prev) => ({ ...prev, ORGCD: newOrgCd, orgText: newOrgNm }));
+    setShowOrgPopup(false);
+  };
+
+  const handleClassSelect = ({ major, middle, minor }) => {
+    setFilters((prev) => ({
+      ...prev,
+      CLASSACD: major,
+      CLASSBCD: middle,
+      CLASSCCD: minor,
+    }));
+    setShowClassPopup(false);
+  };
+
+  const handleOrgCancel = () => {
+    setShowOrgPopup(false);
   };
 
   if (user === null) {
@@ -440,7 +653,7 @@ const StandardOrgStatistic = () => {
         filters={tableFilters}
         setFilters={setTableFilters}
         rowCount={rowCount}
-        onDownloadExcel={() => handleDownloadExcel(tableInstance.current, tableStatus, '조직별현황.xlsx')}
+        onDownloadExcel={() => handleDownloadExcel(tableInstance.current, tableStatus, '조직별통계.xlsx')}
         buttonStyles={styles}
       />
       <div className={styles.tableWrapper}>
@@ -448,6 +661,17 @@ const StandardOrgStatistic = () => {
         {loading && <div>로딩 중...</div>}
         <div ref={tableRef} className={styles.tableSection} style={{ visibility: loading || tableStatus !== 'ready' ? 'hidden' : 'visible' }} />
       </div>
+      {showOrgPopup && (
+        <OrgSearchPopup
+          onClose={handleOrgCancel}
+          onConfirm={handleOrgConfirm}
+          initialSelectedOrgs={filters.ORGCD ? filters.ORGCD.split(',').filter(Boolean) : []}
+          pGUBUN={pGUBUN}
+          isMulti={false}
+          isChecked={false}
+        />
+      )}
+      <StandardClassSelectPopup show={showClassPopup} onHide={() => setShowClassPopup(false)} onSelect={handleClassSelect} data={classData} />
       <StandardOrgClassStatisticPopup
         show={showStatisticPopup}
         onHide={() => setShowStatisticPopup(false)}
@@ -457,7 +681,7 @@ const StandardOrgStatistic = () => {
         show={showOrgStatisticPopup}
         onHide={() => setShowOrgStatisticPopup(false)}
         data={selectedOrgData ? [selectedOrgData] : []}
-        dynamicColumns={dynamicColumns} // 추가: 동적 컬럼 전달
+        dynamicColumns={dynamicColumns}
       />
     </div>
   );

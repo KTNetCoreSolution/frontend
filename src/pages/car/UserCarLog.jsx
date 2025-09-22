@@ -75,12 +75,30 @@ const UserCarLog = () => {
         bBtn = true;
       }
 
+      // if (bBtn) {
+      //   const button = document.createElement("button");
+      //   button.className = `btn btn-sm ${className}`;
+      //   button.innerText = label;
+      //   button.onclick = () => onClick(cell.getData());
+      //   return button;
+      // }
       if (bBtn) {
+        const wrapper = document.createElement("div");
+        wrapper.style.display = "flex";
+        wrapper.style.justifyContent = "center";
+        wrapper.style.alignItems = "center";
+        wrapper.style.height = "100%";
+
         const button = document.createElement("button");
         button.className = `btn btn-sm ${className}`;
         button.innerText = label;
-        button.onclick = () => onClick(cell.getData());
-        return button;
+        button.onclick = (e) => {
+          e.stopPropagation(); // 행 클릭 이벤트와 충돌 방지
+          onClick(cell.getData());
+        };
+
+        wrapper.appendChild(button);
+        return wrapper;
       }
       else {
         return '';
@@ -583,10 +601,10 @@ const UserCarLog = () => {
         onEvent={handleDynamicEvent}
       >
       <div className='btnGroupCustom' style={{display:user?.levelCd === '41' ? 'flex' : 'none'}}>
-        <button className={`${styles.btn} text-bg-success`} onClick={handleConfrim}>
+        <button className='btn text-bg-success' onClick={handleConfrim}>
           선택승인
         </button>
-        <button className={`${styles.btn} text-bg-success`} onClick={handleConfrimAll}>
+        <button className='btn text-bg-success' onClick={handleConfrimAll}>
           일괄승인
         </button>
       </div>

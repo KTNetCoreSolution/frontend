@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { performLogin, fetchCaptcha } from '../../service/login';
+import { performMobileLogin, fetchCaptcha, performMobileLoginAccess } from '../../service/login';
 import Join from '../../pages/user/Join';
 import PasswordChange from '../../pages/user/PasswordChange';
 import { msgPopup } from '../../utils/msgPopup';
@@ -20,6 +20,8 @@ const MobileLogin = () => {
   const [timer, setTimer] = useState(60);
   const [isCaptchaLoading, setIsCaptchaLoading] = useState(true);
   const [captchaError, setCaptchaError] = useState('');
+  const [accessCheckYn, setAccessCheckYn] = useState('N');
+  const [accessAuthId, setAccessAuthId] = useState('');
   const [error, setError] = useState('');
   const [showJoinPopup, setShowJoinPopup] = useState(false);
   const [showPasswordChangePopup, setShowPasswordChangePopup] = useState(false);
@@ -69,10 +71,36 @@ const MobileLogin = () => {
     loadCaptcha();
   }, []);
 
+  useEffect(() => {
+    const initializeAccess = async () => {
+      try {
+        const response = await performMobileLoginAccess((error) => {
+          errorMsgPopup(error);
+          setError(error.message || '접근 권한 확인에 실패했습니다.');
+        });
+
+        if (response && response.success) {
+          const accessAuthId = response.data[0].AUTHID;
+          const accessCheckYn = response.data[0].ACCESSCHEKYN;
+
+          setAccessAuthId(accessCheckYn === 'Y' ? accessAuthId : '');
+          setAccessCheckYn(accessCheckYn);
+        } else {
+          setError(response?.errMsg || '접근 권한 확인에 실패했습니다.');
+        }
+      } catch (error) {
+        console.error('초기 접근 권한 체크 실패:', error.message);
+        setError(error.message || '접근 권한 확인에 실패했습니다.');
+      }
+    };
+    initializeAccess();
+  }, []); // 빈 의존성 배열로 한 번만 호출
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-    const response = await performLogin('mobile', empNo, empPwd, captchaInput, navigate, (error) => {
+
+    const response = await performMobileLogin(accessAuthId, empNo, empPwd, captchaInput, navigate, (error) => {
       errorMsgPopup(error);
     });
 
@@ -166,6 +194,7 @@ const MobileLogin = () => {
                 <button
                   type="button"
                   className='smallButton'
+                  style={{ visibility: 'hidden' }}
                   onClick={handleJoinClick}
                 >
                   회원가입

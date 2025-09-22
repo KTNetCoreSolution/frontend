@@ -270,6 +270,10 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN, 
     try {
       if (onConfirm) {
         const selectedNodes = collectTopLevelSelected(treeData, selectedIds);
+        if (selectedNodes.length === 0) {
+          handleClose();
+          return;
+        }
         const orgCd = selectedNodes.map((node) => node.ORGCD).filter(Boolean).join(",");
         const orgNm = selectedNodes.map((node) => node.ORGNM).filter(Boolean).join(",");
         onConfirm([{ ORGCD: orgCd, ORGNM: orgNm }]);
@@ -359,7 +363,7 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN, 
           </TreeWrapper>
         </div>
 
-        <div className='buttonContainer'>
+        <div className='footer buttonContainer'>
           <button
             className='btn btnSecondary'
             onClick={handleClose}

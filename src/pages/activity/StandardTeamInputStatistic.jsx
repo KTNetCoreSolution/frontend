@@ -13,6 +13,8 @@ import styles from '../../components/table/TableSearch.module.css';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import common from '../../utils/common';
 import StandardTeamOrgDayStatisticPopup from './popup/StandardTeamOrgDayStatisticPopup';
+import StandardTeamInputEmpStatisticPopup from './popup/StandardTeamInputEmpStatisticPopup';
+import OrgSearchPopup from '../../components/popup/OrgSearchPopup'; // 추가: 조직 선택 팝업
 
 const fn_CellNumber = { editor: 'number', editorParams: { min: 0 }, editable: true };
 
@@ -40,6 +42,8 @@ const StandardTeamInputStatistic = () => {
     classGubun: user?.standardSectionCd || 'LINE',
     classGubunTxt: user?.standardSectionCd === 'LINE' ? '선로' : user?.standardSectionCd === 'DESIGN' ? '설계' : user?.standardSectionCd === 'BIZ' ? 'BIZ' : '선로',
     monthDate: today.substring(0, 7),
+    ORGCD: user?.orgCd || '', // 추가: 조직 코드
+    orgText: user?.orgNm || '', // 추가: 조직 이름
   });
   const [tableFilters, setTableFilters] = useState({});
   const [loading, setLoading] = useState(false);
@@ -51,14 +55,30 @@ const StandardTeamInputStatistic = () => {
   const tableInstance = useRef(null);
   const isInitialRender = useRef(true);
   const [showStatisticPopup, setShowStatisticPopup] = useState(false);
+  const [showEmpStatisticPopup, setShowEmpStatisticPopup] = useState(false);
+  const [showOrgPopup, setShowOrgPopup] = useState(false); // 추가: 조직 선택 팝업 상태
   const [selectedData, setSelectedData] = useState(null);
+  const [selectedEmpData, setSelectedEmpData] = useState(null);
+
+  // 추가: pGUBUN 동적 설정
+  const pGUBUN = (() => {
+    if (showOrgPopup) {
+      if (filters.classGubun === 'BIZ') {
+        return 'STABIZEMPNO';
+      } else if (filters.classGubun === 'DESIGN') {
+        return 'STADESIGNEMPNO';
+      } else if (filters.classGubun === 'LINE') {
+        return 'STALINEEMPNO';
+      }
+      return 'OPEREMPNO';
+    }
+    return 'LIST'; // 기본값은 'LIST'로 유지
+  })();
 
   // 공통 cellClick 핸들러
   const handleDayClick = (cell, day) => {
     const cellValue = cell.getValue();
-
     if (!cellValue || parseFloat(cellValue) === 0) return;
-
     const rowData = cell.getRow().getData();
     const sectionCd = rowData.SECTIONCD;
     const orgCd = rowData.ORGCD;
@@ -70,6 +90,34 @@ const StandardTeamInputStatistic = () => {
     setShowStatisticPopup(true);
   };
 
+  const handleEmpClick = (e, cell) => {
+    const value = cell.getValue();
+    const rowData = cell.getRow().getData();
+    const sectionCd = rowData.SECTIONCD;
+    const orgCd = rowData.ORGCD;
+    const mDate = rowData.MDATE;
+    setSelectedEmpData({
+      SECTIONCD: sectionCd,
+      ORGCD: orgCd,
+      MDATE: mDate,
+    });
+    setShowEmpStatisticPopup(true);
+  };
+
+  // 추가: 조직 선택 확인 핸들러
+  const handleOrgConfirm = (selectedRows) => {
+    if (!selectedRows || selectedRows.length === 0) return;
+    const newOrgCd = selectedRows.map((row) => row.ORGCD).join(',');
+    const newOrgNm = selectedRows.map((row) => row.ORGNM).join(',');
+    setFilters((prev) => ({ ...prev, ORGCD: newOrgCd, orgText: newOrgNm }));
+    setShowOrgPopup(false);
+  };
+
+  // 추가: 조직 선택 취소 핸들러
+  const handleOrgCancel = () => {
+    setShowOrgPopup(false);
+  };
+
   // 초기 searchConfig 설정
   const searchConfig = {
     areas: [
@@ -77,16 +125,18 @@ const StandardTeamInputStatistic = () => {
         type: 'search',
         fields: [
           { id: 'classGubunLbl', type: 'label', row: 1, label: '분야', labelVisible: false, enabled: true },
-          ...(hasPermission(user?.auth, 'oper')
+          ...(hasPermission(user?.auth, 'standardOper')
             ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true, eventType: 'selectChange' }]
             : user?.standardSectionCd === 'LINE'
-              ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true }]
+              ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true, width:'60px' }]
               : user?.standardSectionCd === 'DESIGN'
-                ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '설계', labelVisible: false, enabled: true }]
+                ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '설계', labelVisible: false, enabled: true, width:'60px' }]
                 : user?.standardSectionCd === 'BIZ'
-                  ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true }]
+                  ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true, width:'60px' }]
                   : []),
           { id: 'monthDate', type: 'month', row: 1, width: '74px', label: '월', labelVisible: true, placeholders: '월 선택', enabled: true, defaultValue: today.substring(0, 7) },
+          { id: 'orgText', type: 'text', row: 1, label: '조직', labelVisible: true, placeholder: '조직 선택', enabled: false }, // 추가: 조직 텍스트
+          { id: 'orgPopupBtn', type: 'popupIcon', row: 1, label: '조직 선택', labelVisible: false, eventType: 'showOrgPopup', enabled: true }, // 추가: 조직 선택 버튼
         ],
       },
       {
@@ -103,9 +153,11 @@ const StandardTeamInputStatistic = () => {
     setFilters((prev) => ({
       ...prev,
       monthDate: prev.monthDate || today.substring(0, 7),
+      ORGCD: prev.ORGCD || user?.orgCd || '', // 추가: 조직 코드 초기화
+      orgText: prev.orgText || user?.orgNm || '', // 추가: 조직 이름 초기화
     }));
     setTableFilters(initialFilters(filterTableFields));
-  }, [today]);
+  }, [today, user]);
 
   const columns = [
     { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
@@ -114,8 +166,26 @@ const StandardTeamInputStatistic = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '월', field: 'MDATE', sorter: 'number', width: 100, frozen: true },
     { headerHozAlign: 'center', hozAlign: 'center', title: '팀코드', field: 'ORGCD', sorter: 'string', width: 100, frozen: true, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '팀정보', field: 'ORGNM', sorter: 'string', width: 120, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '대상인원(명)', field: 'TARGETCNT', sorter: 'number', width: 102, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '입력인원(명)', field: 'EMPNOCNT', sorter: 'number', width: 102, frozen: true },
+    {
+      headerHozAlign: 'center', hozAlign: 'center', title: '대상인원(명)', field: 'EMPTARGETCNT', sorter: 'number', width: 102, frozen: true,
+      cellClick: (e, cell) => handleEmpClick(e, cell),
+      formatter: (cell) => {
+        const value = cell.getValue();
+        if (!value || parseFloat(value) === 0) return '';
+        return parseFloat(value).toFixed(2);
+      },
+      cellStyle: { color: '#247db3' },
+    },
+    {
+      headerHozAlign: 'center', hozAlign: 'center', title: '입력인원(명)', field: 'EMPINPUTCNT', sorter: 'number', width: 102, frozen: true,
+      cellClick: (e, cell) => handleEmpClick(e, cell),
+      formatter: (cell) => {
+        const value = cell.getValue();
+        if (!value || parseFloat(value) === 0) return '';
+        return parseFloat(value).toFixed(2);
+      },
+      cellStyle: { color: '#247db3' },
+    },
     { headerHozAlign: 'center', hozAlign: 'center', title: '월누계', field: 'MONTH_TOTAL', sorter: 'number', width: 100, frozen: true },
     ...Array.from({ length: 31 }, (_, i) => {
       const day = String(i + 1).padStart(2, '0');
@@ -155,7 +225,7 @@ const StandardTeamInputStatistic = () => {
     try {
       const params = {
         pGUBUN: 'LIST',
-        pSECTIONCD: hasPermission(user?.auth, 'oper')
+        pSECTIONCD: hasPermission(user?.auth, 'standardOper')
           ? filters.classGubun
           : user?.standardSectionCd === 'LINE'
             ? 'LINE'
@@ -165,7 +235,7 @@ const StandardTeamInputStatistic = () => {
                 ? 'BIZ'
                 : 'LINE',
         pEMPNO: user?.empNo || '',
-        pORGCD: '',
+        pORGCD: filters.ORGCD || '', // 수정: 선택된 조직 코드 사용
         pDATE1: filters.monthDate,
         pCLASSCD: '',
         pDEBUG: 'F',
@@ -265,6 +335,8 @@ const StandardTeamInputStatistic = () => {
       loadData();
     } else if (eventType === 'selectChange') {
       setFilters((prev) => ({ ...prev, [payload.id]: payload.value }));
+    } else if (eventType === 'showOrgPopup') { // 추가: 조직 팝업 이벤트
+      setShowOrgPopup(true);
     }
   };
 
@@ -299,6 +371,21 @@ const StandardTeamInputStatistic = () => {
         onHide={() => setShowStatisticPopup(false)}
         data={selectedData ? [selectedData] : []}
       />
+      <StandardTeamInputEmpStatisticPopup
+        show={showEmpStatisticPopup}
+        onHide={() => setShowEmpStatisticPopup(false)}
+        data={selectedEmpData ? [selectedEmpData] : []}
+      />
+      {showOrgPopup && ( // 추가: 조직 선택 팝업
+        <OrgSearchPopup
+          onClose={handleOrgCancel}
+          onConfirm={handleOrgConfirm}
+          initialSelectedOrgs={filters.ORGCD ? filters.ORGCD.split(',').filter(Boolean) : []}
+          pGUBUN={pGUBUN}
+          isMulti={false}
+          isChecked={false}
+        />
+      )}
     </div>
   );
 };

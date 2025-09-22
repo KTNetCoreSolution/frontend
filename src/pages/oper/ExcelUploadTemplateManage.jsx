@@ -180,8 +180,8 @@ const ExcelUploadTemplateManage = () => {
             }
           },
           { headerHozAlign: "center", hozAlign: "center", title: "파일ID", field: "FILEID", sorter: "number", width: 100, editable: false },
-          { headerHozAlign: "center", hozAlign: "left", title: "제목", field: "TITLE", sorter: "string", width: 200, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "TITLE", setData, tableInstance) },
-          { headerHozAlign: "center", hozAlign: "center", title: "파일명", field: "FILENM", sorter: "string", width: 200, editable: false },
+          { headerHozAlign: "center", hozAlign: "left", title: "제목", field: "TITLE", sorter: "string", width: 300, ...fn_CellText, cellEdited: (cell) => fn_HandleCellEdit(cell, "TITLE", setData, tableInstance) },
+          { headerHozAlign: "center", hozAlign: "center", title: "파일명", field: "FILENM", sorter: "string", width: 300, editable: false },
           { headerHozAlign: "center", hozAlign: "center", title: "파일타입", field: "FILETYPE", sorter: "string", width: 100, editable: false },
           { headerHozAlign: "center", hozAlign: "right", title: "파일용량", field: "FILESIZE", sorter: "string", width: 100, editable: false },
           { headerHozAlign: "center", hozAlign: "center", title: "등록일", field: "REGEDT", sorter: "string", width: 100, editable: false },

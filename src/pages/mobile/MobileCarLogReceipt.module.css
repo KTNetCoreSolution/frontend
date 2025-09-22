@@ -33,8 +33,8 @@
 }
 
 .btnCheck {
-    width: 98% !important;
-    margin: 5px !important;
+    width: 100% !important;
+    /* margin: 5px !important; */
     --bs-btn-color: #fff;
     --bs-btn-bg: #00c4b4;
     --bs-btn-border-color: #00c4b4;

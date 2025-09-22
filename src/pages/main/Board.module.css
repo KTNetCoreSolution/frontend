@@ -15,6 +15,10 @@
   vertical-align: middle; /* 필요 시 */
 }
 
+.boardContentDate {
+  color: var(--bs-font-secondary-color);
+}
+
 .btnReg {
     background-color: #547574;
     border-color: #547574;

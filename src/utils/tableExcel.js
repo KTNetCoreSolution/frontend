@@ -6,15 +6,16 @@ import * as XLSX from "xlsx";
  * @param {string} tableStatus - 테이블 상태 ("initializing", "ready", "error")
  * @param {string} [fileName="table_data.xlsx"] - 다운로드될 엑셀 파일 이름 (기본값: table_data.xlsx)
  * @param {string} [sheetName="Sheet1"] - 엑셀 시트 이름 (기본값: Sheet1)
+ * @param {boolean} [includeHiddenColumns=false] - 숨겨진 컬럼 포함 여부 (기본값: false)
  */
 export const handleDownloadExcel = (
   tableInstance,
   tableStatus,
   fileName = "table_data.xlsx",
-  sheetName = "Sheet1"
+  sheetName = "Sheet1",
+  includeHiddenColumns = false
 ) => {
-    // 테이블 인스턴스와 상태 검증
-  // tableInstance가 없거나 상태가 "ready"가 아니면 실행 중단
+  // 테이블 인스턴스와 상태 검증
   if (!tableInstance || tableStatus !== "ready") {
     console.error("Table instance not ready:", tableInstance, tableStatus);
     return;
@@ -23,7 +24,6 @@ export const handleDownloadExcel = (
   try {
     // 테이블에서 현재 데이터 가져오기
     const data = tableInstance.getData();
-    // 데이터가 없거나 빈 배열이면 경고 후 중단
     if (!data || data.length === 0) {
       console.warn("No data available to download");
       return;
@@ -31,13 +31,16 @@ export const handleDownloadExcel = (
 
     // 테이블의 컬럼 정의 가져오기
     const columns = tableInstance.getColumns();
-    // 컬럼 제목 배열 생성 (예: ["ID", "이름", "나이", "상태"])
-    const headers = columns.map(col => col.getDefinition().title);
-    // 필드명 배열 생성 (예: ["id", "name", "age", "status"])
-    const fields = columns.map(col => col.getField());
+    // 표시된 컬럼만 필터링 또는 모든 컬럼 사용
+    const filteredColumns = includeHiddenColumns
+      ? columns
+      : columns.filter(col => col.isVisible());
+    // 컬럼 제목 배열 생성
+    const headers = filteredColumns.map(col => col.getDefinition().title);
+    // 필드명 배열 생성
+    const fields = filteredColumns.map(col => col.getField());
 
     // 엑셀용 2D 배열 생성
-    // 첫 번째 행은 헤더(컬럼 제목), 이후 행은 데이터
     const aoaData = [
       headers, // 헤더 행 추가
       ...data.map(row => fields.map(field => row[field])), // 데이터 행 변환
@@ -52,7 +55,6 @@ export const handleDownloadExcel = (
     // 엑셀 파일로 다운로드
     XLSX.writeFile(workbook, fileName);
   } catch (err) {
-    // 다운로드 중 예외 발생 시 에러 로깅
     console.error("Excel download failed:", err);
   }
 };

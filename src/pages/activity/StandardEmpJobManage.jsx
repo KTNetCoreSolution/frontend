@@ -127,14 +127,14 @@ const StandardEmpJobManage = () => {
         fields: [
           { id: 'classGubunLbl', type: 'label', row: 1, label: '분야', labelVisible: false, enabled: true },
           ...(
-            hasPermission(user?.auth, 'oper')
+            hasPermission(user?.auth, 'standardOper')
               ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true }]
               : user?.standardSectionCd === 'LINE'
-                ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true }]
+                ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true, width:'60px' }]
                 : user?.standardSectionCd === 'DESIGN'
-                  ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '설계', labelVisible: false, enabled: true }]
+                  ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '설계', labelVisible: false, enabled: true, width:'60px' }]
                   : user?.standardSectionCd === 'BIZ'
-                    ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true }]
+                    ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true, width:'60px' }]
                     : []
           ),
           { id: 'selectBtn', type: 'button', label: '선택', labelVisible: false, eventType: 'showClassPopup', enabled: true }, // 분류 선택 버튼
@@ -196,7 +196,7 @@ const StandardEmpJobManage = () => {
       try {
         const params = {
           pGUBUN:
-            hasPermission(user?.auth, 'oper')
+            hasPermission(user?.auth, 'standardOper')
               ? filters.classGubun
               : user?.standardSectionCd === 'LINE'
                 ? 'LINE'
@@ -349,8 +349,8 @@ const StandardEmpJobManage = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible:false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업일시', field: 'WORKDT', sorter: 'string', width: 190 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKH', sorter: 'number', width: 100, ...fn_CellNumber },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', width: 130, ...fn_CellNumber },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKH', sorter: 'number', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', width: 130 },
   ];
 
   const loadData = async () => {
@@ -370,7 +370,7 @@ const StandardEmpJobManage = () => {
     try {
       const params = {
         pGUBUN: 'LIST',
-        pSECTIONCD: hasPermission(user?.auth, 'oper')
+        pSECTIONCD: hasPermission(user?.auth, 'standardOper')
               ? filters.classGubun
               : user?.standardSectionCd === 'LINE'
                 ? 'LINE'

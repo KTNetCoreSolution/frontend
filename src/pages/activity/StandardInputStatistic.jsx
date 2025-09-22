@@ -72,14 +72,14 @@ const StandardInputStatistic = () => {
         type: 'search',
         fields: [
           { id: 'classGubunLbl', type: 'label', row: 1, label: '분야', labelVisible: false, enabled: true },
-          ...(hasPermission(user?.auth, 'oper')
+          ...(hasPermission(user?.auth, 'standardOper')
             ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true }]
             : user?.standardSectionCd === 'LINE'
-              ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true }]
+              ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true, width:'60px' }]
               : user?.standardSectionCd === 'DESIGN'
-                ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '설계', labelVisible: false, enabled: true }]
+                ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '설계', labelVisible: false, enabled: true, width:'60px' }]
                 : user?.standardSectionCd === 'BIZ'
-                  ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true }]
+                  ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true, width:'60px' }]
                   : []),
           { id: 'dayGubunLbl', type: 'label', row: 1, label: '작업', labelVisible: false, enabled: true },
           { id: 'dayGubun', type: 'select', row: 1, label: '', labelVisible: false, options: getFieldOptions('dayGubun'), defaultValue: 'M', enabled: true },
@@ -183,7 +183,7 @@ const StandardInputStatistic = () => {
     try {
       const params = {
         pGUBUN: 'LIST',
-        pSECTIONCD: hasPermission(user?.auth, 'oper')
+        pSECTIONCD: hasPermission(user?.auth, 'standardOper')
           ? filters.classGubun
           : user?.standardSectionCd === 'LINE'
             ? 'LINE'
