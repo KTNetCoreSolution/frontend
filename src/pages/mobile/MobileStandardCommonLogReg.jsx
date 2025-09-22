@@ -131,6 +131,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
   };
 
   const handleSubmit = async () => {
+
     try {
       if (!formData.isDuplicate) {
         const quantityValidation = common.validateVarcharLength(String(formData.QUANTITY), 10, "건(구간/본/개소)");
@@ -170,15 +171,21 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
         pCLASSCD: formData.CLASSCCD,
         pWORKCD: formData.WORKTYPE,
         pWORKCNT: formData.isDuplicate ? "0" : formData.QUANTITY,
-        pEMPNO: user?.empNo || '',
         pSECTIONCD: initialClassGubun,
-        pDEBUG: 'F',
+        pEMPNO: user?.empNo || ''
       };
 
       const response = await fetchData('standard/empJob/common/reg/save', params);
       if (!response.success) {
         msgPopup(response.message || '등록 중 오류가 발생했습니다.');
         return;
+      } else {
+        if (response.errMsg !== '' || (response.data[0] && response.data[0].errCd !== '00')) {
+          let errMsg = response.errMsg;
+          if (response.data[0] && response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+          msgPopup(errMsg);
+          return;
+        }
       }
 
       onSubmit();

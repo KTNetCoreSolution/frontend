@@ -25,10 +25,12 @@ const MobileStandardCommonLog = () => {
   const [workTypeOptions, setWorkTypeOptions] = useState([]);
   const [showRegModal, setShowRegModal] = useState(false);
 
+  ///*
   useEffect(() => {
     msgPopup("작업중입니다.");
     navigate('/mobile/Main');
   }, [navigate]);
+  //*/
 
   // 시간 옵션 생성 함수
   const generateTimeOptions = (isWeekly = false, startTime = null, isEnd = false) => {
@@ -217,15 +219,22 @@ const MobileStandardCommonLog = () => {
         pCLASSCD: item.CLASSCCD,
         pWORKCD: item.WORKTYPE,
         pWORKCNT: item.QUANTITY,
-        pEMPNO: user?.empNo || '',
         pSECTIONCD: classGubun,
-        pDEBUG: 'F',
+        pEMPNO: user?.empNo || ''
       };
 
       const response = await fetchData('standard/empJob/common/reg/save', params);
       if (!response.success) {
         msgPopup(response.message || `${action === 'update' ? '수정' : '삭제'} 중 오류가 발생했습니다.`);
         return;
+      } else {
+        if (response.errMsg !== '' || (response.data[0] && response.data[0].errCd !== '00')) {
+          let errMsg = response.errMsg;
+          if (response.data[0] && response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+          msgPopup(errMsg);
+          await fetchRegisteredList(item.WORKDATE);
+          return;
+        }
       }
 
       await fetchRegisteredList(item.WORKDATE);
@@ -397,7 +406,7 @@ const MobileStandardCommonLog = () => {
                   <span className={styles.formText}>{item.CLASSCNM}</span>
                 </li>
                 <li>
-                  <span className={styles.formLabel}>건</span>
+                  <span className={styles.formLabel}>건(구간/본/개소)</span>
                   <span className={styles.formText}>
                     <input
                       type="number"
@@ -451,7 +460,6 @@ const MobileStandardCommonLog = () => {
           <div className="nodataWrap">조회된 목록이 없습니다.</div>
         )}
       </div>
-
       <Modal show={showRegModal} onHide={handleRegModalClose} centered className={styles.customModal}>
         <Modal.Body className={styles.modalBody}>
           <MobileStandardCommonLogReg
