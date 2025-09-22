@@ -140,15 +140,16 @@ const MobileDrivingLog = () => {
   }, []);
 
   const handleLogDate = (e) => {
+    let logDate = e.target.value;
     let logStTime = '09:00';
     
     if(e.target.value < lastLogInfo.LOGDATE) {
       logDateRef.current.value = lastLogInfo.LOGDATE;
-      setLogInfo({ ...logInfo, LOGDATE: lastLogInfo.LOGDATE });
+      logDate =lastLogInfo.LOGDATE;
       logStTime = lastLogInfo.LOGENTIME;
     }
     else {
-      setLogInfo({ ...logInfo, LOGDATE: e.target.value });      
+      logDate = e.target.value;
       logStTime = lastLogInfo.LOGDATE >= e.target.value ? lastLogInfo.LOGENTIME : '09:00';
     }
 
@@ -162,6 +163,8 @@ const MobileDrivingLog = () => {
         return true;
       }
     });
+    
+    setLogInfo({ ...logInfo, LOGDATE: logDate, LOGSTTIME: logStTime, LOGENTIME: logEnTime});
   };
 
   const handleSafetyCheck = (target, bResult) => {    
