@@ -4,6 +4,6 @@
   { "MENUID": "MMENU0003", "MENUNM": "기동장비공지사항", "URL": "/mobile/MobileCarNotice", "ICON": "menu_m_workCarReport.png", "children": [] },
   { "MENUID": "MMENU0004", "MENUNM": "운행이력", "URL": "/mobile/MobileCarLogList", "ICON": "menu_m_carReservation.png", "children": [] },
   { "MENUID": "MMENU0005", "MENUNM": "차량상태", "URL": "/mobile/MobileCarCheckStatus", "ICON": "menu_m_sharedCarLog.png", "children": [] },
-  { "MENUID": "MMENU0006", "MENUNM": "표준활동[선로,설계]", "URL": "/mobile/MobileStandardCommonLog", "ICON": "menu_m_userInfo.png", "children": [] },
+  { "MENUID": "MMENU0006", "MENUNM": "표준활동", "URL": "/mobile/MobileStandardCommonLog", "ICON": "menu_m_userInfo.png", "children": [] },
   { "MENUID": "MMENU0007", "MENUNM": "표준활동[Biz]", "URL": "/mobile/MobileStandardBizLog", "ICON": "menu_m_drivingLog.png", "children": [] }
 ]

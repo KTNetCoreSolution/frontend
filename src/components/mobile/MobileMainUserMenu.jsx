@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useStore from '../../store/store';
 import { fetchDataGet } from '../../utils/dataUtils';
+import { mobileMenuStandardPermission } from '../../utils/authUtils';
 import mobileUserMenu from '../../data/mobileUserMenu.json';
 import './MobileMainUserMenu.css';
 
@@ -55,6 +56,8 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
     handleClose();
   };
 
+  const filteredUserMenu = mobileUserMenu.filter((item) => mobileMenuStandardPermission(user?.auth, user?.standardSectionCd, item.MENUID));
+
   if (!isValidProps) {
     return null;
   }
@@ -80,7 +83,7 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
         </div>
         <div className="custom-offcanvas-body">
           <ul className="list-group">
-            {mobileUserMenu.map((item) => (
+            {filteredUserMenu.map((item) => (
               <li
                 key={item.MENUID}
                 className={`list-group-item ${location.pathname === item.URL ? 'text-primary-custom' : ''}`}

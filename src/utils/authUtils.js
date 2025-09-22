@@ -19,6 +19,19 @@ export function hasPermission(userAuth, screen) {
   return allowedAuths.includes(userAuth);
 }
 
+export function mobileMenuStandardPermission(userAuth, standardSectionCd, menuId) {
+  if (hasPermission(userAuth, 'standardOper')) {
+    return true;
+  }
+  if (standardSectionCd === 'LINE' || standardSectionCd === 'DESIGN') {
+    return menuId !== 'MMENU0007'; // 표준활동[Biz] 제외
+  }
+  if (standardSectionCd === 'BIZ') {
+    return menuId !== 'MMENU0006'; // 표준활동 제외
+  }
+  return true;
+}
+
 export async function checkTokenValidity(navigate, user, setUser, clearUser) {
   try {
     const response = await fetchDataGet('auth/live', { extend: true }, { withCredentials: true });
