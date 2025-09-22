@@ -92,6 +92,9 @@ const MobileDrivingLog = () => {
       return 0; // 첫 페이지
     } else if (index === carList.length - 1) {
       return Math.min(9, carList.length - 1); // 마지막 페이지
+    } else if(carList.length <= 10) {
+      // 페이지가 10개 이하일 때
+      return index; 
     } else if (carList.length > 10 && index < 9) {
       // 페이지가 10개 초과일 때
       if (activeIndex === 1 && index <= preIndex) {
