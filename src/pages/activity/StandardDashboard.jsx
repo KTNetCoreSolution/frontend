@@ -299,7 +299,7 @@ const StandardDashboard = () => {
           const seriesData = classNames.map((className, idx) => ({
             name: className,
             type: 'bar',
-            barWidth: 80,
+            barWidth: 60,
             stack: 'total',
             itemStyle: {
               color: colors[idx]
@@ -363,8 +363,8 @@ const StandardDashboard = () => {
               left: grid.left,
               right: grid.right,
               top: grid.top,
-              bottom: grid.bottom,
-              height: '80%',
+              bottom: 40,
+              height: '70%',
             },
             tooltip: {
               trigger: 'axis',
@@ -385,8 +385,8 @@ const StandardDashboard = () => {
               itemHeight: 12,
               data: classNames,
               orient: 'horizontal',
-              top: 0,
-              right: 32,
+              bottom: 0,
+              left: 'center',
               textStyle: {
                 color: '#ffffff',
                 opacity: '.7'
@@ -459,6 +459,7 @@ const StandardDashboard = () => {
                 name: '업무 비율',
                 type: 'pie',
                 radius: ['40%', '70%'],
+                center: ['50%', '60%'],
                 padAngle: 0,
                 color: colors,
                 label: {
@@ -515,105 +516,101 @@ const StandardDashboard = () => {
 
   return (
     <div className={`chartWrap ${styles.container} ${isFullscreen ? styles.fullscreen : ''}`}>
-      <div className='chartRowWrap'>
-        <div className='inputSection'>
-          <div className='subSectionSearch'>
-            <img src={visualImg} className='visualImg' />
-            <div className='formWrap'>
-              <div className='chartTitle' style={{height: '30px'}}>전사 표준활동 입력현황</div>
-              <div className='formGroup'>
-                {/* <input
+      <div className='inputSection'>
+        <div className='subSectionSearch'>
+          <img src={visualImg} className='visualImg' />
+          <div className='formWrap'>
+            <div className='chartTitle' style={{height: '30px'}}>전사 표준활동 입력현황</div>
+            <div className='formGroup'>
+              {/* <input
+                type="month"
+                value={month}
+                onChange={e => setMonth(e.target.value)}
+                className='monthInput'
+              /> */}
+              <div className="month-input-wrapper">
+                <input
                   type="month"
                   value={month}
-                  onChange={e => setMonth(e.target.value)}
-                  className='monthInput'
-                /> */}
-                <div className="month-input-wrapper">
-                  <input
-                    type="month"
-                    value={month}
-                    onChange={(e) => setMonth(e.target.value)}
-                    className="monthInput"
-                  />
-                  <span className="calendar-icon">
-                    <i className="bi bi-calendar3"></i>
-                  </span>
-                </div>
-                <button className='refreshButton' onClick={() => user && loadData()}>
-                  <i className="bi bi-arrow-repeat"></i>
-                </button>
+                  onChange={(e) => setMonth(e.target.value)}
+                  className="monthInput"
+                />
+                <span className="calendar-icon">
+                  <i className="bi bi-calendar3"></i>
+                </span>
               </div>
+              <button className='refreshButton' onClick={() => user && loadData()}>
+                <i className="bi bi-arrow-repeat"></i>
+              </button>
             </div>
+          </div>
+        </div>
+        <div className='subSectionChart'>
+          <div ref={chartRefs[0]} className='chartItem'/>
+          <div ref={chartRefs[1]} className='chartItem'/>
+          <div ref={chartRefs[2]} className='chartItem'/>
+          <div ref={chartRefs[3]} className='chartItem'/>
+        </div>
+        <table className='subSectionTable'>
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>대상인원(명)</th>
+              <th>입력인원(명)</th>
+              <th>대상시간(h)</th>
+              <th>입력시간(h)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {summaryData.map((item, index) => (
+              <tr key={index}>
+                <td>{item.구분}</td>
+                <td>{item.대상인원}</td>
+                <td>{item.입력인원}</td>
+                <td>{item.대상시간}</td>
+                <td>{item.입력시간}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className='rightSection'>
+        <div>
+          <div className='chartTitle'>대분류별 표준활동 추이현황</div>
+          <div className='fieldSection'>
+            <div className='subSection'>
+              {/* <div className='subSecTitle'>선로</div> */}
+              <div ref={chartRefs[4]} className='chartBar' />
+            </div>
+            <div className='subSection'>
+              {/* <div className='subSecTitle'>설계</div> */}
+              <div ref={chartRefs[5]} className='chartBar' />
+            </div>
+            <div className='subSection'>
+              {/* <div className='subSecTitle'>BIZ</div> */}
+              <div ref={chartRefs[6]} className='chartBar' />
+            </div>
+          </div>
+        </div>
+        <div>
+          <div className='chartTitle'>대분류별 표준활동 입력현황</div>
+          <div className='fieldSection'>
+            <div className='subSection'>
+              {/* <div className='subSecTitle'>선로</div> */}
+              <div ref={chartRefs[7]} className='chart' />
+            </div>
+            <div className='subSection'>
+              {/* <div className='subSecTitle'>설계</div> */}
+              <div ref={chartRefs[8]} className='chart' />
+            </div>
+            <div className='subSection'>
+              {/* <div className='subSecTitle'>BIZ</div> */}
+              <div ref={chartRefs[9]} className='chart' />
+            </div>
+          </div>
+        </div>
+      </div>
 
-          </div>
-          <div className='subSection'>
-            <div className='d-flex flex-row justify-content-center gap-3'>
-              <div ref={chartRefs[0]} className='chart' style={{ width: '130px', height: '130px' }}/>
-              <div ref={chartRefs[1]} className='chart' style={{ width: '130px', height: '130px' }}/>
-              <div ref={chartRefs[2]} className='chart' style={{ width: '130px', height: '130px' }}/>
-              <div ref={chartRefs[3]} className='chart' style={{ width: '130px', height: '130px' }}/>
-            </div>
-          </div>
-          <div className='subSection'>
-            <table className='gridTable'>
-              <thead>
-                <tr>
-                  <th>구분</th>
-                  <th>대상인원(명)</th>
-                  <th>입력인원(명)</th>
-                  <th>대상시간(h)</th>
-                  <th>입력시간(h)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {summaryData.map((item, index) => (
-                  <tr key={index}>
-                    <td>{item.구분}</td>
-                    <td>{item.대상인원}</td>
-                    <td>{item.입력인원}</td>
-                    <td>{item.대상시간}</td>
-                    <td>{item.입력시간}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <div className='chartRowWrap'>
-        <div className='chartTitle'>대분류별 표준활동 추이현황</div>
-        <div className='fieldSection'>
-          <div className='subSection'>
-            {/* <div className='subSecTitle'>선로</div> */}
-            <div ref={chartRefs[4]} className='chartBar' />
-          </div>
-          <div className='subSection'>
-            {/* <div className='subSecTitle'>설계</div> */}
-            <div ref={chartRefs[5]} className='chartBar' />
-          </div>
-          <div className='subSection'>
-            {/* <div className='subSecTitle'>BIZ</div> */}
-            <div ref={chartRefs[6]} className='chartBar' />
-          </div>
-        </div>
-      </div>
-      <div className='chartRowWrap'>
-        <div className='chartTitle'>대분류별 표준활동 입력현황</div>
-        <div className='fieldSection'>
-          <div className='subSection'>
-            {/* <div className='subSecTitle'>선로</div> */}
-            <div ref={chartRefs[7]} className='chart' />
-          </div>
-          <div className='subSection'>
-            {/* <div className='subSecTitle'>설계</div> */}
-            <div ref={chartRefs[8]} className='chart' />
-          </div>
-          <div className='subSection'>
-            {/* <div className='subSecTitle'>BIZ</div> */}
-            <div ref={chartRefs[9]} className='chart' />
-          </div>
-        </div>
-      </div>
       {loading && <div>로딩 중...</div>}
     </div>
   );

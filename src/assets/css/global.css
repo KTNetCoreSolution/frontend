@@ -1587,31 +1587,38 @@ textarea.form-control {
   padding: 1.5rem;
 }
 
-.subSectionSearch {
+.inputSection {
   display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  background: #1f2330;
+  padding: 0 24px 32px;
+  width: 380px;
+  gap: 36px;
+}
+.inputSection .subSectionSearch {
+  display: flex;
+  flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  gap: 60px;
+  gap: 30px;
   flex: 1;
   text-align: center;
   width: 100%;
-  border-radius: 12px !important;
-  background: #1f2330;
-  padding: 1.5rem 1.5rem 1.5rem 3rem;
+  padding: 2rem 3rem;
+  border-bottom: 2px dotted rgba(255, 255, 255, 0.2);
 }
-.subSectionSearch .formWrap {
+.inputSection .subSectionSearch .formWrap {
   display: flex;
   flex-direction: column;
   justify-content: center;
   width: 100%;
   height: 100%;
-  border-right: 2px dotted rgba(255, 255, 255, 0.2);
-  padding-right: 60px;
 }
-.subSectionSearch .formGroup {
+.inputSection .subSectionSearch .formGroup {
   gap: 6px;
 }
-.subSectionSearch .formGroup .month-input-wrapper {
+.inputSection .subSectionSearch .formGroup .month-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
@@ -1624,7 +1631,7 @@ textarea.form-control {
   border: 0;
   color: #fff;
 }
-.subSectionSearch .formGroup input.monthInput {
+.inputSection .subSectionSearch .formGroup input.monthInput {
   background: transparent;
   border: 0;
   font-size: 1rem;
@@ -1633,14 +1640,14 @@ textarea.form-control {
   padding: 0;
   width: 100%;
 }
-.subSectionSearch .formGroup input.monthInput::-webkit-calendar-picker-indicator {
+.inputSection .subSectionSearch .formGroup input.monthInput::-webkit-calendar-picker-indicator {
   opacity: 0;
   position: absolute;
   width: 100%;
   height: 100%;
   cursor: pointer;
 }
-.subSectionSearch .formGroup .calendar-icon {
+.inputSection .subSectionSearch .formGroup .calendar-icon {
   position: absolute;
   right: 24px;
   top: 50%;
@@ -1649,21 +1656,31 @@ textarea.form-control {
   color: #ffffff;
   font-size: 1rem;
 }
-
-.subSectionSearch .formGroup .refreshButton {
+.inputSection .subSectionSearch .formGroup .refreshButton {
   height: 46px;
   width: 46px;
   background: #101217;
   border: 0;
   border-radius: 8px;
 }
-
-.subSectionSearch .formGroup .refreshButton .bi-arrow-repeat {
+.inputSection .subSectionSearch .formGroup .refreshButton .bi-arrow-repeat {
   font-size: 20px;
   color: #fff;
   opacity: .7;
 }
-
+.inputSection .subSectionChart {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  row-gap: 20px;
+}
+.inputSection .subSectionChart .chartItem {
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  width: 100%;
+  height: 130px;
+}
 .subSectionRow {
   display: flex;
   flex-direction: row;
@@ -1724,11 +1741,13 @@ textarea.form-control {
   color: #ffffff;
 }
 
-.inputSection {
+
+
+.rightSection {
   display: flex;
-  border-radius: 12px !important;
-  background: #1f2330;
-  padding: 0 16px;
+  flex-direction: column;
+  flex: 1;
+  gap: 50px;
 }
 
 .refreshButton {
@@ -1767,7 +1786,6 @@ textarea.form-control {
 
 .chartWrap {
   display: flex;
-  flex-direction: column;
   gap: 36px;
 }
 
@@ -1780,6 +1798,7 @@ textarea.form-control {
 }
 
 .subSectionSearch .chartTitle {
+  justify-content: center;
   color: #bce6f7;
   line-height: 1;
   margin-bottom: 0.5rem !important;
@@ -1796,9 +1815,9 @@ textarea.form-control {
   margin-bottom: 1.25rem !important;
 }
 
-.gridTable {
+.subSectionTable {
   width: 100%;
-  min-width: 480px;
+  /* min-width: 480px; */
   border-collapse: collapse;
   /* background-color: #fff; */
   /* border: 1px solid #ccc; */
@@ -1806,32 +1825,32 @@ textarea.form-control {
   margin-bottom: 0;
 }
 
-.gridTable thead {
+.subSectionTable thead {
   /* background: #F3F6FB; */
   background: #262a3b;
 }
 
-.gridTable th {
-  padding: 6px;
+.subSectionTable th {
+  padding: 8px 6px;
   text-align: center;
   font-size: 12px;
   color: #bce6f7;
   /* border-bottom: 1px solid #cccccc; */
 }
-.gridTable th:first-child {
+.subSectionTable th:first-child {
   border-top-left-radius: 8px;
 }
-.gridTable th:last-child {
+.subSectionTable th:last-child {
   border-top-right-radius: 8px;
 }
-.gridTable td {
-  padding: 6px;
+.subSectionTable td {
+  padding: 8px 6px;
   text-align: center;
   font-size: 12px;
   color: #ffffff;
   border-bottom: 1px solid #14151c;
 }
-.gridTable tr:last-child td {
+.subSectionTable tr:last-child td {
   /* border-bottom: 0; */
 }
 
@@ -1885,6 +1904,6 @@ textarea.form-control {
 
 
 .visualImg {
-  width: 170px;
+  width: 150px;
   transform: scaleX(-1);
 }
