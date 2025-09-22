@@ -197,7 +197,9 @@ const StandardDashboard = () => {
       }
 
       // 1.2-1.4 Stage Speed Gauge for 시간 (선로, 설계, BIZ)
-      ['선로', '설계', 'BIZ'].forEach((section, i) => {
+      ['LINE', 'DESIGN', 'BIZ'].forEach((section, i) => {
+        const sectionLabels = {LINE: '선로', DESIGN: '설계', BIZ: 'BIZ'};
+
         if (chartRefs[i + 1].current) {
           const item = totalData.find(item => item.구분 === section);
           const inputTime = item ? item['입력시간(h)'] : 0;
@@ -226,7 +228,7 @@ const StandardDashboard = () => {
                 left: 'center',
                 top: '54%',
                 style: {
-                  text: item?.구분 || section,
+                  text: sectionLabels[item?.구분 || section] || (item?.구분 || section),
                   fontSize: 12,
                   fontWeight: 'normal',
                   fill: '#ffffff',
