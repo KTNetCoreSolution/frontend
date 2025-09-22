@@ -25,6 +25,11 @@ const MobileStandardCommonLog = () => {
   const [workTypeOptions, setWorkTypeOptions] = useState([]);
   const [showRegModal, setShowRegModal] = useState(false);
 
+  useEffect(() => {
+    msgPopup("작업중입니다.");
+    navigate('/mobile/Main');
+  }, [navigate]);
+
   // 시간 옵션 생성 함수
   const generateTimeOptions = (isWeekly = false, startTime = null, isEnd = false) => {
     const options = [];
