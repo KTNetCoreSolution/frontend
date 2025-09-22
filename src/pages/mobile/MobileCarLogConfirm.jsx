@@ -195,6 +195,9 @@ const MobileCarLogConfirm = () => {
               <div className={`${styles.formList}`} >
                 <span className={`${styles.formText}`}>운행일시: {item.LOGDATE} {item.LOGSTTIME} ~ {item.LOGENTIME}</span>
               </div>
+              <div className={`${styles.formList}`} >
+                <span className={`${styles.formText}`}>운행시간: {item.DIFFTIME}</span>
+              </div>
               <div className={`d-flex ${styles.formList}`} >
                 <span className={`${styles.formText}`}>운행자: {item.EMPNM} ({item.EMPNO})</span>
               </div>

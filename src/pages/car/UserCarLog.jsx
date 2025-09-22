@@ -252,6 +252,7 @@ const UserCarLog = () => {
     { title: '운행일', field: 'LOGDATE', width: 90, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '시작시간', field: 'LOGSTTIME', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '종료시간', field: 'LOGENTIME', width: 80, headerHozAlign: 'center', hozAlign: 'center'},
+    { title: '운행시간', field: 'DIFFTIME', width: 100, headerHozAlign: 'center', hozAlign: 'center'},
     { title: '조직', field: 'ORG_GROUP', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '본부', field: 'ORGNMLV1', width: 90, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '설계부/운용센터', field: 'ORGNMLV2', width: 120, headerHozAlign: 'center', hozAlign: 'center' },

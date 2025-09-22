@@ -146,6 +146,10 @@ const MobileCarLogList = () => {
                 <span className='formText'>{item.LOGDATE} {item.LOGSTTIME} ~ {item.LOGENTIME}</span> 
               </li>
               <li>
+                <span className='formLabel'>운행시간</span>  
+                <span className='formText'>{item.DIFFTIME}</span> 
+              </li>
+              <li>
                 <span className='formLabel'>승인상태</span>  
                 <span className='formText' style={{color: item.LOGSTAT === 'N' ? 'red' : '#525252'}}>{item.LOGSTATNM}</span> 
               </li>  

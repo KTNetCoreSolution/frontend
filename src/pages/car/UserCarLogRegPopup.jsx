@@ -54,6 +54,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
   const [receiptList, setReceiptList] = useState([]);
   const [stTime , setStTime] = useState([]);
   const [enTime , setEnTime] = useState([]);
+  const [diffTime, setDiffTime] = useState('');
   const logDateRef = useRef(null);
   
   const initializeComponent = async () => {
@@ -85,7 +86,28 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
     //return () => {
     //};
   }, []);
-  
+
+  const calcTimeDifference = (stTime, enTime) => {
+    // 날짜는 동일하다고 가정하고, 시간만 파싱
+    const [startHours, startMinutes] = stTime.split(':').map(Number);
+    const [endHours, endMinutes] = enTime.split(':').map(Number);
+
+    // Date 객체 생성 (임의의 동일한 날짜 사용)
+    const startDate = new Date();
+    startDate.setHours(startHours, startMinutes, 0, 0);
+
+    const endDate = new Date();
+    endDate.setHours(endHours, endMinutes, 0, 0);
+
+    // 시간 차이 계산 (밀리초 단위)
+    const diffInMs = endDate - startDate;
+
+    // 밀리초를 시간과 분으로 변환
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInMinutes = Math.floor((diffInMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    return `${diffInHours}시간 ${diffInMinutes}분`;
+  };
 
   const getCarLogInfo = async () => {
     setCarId(data.CARID);
@@ -146,6 +168,8 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           setSaveBtnDisplay(saveBtnDisplay);
           setDelBtnDisplay(delBtnDisplay);
           setRejectBtnDisplay(reJectBtnDisplay);
+
+          setDiffTime(calcTimeDifference(data.LOGSTTIME, logEnTime));
         }
       }
     } catch (error) {
@@ -192,6 +216,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
     setSaveBtnDisplay('block');
     setDelBtnDisplay('none');
     setRejectBtnDisplay('none');
+    setDiffTime('');
   };
   
   const searchCarInfo = async (e) => {
@@ -238,7 +263,6 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
                 return true;
               }
             });
-
             setCarInfo({CARNM: carNm, MANAGER_EMPNM: managerEmpNm, MANAGER_MOBILE: managerMobile, GARAGE_ADDR: garageAddr, STKM: stKm, src: dataUrl, bookMark: bBookMark, DELYN: 'N', LOGSTAT: '', ORGCD: orgCd});
             setLogInfo({GUBUN:'I', CARID: e.target.value, LOGDATE: logDate, LOGSTTIME: logStTime, LOGENTIME: logEnTime, SAFETYNOTE: '', STKM: stKm, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: ''});
             setLastLogInfo({LOGDATE: response.data[0].LOGDATE, LOGSTTIME: response.data[0].LOGDATE, LOGENTIME: response.data[0].LOGENTIME});
@@ -254,6 +278,8 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             setSaveBtnDisplay('block');
             setDelBtnDisplay('none');
             setRejectBtnDisplay('none');
+
+            setDiffTime(calcTimeDifference(logStTime, logEnTime));
           }
         }
       }
@@ -331,7 +357,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
     setEnTime(timeOption(logStTime, 'E'));
 
     let logEnTime = '09:00';
-    timeOption(logInfo.LOGSTTIME, 'E').some(time => {
+    timeOption(logStTime, 'E').some(time => {
       if (time > logStTime) {
         logEnTime = time; 
         return true;
@@ -339,8 +365,23 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
     });
     
     setLogInfo({ ...logInfo, LOGDATE: logDate, LOGSTTIME: logStTime, LOGENTIME: logEnTime});
+
+    setDiffTime(calcTimeDifference(logStTime, logEnTime));
   };
-    
+
+  const handleLogTime = (e, timeGbn) => {
+    const time = e.target.value;
+
+    if(timeGbn === 'stTime'){
+      setLogInfo({ ...logInfo, LOGSTTIME: time });
+      setDiffTime(calcTimeDifference(time, logInfo.LOGENTIME));
+    }
+    else {
+      setLogInfo({ ...logInfo, LOGENTIME: time });
+      setDiffTime(calcTimeDifference(logInfo.LOGSTTIME, time));
+    }    
+  };
+     
   const validateForm = () => {
     if (!logInfo.CARID || logInfo.CARID === '') {
       return "잘못된 접근입니다.";
@@ -686,14 +727,18 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             <label className='form-label' style={{width:'63px'}}>운행일시</label>
             <div className='d-flex gap-1'>
               <input type="date" ref={logDateRef} id="logDate" className={`form-control ${styles.formControl}`} value={logInfo.LOGDATE} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} style={{width:120 +'px', marginRight:5 + 'px'}} onChange={(e) => {handleLogDate(e)}} />
-              <select id="stTime" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} defaultValue={logInfo.LOGSTTIME} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGSTTIME: e.target.value })}}>
+              <select id="stTime" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} value={logInfo.LOGSTTIME} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {handleLogTime(e, 'stTime')}}>
                 {stTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
               </select>
               <label> ~ </label>
-              <select id="enTime" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} defaultValue={logInfo.LOGENTIME}  disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, LOGENTIME: e.target.value })}}>
+              <select id="enTime" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} value={logInfo.LOGENTIME}  disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {handleLogTime(e, 'enTime')}}>
                 {enTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
               </select>
             </div>
+          </div>
+          <div className='d-flex'>
+            <label className='form-label' style={{width:'63px'}}>운행시간</label>
+            <div>{diffTime}</div>
           </div>
           <div className='mt-3'>
               <button className={`btn ${styles.btnCheck} ${styles.btn}`} style={{ backgroundColor:vImgDisplay === 'flex' ? '#00c4b4' : '#909090'}} disabled={vImgDisplay === 'flex' ? '' : 'disabled'} onClick={(e) => setDisplay(!vDisplay)}>차량점검 및 {logInfo.GUBUN === 'I' ? '일지작성' : '운행결과'}</button>

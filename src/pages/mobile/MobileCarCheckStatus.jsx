@@ -117,6 +117,13 @@ const MobileCarCheckStatus = () => {
                   <span className='formText'>{item.LOGDATE} {item.LOGSTTIME}~{item.LOGENTIME}</span>
                 </li>
               )}
+              {item.LOGDATE === "" ? ('') : (
+                <li>
+                  <span className='formLabel'>운행시간</span>
+                  <span className='formText'>{item.DIFFTIME}</span>
+                </li>
+              )}
+
 
               {item.LOGDATE === "" ? ('') : (
                 <>
