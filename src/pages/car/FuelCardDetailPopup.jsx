@@ -165,7 +165,7 @@ const FuelCardInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
 
   const handleSearchCardInfo = async (data) => {
     let cardNo = '';
-    
+    alert(data);
     if (!data || data === '' || data.length < 12) {
       msgPopup("카드번호를 입력해주세요.");
       return;
@@ -185,10 +185,11 @@ const FuelCardInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
       return;
     }
     
-    const params = {pGUBUN: 'CARDNO' || '', pSEARCH: cardNo || '', pDEBUG: 'F'};
+    const params = {pCARDNO: cardNo, pEMPNO: user?.empNo || "", pDEBUG: 'F'};
     
     try {
-      const response = await fetchData('car/FuelCardList', params);
+      alert(1);
+      const response = await fetchData('fuelcard/FuelCardDetail', params);
 
       if (!response.success) {
         throw new Error(response.errMsg || '카드 정보 조회 중 오류가 발생했습니다.');

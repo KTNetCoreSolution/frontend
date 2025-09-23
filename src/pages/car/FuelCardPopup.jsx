@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import useStore from '../../store/store.js';
 import MainSearch from '../../components/main/MainSearch';
 import { fetchData } from "../../utils/dataUtils";
 import { createTable } from "../../utils/tableConfig";
@@ -15,9 +16,10 @@ const getFieldOptions = () => [
 ];
 
 const FuelCardPopup = ({ show, onHide, onConfirm, checkCarNo}) => {
+  const { user } = useStore();
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
-  const [filters, setFilters] = useState({ searchField: "ORG", searchText: "" });
+  const [filters, setFilters] = useState({ searchField: "CARDNO", searchText: "" });
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [tableStatus, setTableStatus] = useState("initializing");
@@ -91,7 +93,8 @@ const FuelCardPopup = ({ show, onHide, onConfirm, checkCarNo}) => {
             return div;
           }},
           { headerHozAlign: "center", hozAlign: "center", title: "순번", field: "seq", sorter: "number", width: 60, editable: false, formatter: (cell) => cell.getRow().getData().seq },
-          { headerHozAlign: "center", hozAlign: "center", title: "카드번호", field: "CARDNO", sorter: "string", width: 200 },
+          { headerHozAlign: "center", hozAlign: "center", title: "카드번호", field: "CARDNO2", sorter: "string", width: 200 },
+          { headerHozAlign: "center", hozAlign: "center", title: "카드번호", field: "CARDNO", sorter: "string", width: 200, visible: false },
           { headerHozAlign: "center", hozAlign: "center", title: "만료일", field: "EXFIREDT", sorter: "string", width: 100 },
           { headerHozAlign: "center", hozAlign: "center", title: "차량번호", field: "CARNO", sorter: "string", width: 100 },
         ], [], { height: '360px', headerHozAlign: "center", headerFilter: true, layout: 'fitColumns', index: "seq" });
@@ -148,9 +151,9 @@ const FuelCardPopup = ({ show, onHide, onConfirm, checkCarNo}) => {
     setHasSearched(true);
 
   try {
-      const params = {pGUBUN: filters.searchField || "", pSEARCH: filters.searchText || "", pDEBUG: "F"};
+      const params = {pGUBUN: filters.searchField || "", pSEARCH: filters.searchText || "", pEMPNO: user?.empNo || "", pDEBUG: "F"};
 
-      const response = await fetchData("car/FuelCardList", params);
+      const response = await fetchData("fuelcard/FuelCardList", params);
 
       if (!response.success) {
         errorMsgPopup(response.message || "데이터를 가져오는 중 오류가 발생했습니다.");

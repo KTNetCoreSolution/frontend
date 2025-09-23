@@ -114,7 +114,8 @@ const FuelCardListInfo = () => {
   // 테이블 컬럼 정의
   const columns = [
     { title: '번호', field: 'ID', width: 60, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '카드번호', field: 'CARDNO', width: 200, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '카드번호', field: 'CARDNO', width: 200, headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '카드번호', field: 'CARDNO2', width: 200, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '유효기간', field: 'EXFIREDT', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '차대번호', field: 'CARID', width: 150, headerHozAlign: 'center', hozAlign: 'center'},
     { title: '차량번호', field: 'CARNO', width: 150, headerHozAlign: 'center', hozAlign: 'center'},
@@ -143,7 +144,7 @@ const FuelCardListInfo = () => {
 
     // API 로 통신할 경우 fetchData()
     try {
-      const params = {pCARDNO: currentFilters.cardno || '', pCARNO: currentFilters.carno || '', pDEBUG: "F"};
+      const params = {pCARDNO: currentFilters.cardno || '', pCARNO: currentFilters.carno || '', pEMPNO: user?.empNo || "", pDEBUG: "F"};
 
       const response = await fetchData("fuelcard/listInfo", params);
       if (!response.success) {
