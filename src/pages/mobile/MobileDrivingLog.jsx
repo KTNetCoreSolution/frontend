@@ -220,6 +220,9 @@ const MobileDrivingLog = () => {
   };
 
   const moveToRegLog = () => {
+    if(carId === '' || carId === null) {
+      return;
+    }
     navigate('/mobile/MobileCarLogReg', { state: { carId: carId } });
   };
 
