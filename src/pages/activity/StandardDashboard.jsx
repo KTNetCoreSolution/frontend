@@ -490,9 +490,12 @@ const StandardDashboard = () => {
                     fontWeight: 'bold'
                   },
                 },
-                labelLine: {
-                  show: false
-                },
+                 labelLine: {
+                    show: true,           // 라벨과 파이 영역을 잇는 라인 표시 여부
+                    length: 15,           // 라인의 첫 번째 구간 길이
+                    length2: 8,          // 라인의 두 번째 구간 길이
+                    smooth: true,         // 라인의 곡선 여부
+                }
               },
             ],
           });
