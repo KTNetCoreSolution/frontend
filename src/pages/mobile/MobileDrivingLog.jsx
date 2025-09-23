@@ -71,7 +71,9 @@ const MobileDrivingLog = () => {
       if (!response.success) {
         throw new Error(response.errMsg || '차량관리 공지사항 조회 중 오류가 발생했습니다.');
       } else {
-        setBoardList(response.data);
+        if(response.data != null) {
+          setBoardList(response.data);
+        }
       }
     } catch (error) {
       console.error('Registration error:', error);
@@ -287,9 +289,13 @@ const MobileDrivingLog = () => {
           </div>
           <div className={`d-flex ${styles.formDivNotiBox}`} onClick={(e) => navigate('/mobile/MobileCarNotice')} >
             <div className={styles.container}>      
-              {boardList.map((item, index) =>  
-                <div key={item.NOTICEID} className={`d-flex ${index === 0 ? styles.formDivNotiICON : ''}`} ><label className={`${styles.formNotiList}`} >{item.SIMPLE_TITLE}</label></div>
-              )}
+              {boardList.length > 0 ? (
+                boardList.map((item, index) =>  
+                  <div key={item.NOTICEID} className={`d-flex ${index === 0 ? styles.formDivNotiICON : ''}`} ><label className={`${styles.formNotiList}`} >{item.SIMPLE_TITLE}</label></div>
+                )) : (
+                  <div className='d-flex' ><label className={`${styles.formNotiList}`} >등록된 공지사항이 없습니다.</label></div>
+                )
+              }
             </div>
           </div>
           <div className={`d-flex ${styles.formDivBtnBox}`} onClick={moveToConfirm} >
