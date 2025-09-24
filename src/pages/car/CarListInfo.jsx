@@ -13,6 +13,7 @@ import CarDetailPopup from '../car/CarDetailPopup';
 import ExcelUploadPopup from '../../components/popup/ExcelUploadPopup'; // Add this line
 import styles from '../../components/table/TableSearch.module.css';
 import { fetchData } from '../../utils/dataUtils';
+import { hasPermission } from '../../utils/authUtils';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import { msgPopup } from '../../utils/msgPopup.js';
 import { arEG, tr } from 'date-fns/locale';
