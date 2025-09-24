@@ -55,7 +55,7 @@ const MobileCarLogReceipt = () => {
     const pGubun = state?.gubun || '';
     const pLogdate = state?.logDate || '';
     const pLogtime = state?.logTime || '';
-    const pCarid = state?.logTime || '';
+    const pCarid = state?.carid || '';
     const pEmpNo = state?.empNo || '';
 
     setGubun(pGubun);
