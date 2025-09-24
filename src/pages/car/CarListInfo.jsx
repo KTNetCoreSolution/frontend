@@ -13,7 +13,6 @@ import CarDetailPopup from '../car/CarDetailPopup';
 import ExcelUploadPopup from '../../components/popup/ExcelUploadPopup'; // Add this line
 import styles from '../../components/table/TableSearch.module.css';
 import { fetchData } from '../../utils/dataUtils';
-import { hasPermission } from '../../utils/authUtils';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import { msgPopup } from '../../utils/msgPopup.js';
 import { arEG, tr } from 'date-fns/locale';
@@ -141,20 +140,22 @@ const CarListInfo = () => {
   // - color: 요소의 글자색(예: '#000000'). 'default' 또는 미설정 시 defaultStyles.color('#000000') 적용. 버튼은 기본값 '#ffffff'.
   // - enabled: 요소 활성화 여부(boolean). true(기본값)면 입력/클릭 가능, false면 비활성화(disabled).
   // - defaultValue: 초기값 설정. 'day', 'startday', 'endday'는 날짜 문자열(예: '2025-05-31'), 'startmonth', 'endmonth'는 월 문자열(예: '2025-05'), 'dayperiod', 'monthperiod'는 { start, end } 객체. 미설정 시 오늘 날짜/월 적용.
-    let searchConfig = {
+  let searchConfig = {
     areas: [
       {
         type: 'search',
         fields: [
-          { id: 'cardno', type: 'text', row: 1, label: '카드번호', labelVisible: true, maxLength: 50, width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
+          { id: 'orgText', type: 'text', row: 1, label: '조직', labelVisible: true, placeholder: '조직 선택', width: '150px', height: '30px', backgroundColor: '#f0f0f0', color: '#000000', enabled: false },
+          { id: 'orgPopupBtn', type: 'popupIcon', row: 1, label: '조직 선택', labelVisible: false, eventType: 'showOrgPopup', width: '30px', height: '30px', backgroundColor: '#f0f0f0', color: '#000000', enabled: true },
           { id: 'carno', type: 'text', row: 1, label: '차량번호', labelVisible: true, maxLength: 50, width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
+          { id: 'mgmtstatus', type: 'select', row: 1, label: '운용관리상태', labelVisible: true, options: getFieldOptions('mgmtstatus'), width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
         ],
       },
       {
         type: 'buttons',
         fields: [
           { id: 'searchBtn', type: 'button', row: 1, label: '검색', eventType: 'search', width: '80px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
-          { id: 'popupBtn', type: 'button', row: 2, label: '카드등록', eventType: 'showPopup', width: '80px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
+          { id: 'popupBtn2', type: 'button', row: 2, label: '차량등록', eventType: 'showPopup', width: '80px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
           { id: 'excelUploadBtn', type: 'button', row: 2, label: '엑셀업로드', eventType: 'showExcelUploadPopup', width: '100px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
         ],
       },
