@@ -165,7 +165,6 @@ const FuelCardInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
 
   const handleSearchCardInfo = async (data) => {
     let cardNo = '';
-    alert(data);
     if (!data || data === '' || data.length < 12) {
       msgPopup("카드번호를 입력해주세요.");
       return;
@@ -188,7 +187,6 @@ const FuelCardInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
     const params = {pCARDNO: cardNo, pEMPNO: user?.empNo || "", pDEBUG: 'F'};
     
     try {
-      alert(1);
       const response = await fetchData('fuelcard/FuelCardDetail', params);
 
       if (!response.success) {
