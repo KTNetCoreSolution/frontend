@@ -10,6 +10,7 @@ import FuelCardDetailPopup from './FuelCardDetailPopup.jsx';
 import ExcelUploadPopup from '../../components/popup/ExcelUploadPopup.jsx'; // Add this line
 import styles from '../../components/table/TableSearch.module.css';
 import { fetchData } from '../../utils/dataUtils.js';
+import { hasPermission } from '../../utils/authUtils';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import { msgPopup } from '../../utils/msgPopup.js';
 import { arEG, tr } from 'date-fns/locale';
@@ -73,7 +74,7 @@ const FuelCardListInfo = () => {
   // - color: 요소의 글자색(예: '#000000'). 'default' 또는 미설정 시 defaultStyles.color('#000000') 적용. 버튼은 기본값 '#ffffff'.
   // - enabled: 요소 활성화 여부(boolean). true(기본값)면 입력/클릭 가능, false면 비활성화(disabled).
   // - defaultValue: 초기값 설정. 'day', 'startday', 'endday'는 날짜 문자열(예: '2025-05-31'), 'startmonth', 'endmonth'는 월 문자열(예: '2025-05'), 'dayperiod', 'monthperiod'는 { start, end } 객체. 미설정 시 오늘 날짜/월 적용.
-  const searchConfig = {
+  let searchConfig = {
     areas: [
       {
         type: 'search',
@@ -91,6 +92,17 @@ const FuelCardListInfo = () => {
         ],
       },
     ],
+  };
+
+  if (!hasPermission(user?.auth, 'permissions')) {
+    searchConfig.areas.forEach(area => {
+      if (area.type === 'buttons') {
+        const index = area.fields.findIndex(field => field.id === 'excelUploadBtn');
+        if (index !== -1) {
+          area.fields.splice(index, 1);
+        }
+      }
+    });
   };
 
   const [filters, setFilters] = useState(initialFilters(searchConfig.areas.find((area) => area.type === 'search').fields));
