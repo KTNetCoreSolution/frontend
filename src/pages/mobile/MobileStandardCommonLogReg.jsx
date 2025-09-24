@@ -6,26 +6,11 @@ import { errorMsgPopup } from "../../utils/errorMsgPopup.js";
 import common from "../../utils/common";
 import styles from "./MobileStandardCommonLogReg.module.css";
 
-const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeOptions, onHide, onSubmit }) => {
+const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeOptions, onHide, onSubmit, formData, setFormData }) => {
   const { user } = useStore();
-  const today = common.getTodayDate();
-  const initialWorkDate = workDate || today;
   const initialClassGubun = classGubun || "LINE";
   const initialItem = null; // 수정용 데이터 (필요 시 props로 받음)
 
-  const [formData, setFormData] = useState({
-    CLASSACD: initialItem?.CLASSACD || "all",
-    CLASSBCD: initialItem?.CLASSBCD || "all",
-    CLASSCCD: initialItem?.CLASSCCD || "all",
-    NAME: initialItem?.NAME || "",
-    WORKTYPE: String(initialItem?.WORKTYPE) || "",
-    WORKDATE: initialItem?.WORKDATE || initialWorkDate,
-    STARTTIME: initialItem?.STARTTIME || "09:00",
-    ENDTIME: initialItem?.ENDTIME || "18:00",
-    QUANTITY: initialItem?.QUANTITY || "1",
-    isWeekly: initialItem?.isWeekly || false,
-    isDuplicate: initialItem?.isDuplicate || false,
-  });
   const [class1Options, setClass1Options] = useState([]);
   const [class2Options, setClass2Options] = useState([]);
   const [class3Options, setClass3Options] = useState([]);
@@ -131,7 +116,6 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
   };
 
   const handleSubmit = async () => {
-
     try {
       if (!formData.isDuplicate) {
         const quantityValidation = common.validateVarcharLength(String(formData.QUANTITY), 10, "건(구간/본/개소)");
@@ -162,7 +146,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
       }
 
       const params = {
-        pGUBUN: initialItem ? "U" : "I",
+        pGUBUN: "I", // initialItem 제거로 항상 등록(I) 처리, 수정은 부모에서 처리
         pDATE1: formData.WORKDATE,
         pDATE2: formData.WORKDATE,
         pORGIN_STARTTM: formData.STARTTIME,

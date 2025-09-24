@@ -24,6 +24,19 @@ const MobileStandardCommonLog = () => {
   const [classData, setClassData] = useState([]);
   const [workTypeOptions, setWorkTypeOptions] = useState([]);
   const [showRegModal, setShowRegModal] = useState(false);
+  const [formData, setFormData] = useState({
+    CLASSACD: "all",
+    CLASSBCD: "all",
+    CLASSCCD: "all",
+    NAME: "",
+    WORKTYPE: "",
+    WORKDATE: workDate,
+    STARTTIME: "09:00",
+    ENDTIME: "18:00",
+    QUANTITY: "1",
+    isWeekly: false,
+    isDuplicate: false,
+  });
 
   /*
   useEffect(() => {
@@ -425,7 +438,6 @@ const MobileStandardCommonLog = () => {
                       onChange={(e) => handleRowChange(index, 'WORKTYPE', e.target.value)}
                       className={styles.listSelect2}
                     >
-                      <option value="">선택</option>
                       {workTypeOptions.map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
@@ -469,6 +481,8 @@ const MobileStandardCommonLog = () => {
             workTypeOptions={workTypeOptions}
             onHide={handleRegModalClose}
             onSubmit={handleRegSubmit}
+            formData={formData}
+            setFormData={setFormData}
           />
         </Modal.Body>
       </Modal>

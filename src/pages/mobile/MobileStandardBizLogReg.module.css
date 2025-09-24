@@ -109,6 +109,17 @@
   padding: 8px;
 }
 
+.formInputGroup2 {
+  display: flex;
+  white-space: nowrap;
+  gap: 8px;
+  border-bottom: #ededed 1px solid;
+  padding: 8px;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .formDate {
   min-width: 114px;
   width: 114px;

@@ -4,27 +4,14 @@ import { fetchData } from "../../utils/dataUtils";
 import { msgPopup } from "../../utils/msgPopup.js";
 import { errorMsgPopup } from "../../utils/errorMsgPopup.js";
 import common from "../../utils/common";
-import styles from "./MobileStandardBizLogReg.module.css"; // 기존 CSS 재사용 (필요 시 별도 CSS 생성)
+import styles from "./MobileStandardBizLogReg.module.css";
 
-const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes, onHide, onSubmit }) => {
+const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes, onHide, onSubmit, formData, setFormData }) => {
   const { user } = useStore();
   const today = common.getTodayDate();
   const initialWorkDate = workDate || today;
   const initialClassGubun = classGubun || "BIZ";
 
-  const [formData, setFormData] = useState({
-    CLASSACD: "all",
-    CLASSBCD: "all",
-    CLASSCCD: "all",
-    CUSTOMER: "",
-    DISPATCH: "",
-    WORKERS: "",
-    WORKTIME: "",
-    LINES: 1,
-    PROCESS: "",
-    PROCESSTIME: 0,
-    WORKDATE: initialWorkDate,
-  });
   const [class1Options, setClass1Options] = useState([]);
   const [class2Options, setClass2Options] = useState([]);
   const [class3Options, setClass3Options] = useState([]);
@@ -32,7 +19,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
   const [workersOptions, setWorkersOptions] = useState([]);
   const [workTimeOptions, setWorkTimeOptions] = useState([]);
 
-  // 옵션 로딩 (StandardBizEmpJobRegPopup 참조)
+  // 옵션 로딩 (standard/ddlList로 DISPATCH, WORKERS, WORKTIME만 호출)
   useEffect(() => {
     const fetchDropdownOptions = async (pGUBUN, setOptions) => {
       try {
@@ -58,7 +45,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
     fetchDropdownOptions('WORKTIME', setWorkTimeOptions);
   }, []);
 
-  // classData로부터 옵션 초기화 (기존과 동일)
+  // classData로부터 옵션 초기화
   useEffect(() => {
     setClass1Options(getFieldOptions("CLASSACD", "", classData));
     setClass2Options(getFieldOptions("CLASSBCD", formData.CLASSACD, classData));
@@ -109,26 +96,109 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
     return [];
   };
 
-  // 프로세스 옵션 (bizWorkTypes 필터링, StandardBizEmpJobRegPopup 참조)
+  // 프로세스 옵션 (bizWorkTypes 필터링)
   const filteredBizWorkTypes = useMemo(() => {
-    if (formData.CLASSCCD === "all") return [];
+    if (formData.CLASSCCD === "all" || !formData.CLASSCCD) {
+      return [];
+    }
     const selectedItem = classData.find((item) => item.CLASSCCD === formData.CLASSCCD);
     const bizMCode = selectedItem?.BIZMCODE || null;
-    return bizWorkTypes
+    if (!bizMCode) {
+      return [];
+    }
+
+    const filtered = bizWorkTypes
       .filter((item) => item.BIZMCODE === bizMCode)
+      .map((item, index) => {
+        if (!item.value || !item.label) {
+          console.warn('Invalid WORKCD or WORKNM in bizWorkTypes:', item);
+          return null;
+        }
+        return {
+          value: item.value,
+          label: item.label,
+          BIZMCODE: item.BIZMCODE,
+          ODR: item.ODR || 0,
+          index // 고유 키를 위해 인덱스 추가
+        };
+      })
+      .filter((item) => item !== null) // 유효하지 않은 항목 제거
       .sort((a, b) => a.ODR - b.ODR);
+
+    return filtered;
   }, [formData.CLASSCCD, bizWorkTypes, classData]);
 
+  // filteredBizWorkTypes를 10개씩 chunk로 나누기
+  const processChunks = useMemo(() => {
+    const chunks = [];
+    for (let i = 0; i < filteredBizWorkTypes.length; i += 10) {
+      chunks.push(filteredBizWorkTypes.slice(i, i + 10));
+    }
+
+    return chunks;
+  }, [filteredBizWorkTypes]);
+
+  // 구분 옵션 생성: "1~10", "11~20" 등
+  const sectionOptions = useMemo(() => {
+    const options = processChunks.map((chunk, index) => {
+      const start = index * 10 + 1;
+      const end = start + chunk.length - 1;
+      return { value: `${index}`, label: `${start}~${end}` };
+    });
+
+    return options;
+  }, [processChunks]);
+
+  // 선택된 구분에 따른 프로세스 옵션
+  const filteredProcesses = useMemo(() => {
+    if (!formData.PROCESSSECTION) {
+      return [];
+    }
+    const selectedIndex = parseInt(formData.PROCESSSECTION);
+    if (isNaN(selectedIndex) || selectedIndex < 0 || selectedIndex >= processChunks.length) {
+      return [];
+    }
+    const processes = processChunks[selectedIndex] || [];
+    return processes;
+  }, [formData.PROCESSSECTION, processChunks]);
+
   const handleSubmit = async () => {
-    // 유효성 검사 (StandardBizEmpJobRegPopup 참조)
-    if (formData.CLASSCCD === 'all' || !formData.WORKTIME || !formData.LINES) {
-      msgPopup('소분류, 근무시간, 회선수를 확인해주세요.');
+    // 회선번호+고객명 검증 (최대 200자)
+    const customerValidation = common.validateVarcharLength(formData.CUSTOMER, 200, "회선번호+고객명");
+    if (!customerValidation.valid) {
+      errorMsgPopup(customerValidation.error);
+      return;
+    }
+
+    // 회선수 검증 (최대 10자)
+    const linesValidation = common.validateVarcharLength(String(formData.LINES), 10, "회선수");
+    if (!linesValidation.valid) {
+      errorMsgPopup(linesValidation.error);
+      return;
+    }
+
+    // 프로세스 처리시간 검증 (최대 8자)
+    const processTimeValidation = common.validateVarcharLength(String(formData.PROCESSTIME), 8, "처리시간(분)");
+    if (!processTimeValidation.valid) {
+      errorMsgPopup(processTimeValidation.error);
+      return;
+    }
+
+    // 필수 입력값 검증
+    if (
+      formData.CLASSCCD === "all" ||
+      formData.DISPATCH === "" ||
+      formData.WORKERS === "" ||
+      formData.WORKTIME === "" ||
+      formData.LINES <= 0
+    ) {
+      msgPopup("소분류, 출동여부, 작업인원, 근무시간, 회선수를 확인해주세요.");
       return;
     }
 
     try {
       const params = {
-        pGUBUN: "I", // 삽입
+        pGUBUN: 'I',
         pDATE1: formData.WORKDATE,
         pDATE2: formData.WORKDATE,
         pCLASSCD: formData.CLASSCCD,
@@ -137,10 +207,11 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
         pBIZMAN: formData.WORKERS,
         pWORKCD: formData.WORKTIME,
         pWORKCNT: formData.LINES,
-        pBIZWORKGB: formData.PROCESS,
-        pWORKM: formData.PROCESSTIME,
+        pWORKGBCD: formData.PROCESS,
+        pWORKGBTM: formData.PROCESSTIME,
         pSECTIONCD: initialClassGubun,
-        pEMPNO: user?.empNo || ''
+        pORIGINBIZINPUTKEY: '',
+        pEMPNO: user?.empNo || '',
       };
 
       const response = await fetchData('standard/empJob/biz/reg/save', params);
@@ -167,16 +238,27 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => {
-      const newData = { ...prev, [name]: value };
+      const newData = { ...prev, [name]: name === "PROCESSTIME" ? (value === '' ? 0 : parseInt(value) || 0) : value };
       if (name === "CLASSACD") {
         newData.CLASSBCD = "all";
         newData.CLASSCCD = "all";
+        newData.PROCESSSECTION = "";
+        newData.PROCESS = "";
         setClass2Options(getFieldOptions("CLASSBCD", value, classData));
         setClass3Options(getFieldOptions("CLASSCCD", "all", classData));
       }
       if (name === "CLASSBCD") {
         newData.CLASSCCD = "all";
+        newData.PROCESSSECTION = "";
+        newData.PROCESS = "";
         setClass3Options(getFieldOptions("CLASSCCD", value, classData));
+      }
+      if (name === "CLASSCCD") {
+        newData.PROCESSSECTION = "";
+        newData.PROCESS = "";
+      }
+      if (name === "PROCESSSECTION") {
+        newData.PROCESS = "";
       }
       return newData;
     });
@@ -193,7 +275,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
       </header>
       <div className={`pageMain ${styles.pageMain}`}>
         <div className={styles.formInputGroup}>
-          <button className={`btn ${styles.btnReturn} ${styles.btn}`} style={{width: 80 + 'px'}} onClick={handleReturnPage}>
+          <button className={`btn ${styles.btnReturn} ${styles.btn}`} style={{ width: '80px' }} onClick={handleReturnPage}>
             닫기
           </button>
         </div>
@@ -205,9 +287,8 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
               <label>작업일:</label>
               <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.formDate} />
             </div>
-            <div className={styles.formInputGroup}>
-              <label>회선번호+고객명:</label>
-              <br/>
+            <div className={styles.formInputGroup2}>
+              <label className={styles.formLabel}>회선번호+고객명:</label>
               <input
                 type="text"
                 name="CUSTOMER"
@@ -291,14 +372,31 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
               </select>
             </div>
             <div className={styles.formInputGroup}>
+              <label className={styles.formLabel}>구분:</label>
+              <select name="PROCESSSECTION" value={formData.PROCESSSECTION} onChange={handleChange} className={styles.listSelect}>
+                <option value="">선택</option>
+                {sectionOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.formInputGroup}>
               <label className={styles.formLabel}>프로세스:</label>
               <select name="PROCESS" value={formData.PROCESS} onChange={handleChange} className={styles.listSelect}>
                 <option value="">선택</option>
-                {filteredBizWorkTypes.map((item) => (
-                  <option key={item.value} value={item.value}>
-                    {item.label}
+                {filteredProcesses.length > 0 ? (
+                  filteredProcesses.map((item, index) => (
+                    <option key={`${item.value}-${index}`} value={item.value}>
+                      {item.label}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    프로세스 데이터 없음
                   </option>
-                ))}
+                )}
               </select>
             </div>
             <div className={styles.formInputGroup}>
@@ -320,11 +418,11 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
           </div>
         </div>
         <div className={styles.formInputGroup}>
-          <button className={`btn ${styles.btnReturn} ${styles.btn}`} style={{width: 80 + 'px'}} onClick={handleReturnPage}>
+          <button className={`btn ${styles.btnReturn} ${styles.btn}`} style={{ width: '80px' }} onClick={handleReturnPage}>
             닫기
           </button>
         </div>
-        <h3/>
+        <h3 />
       </div>
     </div>
   );

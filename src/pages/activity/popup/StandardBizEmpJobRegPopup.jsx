@@ -223,7 +223,9 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
           PROCESSTIME: item.WORKM || '0',
           ORIGINAL_PROCESSTIME: item.WORKM || '0', // 원본 값 저장
           WORKDATE: item.DDATE || '',
+          BIZINPUTKEY: item.BIZINPUTKEY || '',
         }));
+
       setRegisteredList(mappedData);
       setOriginalRegisteredList(mappedData); // 원본 데이터 저장
       if (response.data && response.data[0] && response.data[0].MODIFYN === 'N') {
@@ -359,7 +361,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         pWORKGBCD: workGbCodes.join('^'),
         pWORKGBTM: workGbTms.join('^'),
         pSECTIONCD: classGubun,
-        pBIZINPUTKEY: '',
+        pORIGINBIZINPUTKEY: '',
         pEMPNO: user?.empNo || '',
       };
     } else if (action === 'update') {
@@ -398,13 +400,13 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         pWORKGBCD: item.PROCESS,
         pWORKGBTM: item.PROCESSTIME,
         pSECTIONCD: classGubun,
-        pBIZINPUTKEY: '',
+        pORIGINBIZINPUTKEY: item.BIZINPUTKEY || '',
         pEMPNO: user?.empNo || '',
       };
     } else {
       const item = registeredList[index];
       params = {
-        pGUBUN: 'D',
+        pGUBUN: 'DD',
         pDATE1: item.WORKDATE,
         pDATE2: item.WORKDATE,
         pCLASSCD: item.CLASSCCD,
@@ -416,7 +418,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         pWORKGBCD: item.PROCESS,
         pWORKGBTM: item.PROCESSTIME,
         pSECTIONCD: classGubun,
-        pBIZINPUTKEY: '',
+        pORIGINBIZINPUTKEY: item.BIZINPUTKEY || '',
         pEMPNO: user?.empNo || '',
       };
     }

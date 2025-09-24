@@ -25,6 +25,22 @@ const MobileStandardBizLog = () => {
   const [bizWorkTypes, setBizWorkTypes] = useState([]); // BIZ 워크 타입 옵션
   const [showRegModal, setShowRegModal] = useState(false);
 
+  // 추가: formData 상태를 부모에서 관리
+  const [formData, setFormData] = useState({
+    CLASSACD: "all",
+    CLASSBCD: "all",
+    CLASSCCD: "all",
+    CUSTOMER: "",
+    DISPATCH: "",
+    WORKERS: "",
+    WORKTIME: "",
+    LINES: 1,
+    PROCESSSECTION: "",  // 추가: 구분 필드
+    PROCESS: "",
+    PROCESSTIME: 0,
+    WORKDATE: workDate,  // 초기 workDate 사용
+  });
+
   // 초기 리다이렉트 (기존과 동일)
   /*
   useEffect(() => {
@@ -57,21 +73,29 @@ const MobileStandardBizLog = () => {
   const fetchBizWorkTypes = async () => {
     try {
       const params = {
-        pGUBUN: 'BIZWORKTYPE', // 가정: BIZ 워크 타입 로드
+        pGUBUN: 'ALL',
         pDEBUG: 'F',
       };
-      const response = await fetchData('standard/ddlList', params); // DDL API 재사용 가정
+      const response = await fetchData('standard/bizWorkTypeInfoList', params);
       if (!response.success) {
         msgPopup(response.message || 'BIZ 워크 타입 옵션을 가져오는 중 오류가 발생했습니다.');
         return;
       }
       const fetchedOptions = Array.isArray(response.data) ? response.data : [];
-      setBizWorkTypes(fetchedOptions.map((item) => ({ value: item.DDLCD, label: item.DDLNM, BIZMCODE: item.BIZMCODE })));
+      setBizWorkTypes(fetchedOptions.map((item, index) => ({ 
+        value: item.WORKCD, 
+        label: item.WORKNM, 
+        BIZMCODE: item.BIZMCODE,
+        ODR: item.ODR || 0, // ODR 필드 포함, 없으면 0으로 기본값
+        index
+      })));
+
     } catch (err) {
       console.error('BIZ 워크 타입 로드 실패:', err);
       msgPopup(err.response?.data?.message || 'BIZ 워크 타입을 가져오는 중 오류가 발생했습니다.');
     }
   };
+
 
   // 등록 리스트 가져오기 (biz/reg/list 사용, mappedData StandardBizEmpJobRegPopup 참조)
   const fetchRegisteredList = async (date) => {
@@ -112,6 +136,7 @@ const MobileStandardBizLog = () => {
           PROCESSTIME: item.WORKM || '0',
           ORIGINAL_PROCESSTIME: item.WORKM || '0', // 원본 값 저장
           WORKDATE: item.DDATE || '',
+          BIZINPUTKEY: item.BIZINPUTKEY || '',
         }));
       setRegisteredList(mappedData);
       if (response.data && response.data[0] && response.data[0].MODIFYN === 'N') {
@@ -153,7 +178,7 @@ const MobileStandardBizLog = () => {
 
     try {
       const params = {
-        pGUBUN: action === 'update' ? 'U' : 'D',
+        pGUBUN: action === 'update' ? 'U' : 'DD',
         pDATE1: item.WORKDATE,
         pDATE2: item.WORKDATE,
         pCLASSCD: item.CLASSCCD,
@@ -165,7 +190,7 @@ const MobileStandardBizLog = () => {
         pWORKGBCD: item.PROCESS,
         pWORKGBTM: item.PROCESSTIME,
         pSECTIONCD: classGubun,
-        pBIZINPUTKEY: '',
+        pORIGINBIZINPUTKEY: item.BIZINPUTKEY || '',
         pEMPNO: user?.empNo || '',
       };
 
@@ -370,6 +395,8 @@ const MobileStandardBizLog = () => {
             bizWorkTypes={bizWorkTypes}
             onHide={handleRegModalClose}
             onSubmit={handleRegSubmit}
+            formData={formData}
+            setFormData={setFormData}
           />
         </Modal.Body>
       </Modal>
