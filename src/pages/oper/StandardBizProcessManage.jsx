@@ -72,7 +72,7 @@ const fn_HandleCellEdit = (cell, field, setAddRowData, setData, tableInstance) =
 };
 
 const ADD_CONFIRM_MESSAGE = "추가하시겠습니까?";
-const EDIT_CONFIRM_MESSAGE = "변경하시겠습니까?";
+const EDIT_CONFIRM_MESSAGE = "업무명은<br>다른 BIZMCODE의 업무명도 같이 변경됩니다. <br>변경하시겠습니까?";
 const DELETE_CONFIRM_MESSAGE = "삭제하시겠습니까?";
 
 const StandardBizProcessManage = () => {

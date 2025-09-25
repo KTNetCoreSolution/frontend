@@ -9,7 +9,7 @@ import styles from "./MobileStandardCommonLogReg.module.css";
 const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeOptions, onHide, onSubmit, formData, setFormData }) => {
   const { user } = useStore();
   const initialClassGubun = classGubun || "LINE";
-  const initialItem = null; // 수정용 데이터 (필요 시 props로 받음)
+  const initialItem = null;
 
   const [class1Options, setClass1Options] = useState([]);
   const [class2Options, setClass2Options] = useState([]);
@@ -110,7 +110,6 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
   };
 
   const checkTimeOverlap = (newStart, newEnd) => {
-    // 부모 컴포넌트에서 registeredList를 props로 받지 않으므로, API 호출로 중복 확인 필요 시 수정
     // 현재는 단순히 true/false 반환 (필요 시 부모로부터 registeredList props 추가)
     return false;
   };
@@ -146,7 +145,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
       }
 
       const params = {
-        pGUBUN: "I", // initialItem 제거로 항상 등록(I) 처리, 수정은 부모에서 처리
+        pGUBUN: "I",
         pDATE1: formData.WORKDATE,
         pDATE2: formData.WORKDATE,
         pORGIN_STARTTM: formData.STARTTIME,

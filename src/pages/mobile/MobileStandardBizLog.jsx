@@ -150,13 +150,13 @@ const MobileStandardBizLog = () => {
     }
   };
 
-  // 수정 및 삭제 처리 (biz/reg/save 사용, StandardBizEmpJobRegPopup handleSave 참조)
+  // 수정 및 삭제 처리
   const handleSave = async (action, index) => {
     const item = registeredList[index];
 
     if (action === 'update') {
-      // 회선번호+고객명 검증 (최대 300자)
-      const customerValidation = common.validateVarcharLength(item.CUSTOMER, 300, "회선번호+고객명");
+      // 회선번호+고객명 검증 (최대 200자)
+      const customerValidation = common.validateVarcharLength(item.CUSTOMER, 200, "회선번호+고객명");
       if (!customerValidation.valid) {
         errorMsgPopup(customerValidation.error);
         return;
