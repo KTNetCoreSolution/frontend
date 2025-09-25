@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../../store/store';
 import { fetchData } from "../../utils/dataUtils";
@@ -48,6 +48,18 @@ const MobileStandardBizLog = () => {
     navigate('/mobile/Main');
   }, [navigate]);
   */
+
+  // 등록 리스트 총 처리시간 계산
+  const totalRegisteredTime = useMemo(() => {
+    return registeredList.reduce((sum, item) => sum + (parseInt(item.PROCESSTIME) || 0), 0);
+  }, [registeredList]);
+
+  // 분을 시간:분 형식으로 변환
+  const formatTime = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}:${mins.toString().padStart(2, '0')}`;
+  };
 
   // classData 가져오기 (기존과 동일)
   const fetchClassData = async (gubun) => {
@@ -298,7 +310,9 @@ const MobileStandardBizLog = () => {
             BIZ 활동 등록
           </button>
         </div>
-        <h5>※ 등록 리스트 ({workDate})</h5>
+        <h5>
+        ※ 등록 리스트 ({workDate}) <span style={{ color: "blue" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
+        </h5>
         {registeredList.length > 0 ? (
           registeredList.map((item, index) => (
             <div key={index} className={styles.formDivBox}>
