@@ -584,7 +584,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
       </MngUserListPopup>
       <Under26UserListPopup show={showUnder26UserPopup} onHide={() => setShowUnder26UserPopup(false)}
         onConfirm={(selectedRows) => {
-          const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';a
+          const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';
           const userEmpNo = selectedRows.length > 0 ? selectedRows[0].EMPNO : '';
           setCarInfo({ ...carInfo, UNDER26AGEEMPNO: userEmpNo, UNDER26AGEEMPNM: userEmpNm });
         }}>

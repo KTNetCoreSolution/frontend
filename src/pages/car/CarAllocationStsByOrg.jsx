@@ -8,7 +8,7 @@ import TableSearch from '../../components/table/TableSearch.jsx';
 import CommonPopup from '../../components/popup/CommonPopup.jsx';
 import OrgSearchPopup from '../../components/popup/OrgSearchPopup.jsx';
 import styles from '../../components/table/TableSearch.module.css';
-import common from '../../utils/common';
+import common from '../../utils/common.js';
 import { fetchData } from '../../utils/dataUtils.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import { msgPopup } from '../../utils/msgPopup.js';
@@ -24,14 +24,16 @@ const getFieldOptions = (fieldId, dependentValue = '') => {
   const optionsMap = {
     filterSelect: [
       { value: '', label: '선택' },
-      { value: 'CARTYPE', label: '차종' }
+      { value: 'ORG_GROUP', label: '조직' },
     ],
-    filterCarType: [
+    filterOrgGroup: [
       { value: '', label: '선택' },
-      { value: '승용차', label: '승용차' },
-      { value: '승합차', label: '승합차' },
-      { value: '특수차', label: '특수차' },
-      { value: '화물차', label: '화물차' },
+      { value: '본사', label: '본사' },
+      { value: 'Biz', label: 'Biz' },
+      { value: '선로', label: '선로' },
+      { value: '설계', label: '설계' },
+      { value: '인프라운용본부', label: '인프라운용본부' },
+      { value: '재배치', label: '재배치' },
     ],
   };
   return optionsMap[fieldId] || [];
@@ -41,7 +43,7 @@ const getFieldOptions = (fieldId, dependentValue = '') => {
  * 테이블 및 검색 기능 컴포넌트
  * @returns {JSX.Element} 검색 폼과 테이블을 포함한 컴포넌트
  */
-const WorkPerformanceInfo = () => {
+const CarAllocationStsByOrg = () => {
   const { user } = useStore();
   const [showPopup, setShowPopup] = useState(false);
   const [popupTitle, setPopupTitle] = useState('');
@@ -94,7 +96,6 @@ const WorkPerformanceInfo = () => {
           { id: 'startDate', type: 'startday', row: 1, label: '기준일', labelVisible: true, placeholder: '기준일 선택', width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: todayDate },
           { id: 'orgText', type: 'text', row: 1, label: '조직', labelVisible: true, placeholder: '조직 선택', width: '150px', height: '30px', backgroundColor: '#f0f0f0', color: '#000000', enabled: false },
           { id: 'orgPopupBtn', type: 'popupIcon', row: 1, label: '조직 선택', labelVisible: false, eventType: 'showOrgPopup', width: '30px', height: '30px', backgroundColor: '#f0f0f0', color: '#000000', enabled: true },
-          { id: 'carno', type: 'text', row: 1, label: '차량번호', labelVisible: true, maxLength: 50, width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
         ],
       },
       {
@@ -105,12 +106,12 @@ const WorkPerformanceInfo = () => {
       },
     ],
   };
-
-  const [filterTableFields, setFilterTableFields] = useState([
-    { id: 'filterSelect', type: 'select', label: '', options: getFieldOptions('filterSelect'), width: 'default', height: 'default', backgroundColor: 'default', color: 'default', display: 'flex' },
-    { id: 'filterValue', type: 'text', label: '', width: 'default', height: 'default', backgroundColor: 'default', color: 'default', disabled: 'disabled', display: 'flex' },
-    { id: 'filterCarType', type: 'select', label: '', options: getFieldOptions('filterCarType'), width: '100px', height: 'default', backgroundColor: 'default', color: 'default', display: 'none' },
-  ]);
+  
+    const [filterTableFields, setFilterTableFields] = useState([
+      { id: 'filterSelect', type: 'select', label: '', options: getFieldOptions('filterSelect'), width: 'default', height: 'default', backgroundColor: 'default', color: 'default', display: 'flex' },
+      { id: 'filterValue', type: 'text', label: '', width: 'default', height: 'default', backgroundColor: 'default', color: 'default', disabled: 'disabled', display: 'flex' },
+      { id: 'filterOrgGroup', type: 'select', label: '', options: getFieldOptions('filterOrgGroup'), width: '130px', height: 'default', backgroundColor: 'default', color: 'default', display: 'none' },
+    ]);
 
   // const [filters, setFilters] = useState(initialFilters(searchConfig.areas.find((area) => area.type === 'search').fields));
   const [filters, setFilters] = useState({orgcd: selectedOrg, ...initialFilters(searchConfig.areas.find((area) => area.type === 'search').fields) });
@@ -131,32 +132,41 @@ const WorkPerformanceInfo = () => {
   useEffect(() => {
     latestFiltersRef.current = filters;
   }, [filters]);
-
+  
   useEffect(() => {
     latestTableFiltersRef.current = filterTableFields;
   }, [filterTableFields]);
-
+  
   // 테이블 컬럼 정의
   const columns = [
     { title: '번호', field: 'ID', width: 60, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차량번호', field: 'CARNO', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차종', field: 'CARTYPE', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차명', field: 'CARNM', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '사용연료', field: 'USEFUEL', width: 90, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '조직', field: 'ORG_GROUP', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '본부', field: 'ORGNMLV1', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '설계부/운용센터', field: 'ORGNMLV2', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '부', field: 'ORGNMLV3', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '팀', field: 'ORGNMLV4', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
+    {
+      title: '소속', headerHozAlign: 'center', hozAlign: "center",
+      columns: [
+        { title: '조직', field: 'ORG_GROUP', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
+        { title: '본부', field: 'ORGNMLV1', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
+        { title: '설계부/운용센터', field: 'ORGNMLV2', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
+        { title: '부', field: 'ORGNMLV3', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
+        { title: '팀', field: 'ORGNMLV4', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
+      ]
+    },
+    { title: '팀인원', field: 'ORG_USER_CNT', width: 90, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '배정대수', field: 'ALLOCATION_CNT', width: 90, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '배정율(%)', field: 'ALLOCATION_RATE', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
+    {
+      title: '배정차량', headerHozAlign: 'center', hozAlign: "center",
+      columns: [
+        { title: '경형', field: 'COMPACT_CNT', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
+        { title: '승용', field: 'PASSENGER_CNT', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
+        { title: '승합/봉고', field: 'VEHICLE_CNT', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
+        { title: '버켓', field: 'BUCKET_CNT', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
+      ]
+    },
     { title: '운용율3M(%)', field: 'LOGRATE_3M', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '운행일수', field: 'LOG_CNT', width: 90, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '유효일수', field: 'WORKDATE_CNT', width: 90, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '운용율(%)', field: 'LOGRATE', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '운행거리', field: 'LEAVEKM', width: 90, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '운전자(정)사번', field: 'PRIMARY_MANAGER_EMPNO', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '운전자(정)', field: 'PRIMARY_MANAGER_EMPNM', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '렌터카업체', field: 'RENTALCOMP', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차량취득일(kt도입기준)', field: 'CARACQUIREDDT', width: 160, headerHozAlign: 'center', hozAlign: 'center' },
   ];
   
   // 데이터 로드 함수
@@ -168,6 +178,7 @@ const WorkPerformanceInfo = () => {
     setLoading(true);
     setIsSearched(true);
     setError(null);
+
     setTableFilters(initialFilters(filterTableFields));
 
     setFilterTableFields((prevFields) => {
@@ -180,19 +191,20 @@ const WorkPerformanceInfo = () => {
           return { ...filter, display: 'none', value: '' }; // 기본적으로 숨김 처리
         }
       });
-    });    
+    });
 
     // 상태 업데이트 대기
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     // 최신 필터 사용
     const currentFilters = latestFiltersRef.current;
-
+    
     // API 로 통신할 경우 fetchData()
     try {
-      const params = {pDATE: currentFilters.startDate, pORGCD: selectedOrgRef.current, pCARNO: currentFilters.carno || '', pDEBUG: "F"};
+      const params = {pDATE: currentFilters.startDate, pORGCD: selectedOrgRef.current, pDEBUG: "F"};
 
-      const response = await fetchData("carStat/workPerformance", params);
+      const response = await fetchData("carStat/carAllocationStsByOrg", params);
+      
       if (!response.success) {
         errorMsgPopup(response.message || "데이터를 가져오는 중 오류가 발생했습니다.");
         setData([]);
@@ -256,7 +268,7 @@ const WorkPerformanceInfo = () => {
   useEffect(() => {
     const initializeTable = async () => {
       // 다른 컴포넌트 렌더링 대기
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       if (!tableRef.current) {
         console.warn("테이블 컨테이너가 준비되지 않았습니다.");
         return;
@@ -323,8 +335,8 @@ const WorkPerformanceInfo = () => {
 
   // 테이블 필터 업데이트
   /**
-   * 테이블 필터를 동적으로 업데이트
-   */
+  * 테이블 필터를 동적으로 업데이트
+  */
   useEffect(() => {
     if (isInitialRender.current || tableFilters.current === null || tableStatus !== "ready" || loading) return;
     
@@ -332,14 +344,14 @@ const WorkPerformanceInfo = () => {
       tableInstance.current.clearFilter();
     }
 
-    const fields = tableFilters.filterSelect;    
+    const fields = tableFilters.filterSelect;
 
     setFilterTableFields((prevFields) => {
       return prevFields.map((filter) => {
         if (filter.id === 'filterSelect') {  
           return { ...filter, display: 'flex' }; 
-        } else if (filter.id === 'filterCarType') { 
-          return { ...filter, display: fields === 'CARTYPE' ? 'flex' : 'none', value: '' };
+        } else if (filter.id === 'filterOrgGroup') { 
+          return { ...filter, display: fields === 'ORG_GROUP' ? 'flex' : 'none', value: '' };
         } else {
           return { ...filter, display: fields === '' ? 'flex' : 'none', value: '' }; // 기본적으로 숨김 처리
         }
@@ -348,8 +360,8 @@ const WorkPerformanceInfo = () => {
 
     let values = '';
 
-    if (fields === 'CARTYPE') {
-      values = tableFilters.filterCarType;
+    if (fields === 'ORG_GROUP') {
+      values = tableFilters.filterOrgGroup;
     } 
     
     if (fields !== '' && fields !== undefined) {
@@ -357,7 +369,6 @@ const WorkPerformanceInfo = () => {
         tableInstance.current.setFilter(fields, "like", values);
       }
     }
-
   }, [tableFilters.filterSelect]);
   
   useEffect(() => {
@@ -370,8 +381,8 @@ const WorkPerformanceInfo = () => {
     const fields = tableFilters.filterSelect;
     let values = '';
 
-    if (fields === 'CARTYPE') {
-      values = tableFilters.filterCarType;
+    if (fields === 'ORG_GROUP') {
+      values = tableFilters.filterOrgGroup;
     }
     
     if (fields !== '' && fields !== undefined) {
@@ -379,7 +390,7 @@ const WorkPerformanceInfo = () => {
         tableInstance.current.setFilter(fields, "like", values);
       }
     }
-  }, [tableFilters.filterCarType]);
+  }, [tableFilters.filterOrgGroup]);
 
   return (
     <div className={styles.container}>
@@ -393,7 +404,7 @@ const WorkPerformanceInfo = () => {
         filterFields={filterTableFields}
         filters={tableFilters}
         setFilters={setTableFilters}
-        onDownloadExcel={() => {handleDownloadExcel(tableInstance.current, tableStatus, '운행실적관리.xlsx')}}
+        onDownloadExcel={() => {handleDownloadExcel(tableInstance.current, tableStatus, '부서별 차량현황.xlsx')}}
         rowCount={rowCount}
         onEvent={handleDynamicEvent}
       />
@@ -414,4 +425,4 @@ const WorkPerformanceInfo = () => {
   );
 };
 
-export default WorkPerformanceInfo;
+export default CarAllocationStsByOrg;
