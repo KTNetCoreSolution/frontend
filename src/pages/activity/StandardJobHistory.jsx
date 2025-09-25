@@ -167,6 +167,26 @@ const StandardJobHistory = () => {
     setTableFilters(initialFilters(filterTableFields));
   }, [searchConfig, today]);
 
+  useEffect(() => {
+    if (tableInstance.current && tableStatus === 'ready') {
+      const isBiz = hasPermission(user?.auth, 'standardOper')
+        ? filters.classGubun === 'BIZ'
+        : user?.standardSectionCd === 'BIZ';
+
+      if (isBiz) {
+        tableInstance.current.showColumn('BIZTXT');
+        tableInstance.current.showColumn('BIZRUNNM');
+        tableInstance.current.showColumn('BIZMANNM');
+        tableInstance.current.showColumn('BIZWORKGBNM');
+      } else {
+        tableInstance.current.hideColumn('BIZTXT');
+        tableInstance.current.hideColumn('BIZRUNNM');
+        tableInstance.current.hideColumn('BIZMANNM');
+        tableInstance.current.hideColumn('BIZWORKGBNM');
+      }
+    }
+  }, [filters.classGubun, tableStatus, user]);
+
   const columns = [
     { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업일자', field: 'DDATE', sorter: 'string', width: 100, frozen: true },
@@ -186,6 +206,10 @@ const StandardJobHistory = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '업무량(시간)', field: 'WORKH', sorter: 'string', width: 110 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '회선번호+고객명', field: 'BIZTXT', sorter: 'string', width: 200, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '출동여부', field: 'BIZRUNNM', sorter: 'string', width: 130, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업인원', field: 'BIZMANNM', sorter: 'string', width: 130, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '프로세스', field: 'BIZWORKGBNM', sorter: 'string', width: 130, visible: false },
   ];
 
   const loadData = async () => {

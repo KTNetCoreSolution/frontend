@@ -45,6 +45,11 @@ const StandardTeamOrgDayStatisticPopup = ({ show, onHide, data }) => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '사원번호', field: 'EMPNO', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간(시간)', field: 'WORKH', sorter: 'number', width: 120 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', width: 130 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '회선번호+고객명', field: 'BIZTXT', sorter: 'string', width: 200, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '출동여부', field: 'BIZRUNNM', sorter: 'string', width: 130, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업인원', field: 'BIZMANNM', sorter: 'string', width: 130, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '프로세스', field: 'BIZWORKGBNM', sorter: 'string', width: 130, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '회선수', field: 'WORKCNT2', sorter: 'number', width: 130, visible: false },
   ];
 
   // 테이블 초기화
@@ -86,6 +91,34 @@ const StandardTeamOrgDayStatisticPopup = ({ show, onHide, data }) => {
       }
     };
   }, [show]);
+
+  useEffect(() => {
+    if (!tableInstance.current || tableStatus !== 'ready' || !show || !data || !Array.isArray(data) || data.length === 0) return;
+
+    const isBiz = data[0].SECTIONCD === 'BIZ';
+
+    if (isBiz) {
+      tableInstance.current.hideColumn('WORKCNT');
+      tableInstance.current.hideColumn('WORKNM');
+      tableInstance.current.hideColumn('WORKDT');
+      tableInstance.current.hideColumn('WORKH');
+      tableInstance.current.showColumn('BIZTXT');
+      tableInstance.current.showColumn('BIZRUNNM');
+      tableInstance.current.showColumn('BIZMANNM');
+      tableInstance.current.showColumn('BIZWORKGBNM');
+      tableInstance.current.showColumn('WORKCNT2');
+    } else {
+      tableInstance.current.showColumn('WORKCNT');
+      tableInstance.current.showColumn('WORKNM');
+      tableInstance.current.showColumn('WORKDT');
+      tableInstance.current.showColumn('WORKH');
+      tableInstance.current.hideColumn('BIZTXT');
+      tableInstance.current.hideColumn('BIZRUNNM');
+      tableInstance.current.hideColumn('BIZMANNM');
+      tableInstance.current.hideColumn('BIZWORKGBNM');
+      tableInstance.current.hideColumn('WORKCNT2');
+    }
+  }, [tableStatus, show, data]);
 
   useEffect(() => {
     if (!show) return;

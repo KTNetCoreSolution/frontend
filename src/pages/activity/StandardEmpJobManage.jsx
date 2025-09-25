@@ -308,6 +308,30 @@ const StandardEmpJobManage = () => {
     setTableFilters(initialFilters(filterTableFields));
   }, []);
 
+  useEffect(() => {
+    if (tableInstance.current && tableStatus === 'ready') {
+      const isBiz = hasPermission(user?.auth, 'standardOper')
+        ? filters.classGubun === 'BIZ'
+        : user?.standardSectionCd === 'BIZ';
+
+      if (isBiz) {
+        tableInstance.current.hideColumn('WORKCNT');
+        tableInstance.current.showColumn('BIZTXT');
+        tableInstance.current.showColumn('BIZRUNNM');
+        tableInstance.current.showColumn('BIZMANNM');
+        tableInstance.current.showColumn('BIZWORKGBNM');
+        tableInstance.current.showColumn('WORKCNT2');
+      } else {
+        tableInstance.current.showColumn('WORKCNT');
+        tableInstance.current.hideColumn('BIZTXT');
+        tableInstance.current.hideColumn('BIZRUNNM');
+        tableInstance.current.hideColumn('BIZMANNM');
+        tableInstance.current.hideColumn('BIZWORKGBNM');
+        tableInstance.current.hideColumn('WORKCNT2');
+      }
+    }
+  }, [filters.classGubun, tableStatus, user]);
+
   // useEffect에서 filters.CLASSACD, filters.CLASSBCD 변경 시 options 및 searchConfig 업데이트
   useEffect(() => {
     setClass2Options(updatedClass2Options);
@@ -346,11 +370,16 @@ const StandardEmpJobManage = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '중분류', field: 'CLASSBNM', sorter: 'string', width: 180 },
     { headerHozAlign: 'center', hozAlign: 'left', title: '소분류', field: 'CLASSCNM', sorter: 'string', width: 220 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '이름', field: 'EMPNM', sorter: 'string', width: 100 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible:false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업일시', field: 'WORKDT', sorter: 'string', width: 190 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKH', sorter: 'number', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', width: 130 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '회선번호+고객명', field: 'BIZTXT', sorter: 'string', width: 200, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '출동여부', field: 'BIZRUNNM', sorter: 'string', width: 130, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업인원', field: 'BIZMANNM', sorter: 'string', width: 130, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '프로세스', field: 'BIZWORKGBNM', sorter: 'string', width: 130, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '회선수', field: 'WORKCNT2', sorter: 'number', width: 130, visible: false },
   ];
 
   const loadData = async () => {
