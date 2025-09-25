@@ -111,6 +111,14 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   justify-content: space-between;
 }
 
+.formListDataRow {
+  display: flex;
+  flex-direction: row;
+  padding-left: 0;
+  margin-bottom: 0;
+  gap: 10px;
+}
+
 .formChkList {
   display: flex;
   align-items: center;
@@ -220,6 +228,7 @@ input[type="date"] {
 .btn {
   display: flex;
   font-size: 0.875rem !important;
+  font-weight: 600;
   padding: 4px 8px !important;
   line-height: 1.4 !important;
   margin: 0 !important;
@@ -249,6 +258,7 @@ input[type="date"] {
   --bs-btn-disabled-bg: var(--bs-primary-color);
   --bs-btn-disabled-border-color: var(--bs-primary-color);
 }
+
 
 /* Checkboxes and radio buttons */
 .form-check-input {
@@ -862,6 +872,13 @@ body {
   align-items: center;
 }
 
+.listSubmitWrap {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 13px;
+  gap: 6px;
+  margin-bottom: 1rem;;
+}
 /* Mobile portrait mode */
 @media (max-width: 768px) and (orientation: landscape) {
   html, body {

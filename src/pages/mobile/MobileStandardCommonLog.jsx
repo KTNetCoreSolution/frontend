@@ -349,10 +349,10 @@ const MobileStandardCommonLog = () => {
       </header>
       <MobileMainUserMenu show={showSidebar} handleClose={handleToggleSidebar} onLogout={handleLogout} />
 
-      <div className={`pageMain ${styles.pageMain}`}>
-        <div className={styles.formInputGroup}>
-          <div>
-            <label>일자: </label>
+      <div className='pageMain'>
+        <div className='formDivBox d-flex gap-3'>
+          <div className='d-flex'>
+            <label className='formLabel'>일자</label>
             <input
               type="date"
               value={workDate}
@@ -360,8 +360,8 @@ const MobileStandardCommonLog = () => {
               className={styles.formDate}
             />
           </div>
-          <div>
-            <label>분야: </label>
+          <div className='d-flex'>
+            <label className='formLabel'>분야</label>
             {hasPermission(user?.auth, 'standardOper') ? (
               <select
                 value={classGubun}
@@ -389,20 +389,21 @@ const MobileStandardCommonLog = () => {
         </div>
 
         <div className="mb-4">
-          <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={moveToReg}>
+          <button className='btn btn-primary btnCheck' onClick={moveToReg}>
             표준활동 등록
           </button>
         </div>
-        <h5>
-        ※ 등록 리스트 ({workDate}) <span style={{ color: "blue" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
-        </h5>
+        <div className='listSubmitWrap'>
+          <span>※ 등록 리스트 ({workDate})</span>
+          <span style={{ color: "blue" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
+        </div>
         {registeredList.length > 0 ? (
           registeredList.map((item, index) => (
-            <div key={index} className={styles.formDivBox}>
-              <ul className={styles.formList}>
+            <div key={index} className='formDivBox'>
+              <ul className='formList'>
                 <li>
-                  <span className={styles.formLabel}>시간</span>
-                  <span className={styles.formText}>
+                  <span className='formLabel'>시간</span>
+                  <div className='d-flex gap-1'>
                     <select
                       value={item.STARTTIME}
                       onChange={(e) => handleRowChange(index, 'STARTTIME', e.target.value)}
@@ -426,15 +427,15 @@ const MobileStandardCommonLog = () => {
                         </option>
                       ))}
                     </select>
-                  </span>
+                  </div>
                 </li>
                 <li>
-                  <span className={styles.formLabel}>소분류</span>
-                  <span className={styles.formText}>{item.CLASSCNM}</span>
+                  <span className='formLabel'>소분류</span>
+                  <span className='formText'>{item.CLASSCNM}</span>
                 </li>
                 <li>
-                  <span className={styles.formLabel}>건(구간/본/개소)</span>
-                  <span className={styles.formText}>
+                  <span className='formLabel'>건(구간/본/개소)</span>
+                  <div className='formText'>
                     <input
                       type="number"
                       value={item.QUANTITY}
@@ -442,11 +443,11 @@ const MobileStandardCommonLog = () => {
                       min="0"
                       className={styles.quantityInput}
                     />
-                  </span>
+                  </div>
                 </li>
                 <li>
-                  <span className={styles.formLabel}>근무형태</span>
-                  <span className={styles.formText}>
+                  <span className='formLabel'>근무형태</span>
+                  <div className='formText'>
                     <select
                       value={item.WORKTYPE || ''}
                       onChange={(e) => handleRowChange(index, 'WORKTYPE', e.target.value)}
@@ -458,12 +459,12 @@ const MobileStandardCommonLog = () => {
                         </option>
                       ))}
                     </select>
-                  </span>
+                  </div>
                 </li>
                 {isButtonVisible && (
                   <li>
-                    <span className={styles.formLabel}>작업</span>
-                    <span className={styles.formText}>
+                    <span className='formLabel'>작업</span>
+                    <div className='d-flex gap-1'>
                       <button
                         className={`${styles.btn} btn-secondary`}
                         onClick={() => handleSave('update', index)}
@@ -476,7 +477,7 @@ const MobileStandardCommonLog = () => {
                       >
                         삭제
                       </button>
-                    </span>
+                    </div>
                   </li>
                 )}
               </ul>

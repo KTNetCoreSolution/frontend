@@ -85,7 +85,7 @@
   text-align: center !important;
 }
 
-.btnCheck {
+/* .btnCheck {
   width: 100%;
   height: 40px;
   margin-top: 6px !important;
@@ -103,7 +103,7 @@
   --bs-btn-disabled-color: #fff;
   --bs-btn-disabled-bg: #00c4b4;
   --bs-btn-disabled-border-color: #00c4b4;
-}
+} */
 
 .listSelect {
   width: 80px;
