@@ -47,7 +47,7 @@ const MobileStandardCommonLog = () => {
 
   // 등록 리스트 총 처리시간 계산
   const totalRegisteredTime = useMemo(() => {
-    return registeredList.reduce((sum, item) => sum + (parseInt(item.WORKHOURS) || 0) * 60, 0);
+    return registeredList.reduce((sum, item) => sum + (parseInt(item.WORKM) || 0), 0);
   }, [registeredList]);
 
   // 분을 시간:분 형식으로 변환
@@ -188,6 +188,7 @@ const MobileStandardCommonLog = () => {
           ORGIN_STARTTM: item.STARTTM || '',
           ENDTIME: item.ENDTM || '',
           WORKHOURS: item.WORKH || 0,
+          WORKM: item.WORKM || 0,
           QUANTITY: item.WORKCNT || '0',
           WORKDATETIME: `${item.DDATE} ${item.STARTTM} ~ ${item.ENDTM}`,
           WORKNM: item.WORKNM || '',
