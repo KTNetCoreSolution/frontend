@@ -55,7 +55,7 @@ const UserCarLog = () => {
   const [popupOnConfirm, setPopupOnConfirm] = useState(null);
   const [selectedOrg, setSelectedOrg] = useState(user?.orgCd || ''); // 조직 선택 팝업용 상태
   const [selectedOrgNm, setSelectedOrgNm] = useState(user?.orgNm || ''); // 조직 선택 팝업용 상태
-  const [_selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState('');
   const selectedOrgRef = useRef(selectedOrg); // 최신 selectedOrg 값을 추적
   const todayDate = common.getTodayDate();  
 
@@ -395,7 +395,7 @@ const UserCarLog = () => {
 
     // API 로 통신할 경우 fetchData()
     try {
-      const params = {pSTDT: currentFilters.startDate, pENDT: currentFilters.endDate, pORGCD: selectedOrgRef.current, pCARNO: currentFilters.carno || '', pEMPNO: _selectedUsers.EMPNO || '', pSTATUS: currentFilters.mgmtstatus || '', pTRTEMPNO: user?.empNo, pDEBUG: "F"};
+      const params = {pSTDT: currentFilters.startDate, pENDT: currentFilters.endDate, pORGCD: selectedOrgRef.current, pCARNO: currentFilters.carno || '', pEMPNO: selectedUsers || '', pSTATUS: currentFilters.mgmtstatus || '', pTRTEMPNO: user?.empNo, pDEBUG: "F"};
 
       const response = await fetchData("carlog/logInfoList", params);
       if (!response.success) {
@@ -460,8 +460,9 @@ const UserCarLog = () => {
           <UserSearchPopup
             onClose={() => setShowPopup(false)}
             onConfirm={(selectedRows) => {
-              setSelectedUsers(selectedRows);
+              const empNo = selectedRows.map((row) => row.EMPNO).join(', ');
               const userNames = selectedRows.map((row) => row.EMPNM).join(', ');
+              setSelectedUsers(empNo);
               setFilters((prev) => ({ ...prev, userText: userNames || '' }));
               console.log('Selected Users:', selectedRows);
             }}
