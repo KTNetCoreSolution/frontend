@@ -396,7 +396,17 @@ const MobileStandardCommonLog = () => {
         </div>
         <div className='listSubmitWrap'>
           <span>※ 등록 리스트 ({workDate})</span>
-          <span style={{ color: "blue" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
+          {/* <span style={{ color: "blue" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span> */}
+        </div>
+        <div className={`${styles.formDivTimeBox}`}>
+          <label className='formLabel mb-0'>총 처리시간</label>
+          <div>
+            <input className={styles.formTime} type='text' value={totalRegisteredTime}  readOnly aria-label='분 단위 시간' />
+            <span className={styles.formTimeSpan}>(분)</span>
+            <span className='ms-3'></span>
+            <input className={styles.formTime} type='text' value={formatTime(totalRegisteredTime)} readOnly  aria-label='시간 단위 시간' />
+            <span className={styles.formTimeSpan}>(시간)</span>
+          </div>
         </div>
         {registeredList.length > 0 ? (
           registeredList.map((item, index) => (
