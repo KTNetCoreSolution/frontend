@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { performSsoLoginCheck } from '../../service/login'; 
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 
+////테스트용도이므로 실제 ssologin에 쓰이지 않음!!!
 const SsoMLogin = () => {  // 컴포넌트 이름 SsoMLogin으로 가정 (요청하신 대로)
   const navigate = useNavigate();
   const location = useLocation();  // URL 쿼리 파싱용

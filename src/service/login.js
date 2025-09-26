@@ -105,6 +105,28 @@ export const performMobileLoginAccess = async (setError) => {
   return response;
 };
 
+export const performMobileSsoLoginAccess = (empNo, setError) => {
+  return fetchPromiseData('auth/mLogin/sso/access/list', { pEMPNO: empNo }, {}, 'N', false)
+    .then(response => {
+      if (!response.success) {
+        const errMsg = response.errMsg || '접근권한이 없습니다.';
+        setError(errMsg);
+        return response;
+      } else {
+        if (response.errMsg !== '' || (response.data?.[0]?.errCd && response.data[0].errCd !== '00')) {
+          const errMsg = response.data?.[0]?.errMsg || response.errMsg || '접근권한이 없습니다.';
+          setError(errMsg);
+        }
+        return response;
+      }
+    })
+    .catch(error => {
+      const errMsg = error.message || '접근권한이 없습니다.';
+      console.error('Login error:', errMsg);
+      setError(errMsg);
+      return { success: false, errMsg }; // 최소한의 에러 정보 반환
+    });
+};
 /*
 export const performSsoLogin = async (gubun, params, navigate) => {
   try {
@@ -135,21 +157,12 @@ export const performSsoLogin = async (gubun, params, navigate) => {
 export const performSsoLogin = (gubun, params, navigate) => {
   return fetchPromiseData('auth/sso/login', params, {}, 'N', false)
     .then(response => {
-      if (!response.success) {
+     if (!response.success) {
         throw new Error(response.errMsg || 'SSO 로그인 오류');
       } else if (response.errMsg !== '') {
         return { success: false, errMsg: response.errMsg };
       } else {
-        // if (response.data.user.pwdChgYn === 'Y') {
-        //   return response;
-        // }
-        const { setUser } = useStore.getState();
-        setUser({
-          ...response.data.user,
-          expiresAt: response.data.expiresAt * 1000,
-        });
-        navigate(gubun === 'web' ? '/main' : '/mobile/main', { replace: true });
-        return { success: true };
+        return { success: true, data: response.data };
       }
     })
     .catch(error => {
