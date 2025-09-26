@@ -13,6 +13,18 @@
   background-color: #fff;
 }
 
+.formDivTimeBox {
+    margin-bottom: 6px;
+    font-size: 12px;
+    padding: 5px;
+    display: flex;
+    border: 1px solid #d3d3d3;
+    border-radius: 10px;
+    background-color: #fff;
+    justify-content: space-around;
+    align-items: center;
+}
+
 .formList li {
   padding: 4px 0;
 }
@@ -50,16 +62,22 @@
 }
 
 .formDate {
-  min-width: 114px;
-  width: 114px;
+  min-width: 120px;
+  width: 120px;
   margin-left: 10px;
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
+.formTime {
+  width: 60px;
+  background-color: #fff;
+  text-align: center;
+}
+
 .formInputDisabled {
-  width: 100px;
+  width: 90px;
   margin-left: 10px;
   text-align: center;
   background: #e9ecef;

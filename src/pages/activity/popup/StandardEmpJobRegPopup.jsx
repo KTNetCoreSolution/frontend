@@ -117,6 +117,18 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
   const updatedClass2Options = useMemo(() => getFieldOptions('CLASSBCD', formData.CLASSACD, data), [formData.CLASSACD, data]);
   const updatedClass3Options = useMemo(() => getFieldOptions('CLASSCCD', formData.CLASSBCD, data), [formData.CLASSBCD, data]);
 
+  // 등록 리스트 총 처리시간 계산
+  const totalRegisteredTime = useMemo(() => {
+    return registeredList.reduce((sum, item) => sum + (parseInt(item.WORKM) || 0), 0);
+  }, [registeredList]);
+
+  // 분을 시간:분 형식으로 변환
+  const formatTime = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}:${mins.toString().padStart(2, '0')}`;
+  };
+
   useEffect(() => {
     setClass2Options(updatedClass2Options);
   }, [updatedClass2Options]);
@@ -178,6 +190,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
           ORGIN_STARTTM: item.STARTTM || '',
           ENDTIME: item.ENDTM || '',
           WORKHOURS: item.WORKH || 0,
+          WORKM: item.WORKM || 0,
           QUANTITY: item.WORKCNT || '0',
           WORKDATETIME: `${item.DDATE} ${item.STARTTM} ~ ${item.ENDTM}`,
           WORKNM: item.WORKNM || '',
@@ -592,7 +605,9 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
             </tr>
             <tr>
               <td colSpan="4">
-                <h5>※ 등록 리스트 ({formData.WORKDATE})</h5>
+                <h5>
+                ※ 등록 리스트 ({formData.WORKDATE}) <span style={{ color: "blue" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
+                </h5>
                 <table className={styles.listTable}>
                   <thead>
                     <tr>

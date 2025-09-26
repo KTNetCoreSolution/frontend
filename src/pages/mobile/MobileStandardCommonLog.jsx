@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../../store/store';
 import { fetchData } from "../../utils/dataUtils";
@@ -44,6 +44,18 @@ const MobileStandardCommonLog = () => {
     navigate('/mobile/Main');
   }, [navigate]);
   */
+
+  // 등록 리스트 총 처리시간 계산
+  const totalRegisteredTime = useMemo(() => {
+    return registeredList.reduce((sum, item) => sum + (parseInt(item.WORKM) || 0), 0);
+  }, [registeredList]);
+
+  // 분을 시간:분 형식으로 변환
+  const formatTime = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}:${mins.toString().padStart(2, '0')}`;
+  };
 
   // 시간 옵션 생성 함수
   const generateTimeOptions = (isWeekly = false, startTime = null, isEnd = false) => {
@@ -176,6 +188,7 @@ const MobileStandardCommonLog = () => {
           ORGIN_STARTTM: item.STARTTM || '',
           ENDTIME: item.ENDTM || '',
           WORKHOURS: item.WORKH || 0,
+          WORKM: item.WORKM || 0,
           QUANTITY: item.WORKCNT || '0',
           WORKDATETIME: `${item.DDATE} ${item.STARTTM} ~ ${item.ENDTM}`,
           WORKNM: item.WORKNM || '',
@@ -330,17 +343,17 @@ const MobileStandardCommonLog = () => {
   return (
     <div className="container-fluid p-0">
       <header className="header">
-        <h1 className="h5 mb-0">표준활동[선로,설계]</h1>
+        <h1 className="h5 mb-0">표준활동</h1>
         <button className="btn text-white" onClick={handleToggleSidebar}>
           <i className="bi bi-list"></i>
         </button>
       </header>
       <MobileMainUserMenu show={showSidebar} handleClose={handleToggleSidebar} onLogout={handleLogout} />
 
-      <div className={`pageMain ${styles.pageMain}`}>
-        <div className={styles.formInputGroup}>
-          <div>
-            <label>일자: </label>
+      <div className='pageMain'>
+        <div className='formDivBox d-flex gap-3'>
+          <div className='d-flex'>
+            <label className='formLabel'>일자</label>
             <input
               type="date"
               value={workDate}
@@ -348,8 +361,8 @@ const MobileStandardCommonLog = () => {
               className={styles.formDate}
             />
           </div>
-          <div>
-            <label>분야: </label>
+          <div className='d-flex'>
+            <label className='formLabel'>분야</label>
             {hasPermission(user?.auth, 'standardOper') ? (
               <select
                 value={classGubun}
@@ -377,18 +390,31 @@ const MobileStandardCommonLog = () => {
         </div>
 
         <div className="mb-4">
-          <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={moveToReg}>
+          <button className='btn btn-primary btnCheck' onClick={moveToReg}>
             표준활동 등록
           </button>
         </div>
-        <h5>※ 등록 리스트 ({workDate})</h5>
+        <div className='listSubmitWrap'>
+          <span>※ 등록 리스트 ({workDate})</span>
+          <span style={{ color: "blue" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
+        </div>
+        {/* <div className={`${styles.formDivTimeBox}`}>
+          <label className='formLabel mb-0'>총 처리시간</label>
+          <div>
+            <input className={styles.formTime} type='text' value={totalRegisteredTime}  readOnly aria-label='분 단위 시간' />
+            <span className={styles.formTimeSpan}>(분)</span>
+            <span className='ms-3'></span>
+            <input className={styles.formTime} type='text' value={formatTime(totalRegisteredTime)} readOnly  aria-label='시간 단위 시간' />
+            <span className={styles.formTimeSpan}>(시간)</span>
+          </div>
+        </div> */}
         {registeredList.length > 0 ? (
           registeredList.map((item, index) => (
-            <div key={index} className={styles.formDivBox}>
-              <ul className={styles.formList}>
+            <div key={index} className='formDivBox'>
+              <ul className='formListData'>
                 <li>
-                  <span className={styles.formLabel}>시간</span>
-                  <span className={styles.formText}>
+                  <span className='formLabel'>시간</span>
+                  <div className='d-flex gap-1'>
                     <select
                       value={item.STARTTIME}
                       onChange={(e) => handleRowChange(index, 'STARTTIME', e.target.value)}
@@ -412,15 +438,23 @@ const MobileStandardCommonLog = () => {
                         </option>
                       ))}
                     </select>
-                  </span>
+                  </div>
                 </li>
                 <li>
-                  <span className={styles.formLabel}>소분류</span>
-                  <span className={styles.formText}>{item.CLASSCNM}</span>
+                  <span className='formLabel'>대분류</span>
+                  <span className='formText'>{item.CLASSANM}</span>
                 </li>
                 <li>
-                  <span className={styles.formLabel}>건(구간/본/개소)</span>
-                  <span className={styles.formText}>
+                  <span className='formLabel'>중분류</span>
+                  <span className='formText'>{item.CLASSBNM}</span>
+                </li>
+                <li>
+                  <span className='formLabel'>소분류</span>
+                  <span className='formText'>{item.CLASSCNM}</span>
+                </li>
+                <li>
+                  <span className='formLabel'>건(구간/본/개소)</span>
+                  <div className='formText'>
                     <input
                       type="number"
                       value={item.QUANTITY}
@@ -428,11 +462,11 @@ const MobileStandardCommonLog = () => {
                       min="0"
                       className={styles.quantityInput}
                     />
-                  </span>
+                  </div>
                 </li>
                 <li>
-                  <span className={styles.formLabel}>근무형태</span>
-                  <span className={styles.formText}>
+                  <span className='formLabel'>근무형태</span>
+                  <div className='formText'>
                     <select
                       value={item.WORKTYPE || ''}
                       onChange={(e) => handleRowChange(index, 'WORKTYPE', e.target.value)}
@@ -444,12 +478,12 @@ const MobileStandardCommonLog = () => {
                         </option>
                       ))}
                     </select>
-                  </span>
+                  </div>
                 </li>
                 {isButtonVisible && (
                   <li>
-                    <span className={styles.formLabel}>작업</span>
-                    <span className={styles.formText}>
+                    <span className='formLabel'>작업</span>
+                    <div className='d-flex gap-1'>
                       <button
                         className={`${styles.btn} btn-secondary`}
                         onClick={() => handleSave('update', index)}
@@ -462,7 +496,7 @@ const MobileStandardCommonLog = () => {
                       >
                         삭제
                       </button>
-                    </span>
+                    </div>
                   </li>
                 )}
               </ul>

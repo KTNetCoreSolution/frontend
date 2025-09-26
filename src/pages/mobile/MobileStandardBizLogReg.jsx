@@ -271,7 +271,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
   return (
     <div className="container-fluid p-0">
       <header className="header">
-        <h1 className="h5 mb-0">BIZ 활동 등록</h1>
+        <h1 className="h5 mb-0">표준활동 등록</h1>
       </header>
       <div className={`pageMain ${styles.pageMain}`}>
         <div className={styles.formInputGroup}>
@@ -407,7 +407,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
                 value={formData.PROCESSTIME}
                 onChange={handleChange}
                 min="0"
-                className={styles.quantityInput}
+                className={styles.formInput}
               />
             </div>
           </div>

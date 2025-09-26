@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useStore from '../../store/store';
 import { fetchData } from "../../utils/dataUtils";
@@ -48,6 +48,18 @@ const MobileStandardBizLog = () => {
     navigate('/mobile/Main');
   }, [navigate]);
   */
+
+  // 등록 리스트 총 처리시간 계산
+  const totalRegisteredTime = useMemo(() => {
+    return registeredList.reduce((sum, item) => sum + (parseInt(item.PROCESSTIME) || 0), 0);
+  }, [registeredList]);
+
+  // 분을 시간:분 형식으로 변환
+  const formatTime = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}:${mins.toString().padStart(2, '0')}`;
+  };
 
   // classData 가져오기 (기존과 동일)
   const fetchClassData = async (gubun) => {
@@ -271,10 +283,10 @@ const MobileStandardBizLog = () => {
       </header>
       <MobileMainUserMenu show={showSidebar} handleClose={handleToggleSidebar} onLogout={handleLogout} />
 
-      <div className={`pageMain ${styles.pageMain}`}>
-        <div className={styles.formInputGroup}>
-          <div>
-            <label>일자: </label>
+      <div className='pageMain'>
+        <div className='formDivBox d-flex gap-3'>
+          <div className='d-flex'>
+            <label className='formLabel'>일자</label>
             <input
               type="date"
               value={workDate}
@@ -282,8 +294,8 @@ const MobileStandardBizLog = () => {
               className={styles.formDate}
             />
           </div>
-          <div>
-            <label>분야: </label>
+          <div className='d-flex'>
+            <label className='formLabel'>분야</label>
             <input
               type="text"
               value={'BIZ'}
@@ -294,29 +306,42 @@ const MobileStandardBizLog = () => {
         </div>
 
         <div className="mb-4">
-          <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={moveToReg}>
-            BIZ 활동 등록
+          <button className='btn btn-primary btnCheck' onClick={moveToReg}>
+            표준활동 등록
           </button>
         </div>
-        <h5>※ 등록 리스트 ({workDate})</h5>
+        <div className='listSubmitWrap'>
+          <span>※ 등록 리스트 ({workDate})</span>
+          <span style={{ color: "blue" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
+        </div>
+        {/* <div className={`${styles.formDivTimeBox}`}>
+          <label className='formLabel mb-0'>총 처리시간</label>
+          <div>
+            <input className={styles.formTime} type='text' value={totalRegisteredTime}  readOnly aria-label='분 단위 시간' />
+            <span className={styles.formTimeSpan}>(분)</span>
+            <span className='ms-3'></span>
+            <input className={styles.formTime} type='text' value={formatTime(totalRegisteredTime)} readOnly  aria-label='시간 단위 시간' />
+            <span className={styles.formTimeSpan}>(시간)</span>
+          </div>
+        </div> */}
         {registeredList.length > 0 ? (
           registeredList.map((item, index) => (
-            <div key={index} className={styles.formDivBox}>
-              <ul className={styles.formList}>
+            <div key={index} className='formDivBox'>
+              <ul className='formListData'>
                 <li>
-                  <span className={styles.formLabel}>대분류</span>
-                  <span className={styles.formText}>{item.CLASSANM}</span>
+                  <span className='formLabel'>대분류</span>
+                  <span className='formText'>{item.CLASSANM}</span>
                 </li>
                 <li>
-                  <span className={styles.formLabel}>중분류</span>
-                  <span className={styles.formText}>{item.CLASSBNM}</span>
+                  <span className='formLabel'>중분류</span>
+                  <span className='formText'>{item.CLASSBNM}</span>
                 </li>
                 <li>
-                  <span className={styles.formLabel}>소분류</span>
-                  <span className={styles.formText}>{item.CLASSCNM}</span>
+                  <span className='formLabel'>소분류</span>
+                  <span className='formText'>{item.CLASSCNM}</span>
                 </li>
                 <li>
-                  <span className={styles.formLabel}>회선번호+고객명</span>
+                  <span className='formLabel'>회선번호+고객명</span>
                   <input
                     type="text"
                     value={item.CUSTOMER}
@@ -328,27 +353,27 @@ const MobileStandardBizLog = () => {
                   />
                 </li>
                 <li>
-                  <span className={styles.formLabel}>출동여부</span>
-                  <span className={styles.formText}>{item.DISPATCH}</span>
+                  <span className='formLabel'>출동여부</span>
+                  <span className='formText'>{item.DISPATCH}</span>
                 </li>
                 <li>
-                  <span className={styles.formLabel}>작업인원</span>
-                  <span className={styles.formText}>{item.WORKERS}</span>
+                  <span className='formLabel'>작업인원</span>
+                  <span className='formText'>{item.WORKERS}</span>
                 </li>
                 <li>
-                  <span className={styles.formLabel}>근무시간</span>
-                  <span className={styles.formText}>{item.WORKTIME}</span>
+                  <span className='formLabel'>근무시간</span>
+                  <span className='formText'>{item.WORKTIME}</span>
                 </li>
                 <li>
-                  <span className={styles.formLabel}>회선수</span>
-                  <span className={styles.formText}>{item.LINES}</span>
+                  <span className='formLabel'>회선수</span>
+                  <span className='formText'>{item.LINES}</span>
                 </li>
                 <li>
-                  <span className={styles.formLabel}>프로세스</span>
-                  <span className={styles.formText}>{item.PROCESSNM}</span>
+                  <span className='formLabel'>프로세스</span>
+                  <span className='formText'>{item.PROCESSNM}</span>
                 </li>
                 <li>
-                  <span className={styles.formLabel}>처리시간(분)</span>
+                  <span className='formLabel'>처리시간(분)</span>
                   <input
                     type="number"
                     min="0"
@@ -362,8 +387,8 @@ const MobileStandardBizLog = () => {
                 </li>
                 {isButtonVisible && (
                   <li>
-                    <span className={styles.formLabel}>작업</span>
-                    <span className={styles.formText}>
+                    <span className='formLabel'>작업</span>
+                    <div className='d-flex gap-1'>
                       <button
                         className={`${styles.btn} btn-secondary`}
                         onClick={() => handleSave('update', index)}
@@ -376,7 +401,7 @@ const MobileStandardBizLog = () => {
                       >
                         삭제
                       </button>
-                    </span>
+                    </div>
                   </li>
                 )}
               </ul>

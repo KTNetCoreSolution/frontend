@@ -48,7 +48,6 @@
 }
 
 .formLabel {
-  font-weight: bold;
   color: #525252;
   width: 85px;
   display: inline-block;
@@ -121,8 +120,8 @@
 }
 
 .formDate {
-  min-width: 114px;
-  width: 114px;
+  min-width: 120px;
+  width: 120px;
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 5px;
