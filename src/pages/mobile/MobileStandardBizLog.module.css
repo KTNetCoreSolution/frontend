@@ -50,8 +50,8 @@
 }
 
 .formDate {
-  min-width: 114px;
-  width: 114px;
+  min-width: 120px;
+  width: 120px;
   margin-left: 10px;
   background-color: #fff;
   border: 1px solid #ccc;
@@ -59,7 +59,7 @@
 }
 
 .formInputDisabled {
-  width: 100px;
+  width: 90px;
   margin-left: 10px;
   text-align: center;
   background: #e9ecef;

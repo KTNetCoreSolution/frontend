@@ -307,7 +307,7 @@ const MobileStandardBizLog = () => {
 
         <div className="mb-4">
           <button className='btn btn-primary btnCheck' onClick={moveToReg}>
-            BIZ 활동 등록
+            표준활동 등록
           </button>
         </div>
         <div className='listSubmitWrap'>
@@ -380,13 +380,13 @@ const MobileStandardBizLog = () => {
                     <span className='formLabel'>작업</span>
                     <div className='d-flex gap-1'>
                       <button
-                        className='btn btn-secondary'
+                        className={`${styles.btn} btn-secondary`}
                         onClick={() => handleSave('update', index)}
                       >
                         수정
                       </button>
                       <button
-                        className='btn btn-primary'
+                        className={`${styles.btn} btn-primary`}
                         onClick={() => handleSave('delete', index)}
                       >
                         삭제

@@ -400,7 +400,7 @@ const MobileStandardCommonLog = () => {
         {registeredList.length > 0 ? (
           registeredList.map((item, index) => (
             <div key={index} className='formDivBox'>
-              <ul className='formList'>
+              <ul className='formListData'>
                 <li>
                   <span className='formLabel'>시간</span>
                   <div className='d-flex gap-1'>
@@ -428,6 +428,14 @@ const MobileStandardCommonLog = () => {
                       ))}
                     </select>
                   </div>
+                </li>
+                <li>
+                  <span className='formLabel'>대분류</span>
+                  <span className='formText'>{item.CLASSANM}</span>
+                </li>
+                <li>
+                  <span className='formLabel'>중분류</span>
+                  <span className='formText'>{item.CLASSBNM}</span>
                 </li>
                 <li>
                   <span className='formLabel'>소분류</span>
