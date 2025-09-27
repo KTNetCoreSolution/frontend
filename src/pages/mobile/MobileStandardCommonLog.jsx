@@ -411,10 +411,10 @@ const MobileStandardCommonLog = () => {
         {registeredList.length > 0 ? (
           registeredList.map((item, index) => (
             <div key={index} className='formDivBox'>
-              <ul className='formListData'>
+              <ul className='formDataWrap'>
                 <li>
-                  <span className='formLabel'>시간</span>
-                  <div className='d-flex gap-1'>
+                  <span class="formLabel" style={{width: '120px'}}>시간</span>
+                  <div className="formData">
                     <select
                       value={item.STARTTIME}
                       onChange={(e) => handleRowChange(index, 'STARTTIME', e.target.value)}
@@ -441,32 +441,33 @@ const MobileStandardCommonLog = () => {
                   </div>
                 </li>
                 <li>
-                  <span className='formLabel'>대분류</span>
-                  <span className='formText'>{item.CLASSANM}</span>
+                  <span class="formLabel" style={{width: '120px'}}>대분류</span>
+                  <div className="formData">{item.CLASSANM}</div>
                 </li>
                 <li>
-                  <span className='formLabel'>중분류</span>
-                  <span className='formText'>{item.CLASSBNM}</span>
+                  <span class="formLabel" style={{width: '120px'}}>중분류</span>
+                  <div className="formData">{item.CLASSBNM}</div>
                 </li>
                 <li>
-                  <span className='formLabel'>소분류</span>
-                  <span className='formText'>{item.CLASSCNM}</span>
+                  <span class="formLabel" style={{width: '120px'}}>소분류</span>
+                  <div className="formData">{item.CLASSCNM}</div>
                 </li>
                 <li>
-                  <span className='formLabel'>건(구간/본/개소)</span>
-                  <div className='formText'>
+                  <span class="formLabel" style={{width: '120px'}}>건(구간/본/개소)</span>
+                  <div className="formData">
                     <input
                       type="number"
                       value={item.QUANTITY}
                       onChange={(e) => handleRowChange(index, 'QUANTITY', e.target.value)}
                       min="0"
-                      className={styles.quantityInput}
+                      className="text-end"
+                      style={{width: '80px'}}
                     />
                   </div>
                 </li>
                 <li>
-                  <span className='formLabel'>근무형태</span>
-                  <div className='formText'>
+                  <span class="formLabel" style={{width: '120px'}}>근무형태</span>
+                  <div className="formData">
                     <select
                       value={item.WORKTYPE || ''}
                       onChange={(e) => handleRowChange(index, 'WORKTYPE', e.target.value)}
@@ -482,16 +483,16 @@ const MobileStandardCommonLog = () => {
                 </li>
                 {isButtonVisible && (
                   <li>
-                    <span className='formLabel'>작업</span>
-                    <div className='d-flex gap-1'>
+                    <span class="formLabel" style={{width: '120px'}}>작업</span>
+                    <div className="formListDataRow">
                       <button
-                        className={`${styles.btn} btn-secondary`}
+                        className="btn btn-secondary"
                         onClick={() => handleSave('update', index)}
                       >
                         수정
                       </button>
                       <button
-                        className={`${styles.btn} btn-primary`}
+                        className="btn btn-primary"
                         onClick={() => handleSave('delete', index)}
                       >
                         삭제
@@ -506,7 +507,7 @@ const MobileStandardCommonLog = () => {
           <div className="nodataWrap">조회된 목록이 없습니다.</div>
         )}
       </div>
-      <Modal show={showRegModal} onHide={handleRegModalClose} centered className={styles.customModal}>
+      <Modal show={showRegModal} onHide={handleRegModalClose} centered className='customModal'>
         <Modal.Body className={styles.modalBody}>
           <MobileStandardCommonLogReg
             workDate={workDate}

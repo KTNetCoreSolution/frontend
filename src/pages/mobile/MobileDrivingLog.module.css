@@ -59,7 +59,7 @@
 .formCarNm {
   /* width: 100%; */
   text-align: center;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: bold;
   color: #808080;
 }
@@ -91,7 +91,7 @@
   height: 20px;
   margin: auto;
   padding: 2px;
-  font-Size: 12px;
+  font-Size: 0.875rem;
   font-Weight: bold; 
   text-align: center;
   background-color: #00c4b4;
@@ -104,7 +104,7 @@
   /* height: 20px; */
   padding: 2px;
   text-align: left;
-  font-size: 12px;
+  font-size: 0.875rem;
   font-weight: bold;
   padding-left: 10px;
   color: #525252;
@@ -122,7 +122,7 @@
 .formGarageTitle {
   width: 100%;
   text-align: center;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: bold;
   color: #00c4b4;
   height: 20px;
@@ -131,7 +131,7 @@
 .formGarage {
   width: 100%;
   text-align: center;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: bold;
   color: #525252;
   height: 20px;
@@ -140,7 +140,7 @@
 .formManagerTitle {
   width: 100px;
   text-align: left;
-  font-size: 12px;
+  font-size: 0.875rem;
   font-weight: bold;
   padding-left: 10px;
   color: #525252;
@@ -149,7 +149,7 @@
 .formManager {
   width: 100%;
   text-align: left;
-  font-size: 12px;
+  font-size: 0.875rem;
   font-weight: bold;
   padding-left: 10px;
   color: #1a1a1a;
@@ -158,8 +158,8 @@
 .formListTitle {
   width: 100%;
   text-align: left;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 0.875rem;
+  font-weight: 600;
   padding-left: 10px;
   color: #00c4b4;
 }
@@ -167,7 +167,7 @@
 .formList {
   width: 100%;
   text-align: left;
-  font-size: 12px;
+  font-size: 0.875rem;
   font-weight: bold;
   padding-left: 10px;
   color: #525252;

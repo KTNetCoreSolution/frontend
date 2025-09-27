@@ -272,157 +272,186 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
     <div className="container-fluid p-0">
       <header className="header">
         <h1 className="h5 mb-0">표준활동 등록</h1>
+         <button className="btn text-white" onClick={handleReturnPage}>
+          <i className="bi bi-x"></i>
+        </button>
       </header>
-      <div className={`pageMain ${styles.pageMain}`}>
-        <div className={styles.formInputGroup}>
+      <div className="pageMain">
+        {/* <div className={styles.formInputGroup}>
           <button className={`btn ${styles.btnReturn} ${styles.btn}`} style={{ width: '80px' }} onClick={handleReturnPage}>
             닫기
           </button>
-        </div>
-        <div className={styles.formDivBox}>
-          <div className="d-flex flex-column gap-2">
-            <div className={styles.formInputGroup}>
-              <label>분야:</label>
-              <span className={styles.formText}>BIZ</span>
-              <label>작업일:</label>
-              <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.formDate} />
-            </div>
-            <div className={styles.formInputGroup2}>
-              <label className={styles.formLabel}>회선번호+고객명:</label>
-              <input
-                type="text"
-                name="CUSTOMER"
-                value={formData.CUSTOMER}
-                onChange={handleChange}
-                className={styles.formInput}
-              />
-            </div>
-            <div className={styles.formInputGroup}>
-              <label className={styles.formLabel}>출동여부:</label>
-              <select name="DISPATCH" value={formData.DISPATCH} onChange={handleChange} className={styles.listSelect}>
-                <option value="">선택</option>
-                {dispatchOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.formInputGroup}>
-              <label className={styles.formLabel}>작업인원:</label>
-              <select name="WORKERS" value={formData.WORKERS} onChange={handleChange} className={styles.listSelect}>
-                <option value="">선택</option>
-                {workersOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.formInputGroup}>
-              <label className={styles.formLabel}>근무시간:</label>
-              <select name="WORKTIME" value={formData.WORKTIME} onChange={handleChange} className={styles.listSelect}>
-                <option value="">선택</option>
-                {workTimeOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.formInputGroup}>
-              <label className={styles.formLabel}>회선수:</label>
-              <input
-                type="number"
-                name="LINES"
-                value={formData.LINES}
-                onChange={handleChange}
-                min="1"
-                className={styles.formInput}
-              />
-            </div>
-            <div className={styles.formInputGroup}>
-              <label className={styles.formLabel}>대분류:</label>
-              <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange} className={styles.listSelect}>
-                {class1Options.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.formInputGroup}>
-              <label className={styles.formLabel}>중분류:</label>
-              <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange} className={styles.listSelect}>
-                {class2Options.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.formInputGroup}>
-              <label className={styles.formLabel}>소분류:</label>
-              <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange} className={styles.listSelect}>
-                {class3Options.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.formInputGroup}>
-              <label className={styles.formLabel}>구분:</label>
-              <select name="PROCESSSECTION" value={formData.PROCESSSECTION} onChange={handleChange} className={styles.listSelect}>
-                <option value="">선택</option>
-                {sectionOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.formInputGroup}>
-              <label className={styles.formLabel}>프로세스:</label>
-              <select name="PROCESS" value={formData.PROCESS} onChange={handleChange} className={styles.listSelect}>
-                <option value="">선택</option>
-                {filteredProcesses.length > 0 ? (
-                  filteredProcesses.map((item, index) => (
-                    <option key={`${item.value}-${index}`} value={item.value}>
-                      {item.label}
+        </div> */}
+        <div className="formDivBox">
+          <ul className="formDataWrap">
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>분야</span>
+              <div className="formData">BIZ</div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>작업일</span>
+              <div className="formData">
+                <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.formDate} />
+              </div>
+            </li>            
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>회선번호+고객명</span>
+              <div className="formData">
+                <input
+                  type="text"
+                  name="CUSTOMER"
+                  value={formData.CUSTOMER}
+                  onChange={handleChange}
+                  className={styles.formInput}
+                />
+              </div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>출동여부</span>
+              <div className="formData">
+                <select name="DISPATCH" value={formData.DISPATCH} onChange={handleChange}>
+                  <option value="">선택</option>
+                  {dispatchOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
                     </option>
-                  ))
-                ) : (
-                  <option value="" disabled>
-                    프로세스 데이터 없음
-                  </option>
-                )}
-              </select>
-            </div>
-            <div className={styles.formInputGroup}>
-              <label className={styles.formLabel}>처리시간(분):</label>
-              <input
-                type="number"
-                name="PROCESSTIME"
-                value={formData.PROCESSTIME}
-                onChange={handleChange}
-                min="0"
-                className={styles.formInput}
-              />
-            </div>
-          </div>
-          <div className={styles.formInputGroup}>
-            <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={handleSubmit}>
-              등록
-            </button>
-          </div>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>작업인원</span>
+              <div className="formData">
+                <select name="WORKERS" value={formData.WORKERS} onChange={handleChange}>
+                  <option value="">선택</option>
+                  {workersOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>근무시간</span>
+              <div className="formData">
+                <select name="WORKTIME" value={formData.WORKTIME} onChange={handleChange}>
+                  <option value="">선택</option>
+                  {workTimeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>회선수</span>
+              <div className="formData">
+                <input
+                  type="number"
+                  name="LINES"
+                  value={formData.LINES}
+                  onChange={handleChange}
+                  min="1"
+                  className="text-end"
+                  style={{width: '80px'}}
+                />
+              </div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>대분류</span>
+              <div className="formData">
+                <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange}>
+                  {class1Options.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>중분류</span>
+              <div className="formData">
+                <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange}>
+                  {class2Options.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>소분류</span>
+              <div className="formData">
+                <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange}>
+                  {class3Options.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>구분</span>
+              <div className="formData">
+                <select name="PROCESSSECTION" value={formData.PROCESSSECTION} onChange={handleChange}>
+                  <option value="">선택</option>
+                  {sectionOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>프로세스</span>
+              <div className="formDataRow">
+                <select name="PROCESS" value={formData.PROCESS} onChange={handleChange}>
+                  <option value="">선택</option>
+                  {filteredProcesses.length > 0 ? (
+                    filteredProcesses.map((item, index) => (
+                      <option key={`${item.value}-${index}`} value={item.value}>
+                        {item.label}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      프로세스 데이터 없음
+                    </option>
+                  )}
+                </select>
+              </div>
+
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>처리시간(분)</span>
+              <div className="formData">
+                <input
+                  type="number"
+                  name="PROCESSTIME"
+                  value={formData.PROCESSTIME}
+                  onChange={handleChange}
+                  min="0"
+                  className="text-end"
+                  style={{width: '80px'}}
+                />
+              </div>
+            </li>
+          </ul>
         </div>
-        <div className={styles.formInputGroup}>
+        <button className="btn btn-primary" onClick={handleSubmit}>
+          등록
+        </button>
+        {/* <div className={styles.formInputGroup}>
           <button className={`btn ${styles.btnReturn} ${styles.btn}`} style={{ width: '80px' }} onClick={handleReturnPage}>
             닫기
           </button>
-        </div>
-        <h3 />
+        </div> */}
       </div>
     </div>
   );

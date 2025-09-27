@@ -206,6 +206,7 @@ footer {
   min-height: 100vh;
 }
 input, select, textarea {
+  font-family: "Pretendard Variable", -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   font-size: 0.875rem;
   padding: 4px 8px;
   border-radius: 4px;

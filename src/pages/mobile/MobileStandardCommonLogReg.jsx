@@ -225,122 +225,132 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
     <div className="container-fluid p-0">
       <header className="header">
         <h1 className="h5 mb-0">표준활동 등록</h1>
+        <button className="btn text-white" onClick={handleReturnPage}>
+          <i className="bi bi-x"></i>
+        </button>
       </header>
-      <div className={`pageMain ${styles.pageMain}`}>
-        <div className={styles.formInputGroup}>
+      <div className='pageMain'>
+        {/* <div className={styles.formInputGroup}>
           <button className={`btn ${styles.btnReturn} ${styles.btn}`} style={{width: 80 + 'px'}} onClick={handleReturnPage}>
-            {initialItem ? '돌아가기' : '닫기'}
+            {initialItem ? '돌아가기' : '닫기'} 
           </button>
-        </div>
-        <div className={styles.formDivBox}>
-          <div className="d-flex flex-column gap-2">
-            <div className={styles.formInputGroup}>
-              <label>분야:</label>
-              <span className={styles.formText}>
+        </div> */}
+        <div className="formDivBox">
+          <ul className="formDataWrap">
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>분야</span>
+              <div className="formData">
                 {initialClassGubun === "LINE" ? "선로" : initialClassGubun === "DESIGN" ? "설계" : "BIZ"}
-              </span>
-            </div>
-            <div className={styles.formInputGroup}>
-              <label>대분류:</label>
-              <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange} className={styles.listSelect}>
-                {class1Options.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.formInputGroup}>
-              <label>중분류:</label>
-              <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange} className={styles.listSelect}>
-                {class2Options.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.formInputGroup}>
-              <label>소분류:</label>
-              <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange} className={styles.listSelect}>
-                {class3Options.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.formInputGroup}>
-              <label>
-                업무 부가 설명: <br/>
-                <span className={styles.formText}>
-                  {formData.CLASSCCD !== "all" ? classData.find((item) => item.CLASSCCD === formData.CLASSCCD)?.DETAIL || "" : ""}
-                </span>
-              </label>
-            </div>
-            <div className={styles.formInputGroup}>
-              <label>건(구간/본/개소):</label>
-              <input
-                type="number"
-                name="QUANTITY"
-                value={formData.QUANTITY}
-                onChange={handleChange}
-                placeholder="건수 입력"
-                min="0"
-                className={styles.quantityInput}
-              />
-              <label>
-                중복건: <input type="checkbox" name="isDuplicate" checked={formData.isDuplicate} onChange={handleChange} />
-              </label>
-            </div>
-            <div className={styles.formInputGroup}>
-              <label>근무형태:</label>
-              <select name="WORKTYPE" value={formData.WORKTYPE} onChange={handleChange} className={styles.listSelect}>
-                <option value="">선택</option>
-                {workTypeOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.formInputGroup}>
-              <label>
-                작업일시(주간: <input type="checkbox" name="isWeekly" checked={formData.isWeekly} onChange={handleChange} />)
-              </label>
-            </div>
-            <div className={styles.formInputGroup}>
-              <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.formDate} />
-              <select name="STARTTIME" value={formData.STARTTIME} onChange={handleChange} className={styles.formTime}>
-                {formTimeOptions.map((time) => (
-                  <option key={time} value={time}>
-                    {time}
-                  </option>
-                ))}
-              </select>
-              ~
-              <select name="ENDTIME" value={formData.ENDTIME} onChange={handleChange} className={styles.formTime}>
-                {formEndTimeOptions.map((time) => (
-                  <option key={time} value={time}>
-                    {time}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <h3 />
-          </div>
-          <div className={styles.formInputGroup}>
-            <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={handleSubmit}>
-              {initialItem ? "수정" : "등록"}
-            </button>
-          </div>
+              </div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>대분류</span>
+              <div className="formData">
+                <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange}>
+                  {class1Options.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>중분류</span>
+              <div className="formData">
+                <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange}>
+                  {class2Options.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>소분류</span>
+              <div className="formData">
+                <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange}>
+                  {class3Options.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>업무 부가 설명</span>
+              <div className="formData">
+                {formData.CLASSCCD !== "all" ? classData.find((item) => item.CLASSCCD === formData.CLASSCCD)?.DETAIL || "" : ""}
+              </div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>건(구간/본/개소)</span>
+              <div className="formData">
+                <div className="formDataRow align-items-center">
+                  <input
+                    type="number"
+                    name="QUANTITY"
+                    value={formData.QUANTITY}
+                    onChange={handleChange}
+                    placeholder="건수 입력"
+                    min="0"
+                    className="text-end"
+                    style={{width: '80px'}}
+                  />
+                  중복건 <input type="checkbox" name="isDuplicate" checked={formData.isDuplicate} onChange={handleChange} />
+                </div>
+              </div>
+            </li>
+            <li>
+              <span class="formLabel" style={{width: '120px'}}>근무형태</span>
+              <div className="formData">
+                <select name="WORKTYPE" value={formData.WORKTYPE} onChange={handleChange}>
+                  <option value="">선택</option>
+                  {workTypeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>                
+              </div>
+            </li>
+            <li>
+              <div class="formLabel gap-1">
+                <span>작업일시</span> (주간 <input type="checkbox" name="isWeekly" checked={formData.isWeekly} onChange={handleChange} />)
+              </div>
+            </li>
+            <li>
+              <div className="formListDataRow">
+                <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.formDate} />
+                <select name="STARTTIME" value={formData.STARTTIME} onChange={handleChange} className={styles.formTime}>
+                  {formTimeOptions.map((time) => (
+                    <option key={time} value={time}>
+                      {time}
+                    </option>
+                  ))}
+                </select>
+                ~
+                <select name="ENDTIME" value={formData.ENDTIME} onChange={handleChange} className={styles.formTime}>
+                  {formEndTimeOptions.map((time) => (
+                    <option key={time} value={time}>
+                      {time}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+          </ul>
         </div>
-        <div className={styles.formInputGroup}>
+        {/* <div className={styles.formInputGroup}>
           <button className={`btn ${styles.btnReturn} ${styles.btn}`} style={{width: 80 + 'px'}} onClick={handleReturnPage}>
             {initialItem ? '돌아가기' : '닫기'}
           </button>
-        </div>
-        <h3/>
+        </div> */}
+        <button className="btn btn-primary" onClick={handleSubmit}>
+          {initialItem ? "수정" : "등록"}
+        </button>
       </div>
     </div>
   );

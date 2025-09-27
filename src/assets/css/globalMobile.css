@@ -69,7 +69,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 
 .formText {
-  font-size:14px;
+  font-size:0.875rem;
   color: var(--bs-font-color);
   line-height: normal;
   align-items: center;
@@ -77,6 +77,11 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 
 .form-label {
   margin-bottom: 0;
+}
+
+.formDesc {
+  font-size:0.875rem;
+  color: var(--bs-font-color);
 }
 
 .formList {
@@ -98,12 +103,39 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   gap: 0.5rem;
 }
 
+.formData {
+  font-size: 0.875rem;
+}
+
+.formDataWrap {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+  margin-bottom: 0;
+  gap: 8px;
+  font-size: 0.875rem;
+}
+
+.formDataWrap li {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.formDataRow {
+  display: flex;
+  flex-direction: row;
+  padding-left: 0;
+  margin-bottom: 0;
+  gap: 10px;
+}
+
 .formListData {
   display: flex;
   flex-direction: column;
   padding-left: 0;
   margin-bottom: 0;
-  gap: 10px;
+  gap: 8px;
+  font-size: 0.875rem;
 }
 
 .formListData li {
@@ -114,9 +146,10 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .formListDataRow {
   display: flex;
   flex-direction: row;
+  align-items: center;
   padding-left: 0;
   margin-bottom: 0;
-  gap: 10px;
+  gap: 4px;
 }
 
 .formChkList {
@@ -125,11 +158,28 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   justify-content: space-between;
 }
 
+.formListTitle {
+  width: 100%;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #00c4b4;
+}
+
+.formDivBtnBox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #d3d3d3;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
 .formDivBox {
-  margin-bottom: 15px;
   padding: 12px;
   display: block;
-  border-radius: 10px;
+  border-radius: 6px;
   background-color: #f3f5f7;
 }
 
@@ -147,7 +197,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .formDivBox03 {
   padding: 0.5rem 1rem;
   display: block;
-  border-radius: 10px;
+  border-radius: 6px;
   background-color: #f3f5f7;
 }
 
@@ -158,6 +208,21 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 
 .formDivBox03 .list-group .list-group-item:last-child {
   border-bottom: 0;
+}
+
+.formNotiList {
+  width: 100%;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--bs-body-color);  
+}
+
+.formNotiList::before {
+  content: "•";
+  color: var(--bs-body-color);  
+  display: inline-flex;
+  width: 1rem;
 }
 
 .formTitle {
@@ -180,7 +245,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   width: 100%;
   font-size: 14px;
   font-weight: bold;
-  color:var(--bs-font-color);
+  color: var(--bs-font-color);
   line-height: normal;
   align-items: center;
 }
@@ -190,11 +255,19 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   height: 30px; 
   font-size: 14px;
   font-weight: bold;
-  color:var(--bs-font-color);
+  color: var(--bs-font-color);
   border-radius: 5px; 
   border: 1px solid #ccc; 
   padding-left: 5px;
   background-color: white;
+}
+
+.formImgNm {
+  width: auto;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--bs-font-color);
 }
 
 /* Textboxes and select boxes */
@@ -233,7 +306,7 @@ input[type="date"] {
   line-height: 1.4 !important;
   margin: 0 !important;
   white-space: nowrap;
-  border-radius: 4px;
+  border-radius: 6px;
   justify-content: center;
   align-items: center;
   height: 30px;
@@ -242,21 +315,66 @@ input[type="date"] {
   opacity: 0.75;
 }
 .btn-primary {
+  color: #fff;
   background-color: var(--bs-primary-color);
   border-color: var(--bs-primary-color);
 }
-.btn-primary:hover {
-  background-color: var(--bs-primary-color);
+.btn-outline-primary {
+  color: var(--bs-primary-color);
+  background-color: #ffffff;
   border-color: var(--bs-primary-color);
-  opacity: 0.75;
+}
+.btn-secondary {
+  color: #fff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+.btn-outline-secondary {
+  color: #6c757d;
+  background-color: ffffff;
+  border-color: #6c757d;
+}
+.btn-reject {
+  color: #fff;
+  background-color: #dc3545;
+  border-color: #dc3545;
 }
 .btnCheck {
   width: 100%;
   height: 30px;
   --bs-btn-color: #fff;
+  --bs-btn-bg: var(--bs-primary-color);
   --bs-btn-disabled-color: #fff;
   --bs-btn-disabled-bg: var(--bs-primary-color);
   --bs-btn-disabled-border-color: var(--bs-primary-color);
+}
+.btnReject {
+    width: 50px;
+    margin-right: 5px !important;
+    --bs-btn-color: #fff;
+    --bs-btn-bg: #dc3545;
+    --bs-btn-border-color: #dc3545;
+    --bs-btn-disabled-color: #fff;
+    --bs-btn-disabled-bg: #dc3545;
+    --bs-btn-disabled-border-color: #dc3545;
+}
+
+.arrowContainer {
+  position: relative;
+  width: 18px;
+  height: 18px;
+}
+
+.arrowContainer::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid #000;
+  border-bottom: 2px solid #000;
 }
 
 
@@ -303,6 +421,12 @@ input[type="date"] {
   height: auto;
   background-color: #fff;
   border-radius: 1rem;
+  overflow-y: hidden;
+}
+.modal-dialog {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
 }
 .modal-body, .modal-title, .modal-footer {
   font-size: var(--bs-body-font-size) !important;
@@ -310,6 +434,7 @@ input[type="date"] {
 .modal-content {
   padding: calc(1rem * var(--bs-scaling)) !important;
   max-height: 100vh;
+  border: 0;
 }
 .modal-body {
   min-height: 0;
@@ -319,6 +444,13 @@ input[type="date"] {
 }
 .modal-footer-inner {
   margin-top: 1rem;
+}
+
+.customModal {
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  border-radius: 0;
 }
 
 /* Navbars and navs */
@@ -691,6 +823,7 @@ body {
   height: calc(100vh - 56px);
   overflow-y: auto;
   overflow-x: hidden;
+  gap: 0.75rem;
 }
 
 .nodataWrap {
@@ -698,6 +831,7 @@ body {
   justify-content: center;
   align-items: center;
   flex: 1;
+  font-size: 0.875rem;
 }
 
 .btnSecondary {
@@ -772,6 +906,8 @@ body {
   margin-right: 0 !important;
   min-width: auto;
   padding-top: 0;
+  font-size: 0.875rem !important;
+  font-weight: 600;
 }
 .boardWrap .attachLabelWrap {
   display: flex;
@@ -828,7 +964,7 @@ body {
   margin-top: 2rem;
 }
 .boardBottomBtnWrap .btn {
-  font-size: 1rem !important;
+  font-size: 0.875rem !important;
   padding: 0.375rem 1rem !important;
 }
 .pagination {
@@ -879,6 +1015,11 @@ body {
   gap: 6px;
   margin-bottom: 1rem;;
 }
+.btnWrap {
+  display: flex;
+  gap: 4px;
+}
+
 /* Mobile portrait mode */
 @media (max-width: 768px) and (orientation: landscape) {
   html, body {

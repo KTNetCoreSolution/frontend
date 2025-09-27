@@ -112,7 +112,7 @@ const MobileCarNotice = () => {
           </div>
           ))
          ) : (
-          <div className="list-group-item text-center">공지사항이 없습니다.</div>
+          <div className="nodataWrap">공지사항이 없습니다.</div>
         )}
         {totalPages > 1 && (
           <nav aria-label="Page navigation" className="mt-3">

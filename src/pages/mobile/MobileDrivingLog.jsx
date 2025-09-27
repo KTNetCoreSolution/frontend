@@ -271,56 +271,56 @@ const MobileDrivingLog = () => {
               </div>
             </div>
           </div>
-          <div className={`${styles.formDivBox}`} >
-            <div className={styles.container}>
-              <label className={`${styles.formGarageTitle}`} >차고지</label>
-              <label className={`${styles.formGarage}`} >{carInfo.GARAGE_ADDR}</label>
+          <div className="formDivBox">
+            <div className="formListData">
+              <span class="formLabel" style={{width: '120px'}}>차고지</span>
+              <div className="formData">{carInfo.GARAGE_ADDR}</div>
             </div>
           </div>
-          <div className={`${styles.formDivBox}`} >
-            <div className={`d-flex ${styles.container}`} >
-              <label className={`${styles.formManagerTitle}`} >운전자(정)</label>
-              <label className={`${styles.formManager}`}>{carInfo.MANAGER_EMPNM}</label>
-            </div>
-            <div className={`d-flex ${styles.container}`}>
-              <label className={`${styles.formManagerTitle}`}>연락처</label>
-              <label className={`${styles.formManager}`}>{carInfo.MANAGER_MOBILE}</label>
-            </div>
+          <div className="formDivBox">
+            <ul className='formListData'>
+              <li>
+                <span class="formLabel" style={{width: '120px'}}>운전자(정)</span>
+                <div className="formData">{carInfo.MANAGER_EMPNM}</div>
+              </li>
+              <li className={`d-flex ${styles.container}`}>
+                <span class="formLabel" style={{width: '120px'}}>연락처</span>
+                <div className="formData">{carInfo.MANAGER_MOBILE}</div>
+              </li>
+            </ul>
           </div>
-          <div className="mb-2">
-            <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={moveToRegLog}>차량점검 및 일지작성</button>
-          </div>
-          <div className={`d-flex ${styles.formDivNotiBox}`} onClick={(e) => navigate('/mobile/MobileCarNotice')} >
-            <div className={styles.container}>      
+          <button className="btn btn-primary w-100" onClick={moveToRegLog}>차량점검 및 일지작성</button>
+          <div className="formDivBox" onClick={(e) => navigate('/mobile/MobileCarNotice')} >
+            <div>      
               {boardList.length > 0 ? (
                 boardList.map((item, index) =>  
-                  <div key={item.NOTICEID} className={`d-flex ${index === 0 ? styles.formDivNotiICON : ''}`} ><label className={`${styles.formNotiList}`} >{item.SIMPLE_TITLE}</label></div>
+                  <div key={item.NOTICEID} className={`d-flex ${index === 0 ? styles.formDivNotiICON : ''}`} ><span className="formNotiList">{item.SIMPLE_TITLE}</span></div>
                 )) : (
-                  <div className='d-flex' ><label className={`${styles.formNotiList}`} >등록된 공지사항이 없습니다.</label></div>
+                  <div className="nodataWrap">등록된 공지사항이 없습니다.</div>
                 )
               }
             </div>
           </div>
-          <div className={`d-flex ${styles.formDivBtnBox}`} onClick={moveToConfirm} >
-            <div className={`${styles.container}`}>
-              <label className={`${styles.formListTitle}`} >결재</label>
-              <label className={`${styles.formList}`} >미결재 {carInfo.REQCNT} 건 있습니다.</label>
+          <div className="formDivBtnBox" onClick={moveToConfirm} >
+            <div>
+              <label className="formListTitle">결재</label>
+              <label className="formDesc">미결재 {carInfo.REQCNT} 건 있습니다.</label>
             </div>
-            <div className={`${styles.arrowContainer}`}></div>
+            <div className="arrowContainer"></div>
           </div>
-          <div className={`d-flex ${styles.formDivBtnBox}`} onClick={(e) => navigate('/mobile/MobileCarLogList')} >
-            <div className={`${styles.container}`}>
-              <label className={`${styles.formListTitle}`} >운행이력</label>
-              <label className={`${styles.formList}`} >내 운행이력을 확인합니다.</label>
+          <div className="formDivBtnBox" onClick={(e) => navigate('/mobile/MobileCarLogList')} >
+            <div>
+              <label className="formListTitle">운행이력</label>
+              <label className="formDesc">내 운행이력을 확인합니다.</label>
             </div>
-            <div className={`${styles.arrowContainer}`}></div>
+            <div className="arrowContainer"></div>
           </div>
-          <div className={`d-flex ${styles.formDivBtnBox}`} onClick={(e) => navigate('/mobile/MobileCarCheckStatus')} >
-            <div className={`${styles.container}`}>
-              <label className={`${styles.formListTitle}`} >차량상태</label>
-              <label className={`${styles.formList}`} >내 조직의 차량상태를 확인합니다</label>
+          <div className="formDivBtnBox" onClick={(e) => navigate('/mobile/MobileCarCheckStatus')} >
+            <div>
+              <label className="formListTitle">차량상태</label>
+              <label className="formDesc">내 조직의 차량상태를 확인합니다</label>
             </div>
-            <div className={`${styles.arrowContainer}`}></div>
+            <div className="arrowContainer"></div>
           </div>
         </div>
       </div>

@@ -327,76 +327,80 @@ const MobileStandardBizLog = () => {
         {registeredList.length > 0 ? (
           registeredList.map((item, index) => (
             <div key={index} className='formDivBox'>
-              <ul className='formListData'>
+              <ul className='formDataWrap'>
                 <li>
-                  <span className='formLabel'>대분류</span>
-                  <span className='formText'>{item.CLASSANM}</span>
+                  <span class="formLabel" style={{width: '120px'}}>대분류</span>
+                  <div className="formData">{item.CLASSANM}</div>
                 </li>
                 <li>
-                  <span className='formLabel'>중분류</span>
-                  <span className='formText'>{item.CLASSBNM}</span>
+                  <span class="formLabel" style={{width: '120px'}}>중분류</span>
+                  <div className="formData">{item.CLASSBNM}</div>
                 </li>
                 <li>
-                  <span className='formLabel'>소분류</span>
-                  <span className='formText'>{item.CLASSCNM}</span>
+                  <span class="formLabel" style={{width: '120px'}}>소분류</span>
+                  <div className="formData">{item.CLASSCNM}</div>
                 </li>
                 <li>
-                  <span className='formLabel'>회선번호+고객명</span>
-                  <input
-                    type="text"
-                    value={item.CUSTOMER}
-                    onChange={(e) => handleRowChange(index, "CUSTOMER", e.target.value)}
-                    className={`${styles.formInput}`}
-                    style={{
-                      backgroundColor: item.CUSTOMER !== item.ORIGINAL_CUSTOMER ? '#fff9e6' : '#fff',
-                    }}
-                  />
+                  <span class="formLabel" style={{width: '120px'}}>회선번호+고객명</span>
+                  <div className="formData">
+                    <input
+                      type="text"
+                      value={item.CUSTOMER}
+                      onChange={(e) => handleRowChange(index, "CUSTOMER", e.target.value)}
+                      className={`${styles.formInput}`}
+                      style={{
+                        backgroundColor: item.CUSTOMER !== item.ORIGINAL_CUSTOMER ? '#fff9e6' : '#fff',
+                      }}
+                    />
+                  </div>
                 </li>
                 <li>
-                  <span className='formLabel'>출동여부</span>
-                  <span className='formText'>{item.DISPATCH}</span>
+                  <span class="formLabel" style={{width: '120px'}}>출동여부</span>
+                  <div className="formData">{item.DISPATCH}</div>
                 </li>
                 <li>
-                  <span className='formLabel'>작업인원</span>
-                  <span className='formText'>{item.WORKERS}</span>
+                  <span class="formLabel" style={{width: '120px'}}>작업인원</span>
+                  <div className="formData">{item.WORKERS}</div>
                 </li>
                 <li>
-                  <span className='formLabel'>근무시간</span>
-                  <span className='formText'>{item.WORKTIME}</span>
+                  <span class="formLabel" style={{width: '120px'}}>근무시간</span>
+                  <div className="formData">{item.WORKTIME}</div>
                 </li>
                 <li>
-                  <span className='formLabel'>회선수</span>
-                  <span className='formText'>{item.LINES}</span>
+                  <span class="formLabel" style={{width: '120px'}}>회선수</span>
+                  <div className="formData">{item.LINES}</div>
                 </li>
                 <li>
-                  <span className='formLabel'>프로세스</span>
-                  <span className='formText'>{item.PROCESSNM}</span>
+                  <span class="formLabel" style={{width: '120px'}}>프로세스</span>
+                  <div className="formData">{item.PROCESSNM}</div>
                 </li>
                 <li>
-                  <span className='formLabel'>처리시간(분)</span>
-                  <input
-                    type="number"
-                    min="0"
-                    value={item.PROCESSTIME}
-                    onChange={(e) => handleRowChange(index, "PROCESSTIME", e.target.value)}
-                    className={`${styles.minInput}`}
-                    style={{
-                      backgroundColor: item.PROCESSTIME !== item.ORIGINAL_PROCESSTIME ? '#fff9e6' : '#fff',
-                    }}
-                  />
+                  <span class="formLabel" style={{width: '120px'}}>처리시간(분)</span>
+                  <div className="formData">
+                    <input
+                      type="number"
+                      min="0"
+                      value={item.PROCESSTIME}
+                      onChange={(e) => handleRowChange(index, "PROCESSTIME", e.target.value)}
+                      className={`${styles.minInput}`}
+                      style={{
+                        backgroundColor: item.PROCESSTIME !== item.ORIGINAL_PROCESSTIME ? '#fff9e6' : '#fff',
+                      }}
+                    />
+                  </div>
                 </li>
                 {isButtonVisible && (
                   <li>
-                    <span className='formLabel'>작업</span>
+                    <span class="formLabel" style={{width: '120px'}}>작업</span>
                     <div className='d-flex gap-1'>
                       <button
-                        className={`${styles.btn} btn-secondary`}
+                        className="btn btn-secondary"
                         onClick={() => handleSave('update', index)}
                       >
                         수정
                       </button>
                       <button
-                        className={`${styles.btn} btn-primary`}
+                        className="btn btn-primary"
                         onClick={() => handleSave('delete', index)}
                       >
                         삭제
@@ -411,7 +415,7 @@ const MobileStandardBizLog = () => {
           <div className="nodataWrap">조회된 목록이 없습니다.</div>
         )}
       </div>
-      <Modal show={showRegModal} onHide={handleRegModalClose} centered className={styles.customModal}>
+      <Modal show={showRegModal} onHide={handleRegModalClose} centered className="customModal">
         <Modal.Body className={styles.modalBody}>
           <MobileStandardBizLogReg
             workDate={workDate}
