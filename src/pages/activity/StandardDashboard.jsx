@@ -284,8 +284,8 @@ const StandardDashboard = () => {
           const classNames = [...new Set(sectionData.map(item => item.CLASSANM).filter(name => name))];
           // 색상 팔레트
           const colors = [
-            '#1f4178', '#0065b3', '#193565', 
-            '#1cd6d1', '#0787a5', '#00547d'
+            '#234984', '#0076c5', '#25b3fe', 
+            '#0ec9dc', '#0897b5', '#3a6b8d'
           ].slice(0, classNames.length);
           // 데이터 정규화: 각 MDATE의 총 WORKH 계산
           const totalWorkHByDate = mDates.map(mDate => {
@@ -435,8 +435,8 @@ const StandardDashboard = () => {
               time: Number(item.WORKH) || 0,
             }));
           const colors = [
-            '#1f4178', '#0065b3', '#193565', 
-            '#1cd6d1', '#0787a5', '#00547d'
+            '#234984', '#0076c5', '#25b3fe', 
+            '#0ec9dc', '#0897b5', '#3a6b8d'
           ].slice(0, data.length);
           chart.setOption({
             title: {
