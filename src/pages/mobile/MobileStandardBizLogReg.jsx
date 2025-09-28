@@ -285,17 +285,17 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
         <div className="formDivBox">
           <ul className="formDataWrap">
             <li>
-              <span class="formLabel" style={{width: '120px'}}>분야</span>
+              <span className="formLabel" style={{width: '120px'}}>분야</span>
               <div className="formData">BIZ</div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>작업일</span>
+              <span className="formLabel" style={{width: '120px'}}>작업일</span>
               <div className="formData">
                 <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.formDate} />
               </div>
             </li>            
             <li>
-              <span class="formLabel" style={{width: '120px'}}>회선번호+고객명</span>
+              <span className="formLabel" style={{width: '120px'}}>회선번호+고객명</span>
               <div className="formData">
                 <input
                   type="text"
@@ -307,7 +307,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>출동여부</span>
+              <span className="formLabel" style={{width: '120px'}}>출동여부</span>
               <div className="formData">
                 <select name="DISPATCH" value={formData.DISPATCH} onChange={handleChange}>
                   <option value="">선택</option>
@@ -320,7 +320,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>작업인원</span>
+              <span className="formLabel" style={{width: '120px'}}>작업인원</span>
               <div className="formData">
                 <select name="WORKERS" value={formData.WORKERS} onChange={handleChange}>
                   <option value="">선택</option>
@@ -333,7 +333,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>근무시간</span>
+              <span className="formLabel" style={{width: '120px'}}>근무시간</span>
               <div className="formData">
                 <select name="WORKTIME" value={formData.WORKTIME} onChange={handleChange}>
                   <option value="">선택</option>
@@ -346,7 +346,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>회선수</span>
+              <span className="formLabel" style={{width: '120px'}}>회선수</span>
               <div className="formData">
                 <input
                   type="number"
@@ -360,7 +360,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>대분류</span>
+              <span className="formLabel" style={{width: '120px'}}>대분류</span>
               <div className="formData">
                 <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange}>
                   {class1Options.map((opt) => (
@@ -372,7 +372,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>중분류</span>
+              <span className="formLabel" style={{width: '120px'}}>중분류</span>
               <div className="formData">
                 <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange}>
                   {class2Options.map((opt) => (
@@ -384,7 +384,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>소분류</span>
+              <span className="formLabel" style={{width: '120px'}}>소분류</span>
               <div className="formData">
                 <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange}>
                   {class3Options.map((opt) => (
@@ -396,7 +396,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>구분</span>
+              <span className="formLabel" style={{width: '120px'}}>구분</span>
               <div className="formData">
                 <select name="PROCESSSECTION" value={formData.PROCESSSECTION} onChange={handleChange}>
                   <option value="">선택</option>
@@ -409,7 +409,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>프로세스</span>
+              <span className="formLabel" style={{width: '120px'}}>프로세스</span>
               <div className="formDataRow">
                 <select name="PROCESS" value={formData.PROCESS} onChange={handleChange}>
                   <option value="">선택</option>
@@ -429,7 +429,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
 
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>처리시간(분)</span>
+              <span className="formLabel" style={{width: '120px'}}>처리시간(분)</span>
               <div className="formData">
                 <input
                   type="number"

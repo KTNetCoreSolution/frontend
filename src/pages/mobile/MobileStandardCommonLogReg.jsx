@@ -238,13 +238,13 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
         <div className="formDivBox">
           <ul className="formDataWrap">
             <li>
-              <span class="formLabel" style={{width: '120px'}}>분야</span>
+              <span className="formLabel" style={{width: '120px'}}>분야</span>
               <div className="formData">
                 {initialClassGubun === "LINE" ? "선로" : initialClassGubun === "DESIGN" ? "설계" : "BIZ"}
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>대분류</span>
+              <span className="formLabel" style={{width: '120px'}}>대분류</span>
               <div className="formData">
                 <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange}>
                   {class1Options.map((opt) => (
@@ -256,7 +256,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>중분류</span>
+              <span className="formLabel" style={{width: '120px'}}>중분류</span>
               <div className="formData">
                 <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange}>
                   {class2Options.map((opt) => (
@@ -268,7 +268,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>소분류</span>
+              <span className="formLabel" style={{width: '120px'}}>소분류</span>
               <div className="formData">
                 <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange}>
                   {class3Options.map((opt) => (
@@ -280,13 +280,13 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
               </div>
             </li>
             <li className="align-items-start">
-              <span class="formLabel" style={{width: '120px'}}>업무 부가 설명</span>
+              <span className="formLabel" style={{width: '120px'}}>업무 부가 설명</span>
               <div className="formData">
                 {formData.CLASSCCD !== "all" ? classData.find((item) => item.CLASSCCD === formData.CLASSCCD)?.DETAIL || "" : ""}
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>건(구간/본/개소)</span>
+              <span className="formLabel" style={{width: '120px'}}>건(구간/본/개소)</span>
               <div className="formData">
                 <div className="formDataRow align-items-center">
                   <input
@@ -304,7 +304,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>근무형태</span>
+              <span className="formLabel" style={{width: '120px'}}>근무형태</span>
               <div className="formData">
                 <select name="WORKTYPE" value={formData.WORKTYPE} onChange={handleChange}>
                   <option value="">선택</option>
@@ -317,7 +317,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
               </div>
             </li>
             <li>
-              <div class="formLabel gap-1">
+              <div className="formLabel gap-1">
                 <span>작업일시</span> (주간 <input type="checkbox" name="isWeekly" checked={formData.isWeekly} onChange={handleChange} />)
               </div>
             </li>

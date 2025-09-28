@@ -413,7 +413,7 @@ const MobileStandardCommonLog = () => {
             <div key={index} className='formDivBox'>
               <ul className='formDataWrap'>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>시간</span>
+                  <span className="formLabel" style={{width: '120px'}}>시간</span>
                   <div className="formData">
                     <select
                       value={item.STARTTIME}
@@ -441,19 +441,19 @@ const MobileStandardCommonLog = () => {
                   </div>
                 </li>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>대분류</span>
+                  <span className="formLabel" style={{width: '120px'}}>대분류</span>
                   <div className="formData">{item.CLASSANM}</div>
                 </li>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>중분류</span>
+                  <span className="formLabel" style={{width: '120px'}}>중분류</span>
                   <div className="formData">{item.CLASSBNM}</div>
                 </li>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>소분류</span>
+                  <span className="formLabel" style={{width: '120px'}}>소분류</span>
                   <div className="formData">{item.CLASSCNM}</div>
                 </li>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>건(구간/본/개소)</span>
+                  <span className="formLabel" style={{width: '120px'}}>건(구간/본/개소)</span>
                   <div className="formData">
                     <input
                       type="number"
@@ -466,7 +466,7 @@ const MobileStandardCommonLog = () => {
                   </div>
                 </li>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>근무형태</span>
+                  <span className="formLabel" style={{width: '120px'}}>근무형태</span>
                   <div className="formData">
                     <select
                       value={item.WORKTYPE || ''}
@@ -483,7 +483,7 @@ const MobileStandardCommonLog = () => {
                 </li>
                 {isButtonVisible && (
                   <li>
-                    <span class="formLabel" style={{width: '120px'}}>작업</span>
+                    <span className="formLabel" style={{width: '120px'}}>작업</span>
                     <div className="formListDataRow">
                       <button
                         className="btn btn-secondary"

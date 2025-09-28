@@ -180,7 +180,7 @@ const MobileCarLogConfirm = () => {
         <MobileMainUserMenu show={showSidebar} handleClose={handleToggleSidebar} onLogout={handleLogout} />
 
         <div className="pageMain">
-          <div class="d-flex justify-content-end">
+          <div className="d-flex justify-content-end">
             <button className="btn btn-secondary" style={{width: '80px', display: user?.levelCd === '41' ? 'block' : 'none' }} onClick={(e) => handleConfrimAll(e)}>일괄승인</button>
             <button className="btn btn-secondary" style={{width: '80px'}} onClick={handleReturnPage}>돌아가기</button>
           </div>
@@ -189,69 +189,69 @@ const MobileCarLogConfirm = () => {
           <div key={`${item.CARID}_${index}`} className="formDivBox" onClick={(e) => handleListClick(item)} >
             <ul className="formListData">          
               <li>
-                <span class="formLabel" style={{width: '120px'}}>차량번호</span>
+                <span className="formLabel" style={{width: '120px'}}>차량번호</span>
                 <div className="formText">{item.CARNO}</div>
               </li>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>차대번호</span>
+                <span className="formLabel" style={{width: '120px'}}>차대번호</span>
                 <div className="formText">{item.CARID}</div>
               </li>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>운행일시</span>
+                <span className="formLabel" style={{width: '120px'}}>운행일시</span>
                 <div className="formText">{item.LOGDATE} {item.LOGSTTIME} ~ {item.LOGENTIME}</div>
               </li>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>운행시간</span>
+                <span className="formLabel" style={{width: '120px'}}>운행시간</span>
                 <div className="formText">{item.DIFFTIME}</div>
               </li>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>운행자</span>
+                <span className="formLabel" style={{width: '120px'}}>운행자</span>
                 <div className="formText">{item.EMPNM} ({item.EMPNO})</div>
               </li>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>시작Km</span>
+                <span className="formLabel" style={{width: '120px'}}>시작Km</span>
                 <div className="formText">{item.STKM}</div>
               </li>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>종료Km</span>
+                <span className="formLabel" style={{width: '120px'}}>종료Km</span>
                 <div className="formText">{item.ENKM}</div>
               </li>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>운행거리</span>
+                <span className="formLabel" style={{width: '120px'}}>운행거리</span>
                 <div className="formText">{item.LEAVEKM}</div>
               </li>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>주유(ℓ)</span>
+                <span className="formLabel" style={{width: '120px'}}>주유(ℓ)</span>
                 <div className="formText">{item.FUEL}</div>
               </li>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>승인상태</span>
+                <span className="formLabel" style={{width: '120px'}}>승인상태</span>
                 <div className="formText" style={{color: item.LOGSTAT === 'N' ? 'red' : '#525252'}}>{item.LOGSTATNM}</div>           
               </li>
             </ul>
             <ul className={`formListData mt-2 ${styles.formDivOverlayHide} ${id === item.ID ? styles.formDivOverlayShow : ''}`}>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>차량파손</span>
+                <span className="formLabel" style={{width: '120px'}}>차량파손</span>
                 <div className="formText" style={{color: item.DAMAGE === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.DAMAGE}</div>
               </li>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>오일누수</span>
+                <span className="formLabel" style={{width: '120px'}}>오일누수</span>
                 <div className="formText" style={{color: item.OILLEAK === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.OILLEAK}</div>
               </li>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>타이어</span>
+                <span className="formLabel" style={{width: '120px'}}>타이어</span>
                 <div className="formText" style={{color: item.TIRE === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.TIRE}</div>
               </li>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>적재물안전</span>
+                <span className="formLabel" style={{width: '120px'}}>적재물안전</span>
                 <div className="formText" style={{color: item.LUGGAGE === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.LUGGAGE}</div>
               </li>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>기타</span>
+                <span className="formLabel" style={{width: '120px'}}>기타</span>
                 <div className="formText" style={{color: item.ETC1 === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.ETC1}</div>
               </li>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>특이사항</span>
+                <span className="formLabel" style={{width: '120px'}}>특이사항</span>
                 <div className="formText" style={{color: item.ETC2 === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.ETC2}</div>
               </li>
               <li>

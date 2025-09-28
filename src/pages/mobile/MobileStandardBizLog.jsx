@@ -329,19 +329,19 @@ const MobileStandardBizLog = () => {
             <div key={index} className='formDivBox'>
               <ul className='formDataWrap'>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>대분류</span>
+                  <span className="formLabel" style={{width: '120px'}}>대분류</span>
                   <div className="formData">{item.CLASSANM}</div>
                 </li>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>중분류</span>
+                  <span className="formLabel" style={{width: '120px'}}>중분류</span>
                   <div className="formData">{item.CLASSBNM}</div>
                 </li>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>소분류</span>
+                  <span className="formLabel" style={{width: '120px'}}>소분류</span>
                   <div className="formData">{item.CLASSCNM}</div>
                 </li>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>회선번호+고객명</span>
+                  <span className="formLabel" style={{width: '120px'}}>회선번호+고객명</span>
                   <div className="formData">
                     <input
                       type="text"
@@ -355,27 +355,27 @@ const MobileStandardBizLog = () => {
                   </div>
                 </li>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>출동여부</span>
+                  <span className="formLabel" style={{width: '120px'}}>출동여부</span>
                   <div className="formData">{item.DISPATCH}</div>
                 </li>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>작업인원</span>
+                  <span className="formLabel" style={{width: '120px'}}>작업인원</span>
                   <div className="formData">{item.WORKERS}</div>
                 </li>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>근무시간</span>
+                  <span className="formLabel" style={{width: '120px'}}>근무시간</span>
                   <div className="formData">{item.WORKTIME}</div>
                 </li>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>회선수</span>
+                  <span className="formLabel" style={{width: '120px'}}>회선수</span>
                   <div className="formData">{item.LINES}</div>
                 </li>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>프로세스</span>
+                  <span className="formLabel" style={{width: '120px'}}>프로세스</span>
                   <div className="formData">{item.PROCESSNM}</div>
                 </li>
                 <li>
-                  <span class="formLabel" style={{width: '120px'}}>처리시간(분)</span>
+                  <span className="formLabel" style={{width: '120px'}}>처리시간(분)</span>
                   <div className="formData">
                     <input
                       type="number"
@@ -391,7 +391,7 @@ const MobileStandardBizLog = () => {
                 </li>
                 {isButtonVisible && (
                   <li>
-                    <span class="formLabel" style={{width: '120px'}}>작업</span>
+                    <span className="formLabel" style={{width: '120px'}}>작업</span>
                     <div className='d-flex gap-1'>
                       <button
                         className="btn btn-secondary"

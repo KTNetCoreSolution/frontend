@@ -286,18 +286,18 @@ const MobileDrivingLog = () => {
           </div>
           <div className="formDivBox">
             <div className="formListData">
-              <span class="formLabel" style={{width: '120px'}}>차고지</span>
+              <span className="formLabel" style={{width: '120px'}}>차고지</span>
               <div className="formData">{carInfo.GARAGE_ADDR}</div>
             </div>
           </div>
           <div className="formDivBox">
             <ul className='formListData'>
               <li>
-                <span class="formLabel" style={{width: '120px'}}>운전자(정)</span>
+                <span className="formLabel" style={{width: '120px'}}>운전자(정)</span>
                 <div className="formData">{carInfo.MANAGER_EMPNM}</div>
               </li>
               <li className={`d-flex ${styles.container}`}>
-                <span class="formLabel" style={{width: '120px'}}>연락처</span>
+                <span className="formLabel" style={{width: '120px'}}>연락처</span>
                 <div className="formData">{carInfo.MANAGER_MOBILE}</div>
               </li>
             </ul>

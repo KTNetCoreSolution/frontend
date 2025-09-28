@@ -405,9 +405,9 @@ const MobileDrivingLog = () => {
           {/* <div className='formList'>
             <span className='formSearchTitle'>점검항목</span>
           </div> */}
-          <ul class="formListData">
+          <ul className="formListData">
             <li>
-              <span class="formLabel">차량파손</span>
+              <span className="formLabel">차량파손</span>
               <div className='safetyWrap'>
                 <label className={`${styles.safetyLabel} ${isDamage ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Damage', !isDamage)}>{isDamage ? '양호' : '불량'}</label>
                 <div className={`${styles.safetyBox} ${isDamage ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Damage', !isDamage)}>
@@ -416,7 +416,7 @@ const MobileDrivingLog = () => {
               </div>
             </li>
             <li>
-              <span class="formLabel">오일누수</span>
+              <span className="formLabel">오일누수</span>
               <div className='safetyWrap'>
                 <label className={`${styles.safetyLabel} ${isOilLeak ? '' : styles.bad}`} onClick={() => handleSafetyCheck('OilLeak', !isOilLeak)}>{isOilLeak ? '양호' : '불량'}</label>
                 <div className={`${styles.safetyBox} ${isOilLeak ? '' : styles.bad}`} onClick={() => handleSafetyCheck('OilLeak', !isOilLeak)}>
@@ -425,7 +425,7 @@ const MobileDrivingLog = () => {
               </div>  
             </li>
             <li>
-              <span class="formLabel">타이어</span>
+              <span className="formLabel">타이어</span>
               <div className='safetyWrap'>
                 <label className={`${styles.safetyLabel} ${isTire ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Tire', !isTire)}>{isTire ? '양호' : '불량'}</label>
                 <div className={`${styles.safetyBox} ${isTire ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Tire', !isTire)}>
@@ -434,7 +434,7 @@ const MobileDrivingLog = () => {
               </div>
             </li> 
             <li>
-              <span class="formLabel">적재물안전</span>
+              <span className="formLabel">적재물안전</span>
               <div className='safetyWrap'>
                 <label className={`${styles.safetyLabel} ${isLuggage ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Luggage', !isLuggage)}>{isLuggage ? '양호' : '불량'}</label>
                 <div className={`${styles.safetyBox} ${isLuggage ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Luggage', !isLuggage)}>
@@ -443,7 +443,7 @@ const MobileDrivingLog = () => {
               </div>
             </li>       
             <li>
-              <span class="formLabel">기타(직접기재)</span>
+              <span className="formLabel">기타(직접기재)</span>
               <div className='safetyWrap'>
                 <label className={`${styles.safetyLabel} ${isEtc1 ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Etc1', !isEtc1)}>{isEtc1 ? '양호' : '불량'}</label>
                 <div className={`${styles.safetyBox} ${isEtc1 ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Etc1', !isEtc1)}>
@@ -452,7 +452,7 @@ const MobileDrivingLog = () => {
               </div>
             </li>      
             <li>
-              <span class="formLabel">특이사항(직전)</span>
+              <span className="formLabel">특이사항(직전)</span>
               <div className='safetyWrap'>
                 <label className={`${styles.safetyLabel} ${isEtc2 ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Etc2', !isEtc2)}>{isEtc2 ? '양호' : '불량'}</label>
                 <div className={`${styles.safetyBox} ${isEtc2 ? '' : styles.bad}`} onClick={() => handleSafetyCheck('Etc2', !isEtc2)}>
@@ -468,37 +468,37 @@ const MobileDrivingLog = () => {
         <div className="formDivBox">
           <ul className="formDataWrap">
             <li>
-              <span class="formLabel" style={{width: '120px'}}>운행자</span>
+              <span className="formLabel" style={{width: '120px'}}>운행자</span>
               <div className="formData">
                 <span className='formSearchTitle' style={{width: '200px'}}>{user?.empNm + ' (' + user?.empNo + ')'}</span>
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>시작km</span>
+              <span className="formLabel" style={{width: '120px'}}>시작km</span>
               <div className="formData">
                 <input type="number" style={{width: '120px'}} value={logInfo.STKM} disabled={gubun === 'I' ? logInfo.STKM === 0 ? '' : 'disabled' : 'disabled'} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, STKM: e.target.value })}} />
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>종료km</span>
+              <span className="formLabel" style={{width: '120px'}}>종료km</span>
               <div className="formData">
                 <input type="number" className={`${styles.formInput}`} style={{width: '120px'}} value={logInfo.ENKM} disabled={gubun === 'I' ? '' : 'disabled'} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, ENKM: e.target.value })}} />
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>운행거리</span>
+              <span className="formLabel" style={{width: '120px'}}>운행거리</span>
               <div className="formData">
                 <span className='formSearchTitle' style={{width: '120px'}}>{logInfo.ENKM - logInfo.STKM}</span>
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>주유(ℓ)</span>
+              <span className="formLabel" style={{width: '120px'}}>주유(ℓ)</span>
               <div className="formData">
                 <input type="number" className={`${styles.formInput}`} style={{width: '120px'}} value={logInfo.FUEL} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, FUEL: e.target.value })}} />
               </div>
             </li>
             <li>
-              <span class="formLabel" style={{width: '120px'}}>비고</span>
+              <span className="formLabel" style={{width: '120px'}}>비고</span>
               <div className="formData">
                 <input type="text" className={`${styles.formInput}`} style={{flex: 1, marginLeft:0}} value={logInfo.NOTE} onInput={(e) => {handleMaxLength(e, 1000)}} onChange={(e) => {setLogInfo({ ...logInfo, NOTE: e.target.value })}} />
               </div>
