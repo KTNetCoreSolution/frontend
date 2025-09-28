@@ -279,7 +279,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
                 </select>
               </div>
             </li>
-            <li>
+            <li className="align-items-start">
               <span class="formLabel" style={{width: '120px'}}>업무 부가 설명</span>
               <div className="formData">
                 {formData.CLASSCCD !== "all" ? classData.find((item) => item.CLASSCCD === formData.CLASSCCD)?.DETAIL || "" : ""}

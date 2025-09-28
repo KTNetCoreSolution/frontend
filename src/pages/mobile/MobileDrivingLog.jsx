@@ -252,11 +252,24 @@ const MobileDrivingLog = () => {
                     {carList.map((item, index) =>  
                       <div key={item.CARID} className={styles.slide}>            
                         <div className={styles.container}>
-                            <div className='d-flex justify-content-center gap-2'>
+                            <div className='d-flex justify-content-center align-items-center gap-2'>
                               <label className={`${styles.formCarNm}`}>{carInfo.CARNM} - {carInfo.CARNO}</label>
-                              <div className={`${styles.starBorder}`}>
+                              {/* <div className={`${styles.starBorder}`}>
                                 <button onClick={(e) => {handleBookMark(e)}} className={`${styles.star} ${isFilled ? styles.filled : ''}`}  />
-                              </div>
+                              </div> */}
+                              <svg
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill={isFilled ? 'gold' : '#e0e0e0'}
+                                // stroke="#888"
+                                // strokeWidth="1"
+                                strokeLinejoin="round"
+                                onClick={handleBookMark}
+                                style={{ cursor: 'pointer' }}
+                              >
+                                <path d="M12 2.5l2.95 6.11 6.73.98-4.87 4.74 1.15 6.7L12 17.77 6.04 21l1.15-6.7-4.87-4.74 6.73-.98L12 2.5z" />
+                              </svg>
                             </div>
                             <img src={carInfo.src} className={styles.carImage} />
                         </div>

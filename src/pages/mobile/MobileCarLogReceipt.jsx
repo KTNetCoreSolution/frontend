@@ -249,38 +249,38 @@ const MobileCarLogReceipt = () => {
             <button className="btn btn-secondary" style={{width: '80px'}} onClick={handleReturnPage}>{state?.gubun === 'U' ? '돌아가기' : '닫기' }</button>
           </div>
           <div className="d-flex flex-column gap-3" style={{display: `${vSaveBtnDisplay}`}}>
-              <input type="file" className={`form-control ${styles.formControl}`} accept="image/*" multiple
-                onChange={(e) => {
-                  const selectedFiles = Array.from(e.target.files || []);
-                  setImgUploadInfo({ FILES: selectedFiles });
-                }}/>
-              <div>
-                <button className="btn btn-primary w-100" onClick={(e) => handleUpload(e)}>영수증 등록</button>
+            <input type="file" className={`form-control ${styles.formControl}`} accept="image/*" multiple
+              onChange={(e) => {
+                const selectedFiles = Array.from(e.target.files || []);
+                setImgUploadInfo({ FILES: selectedFiles });
+              }}/>
+            <div className='btnWrap flex-column'>
+              <button className="btn btn-primary w-100" onClick={(e) => handleUpload(e)}>영수증 등록</button>
+              <div className="d-flex" style={{display: receiptList.length > 0 ? 'block' : 'none'}} >
+                <button className="btn btn-outline-primary w-100" onClick={handleDownloadAll}>전체 다운로드</button>
               </div>
-          <div className="d-flex justify-content-end" style={{display: receiptList.length > 0 ? 'block' : 'none'}} >
-            <button className="btn btn-outline-primary w-100" onClick={handleDownloadAll}>전체 다운로드</button>
-          </div>
-          <div style={{display: receiptList.length > 0 ? 'block' : 'none'}} >
-            {receiptList.map((item, index) => 
-            <div key={`imgDiv` + index}>
-              <div className="d-flex align-items-center justify-content-between">
-                <span className="flex-shrink-0 formImgNm">{item.IMGNM}</span>
-                <div className="btnWrap">
-                  <button className="btn btn-outline-secondary gap-1" onClick={() => handleDownload(item)}>
-                    <i className="bi bi-download"></i> <span>다운로드</span>
-                  </button>
-                  <button className="btn btn-outline-secondary" style={{display: `${vSaveBtnDisplay}`}} onClick={() => handleImgDelete(item)}>
-                    <i className="bi"></i> 삭제
-                  </button>
-                </div>
-              </div>
-              <img src={item.SRC} className={styles.receiptImage} />
             </div>
-            )}
+            <div className='d-flex flex-column gap-2' style={{display: receiptList.length > 0 ? 'block' : 'none'}} >
+              {receiptList.map((item, index) => 
+              <div key={`imgDiv` + index}>
+                <div className="d-flex align-items-center justify-content-between">
+                  <span className="flex-shrink-0 formImgNm">{item.IMGNM}</span>
+                  <div className="btnWrap">
+                    <button className="btn btn-outline-secondary gap-1" onClick={() => handleDownload(item)}>
+                      <i className="bi bi-download"></i> <span>다운로드</span>
+                    </button>
+                    <button className="btn btn-outline-secondary" style={{display: `${vSaveBtnDisplay}`}} onClick={() => handleImgDelete(item)}>
+                      <i className="bi"></i> 삭제
+                    </button>
+                  </div>
+                </div>
+                <img src={item.SRC} className="receiptImage mt-2" />
+              </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

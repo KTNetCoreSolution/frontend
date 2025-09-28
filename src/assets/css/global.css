@@ -469,16 +469,23 @@ border-color: #bd2130;
 }
 
 .tabulator {
+  display: flex;
+  flex-direction: column;
   overflow-x: auto !important;
   border: unset !important;
 }
 .tabulator-row.tabulator-selectable:hover {
   background-color: #e0f7fa !important;
 }
+
 .tabulator .tabulator-tableholder {
+  flex: 1 1 auto;
   border-bottom: 1px solid #999;
-  height: calc(100% - 80px) !important; 
-  max-height: calc(100% - 80px) !important;
+  overflow: auto;
+}
+
+.tabulator .tabulator-footer {
+  flex-shrink: 0; 
 }
 .tabulator .tabulator-footer .tabulator-page:not(disabled):hover {
   background: inherit !important;
@@ -490,6 +497,7 @@ border-color: #bd2130;
   border: 1px solid #0eaba7 !important;
   opacity: .75;
 }
+
 
 /* 250815 이후 추가 */
 

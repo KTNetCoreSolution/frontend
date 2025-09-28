@@ -81,10 +81,17 @@ button.tabulator-page {
 }
 
 .tabulator .tabulator-header .tabulator-col {
-    height: auto !important;
+    align-items: center;
+    height: 100% !important;
     background-color: #fff;
 }
 
 .tabulator-row.tabulator-row-even {
     background-color: #f9f9f9;
+}
+
+.tabulator .tabulator-header .tabulator-col .tabulator-col-content {
+    display: flex;
+    flex: 1;
+    align-items: center;
 }

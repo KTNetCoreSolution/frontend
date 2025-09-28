@@ -255,13 +255,13 @@ const MobileCarLogConfirm = () => {
                 <div className="formText" style={{color: item.ETC2 === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.ETC2}</div>
               </li>
               <li>
-                <div className="btnWrap">
+                <div className="btnWrap w-100">
                     <button className='btn btn-primary flex-grow-1' onClick={(e) => handleConfrim(e, item, 'Y')}>승인</button>
                     <button className='btn btn-reject flex-grow-1' onClick={(e) => handleConfrim(e, item, 'N')}>반려</button>
                   </div>
                 </li>
                 {item.LEVELCD === '41' ? (
-                  <div className="btnWrap">
+                  <div className="btnWrap w-100">
                     <button className='btn btn-primary flex-grow-1' onClick={(e) => handleConfrim(e, item, 'Y')}>승인</button>
                     <button className='btn btn-reject flex-grow-1' onClick={(e) => handleConfrim(e, item, 'N')}>반려</button>
                   </div>
@@ -275,7 +275,7 @@ const MobileCarLogConfirm = () => {
           </div>
             ))
           ) : (
-            <li className="list-group-item text-center">미결재 목록이 없습니다.</li>
+            <div className="nodataWrap">미결재 목록이 없습니다.</div>
           )}
         {totalPages > 1 && (
           <nav aria-label="Page navigation" className="mt-3">

@@ -125,7 +125,7 @@ const MobileCarLogList = () => {
         <div className="pageMain">
           <div className='formDivBox'>
             <div className='formList'>
-              <span className='formSearch'>운행일자 </span>
+              <span className='formSearch'>운행일자</span>
               <div className="formGroupContainer" >
                 <input name="startDate" type="date" className='formInputDate' value={dateInfo.startDate} onChange={(e) => handleDateChange(e)} />~
                 <input name="endDate" type="date" className='formInputDate' value={dateInfo.endDate} onChange={(e) => handleDateChange(e)} />
