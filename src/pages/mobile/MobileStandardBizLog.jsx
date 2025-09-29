@@ -42,12 +42,12 @@ const MobileStandardBizLog = () => {
   });
 
   // 초기 리다이렉트 (기존과 동일)
-  ///*
+  /*
   useEffect(() => {
     msgPopup("작업중입니다.");
     navigate('/mobile/Main');
   }, [navigate]);
-  //*/
+  */
 
   // 등록 리스트 총 처리시간 계산
   const totalRegisteredTime = useMemo(() => {
