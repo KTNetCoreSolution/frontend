@@ -40,7 +40,7 @@ const MobileCarLogList = () => {
   };
   
   const initializeComponent = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 300));
   };
     
   useEffect(() => {

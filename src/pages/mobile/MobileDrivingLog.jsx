@@ -45,7 +45,7 @@ const MobileDrivingLog = () => {
 
   const initializeComponent = async () => {
     // Component에 들어갈 데이터 로딩
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     try {
       const params = { pEMPNO: user?.empNo, pDEBUG: "F" };
