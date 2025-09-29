@@ -190,10 +190,11 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
       formData.DISPATCH === "" ||
       formData.WORKERS === "" ||
       formData.WORKTIME === "" ||
+      formData.PROCESSTIME <= 0 ||
       formData.PROCESS === "" ||
       formData.LINES <= 0
     ) {
-      msgPopup("소분류, 출동여부, 작업인원, 근무시간, 회선수, 프로세스를 확인해주세요.");
+      msgPopup("소분류, 출동여부, 작업인원, 근무시간, 회선수, 프로세스, 처리시간(분)을 확인해주세요.");
       return;
     }
 

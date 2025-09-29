@@ -101,16 +101,20 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable, gubun }) => {
   return (
     <>
       <div className={styles.overlay} onClick={onHide}></div>
-      <div className='modal show d-block' tabIndex="-1" style={{zIndex: 1050}}>
-        <div className='modal-dialog-centered'>
-          <div className='modal-content'>
-            <div className='modal-header'>
-              <h5 className='modal-title'>비밀번호 변경</h5>
-              <button type="button" className={`${styles.btnClose} btn-close`} onClick={onHide}></button>
+      <div className="modal show d-block" tabIndex="-1" style={{ zIndex: 1050 }}>
+        <div className="modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">비밀번호 변경</h5>
+              <button
+                type="button"
+                className={`${styles.btnClose} btn-close`}
+                onClick={onHide}
+              ></button>
             </div>
-            <div className='modal-body'>
+            <div className="modal-body">
               <form onSubmit={handlePasswordChange}>
-                <div className='formGroup'>
+                <div className="formGroup">
                   <label htmlFor="empNo" className="form-label w100">
                     아이디 <font color="red">*</font>
                   </label>
@@ -124,7 +128,7 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable, gubun }) => {
                     placeholder="아이디를 입력하세요"
                   />
                 </div>
-                <div className='formGroup'>
+                <div className="formGroup">
                   <label htmlFor="currentPwd" className="form-label w100">
                     현재 비밀번호 <font color="red">*</font>
                   </label>
@@ -138,7 +142,7 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable, gubun }) => {
                     placeholder="현재 비밀번호를 입력하세요"
                   />
                 </div>
-                <div className='formGroup'>
+                <div className="formGroup">
                   <label htmlFor="newPwd" className="form-label w100">
                     새 비밀번호 <font color="red">*</font>
                   </label>
@@ -152,7 +156,7 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable, gubun }) => {
                     placeholder="새 비밀번호를 입력하세요"
                   />
                 </div>
-                <div className='formGroup'>
+                <div className="formGroup">
                   <label htmlFor="confirmPwd" className="form-label w100">
                     비밀번호 확인 <font color="red">*</font>
                   </label>
@@ -166,14 +170,15 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable, gubun }) => {
                     placeholder="새 비밀번호를 입력하세요"
                   />
                 </div>
-
+                <div className="modal-footer">
+                  <button type="submit" className="btn btn-primary w-100">
+                    변경
+                  </button>
+                  {error && (
+                    <p className="text-danger text-center mt-2">{error}</p>
+                  )}
+                </div>
               </form>
-            </div>
-            <div className='modal-footer'>
-              <button type="submit" className='btn btn-primary w-100'>
-                변경
-              </button>
-              {error && <p className="text-danger text-center mt-2">{error}</p>}
             </div>
           </div>
         </div>
