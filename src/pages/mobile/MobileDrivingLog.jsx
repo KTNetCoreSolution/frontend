@@ -18,7 +18,6 @@ const MobileDrivingLog = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [preIndex, setPreIndex] = useState(0);
   const [carId, setCarId] = useState('');
   const [carList, setCarList] = useState([]);
   const [boardList, setBoardList] = useState([]);
@@ -90,6 +89,8 @@ const MobileDrivingLog = () => {
   
   
   const calculateActiveIndex = (index) => {
+    setCurrentIndex(index);
+
     if (index === 0) {
       return 0; // 첫 페이지
     } else if (index === carList.length - 1) {
@@ -99,22 +100,29 @@ const MobileDrivingLog = () => {
       return index; 
     } else if (carList.length > 10 && index < 9) {
       // 페이지가 10개 초과일 때
-      if (activeIndex === 1 && index <= preIndex) {
+      if (activeIndex === 1 && index <= currentIndex) {
         return 1; // currentIndex가 1일 때는 첫 도트
       }
-      else if (index > activeIndex && index >= preIndex) {
-        return activeIndex + 1; // currentIndex가 9 이하일 때는 1:1 매핑
+      else if (index > activeIndex && index >= currentIndex) {
+        return index; // currentIndex가 9 이하일 때는 1:1 매핑
       } else {
         return activeIndex - 1; // currentIndex가 9 초과일 때는 9번째 도트 유지
       }
     } else if (carList.length > 10 && index >= 9) { 
-      if (activeIndex === 1) {
-        return 1; // currentIndex가 1일 때는 첫 도트
-      }
-      else if (index > preIndex) {
-        return 8; // currentIndex가 9 초과일 때는 도트 하나씩 이동
-      } else if (index <= preIndex) { 
-        return activeIndex - 1; // currentIndex가 9 초과일 때는 도트 하나씩 이동
+      if (index >= currentIndex) {
+        if (activeIndex == 8) {
+          return 8;
+        }
+        else {
+          return activeIndex + 1; // currentIndex가 9 초과일 때는 도트 하나씩 이동
+        }
+      } else if (index < currentIndex) {         
+        if (activeIndex == 1) {
+          return 1;
+        }
+        else {
+          return activeIndex - 1; // currentIndex가 9 초과일 때는 도트 하나씩 이동
+        }
       } else {
         return 1; // currentIndex가 1일 때는 첫 도트
       }
@@ -129,20 +137,16 @@ const MobileDrivingLog = () => {
     onSwipedLeft: () => {
       const index = currentIndex + 1;
       if (currentIndex < carList.length - 1) {
-        setCurrentIndex(index);
         const carId = carList[index].CARID;
         getCarImgInfo(carId);
-        setPreIndex(currentIndex);
         setActiveIndex(calculateActiveIndex(index));
       }
     },
     onSwipedRight: () => {
       const index = currentIndex - 1;
       if (currentIndex > 0) {
-        setCurrentIndex(index);
         const carId = carList[index].CARID;
         getCarImgInfo(carId);
-        setPreIndex(currentIndex);
         setActiveIndex(calculateActiveIndex(index));
       };
     },
