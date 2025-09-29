@@ -190,13 +190,13 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
       if (name === "CLASSACD") {
         newData.CLASSBCD = "all";
         newData.CLASSCCD = "all";
-        setClass2Options(getFieldOptions("CLASSBCD", value, classData));
-        setClass3Options(getFieldOptions("CLASSCCD", "all", classData));
+        //setClass2Options(getFieldOptions("CLASSBCD", value, classData));
+        //setClass3Options(getFieldOptions("CLASSCCD", "all", classData));
       }
 
       if (name === "CLASSBCD") {
         newData.CLASSCCD = "all";
-        setClass3Options(getFieldOptions("CLASSCCD", value, classData));
+        //setClass3Options(getFieldOptions("CLASSCCD", value, classData));
       }
 
       if (name === "isDuplicate" && checked) {

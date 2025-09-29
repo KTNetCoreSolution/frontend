@@ -190,9 +190,10 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
       formData.DISPATCH === "" ||
       formData.WORKERS === "" ||
       formData.WORKTIME === "" ||
+      formData.PROCESS === "" ||
       formData.LINES <= 0
     ) {
-      msgPopup("소분류, 출동여부, 작업인원, 근무시간, 회선수를 확인해주세요.");
+      msgPopup("소분류, 출동여부, 작업인원, 근무시간, 회선수, 프로세스를 확인해주세요.");
       return;
     }
 
@@ -244,14 +245,14 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
         newData.CLASSCCD = "all";
         newData.PROCESSSECTION = "";
         newData.PROCESS = "";
-        setClass2Options(getFieldOptions("CLASSBCD", value, classData));
-        setClass3Options(getFieldOptions("CLASSCCD", "all", classData));
+        //setClass2Options(getFieldOptions("CLASSBCD", value, classData));
+        //setClass3Options(getFieldOptions("CLASSCCD", "all", classData));
       }
       if (name === "CLASSBCD") {
         newData.CLASSCCD = "all";
         newData.PROCESSSECTION = "";
         newData.PROCESS = "";
-        setClass3Options(getFieldOptions("CLASSCCD", value, classData));
+        //setClass3Options(getFieldOptions("CLASSCCD", value, classData));
       }
       if (name === "CLASSCCD") {
         newData.PROCESSSECTION = "";
