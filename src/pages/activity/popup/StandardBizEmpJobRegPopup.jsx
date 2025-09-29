@@ -644,7 +644,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
             <tr>
               <td colSpan="10">
                 <h5>
-                  등록 리스트 <span style={{ color: "blue" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
+                  등록 리스트 <span style={{ color: "#237FB3" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
                 </h5>
                 <div className={styles.listTableContainer}>
                   <table className={styles.listTable}>

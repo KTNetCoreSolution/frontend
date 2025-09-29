@@ -429,8 +429,18 @@ input[type="date"] {
   max-width: 100%;
   margin: 0;
 }
-.modal-body, .modal-title, .modal-footer {
-  font-size: var(--bs-body-font-size) !important;
+.modal-title {
+  font-size: 1rem !important;
+  font-weight: 600;
+}
+.modal-header .btn-close {
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+  margin-right: 0;
+}
+.modal-body, .modal-footer {
+  font-size: 0.875rem !important;
 }
 .modal-content {
   padding: calc(1rem * var(--bs-scaling)) !important;
@@ -1015,7 +1025,7 @@ body {
   flex-wrap: wrap;
   font-size: 13px;
   gap: 6px;
-  margin-bottom: 1rem;;
+  margin-bottom: 0.25rem;
 }
 .btnWrap {
   display: flex;

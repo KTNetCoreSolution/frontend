@@ -150,7 +150,14 @@ const StandardDashboard = () => {
 
         chart.setOption({
           tooltip: {
-            formatter: `대상시간(h): ${targetTime}<br/>입력시간(h): ${inputTime}`,
+            formatter: () => {
+              return `
+                <div style="font-family: 'Pretendard Variable', sans-serif;">
+                  대상시간(h): ${targetTime}<br/>
+                  입력시간(h): ${inputTime}
+                </div>
+              `;
+            }
           },
           graphic: [
             {
@@ -159,6 +166,7 @@ const StandardDashboard = () => {
               top: '36%',
               style: {
                 text: `${percentValue}%`,
+                fontFamily: "'Pretendard Variable', sans-serif",
                 fontSize: 16,
                 fontWeight: 'bold',
                 fill: '#208bec',
@@ -171,6 +179,7 @@ const StandardDashboard = () => {
               top: '54%',
               style: {
                 text: '전체',
+                fontFamily: "'Pretendard Variable', sans-serif",
                 fontSize: 12,
                 fontWeight: 'normal',
                 fill: '#ffffff',
@@ -208,7 +217,14 @@ const StandardDashboard = () => {
           const chart = echarts.init(chartRefs[i + 1].current);
           chart.setOption({
             tooltip: {
-              formatter: `대상시간(h): ${targetTime}<br/> 입력시간(h): ${inputTime}`,
+              formatter: () => {
+                return `
+                  <div style="font-family: 'Pretendard Variable', sans-serif;">
+                    대상시간(h): ${targetTime}<br/>
+                    입력시간(h): ${inputTime}
+                  </div>
+                `;
+              }
             },
             graphic: [
               {
@@ -217,6 +233,7 @@ const StandardDashboard = () => {
                 top: '36%',
                 style: {
                   text: `${percentValue}%`,
+                  fontFamily: "'Pretendard Variable', sans-serif",
                   fontSize: 16,
                   fontWeight: 'bold',
                   fill: '#1cd6d1',
@@ -229,6 +246,7 @@ const StandardDashboard = () => {
                 top: '54%',
                 style: {
                   text: sectionLabels[item?.구분 || section] || (item?.구분 || section),
+                  fontFamily: "'Pretendard Variable', sans-serif",
                   fontSize: 12,
                   fontWeight: 'normal',
                   fill: '#ffffff',
@@ -326,11 +344,10 @@ const StandardDashboard = () => {
             label: {
               show: true,
               formatter: (params) => params.value > 0 ? `${Math.min(params.value, 100)}%` : '',
+              fontFamily: "'Pretendard Variable', sans-serif",
               fontSize: 11,
               color: '#fff',
               overflow: 'none', // 라벨이 잘리지 않도록 설정
-              // textBorderColor: '#171717', // 텍스트 가독성을 위해 테두리 추가
-              // textBorderWidth: 1.5,
             },
             z: 5
           }));
@@ -352,8 +369,8 @@ const StandardDashboard = () => {
               top: 'top',
               textStyle: {
                 fontSize: 16,
-                fontWeight: 'normal',
-                fontFamily: 'Pretendard Variable',
+                fontWeight: 600,
+                fontFamily: "'Pretendard Variable', sans-serif",
                 color: '#ffffff',
                 opacity: '.7'
               },
@@ -370,12 +387,14 @@ const StandardDashboard = () => {
               trigger: 'axis',
               axisPointer: { type: 'shadow' },
               formatter: (params) => {
-                let result = `${params[0].name}<br/>`;
+                let result = `<div style="font-family: 'Pretendard Variable', sans-serif; font-size: 12px;">`;
+                result += `<b>${params[0].name}</b><br/>`;
                 params.forEach(param => {
                   if (param.value > 0) {
                     result += `${param.seriesName}: ${Math.min(param.value, 100)}%<br/>`;
                   }
                 });
+                result += `</div>`;
                 return result;
               },
             },
@@ -388,6 +407,8 @@ const StandardDashboard = () => {
               bottom: 0,
               left: 'center',
               textStyle: {
+                fontFamily: "'Pretendard Variable', sans-serif",
+                fontSize: 12,
                 color: '#ffffff',
                 opacity: '.7'
               },
@@ -397,6 +418,7 @@ const StandardDashboard = () => {
               max: 100, // 100% 초과 방지
               axisLabel: {
                 formatter: '{value}%',
+                fontFamily: "'Pretendard Variable', sans-serif",
                 fontSize: 12,
                 margin: 10,
               },
@@ -406,6 +428,7 @@ const StandardDashboard = () => {
               type: 'category',
               data: mDates,
               axisLabel: {
+                fontFamily: "'Pretendard Variable', sans-serif",
                 fontSize: 12,
                 interval: 0,
                 margin: 10,
@@ -445,15 +468,24 @@ const StandardDashboard = () => {
               top: 'top',
               textStyle: {
                 fontSize: 16,
-                fontWeight: 'normal',
-                fontFamily: 'Pretendard Variable',
+                fontWeight: 600,
+                fontFamily: "'Pretendard Variable', sans-serif",
                 color: '#ffffff',
                 opacity: '.7'
               },
             },
             tooltip: {
               trigger: 'item',
-              formatter: '<b>{b}</b> <br/>시간(h): {c}<br/>비율(%): {d}',
+              // formatter: '<b>{b}</b> <br/>시간(h): {c}<br/>비율(%): {d}',
+              formatter: function (params) {
+                return `
+                  <div style="font-family: 'Pretendard Variable', sans-serif; font-size: 12px;">
+                    <b>${params.name}</b><br/>
+                    시간(h): ${params.value}<br/>
+                    비율(%): ${params.percent}%
+                  </div>
+                `;
+              },
             },
             series: [
               {
@@ -464,17 +496,15 @@ const StandardDashboard = () => {
                 padAngle: 0,
                 color: colors,
                 label: {
-                  // show: false,
-                  // position: 'center'
                   formatter: '{abg|{b}}\n{hr|}\n{per|{d}%}  {value|{c}시간}',
                   backgroundColor: '#262a3b',
                   padding: 6,
                   borderRadius: 8,
                   rich: {
-                    abg: { color: '#ffffff', lineHeight: 22, align: 'center', padding: [6, 8] },
+                    abg: { fontFamily: "'Pretendard Variable', sans-serif", color: '#ffffff', lineHeight: 22, align: 'center', padding: [6, 8] },
                     hr: { borderColor: 'rgba(125, 125, 125, .3)', width: '100%', borderWidth: 1, height: 0 },
-                    per: { color: '#ffffff', backgroundColor: 'transparent', padding: [6, 8] },
-                    value: { color: '#bce6f7', backgroundColor: 'transparent', padding: [6, 8] },
+                    per: { fontFamily: "'Pretendard Variable', sans-serif", color: '#ffffff', backgroundColor: 'transparent', padding: [6, 8] },
+                    value: { fontFamily: "'Pretendard Variable', sans-serif", color: '#bce6f7', backgroundColor: 'transparent', padding: [6, 8] },
                   },
                 },
                  itemStyle: {
@@ -487,6 +517,7 @@ const StandardDashboard = () => {
                   label: {
                     show: true,
                     color: '#4a4a4a',
+                    fontFamily: "'Pretendard Variable', sans-serif",
                     fontSize: 14,
                     fontWeight: 'bold'
                   },
@@ -526,12 +557,6 @@ const StandardDashboard = () => {
           <div className='formWrap'>
             <div className='chartTitle' style={{height: '30px'}}>전사 표준활동 입력현황</div>
             <div className='formGroup'>
-              {/* <input
-                type="month"
-                value={month}
-                onChange={e => setMonth(e.target.value)}
-                className='monthInput'
-              /> */}
               <div className="month-input-wrapper">
                 <input
                   type="month"
@@ -583,15 +608,12 @@ const StandardDashboard = () => {
           <div className='chartTitle'>대분류별 표준활동 추이현황</div>
           <div className='fieldSection'>
             <div className='subSection'>
-              {/* <div className='subSecTitle'>선로</div> */}
               <div ref={chartRefs[4]} className='chartBar' />
             </div>
             <div className='subSection'>
-              {/* <div className='subSecTitle'>설계</div> */}
               <div ref={chartRefs[5]} className='chartBar' />
             </div>
             <div className='subSection'>
-              {/* <div className='subSecTitle'>BIZ</div> */}
               <div ref={chartRefs[6]} className='chartBar' />
             </div>
           </div>
@@ -600,15 +622,12 @@ const StandardDashboard = () => {
           <div className='chartTitle'>대분류별 표준활동 입력현황</div>
           <div className='fieldSection'>
             <div className='subSection'>
-              {/* <div className='subSecTitle'>선로</div> */}
               <div ref={chartRefs[7]} className='chart' />
             </div>
             <div className='subSection'>
-              {/* <div className='subSecTitle'>설계</div> */}
               <div ref={chartRefs[8]} className='chart' />
             </div>
             <div className='subSection'>
-              {/* <div className='subSecTitle'>BIZ</div> */}
               <div ref={chartRefs[9]} className='chart' />
             </div>
           </div>

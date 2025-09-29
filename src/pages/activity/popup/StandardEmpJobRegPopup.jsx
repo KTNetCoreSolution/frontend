@@ -606,7 +606,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
             <tr>
               <td colSpan="4">
                 <h5>
-                ※ 등록 리스트 ({formData.WORKDATE}) <span style={{ color: "blue" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
+                ※ 등록 리스트 ({formData.WORKDATE}) <span style={{ color: "#237FB3" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
                 </h5>
                 <table className={styles.listTable}>
                   <thead>

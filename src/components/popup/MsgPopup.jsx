@@ -16,7 +16,8 @@ const MsgPopup = ({ show, onHide, message }) => {
           <div className='modalContent'>
             <div className='modalHeader modal-header'>
               <h5 className='modalTitle modal-title'>
-                <i className="bi bi-bell me-2"></i> 알림
+                {/* <i className="bi bi-bell me-2"></i>  */}
+                알림
               </h5>
               <button type="button" className='btnClose btn-close' onClick={onHide}></button>
             </div>

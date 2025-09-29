@@ -304,14 +304,14 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
                   name="CUSTOMER"
                   value={formData.CUSTOMER}
                   onChange={handleChange}
-                  className={styles.formInput}
+                  style={{width: '190px'}}
                 />
               </div>
             </li>
             <li>
               <span className="formLabel" style={{width: '120px'}}>출동여부</span>
               <div className="formData">
-                <select name="DISPATCH" value={formData.DISPATCH} onChange={handleChange}>
+                <select name="DISPATCH" value={formData.DISPATCH} onChange={handleChange} style={{width: '190px'}}>
                   <option value="">선택</option>
                   {dispatchOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -324,7 +324,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
             <li>
               <span className="formLabel" style={{width: '120px'}}>작업인원</span>
               <div className="formData">
-                <select name="WORKERS" value={formData.WORKERS} onChange={handleChange}>
+                <select name="WORKERS" value={formData.WORKERS} onChange={handleChange} style={{width: '190px'}}>
                   <option value="">선택</option>
                   {workersOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -337,7 +337,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
             <li>
               <span className="formLabel" style={{width: '120px'}}>근무시간</span>
               <div className="formData">
-                <select name="WORKTIME" value={formData.WORKTIME} onChange={handleChange}>
+                <select name="WORKTIME" value={formData.WORKTIME} onChange={handleChange} style={{width: '190px'}}>
                   <option value="">선택</option>
                   {workTimeOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -357,14 +357,14 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
                   onChange={handleChange}
                   min="1"
                   className="text-end"
-                  style={{width: '80px'}}
+                  style={{width: '190px'}}
                 />
               </div>
             </li>
             <li>
               <span className="formLabel" style={{width: '120px'}}>대분류</span>
               <div className="formData">
-                <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange}>
+                <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange} style={{width: '190px'}}>
                   {class1Options.map((opt) => (
                     <option key={opt.value} value={opt.value}>
                       {opt.label}
@@ -376,7 +376,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
             <li>
               <span className="formLabel" style={{width: '120px'}}>중분류</span>
               <div className="formData">
-                <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange}>
+                <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange} style={{width: '190px'}}>
                   {class2Options.map((opt) => (
                     <option key={opt.value} value={opt.value}>
                       {opt.label}
@@ -388,7 +388,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
             <li>
               <span className="formLabel" style={{width: '120px'}}>소분류</span>
               <div className="formData">
-                <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange}>
+                <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange} style={{width: '190px'}}>
                   {class3Options.map((opt) => (
                     <option key={opt.value} value={opt.value}>
                       {opt.label}
@@ -400,7 +400,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
             <li>
               <span className="formLabel" style={{width: '120px'}}>구분</span>
               <div className="formData">
-                <select name="PROCESSSECTION" value={formData.PROCESSSECTION} onChange={handleChange}>
+                <select name="PROCESSSECTION" value={formData.PROCESSSECTION} onChange={handleChange} style={{width: '190px'}}>
                   <option value="">선택</option>
                   {sectionOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -413,7 +413,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
             <li>
               <span className="formLabel" style={{width: '120px'}}>프로세스</span>
               <div className="formDataRow">
-                <select name="PROCESS" value={formData.PROCESS} onChange={handleChange}>
+                <select name="PROCESS" value={formData.PROCESS} onChange={handleChange} style={{width: '190px'}}>
                   <option value="">선택</option>
                   {filteredProcesses.length > 0 ? (
                     filteredProcesses.map((item, index) => (
@@ -440,7 +440,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
                   onChange={handleChange}
                   min="0"
                   className="text-end"
-                  style={{width: '80px'}}
+                  style={{width: '190px'}}
                 />
               </div>
             </li>

@@ -305,14 +305,12 @@ const MobileStandardBizLog = () => {
           </div>
         </div>
 
-        <div className="mb-4">
-          <button className='btn btn-primary btnCheck' onClick={moveToReg}>
-            표준활동 등록
-          </button>
-        </div>
+        <button className='btn btn-primary btnCheck' onClick={moveToReg}>
+          표준활동 등록
+        </button>
         <div className='listSubmitWrap'>
           <span>※ 등록 리스트 ({workDate})</span>
-          <span style={{ color: "blue" }}>[총:{totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
+          <span style={{ color: "#237FB3" }}>[총:{totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
         </div>
         {/* <div className={`${styles.formDivTimeBox}`}>
           <label className='formLabel mb-0'>총 처리시간</label>
@@ -347,7 +345,6 @@ const MobileStandardBizLog = () => {
                       type="text"
                       value={item.CUSTOMER}
                       onChange={(e) => handleRowChange(index, "CUSTOMER", e.target.value)}
-                      className={`${styles.formInput}`}
                       style={{
                         backgroundColor: item.CUSTOMER !== item.ORIGINAL_CUSTOMER ? '#fff9e6' : '#fff',
                       }}
@@ -415,7 +412,7 @@ const MobileStandardBizLog = () => {
           <div className="nodataWrap">조회된 목록이 없습니다.</div>
         )}
       </div>
-      <Modal show={showRegModal} onHide={handleRegModalClose} centered className="customModal">
+      <Modal show={showRegModal} onHide={handleRegModalClose} centered className="customModal" style={{zIndex: 1050}}>
         <Modal.Body className={styles.modalBody}>
           <MobileStandardBizLogReg
             workDate={workDate}

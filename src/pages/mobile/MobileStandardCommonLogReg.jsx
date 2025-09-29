@@ -246,7 +246,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
             <li>
               <span className="formLabel" style={{width: '120px'}}>대분류</span>
               <div className="formData">
-                <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange}>
+                <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange} style={{ width: '190px' }}>
                   {class1Options.map((opt) => (
                     <option key={opt.value} value={opt.value}>
                       {opt.label}
@@ -258,7 +258,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
             <li>
               <span className="formLabel" style={{width: '120px'}}>중분류</span>
               <div className="formData">
-                <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange}>
+                <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange} style={{ width: '190px' }}>
                   {class2Options.map((opt) => (
                     <option key={opt.value} value={opt.value}>
                       {opt.label}
@@ -270,7 +270,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
             <li>
               <span className="formLabel" style={{width: '120px'}}>소분류</span>
               <div className="formData">
-                <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange}>
+                <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange} style={{ width: '190px' }}>
                   {class3Options.map((opt) => (
                     <option key={opt.value} value={opt.value}>
                       {opt.label}
@@ -306,7 +306,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
             <li>
               <span className="formLabel" style={{width: '120px'}}>근무형태</span>
               <div className="formData">
-                <select name="WORKTYPE" value={formData.WORKTYPE} onChange={handleChange}>
+                <select name="WORKTYPE" value={formData.WORKTYPE} onChange={handleChange} style={{ width: '190px' }}>
                   <option value="">선택</option>
                   {workTypeOptions.map((option) => (
                     <option key={option.value} value={option.value}>
