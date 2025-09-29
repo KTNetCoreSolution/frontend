@@ -83,7 +83,7 @@ const StandardBizProcessManage = () => {
     areas: [
       { type: "search", fields: [
         { id: "bizMCodeGubun", type: "select", row: 1, label: "BIZMCODE", labelVisible: true, options: [], defaultValue: "", enabled: true, eventType: "selectChange" },
-        { id: 'msgLabel', type: 'label', row: 2, label: '입력 중일때는 초록색 배경입니다. [추가], [변경], [삭제] 버튼은 입력 중인 초록색 배경색일 경우는 더블클릭하셔야 합니다.', labelVisible: true, width: '800px', height: '30px', backgroundColor: '#ffffff', color: '#d62424', enabled: true },
+        { id: 'msgLabel', type: 'label', row: 2, label: 'BIZMCODE가 달라도 업무코드와 업무명은 일치해야 하며, 입력 중일때는 초록색 배경입니다. [추가], [변경], [삭제] 버튼은 입력 중인 초록색 배경색일 경우는 더블클릭하셔야 합니다.', labelVisible: true, width: '800px', height: '30px', backgroundColor: '#ffffff', color: '#d62424', enabled: true },
       ] },
       { type: "buttons", fields: [{ id: "searchBtn", type: "button", row: 1, label: "검색", eventType: "search", width: "80px", height: "30px", backgroundColor: "#00c4b4", color: "#ffffff", enabled: true }] },
     ]

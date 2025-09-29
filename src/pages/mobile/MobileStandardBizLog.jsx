@@ -42,12 +42,12 @@ const MobileStandardBizLog = () => {
   });
 
   // 초기 리다이렉트 (기존과 동일)
-  /*
+  ///*
   useEffect(() => {
     msgPopup("작업중입니다.");
     navigate('/mobile/Main');
   }, [navigate]);
-  */
+  //*/
 
   // 등록 리스트 총 처리시간 계산
   const totalRegisteredTime = useMemo(() => {
@@ -312,7 +312,7 @@ const MobileStandardBizLog = () => {
         </div>
         <div className='listSubmitWrap'>
           <span>※ 등록 리스트 ({workDate})</span>
-          <span style={{ color: "blue" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
+          <span style={{ color: "blue" }}>[총:{totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
         </div>
         {/* <div className={`${styles.formDivTimeBox}`}>
           <label className='formLabel mb-0'>총 처리시간</label>
