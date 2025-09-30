@@ -27,6 +27,7 @@ const MobileLogin = () => {
   const [showPasswordChangePopup, setShowPasswordChangePopup] = useState(false);
   const [isManualPasswordChange, setIsManualPasswordChange] = useState(false);
   const [showLicensePopup, setShowLicensePopup] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   // 타이머 관리
@@ -124,6 +125,10 @@ const MobileLogin = () => {
     setShowLicensePopup(true);
   };
 
+  const toggleShowPassword = () => {
+    setShowPassword(prev => !prev);
+  };
+
   return (
     <div className='loginWrapper'>
       <p
@@ -153,13 +158,21 @@ const MobileLogin = () => {
               <img src={loginPwImg} alt="user 이미지" className="inputIcon" />
               <input
                 id="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 value={empPwd}
                 onChange={(e) => setEmpPwd(e.target.value)}
                 placeholder="비밀번호를 입력하세요"
                 required
                 className="inputWithIcon"
               />
+              <button
+                type="button"
+                onClick={toggleShowPassword}
+                className={styles.pwdShowButton}
+                aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
+              >
+                {showPassword ? '숨기기' : '보기'}
+              </button>
             </div>
           </div>
           <div className='formGroup'>

@@ -36,6 +36,17 @@ const Board = ({ canWriteBoard, type = 'notice', onWrite, onView, showHeader = t
             date: item.REGEDT,
           }));
           setLocalNotices(mappedNotices);
+
+          /* //공지사항 없습니다. 테스트 시
+          if(type == 'notice' || type == 'carnotice2')
+          {
+            setLocalNotices([]);
+          }
+          else{
+            setLocalNotices(mappedNotices);
+          }
+          */
+          
         } else {
           setLocalNotices([]);
         }

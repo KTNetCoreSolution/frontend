@@ -29,6 +29,7 @@ const Login = () => {
   const [showPasswordChangePopup, setShowPasswordChangePopup] = useState(false);
   const [isManualPasswordChange, setIsManualPasswordChange] = useState(false);
   const [showLicensePopup, setShowLicensePopup] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { setClientVersion } = useStore();
   const navigate = useNavigate();
 
@@ -101,6 +102,11 @@ const Login = () => {
     setShowPasswordChangePopup(true);
   };
 
+  // 비밀번호 표시 토글 함수
+  const toggleShowPassword = () => {
+    setShowPassword(prev => !prev);
+  };
+
   return (
     <div className='loginWrapper'>
       <div className='loginWrap'>
@@ -143,13 +149,22 @@ const Login = () => {
                 <img src={loginPwImg} alt="pw 이미지" className="inputIcon" />
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={empPwd}
                   onChange={(e) => setEmpPwd(e.target.value)}
                   placeholder="비밀번호를 입력하세요"
                   required
                   className="inputWithIcon"
+                  style={{ paddingRight: '40px' }}  // 토글 버튼 공간 확보
                 />
+                <button
+                  type="button"
+                  onClick={toggleShowPassword}
+                  className={styles.pwdShowButton}
+                  aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
+                >
+                  {showPassword ? '숨기기' : '보기'}
+                </button>
               </div>
             </div>
             <div className='formGroup'>
