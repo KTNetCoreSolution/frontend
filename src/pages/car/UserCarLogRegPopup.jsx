@@ -843,7 +843,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             <input type="text" id="notice" className={`form-control ${styles.formControl2}`} value={logInfo.NOTE} onInput={(e) => {handleMaxLength(e, 1000)}} onChange={(e) => {setLogInfo({ ...logInfo, NOTE: e.target.value })}} />
           </div>
           <div className="mb-2">
-            <button className={`btn ${styles.btnCheck} ${styles.btn}`} onClick={(e) => carLogReceiptPopup()}>주차장 영수증첨부</button>
+            <button className={`btn ${styles.btnCheck} ${styles.btn}`} style={{display: 'none'}} onClick={(e) => carLogReceiptPopup()}>주차장 영수증첨부</button>
               <CommonPopup
                 show={showAddPopup}
                 onHide={handleUploadCancel}

@@ -301,7 +301,8 @@ const MobileDrivingLog = () => {
         } else {
           msgPopup("운행일지가 저장되었습니다.");
           if(gubun === 'I') {
-            handleMoveRecipt();
+            //handleMoveRecipt();
+            navigate('/mobile/MobileDrivingLog');
           }
         }
       }
@@ -508,7 +509,7 @@ const MobileDrivingLog = () => {
         </div>
         <div className='btnWrap flex-column'>
           <button className="btn btn-primary" style={{display: user?.empNo === logInfo.EMPNO ? 'block' : 'none'}} onClick={(e) => handleSubmit(e)}>운행일지 {gubun === 'I' ? '등록' : '수정'}</button>
-          <button className="btn btn-primary" style={{display: gubun === 'U' ? 'block' : 'none'}} onClick={() => handleMoveRecipt()}>주차장 영수증</button>
+          {/*<button className="btn btn-primary" style={{display: gubun === 'U' ? 'block' : 'none'}} onClick={() => handleMoveRecipt()}>주차장 영수증</button>*/}
           <button className="btn btn-primary" style={{display: logInfo.DELYN === 'Y' ? 'block' : 'none'}} onClick={(e) => handleDelete(e)}>운행일지 삭제</button>
         </div>
       </div>

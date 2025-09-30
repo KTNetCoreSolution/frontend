@@ -40,7 +40,7 @@ const getFieldOptions = (fieldId, dependentValue = '') => {
       { value: '', label: '전체' },
       { value: '운행', label: '운행' },
       { value: '유휴', label: '유휴' },
-      { value: '해지', label: '해지' },
+      { value: '반납', label: '반납' },
     ],
     filterSelect: [
       { value: '', label: '선택' },

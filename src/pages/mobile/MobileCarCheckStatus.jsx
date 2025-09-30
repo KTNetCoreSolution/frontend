@@ -99,7 +99,7 @@ const MobileCarCheckStatus = () => {
         <div className="pageMain">
         {currentList.length > 0 ? (
           currentList.map((item, index) => (
-          <div key={item.CARID} className='formDivBox' onClick={(e) => handleNoticeClick(item)} >
+          <div key={item.CARID} className='formDivBox' >
             <ul className='formListData'>          
               <li>
                 <span className='formLabel'>차량번호</span>
