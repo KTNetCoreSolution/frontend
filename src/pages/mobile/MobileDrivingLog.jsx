@@ -306,7 +306,7 @@ const MobileDrivingLog = () => {
               </li>
             </ul>
           </div>
-          <button className="btn btn-primary w-100" onClick={moveToRegLog}>차량점검 및 일지작성</button>
+          <button className="btn btn-primary btn-custom w-100" onClick={moveToRegLog}>차량점검 및 일지작성</button>
           <div className="formDivBox" onClick={(e) => navigate('/mobile/MobileCarNotice')} >
             <div>      
               {boardList.length > 0 ? (

@@ -222,7 +222,7 @@ const StandardEmpStatisticPopup = ({ show, onHide, data }) => {
       <Modal.Header closeButton>
         <Modal.Title>개인별 년간 분야별, 월별 통계</Modal.Title>
       </Modal.Header>
-      <Modal.Body className={`${styles.modalBody} modal-body`}>
+      <Modal.Body className='modal-body'>
         <TableSearch
           filterFields={[
             { id: 'filterSelect', label: '', type: 'select', options: [
