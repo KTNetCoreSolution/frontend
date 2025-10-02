@@ -14,6 +14,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
   const [class1Options, setClass1Options] = useState([]);
   const [class2Options, setClass2Options] = useState([]);
   const [class3Options, setClass3Options] = useState([]);
+  const [isButtonVisible, setIsButtonVisible] = useState(true);
 
   // classData로부터 옵션 초기화
   useEffect(() => {
@@ -21,6 +22,10 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
     setClass2Options(getFieldOptions("CLASSBCD", formData.CLASSACD, classData));
     setClass3Options(getFieldOptions("CLASSCCD", formData.CLASSBCD, classData));
   }, [classData, formData.CLASSACD, formData.CLASSBCD]);
+
+  useEffect(() => {
+    checkButtonVisible(formData.WORKDATE);
+  }, []);
 
   const generateTimeOptions = (isWeekly = false, startTime = null, isEnd = false) => {
     const options = [];
@@ -94,6 +99,28 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
     }
 
     return [];
+  };
+
+  const checkButtonVisible = async (date) => {
+    try {
+      const params = {
+        pGUBUN: 'BTNCHECK',
+        pEMPNO: user?.empNo || '',
+        pDATE1: date,
+        pSECTIONCD: initialClassGubun,
+        pDEBUG: 'F',
+      };
+      const response = await fetchData('standard/empJob/common/reg/list', params);
+
+      if (response.success && response.data && response.data[0]) {
+        setIsButtonVisible(response.data[0].MODIFYFLAG === 'Y');
+      } else {
+        setIsButtonVisible(true); // 기본값
+      }
+    } catch (err) {
+      console.error('버튼 제어 확인 실패:', err);
+      setIsButtonVisible(true); // 에러 시 기본 표시
+    }
   };
 
   const timeToMinutes = (time) => {
@@ -211,6 +238,10 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
         const newEndTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
         const validEndTime = formEndTimeOptions.find((time) => timeToMinutes(time) >= timeToMinutes(newEndTime)) || formEndTimeOptions[0] || prev.ENDTIME;
         newData.ENDTIME = validEndTime;
+      }
+
+      if (name === "WORKDATE") {
+        checkButtonVisible(value);
       }
 
       return newData;
@@ -348,9 +379,11 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
             {initialItem ? '돌아가기' : '닫기'}
           </button>
         </div> */}
-        <button className="btn btn-primary" onClick={handleSubmit}>
-          {initialItem ? "수정" : "등록"}
-        </button>
+        {isButtonVisible && (
+          <button className="btn btn-primary" onClick={handleSubmit}>
+            {initialItem ? "수정" : "등록"}
+          </button>
+        )}
       </div>
     </div>
   );

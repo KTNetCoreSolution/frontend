@@ -305,9 +305,11 @@ const MobileStandardBizLog = () => {
           </div>
         </div>
 
-        <button className='btn btn-primary btnCheck' onClick={moveToReg}>
-          표준활동 등록
-        </button>
+        {isButtonVisible && (
+          <button className='btn btn-primary btnCheck' onClick={moveToReg}>
+            표준활동 등록
+          </button>
+        )}
         <div className='listSubmitWrap'>
           <span>※ 등록 리스트 ({workDate})</span>
           <span style={{ color: "#237FB3" }}>[총:{totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>

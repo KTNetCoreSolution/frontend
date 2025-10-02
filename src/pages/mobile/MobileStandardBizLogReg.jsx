@@ -18,6 +18,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
   const [dispatchOptions, setDispatchOptions] = useState([]);
   const [workersOptions, setWorkersOptions] = useState([]);
   const [workTimeOptions, setWorkTimeOptions] = useState([]);
+  const [isButtonVisible, setIsButtonVisible] = useState(true);
 
   // 옵션 로딩 (standard/ddlList로 DISPATCH, WORKERS, WORKTIME만 호출)
   useEffect(() => {
@@ -51,6 +52,10 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
     setClass2Options(getFieldOptions("CLASSBCD", formData.CLASSACD, classData));
     setClass3Options(getFieldOptions("CLASSCCD", formData.CLASSBCD, classData));
   }, [classData, formData.CLASSACD, formData.CLASSBCD]);
+
+  useEffect(() => {
+    checkButtonVisible(formData.WORKDATE);
+  }, []);
 
   const getFieldOptions = (fieldId, dependentValue = "", classData) => {
     if (!Array.isArray(classData)) return [];
@@ -237,6 +242,27 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
     }
   };
 
+  const checkButtonVisible = async (date) => {
+    try {
+      const params = {
+        pGUBUN: 'BTNCHECK',
+        pEMPNO: user?.empNo || '',
+        pDATE1: date,
+        pSECTIONCD: initialClassGubun,
+        pDEBUG: 'F',
+      };
+      const response = await fetchData('standard/empJob/biz/reg/list', params);
+      if (response.success && response.data && response.data[0]) {
+        setIsButtonVisible(response.data[0].MODIFYFLAG === 'Y');
+      } else {
+        setIsButtonVisible(true); // 기본값
+      }
+    } catch (err) {
+      console.error('버튼 제어 확인 실패:', err);
+      setIsButtonVisible(true); // 에러 시 기본 표시
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => {
@@ -262,6 +288,10 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
       if (name === "PROCESSSECTION") {
         newData.PROCESS = "";
       }
+      if (name === "WORKDATE") {
+        checkButtonVisible(value);
+      }
+
       return newData;
     });
   };
@@ -446,9 +476,11 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
             </li>
           </ul>
         </div>
-        <button className="btn btn-primary" onClick={handleSubmit}>
-          등록
-        </button>
+        {isButtonVisible && (
+          <button className="btn btn-primary" onClick={handleSubmit}>
+            등록
+          </button>
+        )}
         {/* <div className={styles.formInputGroup}>
           <button className={`btn ${styles.btnReturn} ${styles.btn}`} style={{ width: '80px' }} onClick={handleReturnPage}>
             닫기
