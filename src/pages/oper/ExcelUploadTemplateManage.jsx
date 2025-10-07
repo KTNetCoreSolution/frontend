@@ -25,11 +25,20 @@ const getFieldOptions = (fieldId) => {
 const fn_CellText = { editor: "input", editable: true };
 const fn_CellButton = (label, className, onClick) => ({
   formatter: (cell) => {
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.justifyContent = "center";
+    wrapper.style.alignItems = "center";
+    wrapper.style.height = "100%"; // 수직 중앙 정렬 (선택 사항)
+    wrapper.style.width = "100%";  // 가로 전체
+
     const button = document.createElement("button");
     button.className = `btn btn-sm ${className}`;
     button.innerText = label;
     button.onclick = () => onClick(cell.getData());
-    return button;
+    // return button;
+    wrapper.appendChild(button);
+    return wrapper;
   },
 });
 

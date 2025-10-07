@@ -9,10 +9,11 @@
 .boardContentTitle {
   white-space: nowrap;      /* 한 줄로 텍스트 유지 */
   overflow: hidden;         /* 넘치는 텍스트 숨김 */
-  max-width: 500px;
+  /* max-width: 500px; */
   text-overflow: ellipsis;  /* 넘친 부분에 ... 표시 */
-  display: inline-block; /* 또는 block */
+  /* display: inline-block; */
   vertical-align: middle; /* 필요 시 */
+  flex: 1;
 }
 
 .boardContentDate {

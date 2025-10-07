@@ -6,9 +6,6 @@ import { fetchData } from '../../utils/dataUtils';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import common from '../../utils/common';
 import styles from './StandardDashboard.module.css';
-import chartImg01 from '../../assets/images/chartImg01.svg';
-import chartImg02 from '../../assets/images/chartImg02.svg';
-import chartImg03 from '../../assets/images/chartImg03.svg';
 import visualImg from '../../assets/images/dashboardImg.svg';
 
 const StandardDashboard = () => {

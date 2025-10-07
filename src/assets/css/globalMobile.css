@@ -965,6 +965,7 @@ body {
   background: unset;
   border: 0;
   text-decoration: underline;
+  color: var(--bs-font-secondary-color);
 }
 .boardWrap .existingAttachItem {
   margin-top: 0.5rem;

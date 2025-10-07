@@ -171,7 +171,8 @@ const MobileLogin = () => {
                 className={styles.pwdShowButton}
                 aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
               >
-                {showPassword ? '숨기기' : '보기'}
+                <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`}></i>
+                {/* {showPassword ? '숨기기' : '보기'} */}
               </button>
             </div>
           </div>

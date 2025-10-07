@@ -239,9 +239,9 @@ const FuelCardInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
             <input type="text" className={`form-control ${styles.formControl} flex-shrink-0`} id="cardNo3" value={cardInfo.CARDNO3 || ''} style={{width:55 + 'px'}} disabled={`${vStyle.vDISABLED}`} onInput={(e) => {handleMaxLength(e, 4)}} onChange={(e) => {setCardInfo({ ...cardInfo, CARDNO3: e.target.value, CARDNO: cardInfo.CARDNO1 + cardInfo.CARDNO2 + e.target.value + cardInfo.CARDNO4 })}} />
             <input type="text" className={`form-control ${styles.formControl} flex-shrink-0`} id="cardNo4" value={cardInfo.CARDNO4 || ''} style={{width:55 + 'px'}} disabled={`${vStyle.vDISABLED}`} onInput={(e) => {handleMaxLength(e, 4)}} onChange={(e) => {setCardInfo({ ...cardInfo, CARDNO4: e.target.value, CARDNO: cardInfo.CARDNO1 + cardInfo.CARDNO2 + cardInfo.CARDNO3 + e.target.value })}} />
           </div>
-          <div>
+          <div className='ms-1'>
             <button id="btnCarId" type="button" className='btn btn-secondary' style={{display:`${vStyle.vDISPLAY}`}} disabled={`${vStyle.vDISABLED}`} onClick={(e) => handleSearchCardInfo(cardInfo.CARDNO)}>확인</button>
-            <button className='btn btn-danger' style={{display:`${vStyle.vBTNDEL}`}} onClick={handleDelete}>삭제</button>
+            <button className='btn btn-danger' style={{display:`${vStyle.vBTNDEL}`, marginLeft: 0}} onClick={handleDelete}>삭제</button>
           </div>
         </div>
         <div className="mb-2 d-flex">

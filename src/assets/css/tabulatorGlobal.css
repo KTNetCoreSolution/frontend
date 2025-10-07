@@ -24,6 +24,10 @@
     border-right: 1px solid #ddd;
 }
 
+.tabulator-row.tabulator-group {
+  background: #eceef0;
+}
+
 .tabulator-cell {
     display: flex;
     align-items: center;
@@ -87,7 +91,7 @@ button.tabulator-page {
 }
 
 .tabulator-row.tabulator-row-even {
-    background-color: #f9f9f9;
+    background-color: #f9fafa;
 }
 
 .tabulator .tabulator-header .tabulator-col .tabulator-col-content {

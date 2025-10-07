@@ -85,18 +85,33 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .btn:hover {
   opacity: 0.75;
 }
-.btn-primary {
+.btn + .btn {
+  margin-left: 4px;
+}
+
+.btn:has(+ .btn:not([style*="display: none"])) + .btn {
+  margin-left: 4px;
+}
+
+.btn:has(+ .btn[style*="display: none"]) + .btn {
+  margin-left: 0;
+}
+
+.btn-primary, .btn-success {
   background-color: var(--bs-primary-color);
   border-color: var(--bs-primary-color);
 }
-.btn-primary:hover {
+.btn-primary:hover, .btn-success:hover {
   background-color: var(--bs-primary-color);
   border-color: var(--bs-primary-color);
   opacity: 0.75;
 }
-.btn + .btn {
-  margin-left: 4px !important;
+
+.btn-custom {
+  height: 42px !important;
+  flex-shrink: 0;
 }
+
 /* Checkboxes and radio buttons */
 .form-check-input {
   width: calc(1rem * var(--bs-scaling));
@@ -337,6 +352,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   display: flex;
   justify-content: center;
   align-items: center;
+  min-width: 250px;
 }
 .modalDialog {
   max-width: 500px;
@@ -477,7 +493,6 @@ border-color: #bd2130;
 .tabulator-row.tabulator-selectable:hover {
   background-color: #e0f7fa !important;
 }
-
 .tabulator .tabulator-tableholder {
   flex: 1 1 auto;
   border-bottom: 1px solid #999;
@@ -1448,6 +1463,7 @@ textarea.form-control {
   background: unset;
   border: 0;
   text-decoration: underline;
+  color: var(--bs-font-secondary-color);
 }
 .boardWrap .existingAttachItem {
   margin-top: 0.5rem;
@@ -1532,6 +1548,7 @@ textarea.form-control {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  width: 100%;
 }
 .boardBox .contentContainer {
   gap: 0.5rem;
@@ -1558,6 +1575,7 @@ textarea.form-control {
   align-items: center;
   cursor: pointer;
   width: 100%;
+  gap: 24px;
 }
 .boardBox .contentContainer > .list-group-item.nodata {
   display: flex;
@@ -1566,6 +1584,20 @@ textarea.form-control {
   font-size: 0.875rem;
   text-align: center;
 }
+
+.tab-content {
+  display: flex;
+}
+
+.tab-content > .tab-pane {
+  flex: 1;
+  min-width: 0;
+}
+
+.tab-content > .active {
+  display: flex;
+}
+
 .tab-content:has(.nodata) {
   display: flex;
   justify-content: center;
@@ -1888,7 +1920,9 @@ textarea.form-control {
 .mainContentWrap .boardContainer .boardSection {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  flex: 1;
+  /* width: 100%; */
+  min-width: 0;
   min-height: 300px;
   gap: 1.25rem;
   padding: 1.5rem;
@@ -1908,6 +1942,8 @@ textarea.form-control {
   padding: 10px;
 }
 .contentDate {
+  flex-shrink: 0;
+  white-space: nowrap;
   color:var(--bs-font-secondary-color);
 }
 

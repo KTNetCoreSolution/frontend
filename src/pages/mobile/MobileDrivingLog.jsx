@@ -267,7 +267,7 @@ const MobileDrivingLog = () => {
                                 viewBox="0 0 24 24"
                                 fill={isFilled ? 'gold' : '#e0e0e0'}
                                 // stroke="#888"
-                                // strokeWidth="1"
+                                // strokeWidth="1" 
                                 strokeLinejoin="round"
                                 onClick={handleBookMark}
                                 style={{ cursor: 'pointer' }}

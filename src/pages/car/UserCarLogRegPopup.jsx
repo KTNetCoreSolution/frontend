@@ -704,8 +704,21 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             <div className='d-flex flex-column gap-2'>
               <div className='d-flex justify-content-center gap-2'>
                 <label>{carInfo.CARNM}</label>
-                <div className={`${styles.starBorder}`} style={{display: `${vImgDisplay}`}}>
+                {/* <div className={`${styles.starBorder}`} style={{display: `${vImgDisplay}`}}>
                   <button onClick={(e) => {handleBookMark(e)}} className={`${styles.star} ${isFilled ? styles.filled : ''}`}  />
+                </div> */}
+                <div style={{display: `${vImgDisplay}`}}>
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill={isFilled ? 'gold' : '#e0e0e0'}
+                    strokeLinejoin="round"
+                    onClick={handleBookMark}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <path d="M12 2.5l2.95 6.11 6.73.98-4.87 4.74 1.15 6.7L12 17.77 6.04 21l1.15-6.7-4.87-4.74 6.73-.98L12 2.5z" />
+                  </svg>
                 </div>
               </div>
               <img src={carInfo.src} className={styles.carImage} />
@@ -741,7 +754,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             <div>{diffTime}</div>
           </div>
           <div className='mt-3'>
-              <button className={`btn ${styles.btnCheck} ${styles.btn}`} style={{ backgroundColor:vImgDisplay === 'flex' ? '#00c4b4' : '#909090'}} disabled={vImgDisplay === 'flex' ? '' : 'disabled'} onClick={(e) => setDisplay(!vDisplay)}>차량점검 및 {logInfo.GUBUN === 'I' ? '일지작성' : '운행결과'}</button>
+              <button className={`btn btn-custom ${styles.btnCheck} ${styles.btn}`} style={{ backgroundColor:vImgDisplay === 'flex' ? '#00c4b4' : '#909090'}} disabled={vImgDisplay === 'flex' ? '' : 'disabled'} onClick={(e) => setDisplay(!vDisplay)}>차량점검 및 {logInfo.GUBUN === 'I' ? '일지작성' : '운행결과'}</button>
           </div>
         </div>
         <div className='flex-column gap-2' style={{display: `${vDisplay ? 'flex' : 'none'}`}}>
