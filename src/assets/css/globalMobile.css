@@ -217,6 +217,9 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--bs-body-color);  
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .formNotiList::before {
