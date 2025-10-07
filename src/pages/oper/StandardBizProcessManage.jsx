@@ -132,7 +132,6 @@ const StandardBizProcessManage = () => {
           const editButton = document.createElement("button");
           editButton.className = `btn btn-sm btn-primary`;
           editButton.innerText = "변경";
-          editButton.style.marginRight = "5px";
           editButton.setAttribute("data-action", "edit");
           wrapper.appendChild(editButton);
 

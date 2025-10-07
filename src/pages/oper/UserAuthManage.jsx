@@ -122,8 +122,8 @@ const UserAuthManage = () => {
           { headerHozAlign: "center", hozAlign: "center", title: "조직명", field: "ORGNM", sorter: "string", width: 150, editable: false },
           { headerHozAlign: "center", hozAlign: "center", title: "회사코드", field: "COMPANYCD", sorter: "string", width: 100, editable: false },
           { headerHozAlign: "center", hozAlign: "center", title: "회사명", field: "COMPANYNM", sorter: "string", width: 150, editable: false },
-          { headerHozAlign: "center", hozAlign: "center", title: "권한ID", field: "AUTHID", sorter: "string", width: 100, editable: false, cellClick: (e, cell) => { setSelectedEmpNo(cell.getRow().getData().EMPNO); setShowAuthPopup(true); }, cellStyle: { backgroundColor: "#d3d3d3" } },
-          { headerHozAlign: "center", hozAlign: "center", title: "권한명", field: "AUTHNM", sorter: "string", width: 150, editable: false, cellClick: (e, cell) => { setSelectedEmpNo(cell.getRow().getData().EMPNO); setShowAuthPopup(true); }, cellStyle: { backgroundColor: "#d3d3d3" } },
+          { headerHozAlign: "center", hozAlign: "center", title: "권한ID", field: "AUTHID", sorter: "string", width: 100, editable: false, cellClick: (e, cell) => { setSelectedEmpNo(cell.getRow().getData().EMPNO); setShowAuthPopup(true); }, cellStyle: { backgroundColor: "#eaeaea" } },
+          { headerHozAlign: "center", hozAlign: "center", title: "권한명", field: "AUTHNM", sorter: "string", width: 150, editable: false, cellClick: (e, cell) => { setSelectedEmpNo(cell.getRow().getData().EMPNO); setShowAuthPopup(true); }, cellStyle: { backgroundColor: "#eaeaea" } },
         ], [], {
           editable: false, 
           //headerSort: false, // defaultOptions의 headerSort: true를 false로 재정의

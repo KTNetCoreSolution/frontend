@@ -265,8 +265,8 @@ const FuelCardInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         }}>
       </CarListPopup>
       <Modal.Footer>
-        <button className={`btn btn-secondary ${styles.btn}`} onClick={onHide}>취소</button>
-        <button className={`btn btn-primary ${styles.btn}`} onClick={handleSubmit}>확인</button>
+        <button className='btn btn-secondary' onClick={onHide}>취소</button>
+        <button className='btn btn-primary' onClick={handleSubmit}>확인</button>
       </Modal.Footer>
     </Modal>
   );

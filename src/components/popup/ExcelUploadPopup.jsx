@@ -122,18 +122,18 @@ const ExcelUploadPopup = ({ show, onHide, title, rptCd, templateParams }) => {
                     accept={fileUtils.getAccept()}
                     aria-label="Upload"
                   />
-                  <span className="input-group-text uploadButton">
+                  <button type="button" className="input-group-text uploadButton" onClick={() => fileInputRef.current?.click()}>
                     <i className="bi bi-upload"></i>
-                  </span>
+                  </button>
                 </div>
               </div>
               <div className={styles.buttonGroup}>
-                <button type="button" className={`${styles.btn} ${styles.btnDownload} btn text-bg-success`} onClick={handleDownload}>
+                <button type="button" className='btn text-bg-success' onClick={handleDownload}>
                   양식다운로드
                 </button>
                 <button
                   type="button"
-                  className={`${styles.btn} ${styles.btnSave} btn text-bg-success`}
+                  className='btn text-bg-success'
                   onClick={() => handleSave(files)}
                 >
                   자료등록

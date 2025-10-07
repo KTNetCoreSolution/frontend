@@ -47,6 +47,10 @@ body {
     background-color: #fff;
 }
 
+.info {
+  font-size: 0.875rem;
+}
+
 /* Text elements */
 p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .alert, .badge, .breadcrumb, .card, .card-title, .card-text, .list-group-item {
@@ -75,7 +79,6 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   font-size: 0.875rem !important;
   padding: 4px 8px !important;
   line-height: 1.4 !important;
-  margin: 0 !important;
   white-space: nowrap;
   border-radius: 4px;
   justify-content: center;
@@ -124,6 +127,12 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   line-height: 1.4;
 }
 
+.checkbox-custom { 
+  accent-color: #21a2a6;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
 /* Input groups */
 .input-group {
   gap: 8px;
@@ -147,8 +156,11 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   position: sticky;
   top: 0;
   background: #ffffff;
-  border-top: 1px solid #1E2124 !important;
+  /* border-top: 1px solid #1E2124 !important; */
   z-index: 2;
+}
+.stickyTop > tr {
+  border: 0;
 }
 .stickyTop > tr > th {
   background-color: #F1F5F9;
@@ -180,8 +192,8 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   overflow: visible !important;
   padding: calc(1rem * var(--bs-scaling));
 }
-.modal-body, .modal-title, .modal-footer {
-  /* font-size: var(--bs-body-font-size); */
+.modal-footer > * {
+  margin: 0;
 }
 .modal-header {
   display: flex;
@@ -280,7 +292,6 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 6px;
   width: 100%;
   margin-left: auto;
   padding: calc(var(--bs-modal-padding) - var(--bs-modal-footer-gap) * 0.5);
@@ -363,6 +374,7 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   background: #fff;
+  width: 100%;
   /* padding: 10px; */
 }
 .modalHeader {
@@ -1264,7 +1276,7 @@ button.boardBtn01 .more-icon {
 .formGroup input[type="checkbox"]:checked::before {
   content: "\f26e";
   font-family: "bootstrap-icons";
-  font-size: 20px;
+  font-size: 18px;
   color: #fff;
   position: absolute;
   top: 50%;
@@ -1348,7 +1360,6 @@ label + label {
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
   margin-left: auto;
 }
 .downloadButton, .uploadButton {
@@ -1363,7 +1374,6 @@ label + label {
 }
 .btnGroupCustom {
   display: flex;
-  gap: 4px;
   align-items: center;
 }
 .btnGroupCustom .btn {
@@ -1473,7 +1483,6 @@ textarea.form-control {
 }
 .boardBottomBtnWrap {
   display: flex;
-  gap: 6px;
   justify-content: center;
   margin-top: 2rem;
 }
@@ -1951,4 +1960,11 @@ textarea.form-control {
 .visualImg {
   width: 150px;
   transform: scaleX(-1);
+}
+
+.duplicateItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 4px;
 }

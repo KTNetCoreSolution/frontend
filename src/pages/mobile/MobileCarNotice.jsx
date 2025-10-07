@@ -101,56 +101,58 @@ const MobileCarNotice = () => {
         <MobileMainUserMenu show={showSidebar} handleClose={handleToggleSidebar} onLogout={handleLogout} />
 
         <div className="pageMain">
-        {currentNotices.length > 0 ? (
-          currentNotices.map((item, index) => (
-          <div className='formDivBox02' onClick={(e) => handleNoticeClick(item)} >
-            <div key={item.NOTICEID} className='formList'>
-              {/* <span className='formTitle'>{totalNotices - (indexOfFirstItem + index)}. {item.title}</span> */}
-              <span className='formTitle'>{item.title}</span>
-              <span className='contentDate'>{item.date || new Date().toLocaleDateString()}</span>
-            </div>
+          <div>
+            {currentNotices.length > 0 ? (
+              currentNotices.map((item, index) => (
+              <div className='formDivBox02' onClick={(e) => handleNoticeClick(item)} >
+                <div key={item.NOTICEID} className='formList'>
+                  {/* <span className='formTitle'>{totalNotices - (indexOfFirstItem + index)}. {item.title}</span> */}
+                  <span className='formTitle'>{item.title}</span>
+                  <span className='contentDate'>{item.date || new Date().toLocaleDateString()}</span>
+                </div>
+              </div>
+              ))
+            ) : (
+              <div className="nodataWrap">공지사항이 없습니다.</div>
+            )}
+            {totalPages > 1 && (
+              <nav aria-label="Page navigation" className="mt-3">
+                <ul className={`pagination justify-content-center ${styles.pagination}`}>
+                  {totalPages > maxPageButtons && (
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                      <button className={`page-link ${styles.pageLink}`} onClick={() => handlePageChange(1)}  disabled={currentPage === 1} >
+                        &lt;&lt;
+                      </button>
+                    </li>
+                  )}
+                  <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                    <button className={`page-link ${styles.pageLink}`} onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+                      &lt;
+                    </button>
+                  </li>
+                  {pageNumbers.map((page) => (
+                    <li key={page} className={`page-item ${currentPage === page ? 'active' : ''}`}>
+                      <button className={`page-link ${styles.pageLink}`} onClick={() => handlePageChange(page)} >
+                        {page}
+                      </button>
+                    </li>
+                  ))}
+                  <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                    <button className={`page-link ${styles.pageLink}`} onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} >
+                      &gt;
+                    </button>
+                  </li>
+                  {totalPages > maxPageButtons && (
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`} >
+                      <button className={`page-link ${styles.pageLink}`} onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} >
+                        &gt;&gt;
+                      </button>
+                    </li>
+                  )}
+                </ul>
+              </nav>
+            )}            
           </div>
-          ))
-         ) : (
-          <div className="nodataWrap">공지사항이 없습니다.</div>
-        )}
-        {totalPages > 1 && (
-          <nav aria-label="Page navigation" className="mt-3">
-            <ul className={`pagination justify-content-center ${styles.pagination}`}>
-              {totalPages > maxPageButtons && (
-                <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                  <button className={`page-link ${styles.pageLink}`} onClick={() => handlePageChange(1)}  disabled={currentPage === 1} >
-                    &lt;&lt;
-                  </button>
-                </li>
-              )}
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className={`page-link ${styles.pageLink}`} onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-                  &lt;
-                </button>
-              </li>
-              {pageNumbers.map((page) => (
-                <li key={page} className={`page-item ${currentPage === page ? 'active' : ''}`}>
-                  <button className={`page-link ${styles.pageLink}`} onClick={() => handlePageChange(page)} >
-                    {page}
-                  </button>
-                </li>
-              ))}
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className={`page-link ${styles.pageLink}`} onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} >
-                  &gt;
-                </button>
-              </li>
-              {totalPages > maxPageButtons && (
-                <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`} >
-                  <button className={`page-link ${styles.pageLink}`} onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} >
-                    &gt;&gt;
-                  </button>
-                </li>
-              )}
-            </ul>
-          </nav>
-        )}
         </div>
       </div>
   );

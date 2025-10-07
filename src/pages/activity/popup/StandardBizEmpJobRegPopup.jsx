@@ -504,7 +504,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
           <tbody>
             <tr>
               <td className={styles.td1}>
-                대분류:
+                대분류
                 {isButtonVisible && (
                   <button onClick={() => setClassPopupState({ show: true, editingIndex: -1 })} className={`${styles.btn} text-bg-secondary`}>
                     선택
@@ -523,7 +523,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                     ))}
                 </select>
               </td>
-              <td className={styles.td3}>중분류:</td>
+              <td className={styles.td3}>중분류</td>
               <td className={styles.td4}>
                 <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange} className={styles.select}>
                   <option value="all">==중분류==</option>
@@ -534,7 +534,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                   ))}
                 </select>
               </td>
-              <td className={styles.td5}>소분류:</td>
+              <td className={styles.td5}>소분류</td>
               <td className={styles.td6} colSpan="5">
                 <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange} className={styles.select}>
                   <option value="all">==소분류==</option>
@@ -547,11 +547,11 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
               </td>
             </tr>
             <tr>
-              <td className={styles.td1}>회선번호+고객명:</td>
+              <td className={styles.td1}>회선번호+고객명</td>
               <td className={styles.td2}>
                 <input type="text" name="CUSTOMER" value={formData.CUSTOMER} onChange={handleChange} className={styles.input} />
               </td>
-              <td className={styles.td3}>출동여부:</td>
+              <td className={styles.td3}>출동여부</td>
               <td className={styles.td4}>
                 <select name="DISPATCH" value={formData.DISPATCH} onChange={handleChange} className={styles.select}>
                   <option value="">== 선택 ==</option>
@@ -562,7 +562,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                   ))}
                 </select>
               </td>
-              <td className={styles.td5}>작업인원:</td>
+              <td className={styles.td5}>작업인원</td>
               <td className={styles.td6}>
                 <select name="WORKERS" value={formData.WORKERS} onChange={handleChange} className={styles.select}>
                   <option value="">== 선택 ==</option>
@@ -573,7 +573,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                   ))}
                 </select>
               </td>
-              <td className={styles.td7}>근무시간:</td>
+              <td className={styles.td7}>근무시간</td>
               <td className={styles.td8}>
                 <select name="WORKTIME" value={formData.WORKTIME} onChange={handleChange} className={styles.select}>
                   <option value="">== 선택 ==</option>
@@ -584,16 +584,16 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                   ))}
                 </select>
               </td>
-              <td className={styles.td9}>회선수:</td>
+              <td className={styles.td9}>회선수</td>
               <td>
                 <input type="number" name="LINES" value={formData.LINES} onChange={handleChange} min="1" className={styles.input2} />
               </td>
             </tr>
             <tr>
               <td colSpan="10">
-                <h5>
+                <p className='info'>
                   프로세스 <span style={{ color: "red" }}>[총 처리시간: {totalProcessTime}(분), {formatTime(totalProcessTime)}(시간)]</span>
-                </h5>
+                </p>
                 <div className={styles.processTableContainer}>
                   <table className={styles.processTable}>
                     <tbody>

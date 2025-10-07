@@ -223,7 +223,6 @@
 
 .noteButtons {
   display: flex;
-  gap: 5px;
 }
 
 .checkbox {

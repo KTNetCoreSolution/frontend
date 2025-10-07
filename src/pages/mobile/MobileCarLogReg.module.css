@@ -100,7 +100,6 @@
   width: 120px; 
   height: 30px; 
   font-size: 14px;
-  font-weight: bold;
   color:#525252;
   border-radius: 5px; 
   border: 1px solid #ccc; 
@@ -109,14 +108,13 @@
 }
 
 .formInput:disabled {
-  background-color: #e9ecef;
+  background-color: #f2f3f4;
 }
 
 .formSelect {
   width: 70px; 
   height: 30px; 
   font-size: 14px;
-  font-weight: bold;
   color:#525252;
   border-radius: 5px; 
   border: 1px solid #ccc; 

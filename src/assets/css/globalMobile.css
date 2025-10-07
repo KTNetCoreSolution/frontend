@@ -255,7 +255,6 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   width: 120px; 
   height: 30px; 
   font-size: 14px;
-  font-weight: bold;
   color: var(--bs-font-color);
   border-radius: 5px; 
   border: 1px solid #ccc; 
@@ -282,6 +281,9 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 }
 .form-control + .btn, .form-select + .btn {
   margin-left: 4px !important;
+}
+.form-select:disabled {
+  background-color: #f2f3f4;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
@@ -1042,6 +1044,12 @@ body {
   height: auto;
   display: block;
   border: none;
+}
+
+.checkbox-custom { 
+  accent-color: #21a2a6;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 /* Mobile portrait mode */

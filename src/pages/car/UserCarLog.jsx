@@ -224,6 +224,7 @@ const UserCarLog = () => {
         div.style.gap = "5px";
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
+        checkbox.className = "checkbox-custom";
         checkbox.checked = rowData[stateField] === "Y";
         checkbox.onclick = () => {
           setTimeout(() => {

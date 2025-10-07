@@ -913,9 +913,9 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           </div>
         </div>
         <div className='justify-content-center' style={{display: `${vDisplay ? 'flex' : 'none'}`}}>
-          <button className={`btn btn-secondary ${styles.btn}`} style={{ width:40 + 'px'}} onClick={onHide}>취소</button>
-          <button className={`btn btn-primary ${styles.btn}`} style={{ width:40 + 'px', display: `${vSaveBtnDisplay}`}} onClick={handleSubmit}>저장</button>
-          <button className={`btn btn-danger ${styles.btn}`} style={{ width:40 + 'px', display: `${vRejectBtnDisplay}`}} onClick={handleReject}>반려</button>
+          <button className='btn btn-secondary' onClick={onHide}>취소</button>
+          <button className='btn btn-primary' style={{ display: `${vSaveBtnDisplay}`}} onClick={handleSubmit}>저장</button>
+          <button className='btn btn-danger' style={{ display: `${vRejectBtnDisplay}`}} onClick={handleReject}>반려</button>
         </div>
       </Modal.Body>
     </Modal>

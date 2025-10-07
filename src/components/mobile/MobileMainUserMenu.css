@@ -60,6 +60,7 @@
 .custom-offcanvas-body .list-group-item {
   border: unset;
   padding: 0.75rem 0;
+  font-size: 0.875rem !important;
 }
 
 /* Optional: Add backdrop for overlay effect */

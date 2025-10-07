@@ -504,7 +504,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
           <tbody>
             <tr>
               <td className={styles.td1}>
-                대분류:<button onClick={() => setClassPopupState({ show: true, editingIndex: -1 })} className={`${styles.btn} text-bg-secondary`}>
+                대분류<button onClick={() => setClassPopupState({ show: true, editingIndex: -1 })} className={`${styles.btn} text-bg-secondary`}>
                   선택
                 </button>
               </td>
@@ -520,7 +520,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
                     ))}
                 </select>
               </td>
-              <td className={styles.td3}>중분류:</td>
+              <td className={styles.td3}>중분류</td>
               <td>
                 <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange} className={styles.select}>
                   <option value="all">==중분류==</option>
@@ -533,7 +533,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
               </td>
             </tr>
             <tr>
-              <td>소분류:</td>
+              <td>소분류</td>
               <td>
                 <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange} className={styles.select}>
                   <option value="all">==소분류==</option>
@@ -544,34 +544,38 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
                   ))}
                 </select>
               </td>
-              <td>건(구간/본/개소):</td>
+              <td>건(구간/본/개소)</td>
               <td>
-                {formData.isDuplicate ? (
-                  <span>건(구간/본/개소)의 값이 0 으로 설정 됩니다.</span>
-                ) : (
-                  <input
-                    type="number"
-                    name="QUANTITY"
-                    value={formData.QUANTITY}
-                    onChange={handleChange}
-                    placeholder="건수 입력"
-                    min="0"
-                    className={styles.duplicateInput}
-                  />
-                )}
-                <input type="checkbox" name="isDuplicate" checked={formData.isDuplicate} onChange={handleChange} className={`${styles.checkbox}`} />
-                <span className={styles.duplicateSpan}>중복건</span>
+                <div className='d-flex align-items-center'>
+                  {formData.isDuplicate ? (
+                    <span>건(구간/본/개소)의 값이 0 으로 설정 됩니다.</span>
+                  ) : (
+                    <input
+                      type="number"
+                      name="QUANTITY"
+                      value={formData.QUANTITY}
+                      onChange={handleChange}
+                      placeholder="건수 입력"
+                      min="0"
+                      className={styles.duplicateInput}
+                    />
+                  )}
+                  <div className='duplicateItem'>
+                    <input type="checkbox" name="isDuplicate" checked={formData.isDuplicate} onChange={handleChange} className={`${styles.checkbox} checkbox-custom`} />
+                    <span className={styles.duplicateSpan}>중복건</span>
+                  </div>
+                </div>
               </td>
             </tr>
             <tr>
-              <td>업무 부가 설명:</td>
+              <td>업무 부가 설명</td>
               <td colSpan="3">
                 <span>{formData.CLASSCCD !== 'all' ? data.find(item => item.CLASSCCD === formData.CLASSCCD)?.DETAIL || '' : ''}</span>
               </td>
             </tr>
             <tr>
               <td>
-                작업일시(주간:<input type="checkbox" name="isWeekly" checked={formData.isWeekly} onChange={handleChange} className={styles.checkbox}/> )
+                작업일시(주간:<input type="checkbox" name="isWeekly" checked={formData.isWeekly} onChange={handleChange} className={`${styles.checkbox} checkbox-custom`} /> )
               </td>
               <td>
                 <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.dateInput} />
@@ -591,7 +595,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
                   ))}
                 </select>
               </td>
-              <td>근무형태:</td>
+              <td>근무형태</td>
               <td>
                 <select name="WORKTYPE" value={formData.WORKTYPE} onChange={handleChange} className={`${styles.select} ${styles.selectWorkType}`}>
                   <option value="">선택</option>
@@ -605,9 +609,9 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
             </tr>
             <tr>
               <td colSpan="4">
-                <h5>
+                <p className='info'>
                 ※ 등록 리스트 ({formData.WORKDATE}) <span style={{ color: "#237FB3" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
-                </h5>
+                </p>
                 <table className={styles.listTable}>
                   <thead>
                     <tr>

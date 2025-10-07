@@ -54,6 +54,7 @@ const UserListPopup = ({ show, onHide, onConfirm }) => {
             div.style.gap = "5px";
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
+            checkbox.className = "checkbox-custom";
             checkbox.checked = rowData.select === "Y";
             checkbox.onclick = (e) => {
               e.stopPropagation();

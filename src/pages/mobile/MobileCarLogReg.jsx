@@ -377,14 +377,16 @@ const MobileDrivingLog = () => {
           <button className='btn btn-secondary' onClick={handleReturnPage}>{state?.gubun === 'U' ? '돌아가기' : '닫기' }</button> 
         </div> */}
         <div>
-          <div className='formList'>
-            <span className='formSearchTitle'>차량번호 : {logInfo.CARNO} </span>
-          </div>
-          <div className='formList'>
-            <span className='formSearchTitle'>차대번호 : {logInfo.CARID} </span>
+          <div className='formList02'>
+            <span className='formLabel'>차량번호 :</span>
+            <span className='formData'>{logInfo.CARNO}</span> 
           </div>
           <div className='formList02'>
-            <span className='formSearchTitle'>운행일시</span>
+            <span className='formLabel'>차대번호 :</span>
+            <span className='formData'>{logInfo.CARID}</span>
+          </div>
+          <div className='formList02'>
+            <span className='formLabel'>운행일시 :</span>
             <div className='d-flex gap-1'>
               <input type="date" ref={logDateRef} id="logDate" className={`${styles.formInput}`} style={{width: '110px'}} value={logInfo.LOGDATE} disabled={gubun === 'I' ? '' : 'disabled'} onChange={(e) => {handleLogDate(e)}} />
               <div className='d-flex flex-row align-items-center'>
@@ -398,8 +400,9 @@ const MobileDrivingLog = () => {
               </div>
             </div>
           </div>
-          <div className='formList'>
-            <span className='formSearchTitle'>운행시간 : {diffTime} </span>
+          <div className='formList02'>
+            <span className='formLabel'>운행시간 :</span>
+            <span className='formData'>{diffTime}</span>
           </div>
         </div>
         <div className='formDivBox'>
@@ -471,7 +474,7 @@ const MobileDrivingLog = () => {
             <li>
               <span className="formLabel" style={{width: '120px'}}>운행자</span>
               <div className="formData">
-                <span className='formSearchTitle' style={{width: '200px'}}>{user?.empNm + ' (' + user?.empNo + ')'}</span>
+                <span style={{width: '200px'}}>{user?.empNm + ' (' + user?.empNo + ')'}</span>
               </div>
             </li>
             <li>
@@ -489,7 +492,7 @@ const MobileDrivingLog = () => {
             <li>
               <span className="formLabel" style={{width: '120px'}}>운행거리</span>
               <div className="formData">
-                <span className='formSearchTitle' style={{width: '120px'}}>{logInfo.ENKM - logInfo.STKM}</span>
+                <span style={{width: '120px'}}>{logInfo.ENKM - logInfo.STKM}</span>
               </div>
             </li>
             <li>

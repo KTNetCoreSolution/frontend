@@ -319,7 +319,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
             <li>
               <span className="formLabel" style={{width: '120px'}}>건(구간/본/개소)</span>
               <div className="formData">
-                <div className="formDataRow align-items-center">
+                <div className="formListDataRow align-items-center">
                   <input
                     type="number"
                     name="QUANTITY"
@@ -330,7 +330,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
                     className="text-end"
                     style={{width: '80px'}}
                   />
-                  중복건 <input type="checkbox" name="isDuplicate" checked={formData.isDuplicate} onChange={handleChange} />
+                  중복건 <input type="checkbox" name="isDuplicate" checked={formData.isDuplicate} onChange={handleChange} className="checkbox-custom" />
                 </div>
               </div>
             </li>
@@ -349,7 +349,7 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
             </li>
             <li>
               <div className="formLabel gap-1">
-                <span>작업일시</span> (주간 <input type="checkbox" name="isWeekly" checked={formData.isWeekly} onChange={handleChange} />)
+                <span>작업일시</span> (주간 <input type="checkbox" name="isWeekly" checked={formData.isWeekly} onChange={handleChange} className="checkbox-custom" />)
               </div>
             </li>
             <li>

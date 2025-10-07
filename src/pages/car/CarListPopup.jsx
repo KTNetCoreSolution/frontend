@@ -55,6 +55,7 @@ const CarListPopup = ({ show, onHide, onConfirm, checkCardNo}) => {
             div.style.gap = "5px";
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
+            checkbox.className = "checkbox-custom";
             checkbox.checked = rowData.select === "Y";
             checkbox.onclick = (e) => {
               e.stopPropagation();
@@ -232,8 +233,8 @@ const CarListPopup = ({ show, onHide, onConfirm, checkCardNo}) => {
         </TableWrapper>
       </Modal.Body>
       <Modal.Footer>
-        <button className={`btn btn-secondary ${styles.btn}`} onClick={handleClose}>닫기</button>
-        <button className={`btn btn-primary ${styles.btn}`} onClick={handleConfirm}>확인</button>
+        <button className='btn btn-secondary' onClick={handleClose}>닫기</button>
+        <button className='btn btn-primary' onClick={handleConfirm}>확인</button>
       </Modal.Footer>
     </Modal>
   );

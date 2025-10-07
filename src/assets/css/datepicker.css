@@ -29,6 +29,15 @@
 }
 
 /* 캘린더 헤더 */
+.react-datepicker__header__dropdown {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+.react-datepicker__year-dropdown-container--select {
+  margin: 0; 
+}
 .react-datepicker__current-month {
   font-size: 14px;
   font-weight: bold;
@@ -40,7 +49,6 @@
   display: flex;
   justify-content: space-between;
 }
-
 /* 각 날짜 셀 */
 .react-datepicker__day {
   width: 30px;
@@ -87,7 +95,7 @@
 /* 월 드롭다운 */
 .react-datepicker__month-dropdown-container,
 .react-datepicker__year-container {
-  margin: 0 10px;
+  margin: 0;
 }
 
 .react-datepicker__month-dropdown,
