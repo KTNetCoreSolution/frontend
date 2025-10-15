@@ -429,7 +429,7 @@ const StandardTeamJobManage = () => {
         onConfirm={handleDeleteConfirm}
         title="삭제 확인"
       >
-        <p>{selectedRow?.CLASSCNM ? `${selectedRow.CLASSCNM} 삭제하시겠습니까?` : '삭제하시겠습니까?'}</p>
+        <p className='commonInnerTxt'>{selectedRow?.CLASSCNM ? `${selectedRow.CLASSCNM} 삭제하시겠습니까?` : '삭제하시겠습니까?'}</p>
       </CommonPopup>
       <StandardEmpStatisticPopup
         show={showStatisticPopup}

@@ -300,6 +300,10 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
   border-bottom-right-radius: var(--bs-modal-inner-border-radius);
   border-bottom-left-radius: var(--bs-modal-inner-border-radius);
 }
+.commonInnerTxt {
+  font-size: 0.875rem;
+  font-weight: 400;
+}
 /* .closeButton {
   background: none;
   border: none;
