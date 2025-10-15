@@ -10,6 +10,7 @@ import TableSearch from '../../components/table/TableSearch';
 import CommonPopup from '../../components/popup/CommonPopup';
 import OrgSearchPopup from '../../components/popup/OrgSearchPopup';
 import CarDetailPopup from '../car/CarDetailPopup';
+import CarDetailForUserPopup from '../car/CarDetailForUserPopup';
 import ExcelUploadPopup from '../../components/popup/ExcelUploadPopup'; // Add this line
 import styles from '../../components/table/TableSearch.module.css';
 import { fetchData } from '../../utils/dataUtils';
@@ -87,6 +88,7 @@ const CarListInfo = () => {
   const { user } = useStore();
   const [showPopup, setShowPopup] = useState(false);
   const [showDetailPopup, setShowDetailPopup] = useState(false);  
+  const [showDetailForUserPopup, setShowDetailForUserPopup] = useState(false);  
   const [carId, setCarId] = useState('');
   const [showExcelPopup, setShowExcelPopup] = useState(false); // Add this line
   const [popupTitle, setPopupTitle] = useState('');
@@ -100,12 +102,22 @@ const CarListInfo = () => {
 
   const fn_DetailPopup = (carId) => {
     setCarId(carId);
-    setShowDetailPopup(true);
+    if (!hasPermission(user?.auth, 'permissions')) {
+      setShowDetailForUserPopup(true);
+    }
+    else {
+      setShowDetailPopup(true);
+    }
   };
 
   const handleDetailCancel = () => {
     setCarId('');
     setShowDetailPopup(false);
+  };
+
+  const handleDetailForUserCancel = () => {
+    setCarId('');
+    setShowDetailForUserPopup(false);
   };
 
   // selectedOrg 변경 시 ref 업데이트
@@ -166,9 +178,14 @@ const CarListInfo = () => {
   if (!hasPermission(user?.auth, 'permissions')) {
     searchConfig.areas.forEach(area => {
       if (area.type === 'buttons') {
-        const index = area.fields.findIndex(field => field.id === 'excelUploadBtn');
-        if (index !== -1) {
-          area.fields.splice(index, 1);
+        const index1 = area.fields.findIndex(field => field.id === 'popupBtn2');
+        if (index1 !== -1) {
+          area.fields.splice(index1, 1);
+        }
+
+        const index2 = area.fields.findIndex(field => field.id === 'excelUploadBtn');
+        if (index2 !== -1) {
+          area.fields.splice(index2, 1);
         }
       }
     });
@@ -527,6 +544,7 @@ const CarListInfo = () => {
         {popupContent}
       </CommonPopup>
       <CarDetailPopup show={showDetailPopup} onHide={handleDetailCancel} onParentSearch={loadData} data={carId} />
+      <CarDetailForUserPopup show={showDetailForUserPopup} onHide={handleDetailForUserCancel} onParentSearch={loadData} data={carId} />
       <ExcelUploadPopup
         show={showExcelPopup}
         onHide={() => setShowExcelPopup(false)}
