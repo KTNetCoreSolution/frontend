@@ -202,9 +202,10 @@ const RentalBatchManage = () => {
   }, [searchConfig]);
 
   const columns = [
+    { headerHozAlign: 'center', hozAlign: 'center', title: '등록일', field: 'DDATE', sorter: 'string', width: 100, frozen: true },
     { headerHozAlign: 'center', hozAlign: 'center', title: '계약번호', field: 'CONTRACT_NUM', sorter: 'string', width: 120, frozen: true },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '계약시작일', field: 'CONTRACT_STARTDT', sorter: 'string', width: 120 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '계약종료일', field: 'CONTRACT_ENDDT', sorter: 'string', width: 120 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '계약시작일', field: 'CONTRACT_STARTDT', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '계약종료일', field: 'CONTRACT_ENDDT', sorter: 'string', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '임차가(월)', field: 'MRENT_PRICE', sorter: 'string', width: 120 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '자산번호', field: 'ASSET_NUM', sorter: 'string', width: 120 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '용도', field: 'PURPOSE', sorter: 'string', width: 120 },
