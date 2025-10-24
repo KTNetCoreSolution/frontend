@@ -5,7 +5,7 @@ import { msgPopup } from '../../../utils/msgPopup';
 import { errorMsgPopup } from '../../../utils/errorMsgPopup';
 import useStore from '../../../store/store';
 import common from "../../../utils/common";
-import styles from './RentalProductManagePopup.module.css'; // 기존 스타일 재사용 (필요 시 별도 CSS 생성)
+import styles from './RentalProductAddPopup.module.css'; // 기존 스타일 재사용 (필요 시 별도 CSS 생성)
 
 const RentalProductAddPopup = ({ show, onHide, onSave }) => {
   const { user } = useStore();

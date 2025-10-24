@@ -1,0 +1,5 @@
+.customModal {
+  width: 640px; /* 원하는 너비 설정 */
+  max-width: 90vw; /* 뷰포트 기준 최대 너비 제한 */
+  margin: 0 auto;
+}

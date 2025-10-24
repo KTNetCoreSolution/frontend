@@ -63,46 +63,15 @@ const ModuleOrgAuthInfo = () => {
         type: "search",
         fields: [
           { id: 'msgLabel', type: 'label', row: 2, label: '업무조직은 디폴트가 인사테이블의 조직이고, 여기서 작업한 저장 정보가 업무조직을 최우선 시 합니다.', labelVisible: true, width: '800px', height: '30px', backgroundColor: '#ffffff', color: '#d62424', enabled: true },
-          {
-            id: "orgText",
-            type: "text",
-            row: 1,
-            label: "조직",
-            labelVisible: true,
-            placeholder: "조직 선택",
-            enabled: false,
-          },
-          {
-            id: "orgPopupBtn",
-            type: "popupIcon",
-            row: 1,
-            label: "조직 선택",
-            labelVisible: false,
-            eventType: "showOrgPopup",
-            enabled: true,
-          },
-          {
-            id: "MODULETYPE",
-            type: "select",
-            row: 1,
-            label: "업무",
-            labelVisible: true,
-            options: moduleOptions,
-            enabled: true,
-          },
+          { id: "orgText", type: "text", row: 1, label: "조직", labelVisible: true, placeholder: "조직 선택", enabled: false, },
+          { id: "orgPopupBtn", type: "popupIcon", row: 1, label: "조직 선택", labelVisible: false, eventType: "showOrgPopup", enabled: true, },
+          { id: "MODULETYPE", type: "select", row: 1, label: "업무", labelVisible: true, options: moduleOptions, enabled: true, },
         ],
       },
       {
         type: "buttons",
         fields: [
-          {
-            id: "searchBtn",
-            type: "button",
-            row: 1,
-            label: "조회",
-            eventType: "search",
-            enabled: true,
-          },
+          { id: "searchBtn", type: "button", row: 1, label: "조회", eventType: "search", enabled: true, },
         ],
       },
     ],
@@ -116,7 +85,7 @@ const ModuleOrgAuthInfo = () => {
       options: [
         { value: "", label: "선택" },
         { value: "EMPORG", label: "담당조직/담당자" },
-        { value: "MODULETYPE", label: "업무" },
+        { value: "MODULENM", label: "업무" },
         { value: "ORGNM", label: "권한조직" }
       ]
     },
@@ -267,15 +236,7 @@ const ModuleOrgAuthInfo = () => {
         return div;
       }
     },
-    {
-      headerHozAlign: "center",
-      hozAlign: "center",
-      title: "ID",
-      field: "ID",
-      sorter: "string",
-      width: 100,
-      visible: true
-    },
+    { headerHozAlign: "center", hozAlign: "center", title: "ID", field: "ID", sorter: "string", width: 100, visible: true },
     {
       headerHozAlign: "center",
       hozAlign: "left",
@@ -334,7 +295,7 @@ const ModuleOrgAuthInfo = () => {
     {
       headerHozAlign: "center",
       hozAlign: "center",
-      title: "업무",
+      title: "업무코드",
       field: "MODULETYPE",
       sorter: "string",
       width: 120,
@@ -347,6 +308,7 @@ const ModuleOrgAuthInfo = () => {
         return option ? option.label : value;
       }
     },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '업무', field: 'MODULENM', sorter: 'string', width: 200 },
     {
       headerHozAlign: "center",
       hozAlign: "center",
@@ -376,26 +338,10 @@ const ModuleOrgAuthInfo = () => {
         return div;
       }
     },
-    {
-      title: "ORGCD",
-      field: "ORGCD",
-      visible: false
-    },
-    {
-      title: "EMPNO",
-      field: "EMPNO",
-      visible: false
-    },
-    {
-      title: "AUTHOPERATOR",
-      field: "AUTHOPERATOR",
-      visible: false
-    },
-    {
-      title: "inputType",
-      field: "inputType",
-      visible: false
-    }
+    { title: "ORGCD", field: "ORGCD", visible: false },
+    { title: "EMPNO", field: "EMPNO", visible: false },
+    { title: "AUTHOPERATOR", field: "AUTHOPERATOR", visible: false },
+    { title: "inputType", field: "inputType", visible: false }
   ];
 
   const loadData = async () => {
@@ -520,7 +466,7 @@ const ModuleOrgAuthInfo = () => {
         tableInstance.current.setFilter(
           [
             { field: "EMPORG", type: "like", value: filterText },
-            { field: "MODULETYPE", type: "like", value: filterText },
+            { field: "MODULENM", type: "like", value: filterText },
             { field: "ORGNM", type: "like", value: filterText }
           ],
           "or"

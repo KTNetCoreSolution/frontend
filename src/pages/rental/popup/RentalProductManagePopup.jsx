@@ -8,9 +8,21 @@ import { fetchData } from '../../../utils/dataUtils';
 import { errorMsgPopup } from '../../../utils/errorMsgPopup';
 import { msgPopup } from '../../../utils/msgPopup';
 import CommonPopup from '../../../components/popup/CommonPopup';
+import common from '../../../utils/common';
 import useStore from '../../../store/store';
 import RentalProductAddPopup from './RentalProductAddPopup';
 import styles from './RentalProductManagePopup.module.css';
+import { createGlobalStyle } from 'styled-components';
+
+const GlobalProductStyles = createGlobalStyle`
+  .tabulator-cell.bg-readonly {
+    background-color: #eaeaea !important;
+  }
+
+  .tabulator-row.edited .tabulator-cell {
+    background-color: #fff3cd !important;
+  }
+`;
 
 const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => {
   const { user } = useStore();
@@ -81,7 +93,7 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
     const rowElement = cell.getRow().getElement();
     if (rowElement) {
       setTimeout(() => {
-        rowElement.setAttribute('style', 'background-color: #fff3cd');
+        // rowElement.setAttribute('style', 'background-color: #fff3cd');
         rowElement.classList.add('edited');
       }, 0);
     } else {
@@ -142,10 +154,10 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
             },
             editable: false
           },
-          { headerHozAlign: 'center', hozAlign: 'center', title: 'ID', field: 'ID', sorter: 'string', width: 80, frozen: true, editable: false },
-          { headerHozAlign: 'center', hozAlign: 'center', title: '분류코드', field: 'CLASSCD', sorter: 'string', width: 100, editable: false },
+          { headerHozAlign: 'center', hozAlign: 'center', title: '순번', field: 'ID', sorter: 'string', width: 80, frozen: true, editable: false },
+          { headerHozAlign: 'center', hozAlign: 'center', title: '분류코드', field: 'CLASSCD', sorter: 'string', width: 100, editable: false, cssClass: 'bg-readonly' },
           { headerHozAlign: 'center', hozAlign: 'center', title: '분류명', field: 'CLASSNM', sorter: 'string', width: 120, editor: 'input', editable: true, cellEdited: handleCellEdited },
-          { headerHozAlign: 'center', hozAlign: 'center', title: '상품코드', field: 'PRODUCTCD', sorter: 'string', width: 100, editable: false },
+          { headerHozAlign: 'center', hozAlign: 'center', title: '상품코드', field: 'PRODUCTCD', sorter: 'string', width: 100, editable: false, cssClass: 'bg-readonly' },
           { headerHozAlign: 'center', hozAlign: 'center', title: '상품명', field: 'PRODUCTNM', sorter: 'string', width: 150, editor: 'input', editable: true, cellEdited: handleCellEdited },
           { headerHozAlign: 'center', hozAlign: 'left', title: '모델명', field: 'MODELNM', sorter: 'string', width: 400, editor: 'input', editable: true, cellEdited: handleCellEdited },
           { headerHozAlign: 'center', hozAlign: 'center', title: '상품순서', field: 'PRODUCTODR', sorter: 'number', width: 100, editor: 'number', editable: true, cellEdited: handleCellEdited },
@@ -202,6 +214,31 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
 
   const handleEditConfirm = async () => {
     if (!selectedRow) return;
+
+    // 길이 유효성 검사
+    const validations = [
+      { value: selectedRow.PRODUCTNM, maxLength: 150, label: "상품명" },
+      { value: selectedRow.MODELNM, maxLength: 500, label: "모델명" },
+      { value: selectedRow.CLASSNM, maxLength: 100, label: "분류명" },
+      { value: selectedRow.PRODUCTODR, maxLength: 20, label: "상품순서", isNumber: true },
+      { value: selectedRow.CLASSODR, maxLength: 20, label: "분류순서", isNumber: true },
+      { value: selectedRow.MEMO, maxLength: 500, label: "비고" },
+    ];
+
+    for (const validation of validations) {
+      if (validation.value !== undefined && validation.value !== null) {
+        // 숫자형인 경우 문자열로 변환
+        const valueToCheck = validation.isNumber ? String(validation.value) : validation.value;
+
+        const result = common.validateVarcharLength(valueToCheck, validation.maxLength, validation.label);
+        if (!result.valid) {
+          errorMsgPopup(result.error);
+          setShowEditPopup(false);
+          return;
+        }
+      }
+    }
+
     setShowEditPopup(false);
     try {
       const params = {
@@ -298,6 +335,7 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
 
   return (
     <Modal show={show} onHide={onHide} centered dialogClassName={styles.customModal}>
+      <GlobalProductStyles />
       <Modal.Header closeButton>
         <Modal.Title>상품 관리</Modal.Title>
       </Modal.Header>
