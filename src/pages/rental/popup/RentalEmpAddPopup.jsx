@@ -162,7 +162,7 @@ const RentalEmpAddPopup = ({ show, onHide, onSave }) => {
       const response = await fetchData('rental/empMng/save', params);
 
       if (!response.success) {
-        errorMsgPopup(response.message || '추가 중 오류가 발생했습니다.');
+        errorMsgPopup(response.message || '등록 중 오류가 발생했습니다.');
         return;
       }
 
@@ -172,12 +172,12 @@ const RentalEmpAddPopup = ({ show, onHide, onSave }) => {
         return;
       }
 
-      msgPopup('추가되었습니다.');
+      msgPopup('등록되었습니다.');
       onSave?.();
       onHide();
     } catch (err) {
-      console.error('추가 실패:', err);
-      errorMsgPopup('추가 중 오류가 발생했습니다.');
+      console.error('등록 실패:', err);
+      errorMsgPopup('등록 중 오류가 발생했습니다.');
     }
   };
 
