@@ -20,6 +20,12 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
   const [workTimeOptions, setWorkTimeOptions] = useState([]);
   const [isButtonVisible, setIsButtonVisible] = useState(true);
 
+  const initialFormData = {
+    PROCESSTIME: 0,           // 내부 계산용 (항상 숫자)
+    PROCESSTIME_DISPLAY: "",  // 텍스트박스 표시용 (빈값 가능)
+    LINES: "",                // 드롭다운 빈값
+  };
+
   // 옵션 로딩 (standard/ddlList로 DISPATCH, WORKERS, WORKTIME만 호출)
   useEffect(() => {
     const fetchDropdownOptions = async (pGUBUN, setOptions) => {
@@ -197,7 +203,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
       formData.WORKTIME === "" ||
       formData.PROCESSTIME <= 0 ||
       formData.PROCESS === "" ||
-      formData.LINES <= 0
+      (formData.LINES !== "" && formData.LINES <= 0)
     ) {
       msgPopup("소분류, 출동여부, 작업인원, 근무시간, 회선수, 프로세스, 처리시간(분)을 확인해주세요.");
       return;
@@ -266,7 +272,25 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => {
-      const newData = { ...prev, [name]: name === "PROCESSTIME" ? (value === '' ? 0 : parseInt(value) || 0) : value };
+      const newData = { ...prev };
+
+      if (name === "PROCESSTIME_DISPLAY") {
+        const numValue = value === "" ? 0 : parseInt(value, 10) || 0;
+        newData.PROCESSTIME = numValue;
+        newData.PROCESSTIME_DISPLAY = value;   // ← 빈 문자열 허용
+      }
+      else if (name === "LINES") {
+        newData.LINES = value; // 빈값 허용
+      }
+      else if (name === "PROCESSTIME") {
+        // 기존 로직 유지 (직접 수정 시)
+        newData.PROCESSTIME = value === '' ? 0 : parseInt(value) || 0;
+        newData.PROCESSTIME_DISPLAY = value === '' ? '' : value;
+      }
+      else {
+        newData[name] = value;
+      }
+
       if (name === "CLASSACD") {
         newData.CLASSBCD = "all";
         newData.CLASSCCD = "all";
@@ -380,15 +404,17 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
             <li>
               <span className="formLabel" style={{width: '120px'}}>회선수</span>
               <div className="formData">
-                <input
-                  type="number"
-                  name="LINES"
-                  value={formData.LINES}
-                  onChange={handleChange}
-                  min="1"
-                  className="text-end"
+                <select 
+                  name="LINES" 
+                  value={formData.LINES} 
+                  onChange={handleChange} 
                   style={{width: '190px'}}
-                />
+                >
+                  <option value=""></option>
+                  {[...Array(20)].map((_, i) => (
+                    <option key={i+1} value={i+1}>{i+1}</option>
+                  ))}
+                </select>
               </div>
             </li>
             <li>
@@ -462,18 +488,31 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
             </li>
             <li>
               <span className="formLabel" style={{width: '120px'}}>처리시간(분)</span>
-              <div className="formData">
+              <div className="formData d-flex align-items-center">
                 <input
                   type="number"
-                  name="PROCESSTIME"
-                  value={formData.PROCESSTIME}
+                  name="PROCESSTIME_DISPLAY"
+                  value={formData.PROCESSTIME_DISPLAY ?? ""}
                   onChange={handleChange}
                   min="0"
-                  className="text-end"
-                  style={{width: '190px'}}
+                  placeholder=""
+                  className="text-end me-2"
+                  style={{width: '150px'}}
                 />
+                <button 
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm"
+                  onClick={() => setFormData(prev => ({ 
+                    ...prev, 
+                    PROCESSTIME: 0, 
+                    PROCESSTIME_DISPLAY: ""
+                  }))}
+                  title="초기화"
+                >
+                  <i className="bi bi-eraser"></i>
+                </button>
               </div>
-            </li>
+          </li>
           </ul>
         </div>
         {isButtonVisible && (

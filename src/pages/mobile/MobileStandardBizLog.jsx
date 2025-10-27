@@ -34,7 +34,7 @@ const MobileStandardBizLog = () => {
     DISPATCH: "",
     WORKERS: "",
     WORKTIME: "",
-    LINES: 1,
+    LINES: "",
     PROCESSSECTION: "",  // 추가: 구분 필드
     PROCESS: "",
     PROCESSTIME: 0,
@@ -142,7 +142,7 @@ const MobileStandardBizLog = () => {
           WORKERS: item.BIZMANNM || '',
           WORKTIMECD: item.WORKCD || '',
           WORKTIME: item.WORKNM || '',
-          LINES: item.WORKCNT || '1',
+          LINES: item.WORKCNT || '',
           PROCESS: item.BIZWORKGB || '',
           PROCESSNM: item.BIZWORKGBNM || '',
           PROCESSTIME: item.WORKM || '0',

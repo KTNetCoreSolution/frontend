@@ -65,7 +65,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
     DISPATCH: "",
     WORKERS: "",
     WORKTIME: "",
-    LINES: 1,
+    LINES: "",
   });
   const [processTimes, setProcessTimes] = useState({});
   const [registeredList, setRegisteredList] = useState([]);
@@ -217,7 +217,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
           WORKERS: item.BIZMANNM || '',
           WORKTIMECD: item.WORKCD || '',
           WORKTIME: item.WORKNM || '',
-          LINES: item.WORKCNT || '1',
+          LINES: item.WORKCNT || '',
           PROCESS: item.BIZWORKGB || '',
           PROCESSNM: item.BIZWORKGBNM || '',
           PROCESSTIME: item.WORKM || '0',
@@ -317,7 +317,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         formData.DISPATCH === "" ||
         formData.WORKERS === "" ||
         formData.WORKTIME === "" ||
-        formData.LINES <= 0
+        (formData.LINES !== "" && formData.LINES <= 0)
       ) {
         msgPopup("소분류, 출동여부, 작업인원, 근무시간, 회선수를 확인해주세요.");
         return;
