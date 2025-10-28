@@ -11,7 +11,6 @@ import { msgPopup } from '../../utils/msgPopup';
 import styles from '../../components/table/TableSearch.module.css';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import common from '../../utils/common';
-import ExcelUploadPopup from '../../components/popup/ExcelUploadPopup';
 import RentalProductPopup from './popup/RentalProductPopup';
 import RentalProductManagePopup from './popup/RentalProductManagePopup';
 import RentalEmpAddPopup from './popup/RentalEmpAddPopup';
@@ -102,8 +101,6 @@ const RentalEmpManage = () => {
   const tableInstance = useRef(null);
   const isInitialRender = useRef(true);
   const [classData, setClassData] = useState([]);
-  const [excelPopupTitle, setExcelPopupTitle] = useState('');
-  const [showExcelPopup, setShowExcelPopup] = useState(false);
   const [showProductPopup, setShowProductPopup] = useState(false);
   const [showProductManagePopup, setShowProductManagePopup] = useState(false);
   const [showRentalRegPopup, setShowRentalRegPopup] = useState(false);
@@ -158,7 +155,6 @@ const RentalEmpManage = () => {
           { id: 'searchBtn', type: 'button', row: 1, label: '검색', eventType: 'search', enabled: true },
           { id: 'rentalRegBtn', type: 'button', row: 2, label: '렌탈등록', eventType: 'showRentalRegPopup', width: '80px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
           { id: 'popupBtn', type: 'button', row: 2, label: '상품관리', eventType: 'showProductManagePopup', width: '80px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
-          { id: 'excelUploadBtn', type: 'button', row: 2, label: '엑셀업로드', eventType: 'showExcelUploadPopup', width: '100px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
         ],
       },
     ],
@@ -320,7 +316,7 @@ const RentalEmpManage = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '조직4', field: 'ORGNM4', sorter: 'string', width: 130, editable: false},
     { headerHozAlign: 'center', hozAlign: 'center', title: '담당자사번', field: 'EMPNO', sorter: 'string', width: 100, editable: false},
     { headerHozAlign: 'center', hozAlign: 'center', title: '담당자', field: 'EMPNM', sorter: 'string', width: 100, editable: false},
-    { headerHozAlign: 'center', hozAlign: 'left', title: '주소지', field: 'ADDR', sorter: 'string', width: 300, editor: 'input', editable: true, cellEdited: handleCellEdited },
+    { headerHozAlign: 'center', hozAlign: 'left', title: '주소지', field: 'ADDR', sorter: 'string', width: 350, editor: 'input', editable: true, cellEdited: handleCellEdited },
     { headerHozAlign: 'center', hozAlign: 'left', title: '비고', field: 'MEMO', sorter: 'string', width: 300, editor: 'input', editable: true, cellEdited: handleCellEdited },
     { headerHozAlign: 'center', hozAlign: 'center', title: '등록자사번', field: 'REG_EMPNO', sorter: 'string', width: 100, editable: false, cssClass: 'bg-reg-cell' },
     { headerHozAlign: 'center', hozAlign: 'center', title: '등록자', field: 'REG_EMPNM', sorter: 'string', width: 100, editable: false, cssClass: 'bg-reg-cell' },
@@ -455,10 +451,7 @@ const RentalEmpManage = () => {
       setShowRentalRegPopup(true);
     } else if (eventType === 'showProductManagePopup') {
       setShowProductManagePopup(true);
-    } else if (eventType === 'showExcelUploadPopup') {
-      setExcelPopupTitle('일괄등록');
-      setShowExcelPopup(true);
-    }
+    } 
   };
 
   const handleProductSelect = (rowData) => {
@@ -652,19 +645,6 @@ const RentalEmpManage = () => {
         {loading && <div>로딩 중...</div>}
         <div ref={tableRef} className={styles.tableSection} style={{ visibility: loading || tableStatus !== 'ready' ? 'hidden' : 'visible' }} />
       </div>
-      <ExcelUploadPopup
-        show={showExcelPopup}
-        onHide={() => setShowExcelPopup(false)}
-        onSave={(result) => {
-          if (result.errCd === '00') {
-            loadData();
-          }
-          return result;
-        }}
-        title={excelPopupTitle}
-        rptCd="RENTALINFOEXCELUPLOAD|Y"
-        templateParams={{ pGUBUN: 'RPTCD', pTITLE: '', pFILEID: '14', pRPTCD: 'RENTALINFOEXCELUPLOAD', pDEBUG: 'F' }}
-      />
       <RentalEmpAddPopup show={showRentalRegPopup} onHide={() => setShowRentalRegPopup(false)} classData={classData} onSave={handleRentalRegPopup} />
       <RentalProductPopup show={showProductPopup} onHide={() => setShowProductPopup(false)} data={classData} onSave={handleProductSelect} />
       <RentalProductManagePopup show={showProductManagePopup} onHide={() => setShowProductManagePopup(false)} data={classData} onSave={handleProductManageSave} />

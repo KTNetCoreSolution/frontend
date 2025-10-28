@@ -330,7 +330,7 @@ const RentalBatchManage = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '조직4', field: 'ORGNM4', sorter: 'string', width: 130, editable: false, cellClick: (e, cell) => {setSelectedRow(cell.getData());setShowUserPopup(true);}, cssClass: 'bg-user-cell' },
     { headerHozAlign: 'center', hozAlign: 'center', title: '담당자사번', field: 'EMPNO', sorter: 'string', width: 100, editable: false, cellClick: (e, cell) => {setSelectedRow(cell.getData());setShowUserPopup(true);}, cssClass: 'bg-user-cell' },
     { headerHozAlign: 'center', hozAlign: 'center', title: '담당자', field: 'EMPNM', sorter: 'string', width: 100, editable: false, cellClick: (e, cell) => {setSelectedRow(cell.getData());setShowUserPopup(true);}, cssClass: 'bg-user-cell' },
-    { headerHozAlign: 'center', hozAlign: 'left', title: '주소지', field: 'ADDR', sorter: 'string', width: 300, editor: 'input', editable: true, cellEdited: handleCellEdited },
+    { headerHozAlign: 'center', hozAlign: 'left', title: '주소지', field: 'ADDR', sorter: 'string', width: 350, editor: 'input', editable: true, cellEdited: handleCellEdited },
     { headerHozAlign: 'center', hozAlign: 'left', title: '비고', field: 'MEMO', sorter: 'string', width: 300, editor: 'input', editable: true, cellEdited: handleCellEdited },
     { headerHozAlign: 'center', hozAlign: 'center', title: '등록자사번', field: 'REG_EMPNO', sorter: 'string', width: 100, editable: false, cssClass: 'bg-reg-cell' },
     { headerHozAlign: 'center', hozAlign: 'center', title: '등록자', field: 'REG_EMPNM', sorter: 'string', width: 100, editable: false, cssClass: 'bg-reg-cell' },
