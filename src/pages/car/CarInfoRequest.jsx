@@ -1,17 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
+//import { fetchJsonData } from '../../utils/dataUtils';
+//import sampleData from '../../data/data.json';
 import { createTable } from '../../utils/tableConfig.js';
 import { initialFilters } from '../../utils/tableEvent.js';
-import { handleDownloadExcel } from '../../utils/tableExcel.js';
+import { handleDownloadExcel2 } from '../../utils/tableExcel.js';
 import useStore from '../../store/store.js';
 import MainSearch from '../../components/main/MainSearch.jsx';
 import TableSearch from '../../components/table/TableSearch.jsx';
 import CommonPopup from '../../components/popup/CommonPopup.jsx';
 import OrgSearchPopup from '../../components/popup/OrgSearchPopup.jsx';
+import RequestDetailPopup from './RequestDetailPopup.jsx';
 import styles from '../../components/table/TableSearch.module.css';
 import common from '../../utils/common';
 import { fetchData } from '../../utils/dataUtils.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
+import { msgPopup } from '../../utils/msgPopup.js';
 import { arEG, tr } from 'date-fns/locale';
+
+const fn_CellButton = (label, className, onClick) => ({
+  formatter: (cell) => {
+    const button = document.createElement("button");
+    button.className = `btn btn-sm ${className}`;
+    button.innerText = label;
+    button.onclick = () => onClick(cell.getData());
+    return button;
+  },
+});
 
 /**
  * 필드 옵션 데이터를 반환
@@ -23,37 +37,15 @@ const getFieldOptions = (fieldId, dependentValue = '') => {
   const optionsMap = {
     filterSelect: [
       { value: '', label: '선택' },
-      { value: 'CARTYPE', label: '차종' },
-      { value: 'CARCLASS', label: '차형' },
-      { value: 'CARSIZE', label: '규모' },
+      { value: 'REQSTATUS', label: '요청상태' },
     ],
-    filterCarType: [
+    filterReqStat: [
       { value: '', label: '선택' },
-      { value: '승용차', label: '승용차' },
-      { value: '승합차', label: '승합차' },
-      { value: '특수차', label: '특수차' },
-      { value: '화물차', label: '화물차' },
-    ],
-    filterCarClass: [
-      { value: '', label: '선택' },
-      { value: 'RV형', label: 'RV형' },
-      { value: '경형', label: '경형' },
-      { value: '소형', label: '소형' },
-      { value: '승용', label: '승용' },
-      { value: '중형', label: '중형' },
-    ],
-    filterCarSize: [
-      { value: '', label: '선택' },
-      { value: '1톤미만', label: '1톤미만' },
-      { value: '1톤', label: '1톤' },
-      { value: '2.5톤', label: '2.5톤' },
-      { value: '2인', label: '2인' },
-      { value: '4인', label: '4인' },
-      { value: '5인', label: '5인' },
-      { value: '9인', label: '9인' },
-      { value: '3벤', label: '3벤' },
-      { value: '6벤', label: '6벤' },
-    ],
+      { value: 'R', label: '요청' },
+      { value: 'Y', label: '승인' },
+      { value: 'N', label: '반려' },
+      { value: 'C', label: '요청취소' },
+    ]
   };
   return optionsMap[fieldId] || [];
 };
@@ -62,9 +54,11 @@ const getFieldOptions = (fieldId, dependentValue = '') => {
  * 테이블 및 검색 기능 컴포넌트
  * @returns {JSX.Element} 검색 폼과 테이블을 포함한 컴포넌트
  */
-const CarListInfoUpdateHist = () => {
+const CarListInfo = () => {
   const { user } = useStore();
   const [showPopup, setShowPopup] = useState(false);
+  const [showDetailPopup, setShowDetailPopup] = useState(false);  
+  const [row, setRow] = useState([]);
   const [popupTitle, setPopupTitle] = useState('');
   const [popupContent, setPopupContent] = useState(null);
   const [popupOnConfirm, setPopupOnConfirm] = useState(null);
@@ -73,6 +67,16 @@ const CarListInfoUpdateHist = () => {
   const [_selectedUsers] = useState([]);
   const selectedOrgRef = useRef(selectedOrg); // 최신 selectedOrg 값을 추적
   const todayDate = common.getTodayDate();
+
+  const fn_DetailPopup = (row) => {
+    setRow(row);
+    setShowDetailPopup(true);
+  };
+
+  const handleDetailCancel = () => {
+    setRow([]);
+    setShowDetailPopup(false);
+  };
 
   // selectedOrg 변경 시 ref 업데이트
   useEffect(() => {
@@ -107,7 +111,7 @@ const CarListInfoUpdateHist = () => {
   // - color: 요소의 글자색(예: '#000000'). 'default' 또는 미설정 시 defaultStyles.color('#000000') 적용. 버튼은 기본값 '#ffffff'.
   // - enabled: 요소 활성화 여부(boolean). true(기본값)면 입력/클릭 가능, false면 비활성화(disabled).
   // - defaultValue: 초기값 설정. 'day', 'startday', 'endday'는 날짜 문자열(예: '2025-05-31'), 'startmonth', 'endmonth'는 월 문자열(예: '2025-05'), 'dayperiod', 'monthperiod'는 { start, end } 객체. 미설정 시 오늘 날짜/월 적용.
-  const searchConfig = {
+  let searchConfig = {
     areas: [
       {
         type: 'search',
@@ -131,10 +135,12 @@ const CarListInfoUpdateHist = () => {
   const [filterTableFields, setFilterTableFields] = useState([
     { id: 'filterSelect', type: 'select', label: '', options: getFieldOptions('filterSelect'), width: 'default', height: 'default', backgroundColor: 'default', color: 'default', display: 'flex' },
     { id: 'filterValue', type: 'text', label: '', width: 'default', height: 'default', backgroundColor: 'default', color: 'default', disabled: 'disabled', display: 'flex' },
-    { id: 'filterCarType', type: 'select', label: '', options: getFieldOptions('filterCarType'), width: '100px', height: 'default', backgroundColor: 'default', color: 'default', display: 'none' },
-    { id: 'filterCarClass', type: 'select', label: '', options: getFieldOptions('filterCarClass'), width: '100px', height: 'default', backgroundColor: 'default', color: 'default', display: 'none' },
-    { id: 'filterCarSize', type: 'select', label: '', options: getFieldOptions('filterCarSize'), width: '100px', height: 'default', backgroundColor: 'default', color: 'default', display: 'none' },
+    { id: 'filterReqStat', type: 'select', label: '', options: getFieldOptions('filterReqStat'), width: '100px', height: 'default', backgroundColor: 'default', color: 'default', display: 'none' },
   ]);
+
+  // 엑셀 저장 시 추가로 보여줄 엑셀 field 설정
+  const visibleColumns = ['RENTALCOMP|Y', 'CARACQUIREDDT|Y', 'RENTALEXFIREDDT|Y', 'CARREGDATE|Y', 'CARPRICE|Y', 'RENTALPRICE|Y', 'INSURANCE|Y', 'DEDUCTIONYN|Y', 'ORGCD|Y', 'PRIMARY_MANAGER_EMPNO|Y', 'PRIMARY_MANAGER_MOBILE|Y', 'PRIMARY_GARAGE_ADDR|Y'
+    , 'SAFETY_MANAGER|Y', 'UNDER26AGE_EMPNO|Y', 'UNDER26AGE_EMPNM|Y', 'UNDER26AGE_JUMIN_BIRTH_NO|Y', 'UNDER26AGE_CHGDT|Y', 'CARDNO|Y', 'EXFIREDT|Y', 'NOTICE|Y', 'DETAILBUTTON|N'];  
 
   // const [filters, setFilters] = useState(initialFilters(searchConfig.areas.find((area) => area.type === 'search').fields));
   const [filters, setFilters] = useState({orgcd: selectedOrg, ...initialFilters(searchConfig.areas.find((area) => area.type === 'search').fields) });
@@ -163,48 +169,52 @@ const CarListInfoUpdateHist = () => {
   // 테이블 컬럼 정의
   const columns = [
     { title: '번호', field: 'ID', width: 60, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '구분', field: 'GUBUN', width: 60, headerHozAlign: 'center', hozAlign: 'center' },    
-    { title: '변경작업자사번', field: 'REG_EMPNO', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '변경작업자명', field: 'REG_EMPNM', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '변경일시', field: 'REGDT', width: 160, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '변경내역', field: 'CHG_DATA', minWidth: 180, headerHozAlign: 'center', hozAlign: 'left' },
-    { title: '임대여부', field: 'RENTALTYPE', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차량번호', field: 'CARNO', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '요청일시', field: 'REQUESTDT', width: 140, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '요청상태', field: 'REQSTATUS', width: 75, headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '요청상태', field: 'REQSTATUSNM', width: 75, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '요청구분', field: 'GUBUN', width: 75, headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '요청구분', field: 'GUBUNNM', width: 75, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '조직이관', field: 'CHG_ORG', minWidth: 100, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '변경내역', field: 'CHG_DATA', minWidth: 100, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '임대여부', field: 'RENTALTYPE', width: 75, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '차량번호', field: 'CARNO', width: 90, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '차대번호', field: 'CARID', width: 150, headerHozAlign: 'center', hozAlign: 'center'},
     { title: '운용관리상태', field: 'MGMTSTATUS', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차종', field: 'CARTYPE', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차형', field: 'CARCLASS', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '규모', field: 'CARSIZE', width: 80, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차명', field: 'CARNM', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '사용연료', field: 'USEFUEL', width: 90, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '렌터카업체', field: 'RENTALCOMP', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차량취득일(kt도입기준)', field: 'CARACQUIREDDT', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '계약만료일', field: 'RENTALEXFIREDDT', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '최초등록일(자동차등록증)', field: 'CARREGDATE', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차량가', field: 'CARPRICE', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '월납부액', field: 'RENTALPRICE', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '보험료', field: 'INSURANCE', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '공제여부', field: 'DEDUCTIONYN', headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '차명', field: 'CARNM2', width: 160, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '사용연료', field: 'USEFUEL', width: 75, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '렌터카업체', field: 'RENTALCOMP', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '차량취득일(kt도입기준)', field: 'CARACQUIREDDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '계약만료일', field: 'RENTALEXFIREDDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '최초등록일(자동차등록증)', field: 'CARREGDATE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '차량가', field: 'CARPRICE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '월납부액', field: 'RENTALPRICE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '보험료', field: 'INSURANCE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '공제여부', field: 'DEDUCTIONYN', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '조직', field: 'ORG_GROUP', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '본부', field: 'ORGNMLV1', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '설계부/운용센터', field: 'ORGNMLV2', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '부', field: 'ORGNMLV3', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '팀', field: 'ORGNMLV4', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '조직코드', field: 'ORGCD', width: 120, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '운전자(정)사번', field: 'PRIMARY_MANAGER_EMPNO', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '조직코드', field: 'ORGCD', width: 120, headerHozAlign: 'center', hozAlign: 'center', visible: false  },
+    { title: '운전자(정)사번', field: 'PRIMARY_MANAGER_EMPNO', width: 100, headerHozAlign: 'center', hozAlign: 'center', visible: false  },
     { title: '운전자(정)', field: 'PRIMARY_MANAGER_EMPNM', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '운전자(정)전화번호', field: 'PRIMARY_MANAGER_MOBILE', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '차고지주소', field: 'PRIMARY_GARAGE_ADDR', headerHozAlign: 'center', hozAlign: 'left' },
-    { title: '안전관리자여부', field: 'SAFETY_MANAGER', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '소화기보유', field: 'FIREEXTINGUISHER', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '만26세미만운전자사번', field: 'UNDER26AGE_EMPNO', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '만26세미만운전자성명', field: 'UNDER26AGE_EMPNM', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '만26세미만운전자주민번호앞자리', field: 'UNDER26AGE_JUMIN_BIRTH_NO', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '만26세미만운전자변경기준일', field: 'UNDER26AGE_CHGDT', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '카드번호', field: 'CARDNO', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '유효기간', field: 'EXFIREDT', headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '비고', field: 'NOTICE', headerHozAlign: 'center', hozAlign: 'left' },
+    { title: '운전자(정)전화번호', field: 'PRIMARY_MANAGER_MOBILE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '차고지주소', field: 'PRIMARY_GARAGE_ADDR', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '안전관리자여부', field: 'SAFETY_MANAGER', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '소화기보유', field: 'FIREEXTINGUISHER', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '만26세미만운전자사번', field: 'UNDER26AGE_EMPNO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '만26세미만운전자성명', field: 'UNDER26AGE_EMPNM', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '만26세미만운전자주민번호앞자리', field: 'UNDER26AGE_JUMIN_BIRTH_NO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '만26세미만운전자변경기준일', field: 'UNDER26AGE_CHGDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '카드번호', field: 'CARDNO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '유효기간', field: 'EXFIREDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '비고', field: 'NOTICE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '상세', field: 'DETAILBUTTON', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('상세보기', `btn btn-outline-secondary`, (rowData) => handleDetail(rowData)) },
   ];
+
+  const handleDetail = (rowData) => {
+    fn_DetailPopup(rowData);
+  };
   
   // 데이터 로드 함수
   /**
@@ -237,9 +247,9 @@ const CarListInfoUpdateHist = () => {
 
     // API 로 통신할 경우 fetchData()
     try {
-      const params = {pSTDT: currentFilters.startDate || '', pENDT: currentFilters.endDate || '',  pORGCD: selectedOrgRef.current, pCARNO: currentFilters.carno || '', pDEBUG: "F"};
+      const params = {pSTDT: currentFilters.startDate || '', pENDT: currentFilters.endDate || '', pORGCD: selectedOrgRef.current, pCARNO: currentFilters.carno || '', pEMPNO: user?.empNo, pDEBUG: "F"};
 
-      const response = await fetchData("carhist/updateList", params);
+      const response = await fetchData("car/RequstList", params);
       if (!response.success) {
         errorMsgPopup(response.message || "데이터를 가져오는 중 오류가 발생했습니다.");
         setData([]);
@@ -384,12 +394,8 @@ const CarListInfoUpdateHist = () => {
       return prevFields.map((filter) => {
         if (filter.id === 'filterSelect') {  
           return { ...filter, display: 'flex' }; 
-        } else if (filter.id === 'filterCarType') { 
-          return { ...filter, display: fields === 'CARTYPE' ? 'flex' : 'none', value: '' };
-        } else if (filter.id === 'filterCarClass') { 
-          return { ...filter, display: fields === 'CARCLASS' ? 'flex' : 'none', value: '' };
-        } else if (filter.id === 'filterCarSize') { 
-          return { ...filter, display: fields === 'CARSIZE' ? 'flex' : 'none', value: '' };
+        } else if (filter.id === 'filterReqStat') { 
+          return { ...filter, display: fields === 'REQSTATUS' ? 'flex' : 'none', value: '' };
         } else {
           return { ...filter, display: fields === '' ? 'flex' : 'none', value: '' }; // 기본적으로 숨김 처리
         }
@@ -398,12 +404,8 @@ const CarListInfoUpdateHist = () => {
 
     let values = '';
 
-    if (fields === 'CARTYPE') {
-      values = tableFilters.filterCarType;
-    } else if (fields === 'CARCLASS') {
-      values = tableFilters.filterCarClass;
-    } else if (fields === 'CARSIZE') {
-      values = tableFilters.filterCarSize;
+    if (fields === 'REQSTATUS') {
+      values = tableFilters.filterReqStat;
     }
     
     if (fields !== '' && fields !== undefined) {
@@ -424,12 +426,8 @@ const CarListInfoUpdateHist = () => {
     const fields = tableFilters.filterSelect;
     let values = '';
 
-    if (fields === 'CARTYPE') {
-      values = tableFilters.filterCarType;
-    } else if (fields === 'CARCLASS') {
-      values = tableFilters.filterCarClass;
-    } else if (fields === 'CARSIZE') {
-      values = tableFilters.filterCarSize;
+    if (fields === 'REQSTATUS') {
+      values = tableFilters.filterReqStat;
     }
     
     if (fields !== '' && fields !== undefined) {
@@ -437,7 +435,7 @@ const CarListInfoUpdateHist = () => {
         tableInstance.current.setFilter(fields, "like", values);
       }
     }
-  }, [tableFilters.filterCarType, tableFilters.filterCarClass, tableFilters.filterCarSize]);
+  }, [tableFilters.filterReqStat]);
 
   return (
     <div className={styles.container}>
@@ -451,7 +449,7 @@ const CarListInfoUpdateHist = () => {
         filterFields={filterTableFields}
         filters={tableFilters}
         setFilters={setTableFilters}
-        onDownloadExcel={() => {handleDownloadExcel(tableInstance.current, tableStatus, '기동장비 변경이력.xlsx')}}
+        onDownloadExcel={() => {handleDownloadExcel2(tableInstance.current, tableStatus, '기동장비 변경요청 정보.xlsx', visibleColumns)}}
         rowCount={rowCount}
         onEvent={handleDynamicEvent}
       />
@@ -468,8 +466,9 @@ const CarListInfoUpdateHist = () => {
       <CommonPopup show={showPopup} onHide={() => setShowPopup(false)} onConfirm={popupOnConfirm} title={popupTitle}>
         {popupContent}
       </CommonPopup>
+      <RequestDetailPopup show={showDetailPopup} onHide={handleDetailCancel} onParentSearch={loadData} data={row} />
     </div>
   );
 };
 
-export default CarListInfoUpdateHist;
+export default CarListInfo;

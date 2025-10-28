@@ -9,6 +9,7 @@ import Under26UserListPopup from '../../components/popup/UserListPopup';
 import FuelCardPopup from '../car/FuelCardPopup';
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
+import { hasPermission } from '../../utils/authUtils';
 import Modal from 'react-bootstrap/Modal';
 import styles from './CarDetailPopup.module.css';
 
@@ -27,12 +28,25 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
                           , FIREEXTINGUISHER: '', UNDER26AGEEMPNO: '', UNDER26AGEEMPNM: '', UNDER26AGEJUMINBTRTHNO: '', UNDER26AGECHGDT: '', CARDNO: '', EXFIREDT: '', NOTICE: ''};
   const [carInfo, setCarInfo] = useState(initialCarInfo);
   const [chkCarId, setChkCarId] = useState('');
+  const [confirmBtnNm, setConfirmBtnNm] = useState('저장');
+  const [delBtnNm, setDelBtnNm] = useState('삭제');
+  const [reqStatus, setReqStatus] = useState('');
+  const [reqGubun, setReqGubun] = useState('');
   
   useEffect(() => {
     // 컴포넌트 언마운트 시 테이블 정리
     const initializeComponent = async () => {
       // 다른 컴포넌트 렌더링 대기
       await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      if (hasPermission(user?.auth, 'permissions')) {
+        setConfirmBtnNm('저장');
+        setDelBtnNm('삭제');
+      }
+      else {
+        setConfirmBtnNm('저장요청');
+        setDelBtnNm('삭제요청');
+      }
 
       // Component에 들어갈 데이터 로딩
       try {
@@ -84,6 +98,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   
   useEffect(() => {
     setCarInfo(initialCarInfo);
+    setReqStatus('');
     if (show) {
       if(data !== ''){ 
         setCarInfo({...carInfo, GUBUN:'U', PRECARID: data, CARID: data});
@@ -116,6 +131,16 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
 
     if(carInfo.GUBUN === 'I' && chkCarId !== carInfo.CARID) {
       return "차대번호가 변경되었습니다. 차대번호 확인 버튼을 클릭하여 차량 정보를 확인해주세요.";
+    }
+
+    if (reqStatus === 'R') {
+      if (reqGubun === 'I') {
+        return "해당차량은 신규 등록 요청 승인 대기중입니다.";
+      } else if (reqGubun === 'D') {
+        return "해당차량은 삭제 요청 승인 대기중입니다.";
+      } else if (reqGubun === 'U') {
+        return "해당차량은 수정 요청 승인 대기중입니다.";
+      }
     }
   
     if (!carInfo.CARID || !carInfo.CARNO || !carInfo.MGMTSTATUS|| !carInfo.USEFUEL || !carInfo.RENTALTYPE || !carInfo.CARCD || !carInfo.ORGGROUP || !carInfo.ORGCD || !carInfo.PRIMARYMNGEMPNM) {
@@ -154,70 +179,107 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
       errorMsgPopup(validationError);
       return;
     }
+        
+    let Url = 'car/CarinfoRequest';
+    let responseMsg = '';
 
-    try {
-      const params = {
-        pGUBUN: carInfo.GUBUN,
-        pPRECARID: carInfo.PRECARID,
-        pCARID: carInfo.CARID,
-        pCARNO: carInfo.CARNO,
-        pRENTALTYPE: carInfo.RENTALTYPE,
-        pMGMTSTATUS: carInfo.MGMTSTATUS,
-        pCARCD: carInfo.CARCD,
-        pUSEFUEL: carInfo.USEFUEL,
-        pRENTALCOMP: carInfo.RENTALCOMP,
-        pCARACQUIREDDT: carInfo.CARACQUIREDDT,
-        pRENTALEXFIREDDT: carInfo.RENTALEXFIREDDT,
-        pCARREGDATE: carInfo.CARREGDATE,
-        pCARPRICE: carInfo.CARPRICE || '',
-        pRENTALPRICE: carInfo.RENTALPRICE || '',
-        pINSURANCE: carInfo.INSURANCE || '',
-        pDEDUCTIONYN: carInfo.DEDUCTIONYN || '',
-        pORGGROUP: carInfo.ORGGROUP,
-        pORGCD: carInfo.ORGCD,
-        pPRIMARYMNGEMPNO: carInfo.PRIMARYMNGEMPNO || '',
-        pPRIMARYMNGEMPNM: carInfo.PRIMARYMNGEMPNM,
-        pPRIMARYMNGMOBILE: carInfo.PRIMARYMNGMOBILE || '',
-        pPRIMARYGARAGEADDR: carInfo.PRIMARYGARAGEADDR,
-        pSAFETYMANAGER: carInfo.SAFETYMANAGER,
-        pFIREEXTINGUISHER: carInfo.FIREEXTINGUISHER || '미보유',
-        pUNDER26AGEEMPNO: carInfo.UNDER26AGEEMPNO,
-        pUNDER26AGEEMPNM: carInfo.UNDER26AGEEMPNM,
-        pUNDER26AGEJUMINBTRTHNO: carInfo.UNDER26AGEJUMINBTRTHNO,
-        pUNDER26AGECHGDT: carInfo.UNDER26AGECHGDT,
-        pCARDNO: carInfo.CARDNO,
-        pEXFIREDT: carInfo.EXFIREDT,
-        pNOTICE: carInfo.NOTICE,
-        pREGEMPNO: user?.empNo || ''
-      };
+    if (hasPermission(user?.auth, 'permissions')) {
+      Url = 'car/CarinfoTransaction';
+    }
+    else {
+      Url = 'car/CarinfoRequest';
+      responseMsg = '승인 요청';
+    }
 
-      const response = await fetchData('car/CarinfoTransaction', params);
+    if(confirm("차량 정보를 등록/수정" + responseMsg  + "하시겠습니까?")) { 
+      try {
+        const params = {
+          pGUBUN: carInfo.GUBUN,
+          pPRECARID: carInfo.PRECARID,
+          pCARID: carInfo.CARID,
+          pCARNO: carInfo.CARNO,
+          pRENTALTYPE: carInfo.RENTALTYPE,
+          pMGMTSTATUS: carInfo.MGMTSTATUS,
+          pCARCD: carInfo.CARCD,
+          pUSEFUEL: carInfo.USEFUEL,
+          pRENTALCOMP: carInfo.RENTALCOMP,
+          pCARACQUIREDDT: carInfo.CARACQUIREDDT,
+          pRENTALEXFIREDDT: carInfo.RENTALEXFIREDDT,
+          pCARREGDATE: carInfo.CARREGDATE,
+          pCARPRICE: carInfo.CARPRICE || '',
+          pRENTALPRICE: carInfo.RENTALPRICE || '',
+          pINSURANCE: carInfo.INSURANCE || '',
+          pDEDUCTIONYN: carInfo.DEDUCTIONYN || '',
+          pORGGROUP: carInfo.ORGGROUP,
+          pORGCD: carInfo.ORGCD,
+          pPRIMARYMNGEMPNO: carInfo.PRIMARYMNGEMPNO || '',
+          pPRIMARYMNGEMPNM: carInfo.PRIMARYMNGEMPNM,
+          pPRIMARYMNGMOBILE: carInfo.PRIMARYMNGMOBILE || '',
+          pPRIMARYGARAGEADDR: carInfo.PRIMARYGARAGEADDR,
+          pSAFETYMANAGER: carInfo.SAFETYMANAGER,
+          pFIREEXTINGUISHER: carInfo.FIREEXTINGUISHER || '미보유',
+          pUNDER26AGEEMPNO: carInfo.UNDER26AGEEMPNO,
+          pUNDER26AGEEMPNM: carInfo.UNDER26AGEEMPNM,
+          pUNDER26AGEJUMINBTRTHNO: carInfo.UNDER26AGEJUMINBTRTHNO,
+          pUNDER26AGECHGDT: carInfo.UNDER26AGECHGDT,
+          pCARDNO: carInfo.CARDNO,
+          pEXFIREDT: carInfo.EXFIREDT,
+          pNOTICE: carInfo.NOTICE,
+          pREGEMPNO: user?.empNo || ''
+        };
 
-      if (!response.success) {
-        throw new Error(response.errMsg || '차량정보가 잘못되었습니다.');
-      } else {
-        if (response.errMsg !== '' || response.data[0].errCd !== '00') {
-          let errMsg = response.errMsg;
+        const response = await fetchData(Url, params);
 
-          if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
-
-          errorMsgPopup(errMsg);
+        if (!response.success) {
+          throw new Error(response.errMsg || '차량정보가 잘못되었습니다.');
         } else {
-          msgPopup("차량정보가 저장되었습니다.");
-          onHide();
-          onParentSearch();
+          if (response.errMsg !== '' || response.data[0].errCd !== '00') {
+            let errMsg = response.errMsg;
+
+            if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+
+            errorMsgPopup(errMsg);
+          } else {
+            msgPopup("차량정보 저장 " + responseMsg + "이 완료되었습니다.");
+            onHide();
+            onParentSearch();
+          }
         }
-      }
-    } catch (error) {
-      console.error('Registration error:', error);
-      errorMsgPopup(error.message || '차량정보 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
-    } 
+      } catch (error) {
+        console.error('Registration error:', error);
+        errorMsgPopup(error.message || '차량정보 저장' + responseMsg + ' 중 오류가 발생했습니다. 다시 시도해주세요.');
+      } 
+    }
   };
 
   const handleDelete = async (e) => {
     e.preventDefault();
-    
-    if(confirm("차량 정보를 삭제하시겠습니까?")) { 
+
+    if (reqStatus === 'R') {
+      if (reqGubun === 'I') {
+        msgPopup("해당차량은 신규 등록 요청 승인 대기중입니다.");
+        return;
+      } else if (reqGubun === 'D') {
+        msgPopup("해당차량은 삭제 요청 승인 대기중입니다.");
+        return;
+      } else if (reqGubun === 'U') {
+        msgPopup("해당차량은 수정 요청 승인 대기중입니다.");
+        return;
+      }
+    }
+
+    let Url = 'car/CarinfoRequest';
+    let responseMsg = '';
+
+    if (hasPermission(user?.auth, 'permissions')) {
+      Url = 'car/CarinfoTransaction';
+    }
+    else {
+      Url = 'car/CarinfoRequest';
+      responseMsg = '요청';
+    }
+  
+    if(confirm("차량 정보를 삭제" + responseMsg  + "하시겠습니까?")) { 
       const validationError = validateDelForm();
 
       if (validationError) {
@@ -261,10 +323,10 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
           pREGEMPNO: user?.empNo || ''
         };
 
-        const response = await fetchData('car/CarinfoTransaction', params);
+        const response = await fetchData(Url, params);
 
         if (!response.success) {
-          throw new Error(response.errMsg || '차량정보 삭제 중 오류가 발생했습니다.');
+          throw new Error(response.errMsg || '차량정보 삭제' + responseMsg  + ' 중 오류가 발생했습니다.');
         } else {
           if (response.errMsg !== '' || response.data[0].errCd !== '00') {
             let errMsg = response.errMsg;
@@ -273,18 +335,17 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
 
             errorMsgPopup(errMsg);
           } else {
-            msgPopup("차량정보가 삭제되었습니다.");
+            msgPopup("차량정보가 삭제" + responseMsg  + " 되었습니다.");
             onHide();
             onParentSearch();
           }
         }
       } catch (error) {
         console.error('Registration error:', error);
-        errorMsgPopup(error.message || '차량정보 삭제 중 오류가 발생했습니다. 다시 시도해주세요.');
+        errorMsgPopup(error.message || '차량정보 삭제' + responseMsg  + ' 중 오류가 발생했습니다. 다시 시도해주세요.');
       } 
     }
   };
-
   const handleSearchCarInfo = async (data) => {
     let carId = '';
     if (data && data !== '' && data !== 'undefined') { 
@@ -329,12 +390,36 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
             errorMsgPopup(errMsg);
           } else {
             //차량정보 컴포넌트에 바인딩
-            setCarInfo({GUBUN: 'U', PRECARID: response.data[0].CARID, CARID: response.data[0].CARID, CARNO: response.data[0].CARNO, RENTALTYPE: response.data[0].RENTALTYPE, MGMTSTATUS: response.data[0].MGMTSTATUS, CARCD: response.data[0].CARCD, USEFUEL: response.data[0].USEFUEL
-                      , RENTALCOMP: response.data[0].RENTALCOMP, CARACQUIREDDT: response.data[0].CARACQUIREDDT, RENTALEXFIREDDT: response.data[0].RENTALEXFIREDDT, CARREGDATE: response.data[0].CARREGDT, CARPRICE: response.data[0].CARPRICE
-                      , RENTALPRICE: response.data[0].RENTALPRICE, INSURANCE: response.data[0].INSURANCE, DEDUCTIONYN: response.data[0].DEDUCTIONYN, ORGGROUP: response.data[0].ORG_GROUP, ORGCD: response.data[0].ORGCD, ORGNM: response.data[0].ORGNM
-                      , PRIMARYMNGEMPNM: response.data[0].PRIMARY_MANAGER_EMPNM, PRIMARYMNGMOBILE: response.data[0].PRIMARY_MANAGER_MOBILE, PRIMARYGARAGEADDR: response.data[0].PRIMARY_GARAGE_ADDR, FIREEXTINGUISHER: response.data[0].FIREEXTINGUISHER, SAFETYMANAGER: response.data[0].SAFETY_MANAGER
-                      , UNDER26AGEEMPNO: response.data[0].UNDER26AGE_EMPNO, UNDER26AGEEMPNM: response.data[0].UNDER26AGE_EMPNM, UNDER26AGEJUMINBTRTHNO: response.data[0].UNDER26AGE_JUMIN_BIRTH_NO
-                      , UNDER26AGECHGDT: response.data[0].UNDER26AGE_CHGDT, CARDNO: response.data[0].CARDNO, EXFIREDT: response.data[0].EXFIREDT, NOTICE: response.data[0].NOTICE});
+            const vReqStatus = response.data[0].REQSTATUS || '';
+            const vReqGubun = response.data[0].REQGUBUN || '';
+            let bDataSet = true;
+
+            setReqStatus(vReqStatus);
+            setReqGubun(vReqGubun);
+            
+            if (vReqStatus === 'R') {
+              if (vReqGubun === 'I') {
+                msgPopup("해당차량은 신규 등록 요청 승인 대기중입니다.");
+                bDataSet = false;
+              } else if (vReqGubun === 'D') {
+                msgPopup("해당차량은 삭제 요청 승인 대기중입니다.");
+              } else if (vReqGubun === 'U') {
+                msgPopup("해당차량은 수정 요청 승인 대기중입니다.");
+              }
+            }
+
+            if (bDataSet) {
+                setCarInfo({GUBUN: 'U', PRECARID: response.data[0].CARID, CARID: response.data[0].CARID, CARNO: response.data[0].CARNO, RENTALTYPE: response.data[0].RENTALTYPE, MGMTSTATUS: response.data[0].MGMTSTATUS, CARCD: response.data[0].CARCD, USEFUEL: response.data[0].USEFUEL
+                          , RENTALCOMP: response.data[0].RENTALCOMP, CARACQUIREDDT: response.data[0].CARACQUIREDDT, RENTALEXFIREDDT: response.data[0].RENTALEXFIREDDT, CARREGDATE: response.data[0].CARREGDT, CARPRICE: response.data[0].CARPRICE
+                          , RENTALPRICE: response.data[0].RENTALPRICE, INSURANCE: response.data[0].INSURANCE, DEDUCTIONYN: response.data[0].DEDUCTIONYN, ORGGROUP: response.data[0].ORG_GROUP, ORGCD: response.data[0].ORGCD, ORGNM: response.data[0].ORGNM
+                          , PRIMARYMNGEMPNM: response.data[0].PRIMARY_MANAGER_EMPNM, PRIMARYMNGMOBILE: response.data[0].PRIMARY_MANAGER_MOBILE, PRIMARYGARAGEADDR: response.data[0].PRIMARY_GARAGE_ADDR, FIREEXTINGUISHER: response.data[0].FIREEXTINGUISHER, SAFETYMANAGER: response.data[0].SAFETY_MANAGER
+                          , UNDER26AGEEMPNO: response.data[0].UNDER26AGE_EMPNO, UNDER26AGEEMPNM: response.data[0].UNDER26AGE_EMPNM, UNDER26AGEJUMINBTRTHNO: response.data[0].UNDER26AGE_JUMIN_BIRTH_NO
+                          , UNDER26AGECHGDT: response.data[0].UNDER26AGE_CHGDT, CARDNO: response.data[0].CARDNO, EXFIREDT: response.data[0].EXFIREDT, NOTICE: response.data[0].NOTICE});
+            } else {
+                setCarInfo({GUBUN: 'I', PRECARID: carId, CARID: carId, CARNO: '', RENTALTYPE: '', MGMTSTATUS: '', CARCD: '', USEFUEL: '', RENTALCOMP: '', CARACQUIREDDT: today, RENTALEXFIREDDT: today, CARREGDATE: today
+                            , CARPRICE: '', RENTALPRICE: '', INSURANCE: '', DEDUCTIONYN: '', ORGGROUP: '', ORGCD: '', ORGNM: '', PRIMARYMNGEMPNO: '', PRIMARYMNGEMPNM: '', PRIMARYMNGMOBILE: '', PRIMARYGARAGEADDR: '', SAFETYMANAGER: ''
+                            , FIREEXTINGUISHER: '', UNDER26AGEEMPNO: '', UNDER26AGEEMPNM: '', UNDER26AGEJUMINBTRTHNO: '', UNDER26AGECHGDT: '', CARDNO: '', EXFIREDT: '', NOTICE: ''});
+            }
           }
         }
       }
@@ -368,7 +453,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
             <label className="form-label w100" htmlFor="carId">차대번호<font color='red'>*</font></label>
             <input type="text" className={`form-control ${styles.formControl}`} id="carId" value={carInfo.CARID} disabled={`${vStyle.vDISABLED}`} placeholder="차대번호를 입력하세요" onInput={(e) => {handleMaxLength(e, 30)}} onChange={(e) => {setCarInfo({ ...carInfo, CARID: e.target.value })}} />
             <button id="btnCarId" type="button" className={`btn btn-secondary flex-shrink-0`} style={{display:`${vStyle.vDISPLAY}`}} disabled={`${vStyle.vDISABLED}`} onClick={(e) => handleSearchCarInfo(carInfo.CARID)}>확인</button>
-            <button className={`btn btn-sm btn-outline-secondary ${styles.deleteButton} flex-shrink-0`} style={{display:`${vStyle.vBTNDEL}`}} onClick={handleDelete}>삭제</button>
+            <button className={`btn btn-sm btn-outline-secondary ${styles.deleteButton} flex-shrink-0`} style={{display:`${vStyle.vBTNDEL}`}} onClick={handleDelete}>{delBtnNm}</button>
           </div>
           <div className="col-6 d-flex justify-content-end align-items-center">
             <label className="form-guide"><font color='red'>*</font>은 필수 입력 항목입니다.</label>
@@ -591,7 +676,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
       </Under26UserListPopup>
       <Modal.Footer>
         <button className='btn btnSecondary' onClick={onHide}>취소</button>
-        <button className='btn btnPrimary' onClick={handleSubmit}>확인</button>
+        <button className='btn btnPrimary' onClick={handleSubmit}>{confirmBtnNm}</button>
       </Modal.Footer>
     </Modal>
   )

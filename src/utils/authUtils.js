@@ -11,6 +11,7 @@ const PERMISSION_MAP = {
   rentalOper: ['AUTH0001', 'AUTH0004', '', null],
   mainBoard: ['AUTH0001', null],
   permissions: ['AUTH0001'],
+  carManager: ['AUTH0001', 'AUTH0003', 'AUTH0005'],
   tabulatorDirect: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', '', null],
 };
 
