@@ -1,3 +1,4 @@
+// RentalProductManagePopup.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import { createTable } from '../../../utils/tableConfig';
@@ -64,11 +65,8 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
         return;
       }
       const responseData = Array.isArray(response.data) ? response.data : [];
-      setData([...responseData]);
+      setData(responseData); // 상태 업데이트
       setTableStatus("ready");
-      if (tableInstance.current) {
-        setRowCount(responseData.length);
-      }
     } catch (err) {
       setTableStatus("error");
       errorMsgPopup('데이터 로드 실패:', err);
@@ -82,22 +80,22 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
     }
   }, [show, selectedClassCd]);
 
-  const fn_CellSelect = (values) => ({
-    editor: 'list',
-    editorParams: { values, autocomplete: true },
-    editable: true
-  });
-
-  // 컬럼별 cellEdited 핸들러
+  // 공통 cellEdited 핸들러
   const handleCellEdited = (cell) => {
-    const rowElement = cell.getRow().getElement();
-    if (rowElement) {
-      setTimeout(() => {
-        // rowElement.setAttribute('style', 'background-color: #fff3cd');
-        rowElement.classList.add('edited');
-      }, 0);
+    const field = cell.getField();
+    const newVal = cell.getValue();
+    const oldVal = cell.getOldValue();
+    const row = cell.getRow();
+    const rowEl = row.getElement();
+
+    let markEdited = false;
+
+    markEdited = newVal !== oldVal;
+
+    if (markEdited) {
+      setTimeout(() => rowEl.classList.add('edited'), 0);
     } else {
-      console.warn('Row element not found for field:', cell.getField());
+      rowEl.classList.remove('edited');
     }
   };
 
@@ -107,7 +105,6 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
     const initializeTable = async () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
       if (!tableRef.current) {
-        console.warn("테이블 컨테이너가 준비되지 않았습니다.");
         setTableStatus("error");
         return;
       }
@@ -115,6 +112,7 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
         tableInstance.current.destroy();
         tableInstance.current = null;
       }
+
       try {
         tableInstance.current = createTable(tableRef.current, [
           {
@@ -131,10 +129,10 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
               wrapper.style.justifyContent = "center";
               wrapper.style.alignItems = "center";
               wrapper.style.gap = "8px";
+
               const editButton = document.createElement("button");
               editButton.className = `btn btn-sm btn-primary`;
               editButton.innerText = "변경";
-              editButton.setAttribute("data-action", "edit");
               editButton.onclick = () => {
                 setSelectedRow(rowData);
                 setShowEditPopup(true);
@@ -144,7 +142,6 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
               const deleteButton = document.createElement("button");
               deleteButton.className = `btn btn-sm btn-danger`;
               deleteButton.innerText = "삭제";
-              deleteButton.setAttribute("data-action", "delete");
               deleteButton.onclick = () => {
                 setSelectedRow(rowData);
                 setShowDeletePopup(true);
@@ -163,20 +160,19 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
           { headerHozAlign: 'center', hozAlign: 'center', title: '상품순서', field: 'PRODUCTODR', sorter: 'number', width: 100, editor: 'number', editable: true, cellEdited: handleCellEdited },
           { headerHozAlign: 'center', hozAlign: 'center', title: '분류순서', field: 'CLASSODR', sorter: 'number', width: 100, editor: 'number', editable: true, cellEdited: handleCellEdited },
           { headerHozAlign: 'center', hozAlign: 'left', title: '비고', field: 'MEMO', sorter: 'string', width: 300, editor: 'input', editable: true, cellEdited: handleCellEdited },
-          { headerHozAlign: 'center', hozAlign: 'center', title: '사용여부', field: 'USEYN', sorter: 'string', width: 80, ...fn_CellSelect({ 'Y': 'Y', 'N': 'N' }), editable: true, cellEdited: handleCellEdited },
+          { headerHozAlign: 'center', hozAlign: 'center', title: '사용여부', field: 'USEYN', sorter: 'string', width: 80, editor: 'list', editorParams: { values: { 'Y': 'Y', 'N': 'N' }, autocomplete: true }, editable: true, cellEdited: handleCellEdited },
         ], data, {
           headerHozAlign: 'center',
           layout: 'fitColumns',
           reactiveData: true,
+          index: 'ID',
         });
-
-        if (!tableInstance.current) throw new Error("createTable returned undefined or null");
 
         setTableStatus("ready");
         setRowCount(data.length);
       } catch (err) {
         setTableStatus("error");
-        console.error("Table initialization failed:", err.message);
+        console.error("Table initialization failed:", err);
       }
     };
 
@@ -191,6 +187,7 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
     };
   }, [show, data]);
 
+  // 필터 적용
   useEffect(() => {
     if (!tableInstance.current || tableStatus !== "ready") return;
     const { filterSelect, filterText } = filters;
@@ -212,10 +209,21 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
     }
   }, [filters, tableStatus]);
 
+  // React 상태 → 테이블 동기화 (최초 로드 및 검색 후)
+  useEffect(() => {
+    if (!tableInstance.current || tableStatus !== "ready") return;
+    tableInstance.current.setData(data);
+  }, [data, tableStatus]);
+
+  // 저장/삭제 후 리로드
+  const refreshData = () => {
+    loadData(selectedClassCd);
+    if (onSave) onSave();
+  };
+
   const handleEditConfirm = async () => {
     if (!selectedRow) return;
 
-    // 길이 유효성 검사
     const validations = [
       { value: selectedRow.PRODUCTNM, maxLength: 150, label: "상품명" },
       { value: selectedRow.MODELNM, maxLength: 500, label: "모델명" },
@@ -227,9 +235,7 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
 
     for (const validation of validations) {
       if (validation.value !== undefined && validation.value !== null) {
-        // 숫자형인 경우 문자열로 변환
         const valueToCheck = validation.isNumber ? String(validation.value) : validation.value;
-
         const result = common.validateVarcharLength(valueToCheck, validation.maxLength, validation.label);
         if (!result.valid) {
           errorMsgPopup(result.error);
@@ -255,21 +261,14 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
         pEMPNO: user?.empNo || ''
       };
       const response = await fetchData('rental/productInfo/save', params);
-      if (!response.success) {
-        errorMsgPopup(response.message || '변경 중 오류가 발생했습니다.');
-        return;
-      }
-      if (response.errMsg !== "" || (response.data[0] && response.data[0].errCd !== "00")) {
-        let errMsg = response.errMsg;
-        if (response.data[0] && response.data[0].errMsg !== "") errMsg = response.data[0].errMsg;
+      if (!response.success || (response.data[0]?.errCd !== "00")) {
+        const errMsg = response.errMsg || response.data[0]?.errMsg || '변경 실패';
         msgPopup(errMsg);
         return;
       }
       msgPopup("변경되었습니다.");
-      loadData(selectedClassCd);
-      if (onSave) onSave();
+      refreshData();
     } catch (err) {
-      console.error("변경 실패:", err);
       errorMsgPopup("변경 중 오류가 발생했습니다.");
     } finally {
       setSelectedRow(null);
@@ -294,35 +293,22 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
         pEMPNO: user?.empNo || ''
       };
       const response = await fetchData('rental/productInfo/save', params);
-      if (!response.success) {
-        errorMsgPopup(response.message || '삭제 중 오류가 발생했습니다.');
-        return;
-      }
-      if (response.errMsg !== "" || (response.data[0] && response.data[0].errCd !== "00")) {
-        let errMsg = response.errMsg;
-        if (response.data[0] && response.data[0].errMsg !== "") errMsg = response.data[0].errMsg;
+      if (!response.success || (response.data[0]?.errCd !== "00")) {
+        const errMsg = response.errMsg || response.data[0]?.errMsg || '삭제 실패';
         msgPopup(errMsg);
         return;
       }
       msgPopup("삭제되었습니다.");
-      loadData(selectedClassCd);
-      if (onSave) onSave();
+      refreshData();
     } catch (err) {
-      console.error("삭제 실패:", err);
       errorMsgPopup("삭제 중 오류가 발생했습니다.");
     } finally {
       setSelectedRow(null);
     }
   };
 
-  const handleAdd = () => {
-    setShowAddPopup(true);
-  };
-
-  const handleAddSave = () => {
-    loadData(selectedClassCd);
-    if (onSave) onSave();
-  };
+  const handleAdd = () => setShowAddPopup(true);
+  const handleAddSave = () => refreshData();
 
   const onDownloadExcel = () => {
     handleDownloadExcel(tableInstance.current, tableStatus, "상품관리목록.xlsx");
@@ -334,7 +320,7 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
   };
 
   return (
-    <Modal show={show} onHide={onHide} centered dialogClassName={styles.customModal}>
+    <Modal show={show} onHide={handleClose} centered dialogClassName={styles.customModal}>
       <GlobalProductStyles />
       <Modal.Header closeButton>
         <Modal.Title>상품 관리</Modal.Title>
@@ -373,24 +359,13 @@ const RentalProductManagePopup = ({ show, onHide, data: classData, onSave }) => 
         <div ref={tableRef} className={styles.tableSection} style={{ height: '400px', visibility: tableStatus !== "ready" ? "hidden" : "visible" }} />
         {tableStatus === "initializing" && <div>초기화 중...</div>}
         <div className={styles.inputButtonWrapper}>
-          <button className={`btn text-bg-secondary`} onClick={handleClose}>
-            닫기
-          </button>
+          <button className={`btn text-bg-secondary`} onClick={handleClose}>닫기</button>
         </div>
-        <CommonPopup
-          show={showEditPopup}
-          onHide={() => { setShowEditPopup(false); setSelectedRow(null); }}
-          onConfirm={handleEditConfirm}
-          title="변경 확인"
-        >
+
+        <CommonPopup show={showEditPopup} onHide={() => { setShowEditPopup(false); setSelectedRow(null); }} onConfirm={handleEditConfirm} title="변경 확인">
           <p className='commonInnerTxt'>{selectedRow?.PRODUCTNM ? `${selectedRow.PRODUCTNM} 변경하시겠습니까?` : "변경하시겠습니까?"}</p>
         </CommonPopup>
-        <CommonPopup
-          show={showDeletePopup}
-          onHide={() => { setShowDeletePopup(false); setSelectedRow(null); }}
-          onConfirm={handleDeleteConfirm}
-          title="삭제 확인"
-        >
+        <CommonPopup show={showDeletePopup} onHide={() => { setShowDeletePopup(false); setSelectedRow(null); }} onConfirm={handleDeleteConfirm} title="삭제 확인">
           <p className='commonInnerTxt'>{selectedRow?.PRODUCTNM ? `${selectedRow.PRODUCTNM} 삭제하시겠습니까?` : "삭제하시겠습니까?"}</p>
         </CommonPopup>
         <RentalProductAddPopup show={showAddPopup} onHide={() => setShowAddPopup(false)} onSave={handleAddSave} />

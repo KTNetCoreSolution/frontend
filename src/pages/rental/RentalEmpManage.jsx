@@ -10,12 +10,10 @@ import { fetchData } from '../../utils/dataUtils';
 import { msgPopup } from '../../utils/msgPopup';
 import styles from '../../components/table/TableSearch.module.css';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
-import OrgSearchPopup from '../../components/popup/OrgSearchPopup';
 import common from '../../utils/common';
-import ExcelUploadPopup from '../../components/popup/ExcelUploadPopup';
 import RentalProductPopup from './popup/RentalProductPopup';
 import RentalProductManagePopup from './popup/RentalProductManagePopup';
-import UserOrgSearchPopup from '../../components/popup/UserOrgSearchPopup';
+import RentalEmpAddPopup from './popup/RentalEmpAddPopup';
 import CommonPopup from '../../components/popup/CommonPopup';
 import { createGlobalStyle } from 'styled-components';
 
@@ -80,7 +78,7 @@ const filterTableFields = [
   { id: 'filterText', type: 'text', label: '', placeholder: '찾을 내용을 입력하세요', width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
 ];
 
-const RentalBatchManage = () => {
+const RentalEmpManage = () => {
   const { user } = useStore();
   const navigate = useNavigate();
   const today = common.getTodayDate();
@@ -98,27 +96,17 @@ const RentalBatchManage = () => {
   const [data, setData] = useState([]);
   const [isSearched, setIsSearched] = useState(false);
   const [tableStatus, setTableStatus] = useState('initializing');
-  const [showOrgPopup, setShowOrgPopup] = useState(false);
   const [rowCount, setRowCount] = useState(0);
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
   const isInitialRender = useRef(true);
   const [classData, setClassData] = useState([]);
-  const [excelPopupTitle, setExcelPopupTitle] = useState('');
-  const [showExcelPopup, setShowExcelPopup] = useState(false);
   const [showProductPopup, setShowProductPopup] = useState(false);
   const [showProductManagePopup, setShowProductManagePopup] = useState(false);
-  const [showUserPopup, setShowUserPopup] = useState(false);
+  const [showRentalRegPopup, setShowRentalRegPopup] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
-
-  const pGUBUN = useMemo(() => {
-    if (showOrgPopup) {
-      return 'OPEREMPNO';
-    }
-    return 'OPEREMPNO';
-  }, [showOrgPopup]);
 
   const updatedClassOptions = useMemo(
     () => getFieldOptions('CLASSCD', '', classData),
@@ -159,16 +147,14 @@ const RentalBatchManage = () => {
           { id: 'monthDate', type: 'month', row: 1, width: '74px', label: '', labelVisible: true, placeholder: '월 선택', enabled: false, defaultValue: today.substring(0, 7) },
           { id: 'rangeStartDate', type: 'startday', row: 1, width: '100px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: false, defaultValue: today },
           { id: 'rangeEndDate', type: 'endday', row: 1, width: '100px', label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', enabled: false, defaultValue: today },
-          { id: 'orgText', type: 'text', row: 1, label: '조직', labelVisible: true, placeholder: '조직 선택', enabled: false },
-          { id: 'orgPopupBtn', type: 'popupIcon', row: 1, label: '조직 선택', labelVisible: false, eventType: 'showOrgPopup', enabled: true },
         ],
       },
       {
         type: 'buttons',
         fields: [
           { id: 'searchBtn', type: 'button', row: 1, label: '검색', eventType: 'search', enabled: true },
+          { id: 'rentalRegBtn', type: 'button', row: 2, label: '렌탈등록', eventType: 'showRentalRegPopup', width: '80px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
           { id: 'popupBtn', type: 'button', row: 2, label: '상품관리', eventType: 'showProductManagePopup', width: '80px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
-          { id: 'excelUploadBtn', type: 'button', row: 2, label: '엑셀업로드', eventType: 'showExcelUploadPopup', width: '100px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true },
         ],
       },
     ],
@@ -313,8 +299,8 @@ const RentalBatchManage = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '순번', field: 'ID', sorter: 'string', width: 80, frozen: true, editable: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '등록일', field: 'DDATE', sorter: 'string', width: 100, frozen: true, editable: false, cssClass: 'bg-reg-cell' },
     { headerHozAlign: 'center', hozAlign: 'center', title: '계약번호', field: 'CONTRACT_NUM', sorter: 'string', width: 120, frozen: true, editor: 'input', editable: true, cellEdited: handleCellEdited },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '계약시작일', field: 'CONTRACT_STARTDT', sorter: 'string', width: 100, editor: 'date', editable: true, cellEdited: handleCellEdited },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '계약종료일', field: 'CONTRACT_ENDDT', sorter: 'string', width: 100, editor: 'date', editable: true, cellEdited: handleCellEdited },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '계약시작일', field: 'CONTRACT_STARTDT', sorter: 'string', width: 100, editor: "date", editable: true, cellEdited: handleCellEdited },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '계약종료일', field: 'CONTRACT_ENDDT', sorter: 'string', width: 100, editor: "date", editable: true, cellEdited: handleCellEdited },
     { headerHozAlign: 'center', hozAlign: 'right', title: '임차가(월)', field: 'MRENT_PRICE', sorter: 'string', width: 120, editor: 'number', editable: true, cellEdited: handleCellEdited },
     { headerHozAlign: 'center', hozAlign: 'center', title: '자산번호', field: 'ASSET_NUM', sorter: 'string', width: 120, editor: 'input', editable: true, cellEdited: handleCellEdited },
     { headerHozAlign: 'center', hozAlign: 'center', title: '용도', field: 'PURPOSE', sorter: 'string', width: 120, editor: 'input', editable: true, cellEdited: handleCellEdited },
@@ -323,13 +309,13 @@ const RentalBatchManage = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '상품명', field: 'PRODUCTNM', sorter: 'string', width: 150, editable: false, cellClick: (e, cell) => {setSelectedRow(cell.getData());setShowProductPopup(true);}, cssClass: 'bg-product-cell' },
     { headerHozAlign: 'center', hozAlign: 'center', title: '모델명', field: 'MODELNM', sorter: 'string', width: 400, editable: false, cellClick: (e, cell) => {setSelectedRow(cell.getData());setShowProductPopup(true);}, cssClass: 'bg-product-cell' },
     { headerHozAlign: 'center', hozAlign: 'center', title: '시리얼번호', field: 'SN', sorter: 'string', width: 150, editor: 'input', editable: true, cellEdited: handleCellEdited },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 80, editable: false, cellClick: (e, cell) => {setSelectedRow(cell.getData());setShowUserPopup(true);}, cssClass: 'bg-user-cell' },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '조직1', field: 'ORGNM1', sorter: 'string', width: 130, editable: false, cellClick: (e, cell) => {setSelectedRow(cell.getData());setShowUserPopup(true);}, cssClass: 'bg-user-cell' },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '조직2', field: 'ORGNM2', sorter: 'string', width: 130, editable: false, cellClick: (e, cell) => {setSelectedRow(cell.getData());setShowUserPopup(true);}, cssClass: 'bg-user-cell' },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '조직3', field: 'ORGNM3', sorter: 'string', width: 130, editable: false, cellClick: (e, cell) => {setSelectedRow(cell.getData());setShowUserPopup(true);}, cssClass: 'bg-user-cell' },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '조직4', field: 'ORGNM4', sorter: 'string', width: 130, editable: false, cellClick: (e, cell) => {setSelectedRow(cell.getData());setShowUserPopup(true);}, cssClass: 'bg-user-cell' },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '담당자사번', field: 'EMPNO', sorter: 'string', width: 100, editable: false, cellClick: (e, cell) => {setSelectedRow(cell.getData());setShowUserPopup(true);}, cssClass: 'bg-user-cell' },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '담당자', field: 'EMPNM', sorter: 'string', width: 100, editable: false, cellClick: (e, cell) => {setSelectedRow(cell.getData());setShowUserPopup(true);}, cssClass: 'bg-user-cell' },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 80, editable: false},
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조직1', field: 'ORGNM1', sorter: 'string', width: 130, editable: false},
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조직2', field: 'ORGNM2', sorter: 'string', width: 130, editable: false},
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조직3', field: 'ORGNM3', sorter: 'string', width: 130, editable: false},
+    { headerHozAlign: 'center', hozAlign: 'center', title: '조직4', field: 'ORGNM4', sorter: 'string', width: 130, editable: false},
+    { headerHozAlign: 'center', hozAlign: 'center', title: '담당자사번', field: 'EMPNO', sorter: 'string', width: 100, editable: false},
+    { headerHozAlign: 'center', hozAlign: 'center', title: '담당자', field: 'EMPNM', sorter: 'string', width: 100, editable: false},
     { headerHozAlign: 'center', hozAlign: 'left', title: '주소지', field: 'ADDR', sorter: 'string', width: 350, editor: 'input', editable: true, cellEdited: handleCellEdited },
     { headerHozAlign: 'center', hozAlign: 'left', title: '비고', field: 'MEMO', sorter: 'string', width: 300, editor: 'input', editable: true, cellEdited: handleCellEdited },
     { headerHozAlign: 'center', hozAlign: 'center', title: '등록자사번', field: 'REG_EMPNO', sorter: 'string', width: 100, editable: false, cssClass: 'bg-reg-cell' },
@@ -346,7 +332,6 @@ const RentalBatchManage = () => {
       const params = {
         pGUBUN: 'LIST',
         pEMPNO: user?.empNo || '',
-        pORGCD: filters.ORGCD || 'ALL',
         pCLASSCD: filters.CLASSCD === 'all' ? '' : filters.CLASSCD,
         pDATEGUBUN: filters.dayGubun,
         pDATE1: filters.dayGubun === 'D' ? filters.rangeStartDate : filters.dayGubun === 'M' ? filters.monthDate : '',
@@ -354,14 +339,14 @@ const RentalBatchManage = () => {
         pDEBUG: 'F',
       };
 
-      const response = await fetchData('rental/batchMng/list', params);
+      const response = await fetchData('rental/empMng/list', params);
       if (!response.success) {
         errorMsgPopup(response.message || '데이터를 가져오는 중 오류가 발생했습니다.');
         setData([]);
         return;
       }
       const responseData = Array.isArray(response.data) ? response.data : [];
-      setData(responseData); // ID 필드가 이미 서버 데이터에 포함되어 있음
+      setData(responseData);
       setRowCount(responseData.length);
     } catch (err) {
       console.error('데이터 로드 실패:', err);
@@ -390,7 +375,7 @@ const RentalBatchManage = () => {
           headerHozAlign: 'center',
           layout: 'fitColumns',
           reactiveData: true,
-          index: 'ID', // 테이블 인덱스를 ID로 설정
+          index: 'ID',
         });
         if (!tableInstance.current) throw new Error('createTable returned undefined or null');
         setTableStatus('ready');
@@ -451,8 +436,6 @@ const RentalBatchManage = () => {
   const handleDynamicEvent = (eventType, payload) => {
     if (eventType === 'search') {
       loadData();
-    } else if (eventType === 'showOrgPopup') {
-      setShowOrgPopup(true);
     } else if (eventType === 'selectChange') {
       const { id, value } = payload;
       setFilters((prev) => {
@@ -464,24 +447,11 @@ const RentalBatchManage = () => {
         }
         return newFilters;
       });
+    } else if (eventType === 'showRentalRegPopup') {
+      setShowRentalRegPopup(true);
     } else if (eventType === 'showProductManagePopup') {
       setShowProductManagePopup(true);
-    } else if (eventType === 'showExcelUploadPopup') {
-      setExcelPopupTitle('일괄등록');
-      setShowExcelPopup(true);
-    }
-  };
-
-  const handleOrgConfirm = (selectedRows) => {
-    if (!selectedRows || selectedRows.length === 0) return;
-    const newOrgCd = selectedRows.map((row) => row.ORGCD).join(',');
-    const newOrgNm = selectedRows.map((row) => row.ORGNM).join(',');
-    setFilters((prev) => ({ ...prev, ORGCD: newOrgCd, orgText: newOrgNm }));
-    setShowOrgPopup(false);
-  };
-
-  const handleOrgCancel = () => {
-    setShowOrgPopup(false);
+    } 
   };
 
   const handleProductSelect = (rowData) => {
@@ -511,43 +481,12 @@ const RentalBatchManage = () => {
     setSelectedRow(null);
   };
 
-  const handleUserSelect = (rowDataArray) => {
-    if (!selectedRow || !tableInstance.current || !rowDataArray?.length) {
-      setShowUserPopup(false);
-      setSelectedRow(null);
-      return;
-    }
-
-    const table = tableInstance.current;
-    const row   = table.getRow(selectedRow.ID);
-    if (!row) return;
-
-    const sel = rowDataArray[0];
-    const newRow = {
-      ...selectedRow,
-      SECTIONNM: sel.SECTIONNM || '',
-      ORGNM1:    sel.ORGNM1    || '',
-      ORGNM2:    sel.ORGNM2    || '',
-      ORGNM3:    sel.ORGNM3    || '',
-      ORGNM4:    sel.ORGNM4    || '',
-      EMPNO:     sel.EMPNO     || '',
-      EMPNM:     sel.EMPNM     || '',
-    };
-
-    table.updateRow(selectedRow.ID, newRow);
-
-    setTimeout(() => {
-      const el = row.getElement();
-      el.classList.add('edited');
-    }, 0);
-
-    setShowUserPopup(false);
-    setSelectedRow(null);
-  };
-
   const handleProductManageSave = () => {
     fetchBizMCodeOptions();
-    // setShowProductManagePopup(false);
+  };
+
+  const handleRentalRegPopup = () => {
+    loadData();
   };
 
   const handleEditConfirm = async () => {
@@ -594,8 +533,6 @@ const RentalBatchManage = () => {
     try {
       const params = {
         pGUBUN: 'U',
-        pDATE1: '',
-        pDATE2: '',
         pEMPNO: selectedRow.EMPNO || '',
         pORGIN_CONTRACT_NUM: selectedRow.ORGIN_CONTRACT_NUM || '',
         pORGIN_SN: selectedRow.ORGIN_SN || '',
@@ -613,10 +550,9 @@ const RentalBatchManage = () => {
         pZIPCODE: selectedRow.ZIPCODE || '',
         pADDR: selectedRow.ADDR || '',
         pMEMO: selectedRow.MEMO || '',
-        pREG_EMPNO: user?.empNo || '',
       };
 
-      const response = await fetchData('rental/batchMng/save', params);
+      const response = await fetchData('rental/empMng/save', params);
       if (!response.success) {
         errorMsgPopup(response.message || '변경 중 오류가 발생했습니다.');
         return;
@@ -643,9 +579,7 @@ const RentalBatchManage = () => {
     try {
       const params = {
         pGUBUN: 'D',
-        pDATE1: '',
-        pDATE2: '',
-        pEMPNO: user?.empNo || '',
+        pEMPNO: selectedRow.EMPNO || '',
         pORGIN_CONTRACT_NUM: selectedRow.ORGIN_CONTRACT_NUM || '',
         pORGIN_SN: selectedRow.ORGIN_SN || '',
         pCONTRACT_NUM: selectedRow.CONTRACT_NUM || '',
@@ -662,9 +596,9 @@ const RentalBatchManage = () => {
         pZIPCODE: selectedRow.ZIPCODE || '',
         pADDR: selectedRow.ADDR || '',
         pMEMO: selectedRow.MEMO || '',
-        pREG_EMPNO: selectedRow.REG_EMPNO || user?.empNo || '',
       };
-      const response = await fetchData('rental/batchMng/save', params);
+
+      const response = await fetchData('rental/empMng/save', params);
       if (!response.success) {
         errorMsgPopup(response.message || '삭제 중 오류가 발생했습니다.');
         return;
@@ -711,31 +645,8 @@ const RentalBatchManage = () => {
         {loading && <div>로딩 중...</div>}
         <div ref={tableRef} className={styles.tableSection} style={{ visibility: loading || tableStatus !== 'ready' ? 'hidden' : 'visible' }} />
       </div>
-      {showOrgPopup && (
-        <OrgSearchPopup
-          onClose={handleOrgCancel}
-          onConfirm={handleOrgConfirm}
-          initialSelectedOrgs={filters.ORGCD ? filters.ORGCD.split(',').filter(Boolean) : []}
-          pGUBUN={pGUBUN}
-          isMulti={true}
-          isChecked={false}
-        />
-      )}
-      <ExcelUploadPopup
-        show={showExcelPopup}
-        onHide={() => setShowExcelPopup(false)}
-        onSave={(result) => {
-          if (result.errCd === '00') {
-            loadData();
-          }
-          return result;
-        }}
-        title={excelPopupTitle}
-        rptCd="RENTALINFOEXCELUPLOAD|Y"
-        templateParams={{ pGUBUN: 'RPTCD', pTITLE: '', pFILEID: '14', pRPTCD: 'RENTALINFOEXCELUPLOAD', pDEBUG: 'F' }}
-      />
+      <RentalEmpAddPopup show={showRentalRegPopup} onHide={() => setShowRentalRegPopup(false)} classData={classData} onSave={handleRentalRegPopup} />
       <RentalProductPopup show={showProductPopup} onHide={() => setShowProductPopup(false)} data={classData} onSave={handleProductSelect} />
-      <UserOrgSearchPopup show={showUserPopup} onHide={() => setShowUserPopup(false)} onSave={handleUserSelect} />
       <RentalProductManagePopup show={showProductManagePopup} onHide={() => setShowProductManagePopup(false)} data={classData} onSave={handleProductManageSave} />
       <CommonPopup
         show={showEditPopup}
@@ -757,4 +668,4 @@ const RentalBatchManage = () => {
   );
 };
 
-export default RentalBatchManage;
+export default RentalEmpManage;
