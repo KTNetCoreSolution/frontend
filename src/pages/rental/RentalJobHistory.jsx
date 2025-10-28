@@ -108,7 +108,7 @@ const RentalJobHistory = () => {
         type: 'search',
         fields: [
           { id: 'classGubunLbl', type: 'label', row: 1, label: '분야', labelVisible: false, enabled: true },
-          { id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: '', label: '==분야==' },{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true },
+          { id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: '', label: '==분야==' },{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: '', enabled: true },
           { id: 'CLASSCD', type: 'select', row: 1, label: '분류', labelVisible: true, options: updatedClassOptions, defaultValue: 'all', enabled: true },
           { id: 'dayGubunLbl', type: 'label', row: 1, label: '등록', labelVisible: false, enabled: true },
           { id: 'dayGubun', type: 'select', row: 1, label: '', labelVisible: false, options: getFieldOptions('dayGubun'), defaultValue: 'M', enabled: true },
