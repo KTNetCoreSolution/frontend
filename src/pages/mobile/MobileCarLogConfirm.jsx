@@ -181,7 +181,7 @@ const MobileCarLogConfirm = () => {
 
         <div className="pageMain">
           <div className="d-flex justify-content-end">
-            <button className="btn btn-secondary" style={{width: '80px', display: user?.levelCd === '41' ? 'block' : 'none' }} onClick={(e) => handleConfrimAll(e)}>일괄승인</button>
+            <button className="btn btn-secondary" style={{width: '80px', display: user?.levelCd === '41' ? 'block' : 'none' }} onClick={(e) => handleConfrimAll(e)}>일괄승인</button>&nbsp;
             <button className="btn btn-secondary" style={{width: '80px'}} onClick={handleReturnPage}>돌아가기</button>
           </div>
           {currentList.length > 0 ? (
@@ -255,22 +255,18 @@ const MobileCarLogConfirm = () => {
                 <div className="formText" style={{color: item.ETC2 === '양호' ? 'var(--bs-font-primary-dark-color)' : 'red'}}>{item.ETC2}</div>
               </li>
               <li>
-                <div className="btnWrap w-100">
-                    <button className='btn btn-primary flex-grow-1' onClick={(e) => handleConfrim(e, item, 'Y')}>승인</button>
-                    <button className='btn btn-reject flex-grow-1' onClick={(e) => handleConfrim(e, item, 'N')}>반려</button>
-                  </div>
-                </li>
-                {item.LEVELCD === '41' ? (
+                {user?.auth === 'AUTH0001' || item.LEVELCD === '41' ? (
                   <div className="btnWrap w-100">
                     <button className='btn btn-primary flex-grow-1' onClick={(e) => handleConfrim(e, item, 'Y')}>승인</button>
                     <button className='btn btn-reject flex-grow-1' onClick={(e) => handleConfrim(e, item, 'N')}>반려</button>
                   </div>
                   ) : item.LOGSTAT === 'N' ? (
-                  <div className="btnWrap">
+                  <div className="btnWrap w-100">
                     <button className='btn btn-primary flex-grow-1' onClick={(e) => handleConfrim(e, item, 'R')}>재승인요청</button>
                   </div>
                   ) : ('')
                 }
+                </li>
             </ul>
           </div>
             ))

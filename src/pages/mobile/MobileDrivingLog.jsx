@@ -236,7 +236,11 @@ const MobileDrivingLog = () => {
     } else {
       alert('미결재건이 없습니다.');
     }
-  }
+  };
+
+  const moveToPenalty = () => {
+    navigate('/mobile/MobileCarPenaltyList', { state: { carId: carId } });
+  };
 
   return (
       <div className="container-fluid p-0">
@@ -336,6 +340,13 @@ const MobileDrivingLog = () => {
             <div>
               <label className="formListTitle">차량상태</label>
               <label className="formDesc">내 조직의 차량상태를 확인합니다</label>
+            </div>
+            <div className="arrowContainer"></div>
+          </div>
+          <div className="formDivBtnBox" onClick={moveToPenalty} >
+            <div>
+              <label className="formListTitle">과태료</label>
+              <label className="formDesc">선택된 차량의 과태료 목록을 확인합니다</label>
             </div>
             <div className="arrowContainer"></div>
           </div>

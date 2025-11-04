@@ -24,6 +24,7 @@ import { arEG, tr } from 'date-fns/locale';
 const getFieldOptions = (fieldId, dependentValue = '') => {
   const optionsMap = {
     penaltygbn: [
+      { value: '', label: '선택하세요' },
       { value: 'local', label: '주정차위반' },
       { value: 'police', label: '경찰청관할' },
     ],
@@ -115,6 +116,7 @@ const PenaltyListInfo = () => {
   const [data, setData] = useState([]);
   const [isSearched, setIsSearched] = useState(false);
   const [tableStatus, setTableStatus] = useState('initializing');
+  const [excelNm, setExcelNm] = useState('');
   const [error, setError] = useState(null);
   const [rowCount, setRowCount] = useState(0);
   const tableRef = useRef(null);
@@ -135,12 +137,14 @@ const PenaltyListInfo = () => {
         headerFilter: true,
         layout: 'fitData'
       });
+      setExcelNm('주정차위반 과태료 정보.xlsx');
     } else if (filters.penaltygbn === 'police') {
       tableInstance.current = createTable(tableRef.current, columns2, [], {
         headerHozAlign: "center",
         headerFilter: true,
         layout: 'fitData'
       });
+      setExcelNm('경찰청관할 과태료 정보.xlsx');
     }
   }, [filters.penaltygbn]);
 
@@ -206,6 +210,12 @@ const PenaltyListInfo = () => {
 
     // 최신 필터 사용
     const currentFilters = latestFiltersRef.current;
+
+    if(currentFilters.penaltygbn === '') {
+      errorMsgPopup('과태료구분을 선택하세요.');
+      setLoading(false);
+      return;
+    }
 
     // API 로 통신할 경우 fetchData()
     try {
@@ -336,7 +346,7 @@ const PenaltyListInfo = () => {
         filterFields={[]}
         filters={tableFilters}
         setFilters={setTableFilters}
-        onDownloadExcel={() => {handleDownloadExcel(tableInstance.current, tableStatus, latestFiltersRef.current.penaltygbn === 'local' ? '주정차위반 과태료 정보.xlsx' : '경찰청관할 과태료 정보.xlsx');}}
+        onDownloadExcel={() => {handleDownloadExcel(tableInstance.current, tableStatus, excelNm);}}
         rowCount={rowCount}
         onEvent={handleDynamicEvent}
       />
