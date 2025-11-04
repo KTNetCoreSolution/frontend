@@ -355,7 +355,7 @@ const RentalEmpAddPopup = ({ show, onHide, onSave }) => {
           </div>
           <div className={styles.inputButtonWrapper}>
             <button className={`btn text-bg-secondary`} onClick={handleClose}>닫기</button>
-            <button className={`btn text-bg-warning`} onClick={handleReset}>초기화</button>
+            <button className={`btn text-bg-dark`} onClick={handleReset}>초기화</button>
             <button className={`btn text-bg-success`} onClick={handleSave}>확인</button>
           </div>
         </Modal.Body>

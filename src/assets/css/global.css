@@ -16,6 +16,7 @@
   --bs-body-bg: #ffffff;
   --bs-body-bg-main: #f7f7f7;
   --bs-primary-color: #2CBBB7;
+  --bs-graydark-color: #495057;
   --bs-danger: #dc3545;
   --bs-gutter-x: 0;
   --bs-font-color: #1E2124;
@@ -437,6 +438,11 @@ p, h1, h2, h3, h4, h5, h6, .form-label, .form-text, .form-check-label,
 .text-bg-success {
   background-color: var(--bs-primary-color) !important;
   border-color: var(--bs-primary-color) !important;
+  color: #fff !important;
+}
+.text-bg-dark {
+  background-color: var(--bs-graydark-color) !important;
+  border-color: var(--bs-graydark-color) !important;
   color: #fff !important;
 }
 /* .deleteButton:hover {
