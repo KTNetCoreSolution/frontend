@@ -145,4 +145,37 @@ export default {
     const monthsDiff = (end.getFullYear() - start.getFullYear()) * 12 + end.getMonth() - start.getMonth();
     return Math.abs(monthsDiff) > maxMonths ? maxMonths : Math.abs(monthsDiff);
   },
+
+  getAddDate(addYears = 0, addMonths = 0, addDays = 0) {
+    const date = new Date();
+
+    // 2. 연, 월, 일 계산
+    date.setFullYear(date.getFullYear() + addYears);
+    date.setMonth(date.getMonth() + addMonths);
+    date.setDate(date.getDate() + addDays);
+
+    const options = {
+      timeZone: 'Asia/Seoul', // 한국 표준시 타임존 지정
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    };
+
+    const formatter = new Intl.DateTimeFormat('ko-KR', options);
+    const parts = formatter.formatToParts(date);
+    
+    const year = parts.find(p => p.type === 'year').value;
+    let month = parts.find(p => p.type === 'month').value;
+    let day = parts.find(p => p.type === 'day').value;
+
+    if (month.length === 1) {
+      month = '0' + month;
+    }
+
+    if (day.length === 1) {
+      day = '0' + day;
+    }
+
+    return `${year}-${month}-${day}`;
+  },
 };

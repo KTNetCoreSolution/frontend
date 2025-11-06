@@ -43,7 +43,8 @@ const getFieldOptions = (fieldId, dependentValue = '') => {
  */
 const PenaltyListInfo = () => {
   const { user } = useStore();
-  const todayDate = common.getTodayDate();  
+  const startDate = common.getAddDate(0, 0, -15); // 15일 전 날짜 계산
+  const endDate = common.getAddDate(0, 0, 15); // 15일 후 날짜 계산
   const [showExcelPopup, setShowExcelPopup] = useState(false); // Add this line
   const [excelPopupTitle, setExcelPopupTitle] = useState(''); // Add this line
   const [showExcelPopup2, setShowExcelPopup2] = useState(false); // Add this line
@@ -82,8 +83,8 @@ const PenaltyListInfo = () => {
         type: 'search',
         fields: [
           { id: 'penaltygbn', type: 'select', row: 1, label: '과태료구분', labelVisible: true, options: getFieldOptions('penaltygbn'), width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
-          { id: 'startDate', type: 'startday', row: 1, label: '납부기한', labelVisible: true, placeholder: '시작일 선택', width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: todayDate },
-          { id: 'endDate', type: 'endday', row: 1, label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: todayDate },
+          { id: 'startDate', type: 'startday', row: 1, label: '납부기한', labelVisible: true, placeholder: '시작일 선택', width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: startDate },
+          { id: 'endDate', type: 'endday', row: 1, label: '~', labelVisible: true, placeholder: '종료일 선택', width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: false, defaultValue: endDate },
           { id: 'carno', type: 'text', row: 1, label: '차량번호', labelVisible: true, maxLength: 50, width: '200px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
           { id: 'paymentflag', type: 'select', row: 1, label: '납부여부', labelVisible: true, options: getFieldOptions('paymentflag'), width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
         ],
@@ -212,7 +213,7 @@ const PenaltyListInfo = () => {
     const currentFilters = latestFiltersRef.current;
 
     if(currentFilters.penaltygbn === '') {
-      errorMsgPopup('과태료구분을 선택하세요.');
+      msgPopup('과태료구분을 선택하세요.');
       setLoading(false);
       return;
     }

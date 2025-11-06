@@ -15,7 +15,7 @@ const MobileDrivingLog = () => {
   const timeOption = (stdTime, gbn) => {
     const times = [];
     for (let hour = 0; hour < 24; hour++) {
-      for (let minute = 0; minute < 60; minute += 30) {
+      for (let minute = 0; minute < 60; minute += 10) {
         const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
         if (timeString >= stdTime) {
           if(gbn === 'S' && timeString >= stdTime) {
@@ -187,8 +187,7 @@ const MobileDrivingLog = () => {
         logEnTime = time; 
         return true;
       }
-    });
-    
+    });    
     
     setLogInfo({ ...logInfo, LOGDATE: logDate, LOGSTTIME: logStTime, LOGENTIME: logEnTime});
     setDiffTime(calcTimeDifference(logStTime, logEnTime));
@@ -198,8 +197,18 @@ const MobileDrivingLog = () => {
     const time = e.target.value;
 
     if(timeGbn === 'stTime'){
-      setLogInfo({ ...logInfo, LOGSTTIME: time });
-      setDiffTime(calcTimeDifference(time, logInfo.LOGENTIME));
+      const newEnTime = timeOption(time, 'E');
+      setEnTime(newEnTime);
+      
+      if (logInfo.LOGENTIME < newEnTime[0]) {
+        setLogInfo({ ...logInfo, LOGSTTIME: time, LOGENTIME: newEnTime[0] });
+        setDiffTime(calcTimeDifference(time, newEnTime[0]));
+      }
+      else {
+        setLogInfo({ ...logInfo, LOGSTTIME: time });
+        setDiffTime(calcTimeDifference(time, logInfo.LOGENTIME));
+      }
+      
     }
     else {
       setLogInfo({ ...logInfo, LOGENTIME: time });

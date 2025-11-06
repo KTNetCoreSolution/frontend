@@ -16,7 +16,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
   const timeOption = (stdTime, gbn) => {
     const times = [];
     for (let hour = 0; hour < 24; hour++) {
-      for (let minute = 0; minute < 60; minute += 30) {
+      for (let minute = 0; minute < 60; minute += 10) {
         const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
         if (timeString >= stdTime) {
           if(gbn === 'S' && timeString >= stdTime) {
@@ -35,7 +35,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
   const [carId, setCarId] = useState('');
   const [carList, setCarList] = useState({});
   const [carInfo, setCarInfo] = useState({CARNM: '', MANAGER_EMPNM: '', MANAGER_MOBILE: '', GARAGE_ADDR: '', STKM: 0, src: null, bookMark: false, ORGCD: ''});
-  const [logInfo, setLogInfo] = useState({CARID: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:30', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, EMPNO: ''});
+  const [logInfo, setLogInfo] = useState({CARID: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:10', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, EMPNO: ''});
   const [lastLogInfo, setLastLogInfo] = useState({LOGDATE: '', LOGSTTIME: '', LOGENTIME: ''});
   const [vImgDisplay, setImgDisplay] = useState('none');
   const [vDisplay, setDisplay] = useState('false');
@@ -200,7 +200,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
 
   const initializing = () => {
     setCarInfo({CARNM: '', MANAGER_EMPNM: '', MANAGER_MOBILE: '', GARAGE_ADDR: '', STKM: 0, src: null, bookMark: false, ORGCD: ''});
-    setLogInfo({GUBUN:'I', CARID: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:30', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: ''});
+    setLogInfo({GUBUN:'I', CARID: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:10', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: ''});
     setLastLogInfo({LOGDATE: '', LOGSTTIME: '', LOGENTIME: ''});
     setIsFilled(false);
     setIsDamage(true);
@@ -373,8 +373,18 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
     const time = e.target.value;
 
     if(timeGbn === 'stTime'){
-      setLogInfo({ ...logInfo, LOGSTTIME: time });
-      setDiffTime(calcTimeDifference(time, logInfo.LOGENTIME));
+      const newEnTime = timeOption(time, 'E');
+      setEnTime(newEnTime);
+      
+      if (logInfo.LOGENTIME < newEnTime[0]) {
+        setLogInfo({ ...logInfo, LOGSTTIME: time, LOGENTIME: newEnTime[0] });
+        setDiffTime(calcTimeDifference(time, newEnTime[0]));
+      }
+      else {
+        setLogInfo({ ...logInfo, LOGSTTIME: time });
+        setDiffTime(calcTimeDifference(time, logInfo.LOGENTIME));
+      }
+      
     }
     else {
       setLogInfo({ ...logInfo, LOGENTIME: time });
@@ -754,7 +764,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             <div>{diffTime}</div>
           </div>
           <div className='mt-3'>
-              <button className={`btn btn-custom ${styles.btnCheck} ${styles.btn}`} style={{ backgroundColor:vImgDisplay === 'flex' ? '#00c4b4' : '#909090'}} disabled={vImgDisplay === 'flex' ? '' : 'disabled'} onClick={(e) => setDisplay(!vDisplay)}>차량점검 및 {logInfo.GUBUN === 'I' ? '일지작성' : '운행결과'}</button>
+            <button className={`btn btn-custom ${styles.btnCheck} ${styles.btn}`} style={{ backgroundColor:vImgDisplay === 'flex' ? '#00c4b4' : '#909090'}} disabled={vImgDisplay === 'flex' ? '' : 'disabled'} onClick={(e) => setDisplay(!vDisplay)}>차량점검 및 {logInfo.GUBUN === 'I' ? '일지작성' : '운행결과'}</button>
           </div>
         </div>
         <div className='flex-column gap-2' style={{display: `${vDisplay ? 'flex' : 'none'}`}}>
