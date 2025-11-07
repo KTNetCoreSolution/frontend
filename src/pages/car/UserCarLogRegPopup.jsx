@@ -6,6 +6,7 @@ import { fetchData, fetchFileUpload } from "../../utils/dataUtils";
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import CommonPopup from '../../components/popup/CommonPopup.jsx';
+import { hasPermission } from '../../utils/authUtils';
 import Modal from 'react-bootstrap/Modal';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -42,6 +43,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
   const [vSaveBtnDisplay, setSaveBtnDisplay] = useState('block');
   const [vDelBtnDisplay, setDelBtnDisplay] = useState('none');
   const [vRejectBtnDisplay, setRejectBtnDisplay] = useState('none');
+  const [modifyYn, setModifyYn] = useState('Y');
   const [isFilled, setIsFilled] = useState(false);
   const [isDamage, setIsDamage] = useState(true);
   const [isOilLeak, setIsOilLeak] = useState(true);
@@ -151,7 +153,8 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           const bEtc2 = response.data[0].ETC2 === 'Y' ? true : false;
           const saveBtnDisplay = empNo === user?.empNo ? 'block' : 'none';
           const delBtnDisplay = (response.data[0].DELYN === 'Y' && empNo === user?.empNo) ? 'block' : 'none';
-          const reJectBtnDisplay = (response.data[0].LOGSTAT === 'R' && orgCd === user?.orgCd && '41' === user?.levelCd) ? 'block' : 'none';
+          const reJectBtnDisplay = (response.data[0].LOGSTAT === 'R' && ((orgCd === user?.orgCd && '41' === user?.levelCd) || hasPermission(user?.auth, 'permissions')))  ? 'block' : 'none';
+          const modifyCheck = (response.data[0].DELYN === 'Y' && empNo === user?.empNo) ? 'Y' : 'N';
           
           setStTime(timeOption(data.LOGSTTIME, 'S'));
           setEnTime(timeOption(data.LOGSTTIME, 'E'));
@@ -168,6 +171,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           setSaveBtnDisplay(saveBtnDisplay);
           setDelBtnDisplay(delBtnDisplay);
           setRejectBtnDisplay(reJectBtnDisplay);
+          setModifyYn(modifyCheck);
 
           setDiffTime(calcTimeDifference(data.LOGSTTIME, logEnTime));
         }
@@ -216,6 +220,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
     setSaveBtnDisplay('block');
     setDelBtnDisplay('none');
     setRejectBtnDisplay('none');
+    setModifyYn('Y');
     setDiffTime('');
   };
   
@@ -278,6 +283,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             setSaveBtnDisplay('block');
             setDelBtnDisplay('none');
             setRejectBtnDisplay('none');
+            setModifyYn('Y');
 
             setDiffTime(calcTimeDifference(logStTime, logEnTime));
           }
@@ -322,7 +328,8 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
 
   const handleSafetyCheck = (target, bResult) => {    
     
-    if (logInfo.GUBUN === 'I') {
+    //if (logInfo.GUBUN === 'I') {
+    if (modifyYn === 'Y') {
       if (target === 'Damage') {
         setIsDamage(bResult);
       } else if (target === 'OilLeak') {
@@ -754,7 +761,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
                 {stTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
               </select>
               <label> ~ </label>
-              <select id="enTime" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} value={logInfo.LOGENTIME}  disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {handleLogTime(e, 'enTime')}}>
+              <select id="enTime" className={`form-select ${styles.formSelect}`} style={{width: 80 +'px'}} value={logInfo.LOGENTIME}  disabled={modifyYn === 'Y' ? '' : 'disabled'} onChange={(e) => {handleLogTime(e, 'enTime')}}>
                 {enTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
               </select>
             </div>
@@ -833,7 +840,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             </div>
           </div>
           <div className="mb-2">
-            <textarea className={`${styles.formTextArea}`} rows="5" value={logInfo.SAFETYNOTE} maxLength={1500} placeholder="점검특이사항(차량불량사항이 있는 경우/특수문자 입력불가)" disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, SAFETYNOTE: e.target.value })}}  />
+            <textarea className={`${styles.formTextArea}`} rows="5" value={logInfo.SAFETYNOTE} maxLength={1500} placeholder="점검특이사항(차량불량사항이 있는 경우/특수문자 입력불가)" disabled={modifyYn === 'Y' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, SAFETYNOTE: e.target.value })}}  />
           </div>
         </div>
         <div className='flex-column gap-2' style={{display: `${vDisplay ? 'flex' : 'none'}`}}>
@@ -851,7 +858,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           </div>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>종료km</label>
-            <input type="number" id="stKm" className={`form-control ${styles.formControl2}`} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} value={logInfo.ENKM} style={{width:100 +'px'}} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, ENKM: e.target.value })}} />
+            <input type="number" id="stKm" className={`form-control ${styles.formControl2}`} disabled={modifyYn === 'Y' ? '' : 'disabled'} value={logInfo.ENKM} style={{width:100 +'px'}} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, ENKM: e.target.value })}} />
           </div>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>주행거리</label>

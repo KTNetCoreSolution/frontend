@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createTable } from '../../utils/tableConfig.js';
 import { initialFilters } from '../../utils/tableEvent.js';
-import { handleDownloadExcel } from '../../utils/tableExcel.js';
+import { handleDownloadExcel2 } from '../../utils/tableExcel.js';
 import useStore from '../../store/store.js';
 import MainSearch from '../../components/main/MainSearch.jsx';
 import TableSearch from '../../components/table/TableSearch.jsx';
@@ -11,6 +11,7 @@ import UserSearchPopup from '../../components/popup/UserSearchPopup';
 import LogRegPopup from './UserCarLogRegPopup.jsx';
 import styles from '../../components/table/TableSearch.module.css';
 import common from '../../utils/common';
+import { hasPermission } from '../../utils/authUtils';
 import { fetchData } from '../../utils/dataUtils.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import { msgPopup } from '../../utils/msgPopup.js';
@@ -66,11 +67,12 @@ const UserCarLog = () => {
       const rowData = row.getData();
       const confYn = rowData.CONFYN;
       const logStat = rowData.LOGSTAT;
-
       let bBtn = false;
 
-      if (field === 'actions' && logStat === 'R' && confYn === 'Y') {
-          bBtn = true;
+      console.log('confYn:' + confYn);
+      console.log('logStat:' + confYn);
+      if (field === 'actions' && (logStat === 'R' && (confYn === 'Y'|| hasPermission(user?.auth, 'permissions'))) ) {
+        bBtn = true;
       } else if (field === 'DETAIL') {
         bBtn = true;
       }
@@ -202,6 +204,8 @@ const UserCarLog = () => {
   useEffect(() => {
     latestTableFiltersRef.current = filterTableFields;
   }, [filterTableFields]);
+
+  let visibleColumns = ['actions|N', 'applyTarget|N', 'DETAIL|N'];  
 
   // 테이블 컬럼 정의
   const columns = [   
@@ -373,6 +377,8 @@ const UserCarLog = () => {
    * @async
    */
   const loadData = async () => {
+    if (isInitialRender.current || !tableInstance.current || tableStatus !== 'ready' || loading) return;
+    
     setLoading(true);
     setIsSearched(true);
     setError(null);
@@ -489,10 +495,18 @@ const UserCarLog = () => {
     const initializeTable = async () => {
       // 다른 컴포넌트 렌더링 대기
       await new Promise((resolve) => setTimeout(resolve, 1000));
+      
       if (!tableRef.current) {
         console.warn("테이블 컨테이너가 준비되지 않았습니다.");
         return;
       }
+
+      if (hasPermission(user?.auth, 'permissions') || user?.levelCd === '41') {
+        visibleColumns = ['actions|Y', 'applyTarget|Y', 'DETAIL|Y'];
+      } else {
+        visibleColumns = [];
+      }
+
       try {
         // Tabulator 테이블 생성
         //1.테블레이터 기본 속성으로 호출 시
@@ -549,7 +563,7 @@ const UserCarLog = () => {
         setRowCount(rows);
       }
 
-      if (user?.levelCd === '41') {
+      if (user?.levelCd === '41' || hasPermission(user?.auth, 'permissions')) {
         table.showColumn('actions');
         table.showColumn('applyTarget');
       } else {
@@ -599,15 +613,15 @@ const UserCarLog = () => {
         filterFields={filterTableFields}
         filters={tableFilters}
         setFilters={setTableFilters}
-        onDownloadExcel={() => {handleDownloadExcel(tableInstance.current, tableStatus, '기동장비운행일지.xlsx')}}
+        onDownloadExcel={() => {handleDownloadExcel2(tableInstance.current, tableStatus, '기동장비운행일지.xlsx', visibleColumns)}}
         rowCount={rowCount}
         onEvent={handleDynamicEvent}
       >
-      <div className='btnGroupCustom' style={{display:user?.levelCd === '41' ? 'flex' : 'none'}}>
+      <div className='btnGroupCustom' style={{display:user?.levelCd === '41' || hasPermission(user?.auth, 'permissions') ? 'flex' : 'none'}}>
         <button className='btn text-bg-success' onClick={handleConfrim}>
           선택승인
         </button>
-        <button className='btn text-bg-success' onClick={handleConfrimAll}>
+        <button className='btn text-bg-success' style={{display:user?.levelCd === '41' ? 'flex' : 'none'}} onClick={handleConfrimAll}>
           일괄승인
         </button>
       </div>

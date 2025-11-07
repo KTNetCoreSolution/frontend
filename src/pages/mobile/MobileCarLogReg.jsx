@@ -39,6 +39,7 @@ const MobileDrivingLog = () => {
   const [gubun, setGubun] = useState('');
   const [logInfo, setLogInfo] = useState({GUBUN: '', CARID: '', CARNO: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:30', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: '', EMPNM: '', DELYN: 'N'});
   const [lastLogInfo, setLastLogInfo] = useState({LOGDATE: '', LOGSTTIME: '', LOGENTIME: ''});
+  const [modifyYn, setModifyYn] = useState('Y');
   const [isDamage, setIsDamage] = useState(true);
   const [isOilLeak, setIsOilLeak] = useState(true);
   const [isTire, setIsTire] = useState(true);
@@ -118,6 +119,10 @@ const MobileDrivingLog = () => {
         const empNo = pGubun === 'I' ? user?.empNo : response.data[0].EMPNO;
         const empNm = pGubun === 'I' ? user?.empNm : response.data[0].EMPNM;
         const delYn = response.data[0].DELYN;
+
+        const modifyCheck = pGubun === 'I' || delYn === 'Y' ? 'Y' : 'N';
+        
+        setModifyYn(modifyCheck);
 
         setEnTime(timeOption(logStTime, 'E'));
 
@@ -218,7 +223,7 @@ const MobileDrivingLog = () => {
 
   const handleSafetyCheck = (target, bResult) => {    
     
-    if (logInfo.GUBUN === 'I') {
+    if (modifyYn === 'Y') {
       if (target === 'Damage') {
         setIsDamage(bResult);
       } else if (target === 'OilLeak') {
@@ -403,7 +408,7 @@ const MobileDrivingLog = () => {
                   {stTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
                 </select>
                 <span style={{width: '12px', textAlign: 'center'}}>~</span>
-                <select id="enTime" className={`form-select ${styles.formSelect}`} value={logInfo.LOGENTIME}  disabled={gubun === 'I' ? '' : 'disabled'} onChange={(e) => {handleLogTime(e, 'enTime')}}>
+                <select id="enTime" className={`form-select ${styles.formSelect}`} value={logInfo.LOGENTIME}  disabled={modifyYn === 'Y' ? '' : 'disabled'} onChange={(e) => {handleLogTime(e, 'enTime')}}>
                   {enTime.map((time, index) => <option key={index} value={time}>{time}</option>)}
                 </select>
               </div>
@@ -475,7 +480,7 @@ const MobileDrivingLog = () => {
             </li>                                                
           </ul>
           <div className='mt-3'>
-            <textarea className={`${styles.formTextArea}`} rows="5" value={logInfo.SAFETYNOTE} maxLength={1500} placeholder="점검특이사항(차량불량사항이 있는 경우/특수문자 입력불가)" disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, SAFETYNOTE: e.target.value })}}  />
+            <textarea className={`${styles.formTextArea}`} rows="5" value={logInfo.SAFETYNOTE} maxLength={1500} placeholder="점검특이사항(차량불량사항이 있는 경우/특수문자 입력불가)" disabled={modifyYn === 'Y' ? '' : 'disabled'} onChange={(e) => {setLogInfo({ ...logInfo, SAFETYNOTE: e.target.value })}}  />
           </div>
         </div>
         <div className="formDivBox">
@@ -495,7 +500,7 @@ const MobileDrivingLog = () => {
             <li>
               <span className="formLabel" style={{width: '120px'}}>종료km</span>
               <div className="formData">
-                <input type="number" className={`${styles.formInput}`} style={{width: '120px'}} value={logInfo.ENKM} disabled={gubun === 'I' ? '' : 'disabled'} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, ENKM: e.target.value })}} />
+                <input type="number" className={`${styles.formInput}`} style={{width: '120px'}} value={logInfo.ENKM} disabled={modifyYn === 'Y' ? '' : 'disabled'} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, ENKM: e.target.value })}} />
               </div>
             </li>
             <li>

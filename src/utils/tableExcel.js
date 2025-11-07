@@ -93,7 +93,7 @@ export const handleDownloadExcel2 = (
     visibleColumns.forEach((Column) => {
       const isVisible = Column.includes('|Y');
       const columnName = Column.split('|')[0];
-
+      
       if (isVisible) {
         tableInstance.showColumn(columnName);
       } else {
@@ -102,7 +102,7 @@ export const handleDownloadExcel2 = (
     });
 
     // 테이블의 컬럼 정의 가져오기
-    const columns = tableInstance.getColumns();
+    const columns = tableInstance.getColumns().filter(col => col.isVisible());
     // 컬럼 제목 배열 생성 (예: ["ID", "이름", "나이", "상태"])
     const headers = columns.map(col => col.getDefinition().title);
     // 필드명 배열 생성 (예: ["id", "name", "age", "status"])
@@ -135,7 +135,7 @@ export const handleDownloadExcel2 = (
         tableInstance.hideColumn(columnName);
       } else {
         tableInstance.showColumn(columnName);
-      } 
+      }       
     });
   }
 };
