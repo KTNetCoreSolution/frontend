@@ -189,7 +189,7 @@ const Login = () => {
                 type="text"
                 value={captchaInput}
                 onChange={(e) => setCaptchaInput(e.target.value.toUpperCase())}
-                placeholder="코드를 입력하세요"
+                placeholder="코드를 입력하세요1"
                 required
                 className={styles.input}
               />
