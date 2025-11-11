@@ -135,7 +135,7 @@ const FuelCardListInfo = () => {
   ];
 
   // 엑셀 저장 시 추가로 보여줄 엑셀 field 설정
-  const visibleColumns = ['DETAILBUTTON|Y'];  
+  const visibleColumns = ['DETAILBUTTON|N'];  
 
   const handleDetail = (rowData) => {
     fn_DetailPopup(rowData.CARDNO);
