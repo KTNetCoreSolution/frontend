@@ -43,7 +43,7 @@ const getFieldOptions = (fieldId, dependentValue = '') => {
  */
 const PenaltyListInfo = () => {
   const { user } = useStore();
-  const startDate = common.getAddDate(0, 0, -15); // 15일 전 날짜 계산
+  const startDate = common.getAddDate(0, -3, 0); // 15일 전 날짜 계산
   const endDate = common.getAddDate(0, 0, 15); // 15일 후 날짜 계산
   const [showExcelPopup, setShowExcelPopup] = useState(false); // Add this line
   const [excelPopupTitle, setExcelPopupTitle] = useState(''); // Add this line
@@ -106,6 +106,11 @@ const PenaltyListInfo = () => {
         const index = area.fields.findIndex(field => field.id === 'excelUploadBtn');
         if (index !== -1) {
           area.fields.splice(index, 1);
+        }
+
+        const index2 = area.fields.findIndex(field => field.id === 'excelUploadBtn2');
+        if (index2 !== -1) {
+          area.fields.splice(index2, 1);
         }
       }
     });

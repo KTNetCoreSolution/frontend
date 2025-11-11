@@ -134,6 +134,9 @@ const FuelCardListInfo = () => {
     { title: '상세', field: 'DETAILBUTTON', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('상세보기', `btn btn-outline-secondary`, (rowData) => handleDetail(rowData)) },
   ];
 
+  // 엑셀 저장 시 추가로 보여줄 엑셀 field 설정
+  const visibleColumns = ['DETAILBUTTON|Y'];  
+
   const handleDetail = (rowData) => {
     fn_DetailPopup(rowData.CARDNO);
   };
@@ -281,7 +284,7 @@ const FuelCardListInfo = () => {
       <TableSearch
         filterFields={[]}
         filters={tableFilters}
-        onDownloadExcel={() => {handleDownloadExcel(tableInstance.current, tableStatus, '주유카드정보.xlsx')}}
+        onDownloadExcel={() => {handleDownloadExcel2(tableInstance.current, tableStatus, '주유카드정보.xlsx', visibleColumns)}}
         rowCount={rowCount}
         onEvent={handleDynamicEvent}
       />

@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useStore from '../../store/store.js';
 import commonUtils from '../../utils/common.js';
 import { fetchData } from "../../utils/dataUtils.js";
@@ -12,7 +12,6 @@ import api from '../../utils/api.js';
 const MobileCarPenaltyList = () => {
   const { user } = useStore();
   const { clearUser } = useStore();
-  const { state } = useLocation();
   const navigate = useNavigate();
   const [showSidebar, setShowSidebar] = useState(false);
   const [list, setList] = useState([]);
@@ -49,16 +48,14 @@ const MobileCarPenaltyList = () => {
   const initializeComponent = async () => {
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    const carId = state?.carId || '';
-
-    if (carId === '') {
+    if (user?.empNo === '') {
       errorMsgPopup("잘못된 접근입니다.");
       navigate(-1);
       return;
     }
 
     try {
-      const params = { CARID: carId, pDEBUG: "F" };
+      const params = { pEMPNO: user?.empNo, pDEBUG: "F" };
       const response = await fetchData('carlogM/penalyList', params);
 
       if (!response.success) {

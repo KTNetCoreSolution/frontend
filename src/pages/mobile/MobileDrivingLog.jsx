@@ -21,7 +21,7 @@ const MobileDrivingLog = () => {
   const [carId, setCarId] = useState('');
   const [carList, setCarList] = useState([]);
   const [boardList, setBoardList] = useState([]);
-  const [carInfo, setCarInfo] = useState({CARNO: '', CARNM: '', MANAGER_EMPNM: '', MANAGER_MOBILE: '', GARAGE_ADDR: '', src: null, bookMark: false, REQCNT: 0});
+  const [carInfo, setCarInfo] = useState({CARNO: '', CARNM: '', MANAGER_EMPNM: '', MANAGER_MOBILE: '', GARAGE_ADDR: '', src: null, bookMark: false, REQCNT: 0, PENALTYCNT: 0});
   const [isFilled, setIsFilled] = useState(false);
 
   const handleToggleSidebar = () => {
@@ -208,10 +208,11 @@ const MobileDrivingLog = () => {
           const managerMobile = response.data[0].PRIMARY_MANAGER_MOBILE;
           const garageAddr = response.data[0].PRIMARY_GARAGE_ADDR;
           const reqCnt = response.data[0].REQCNT;
+          const penaltyCnt = response.data[0].PENALTYCNT;
           
           const bBookMark = response.data[0].BOOKMARK === 'Y' ? true : false;
           
-          setCarInfo({CARNO: carNo, CARNM: carNm, MANAGER_EMPNM: managerEmpNm, MANAGER_MOBILE: managerMobile, GARAGE_ADDR: garageAddr, src: dataUrl, bookMark: bBookMark, REQCNT: reqCnt});
+          setCarInfo({CARNO: carNo, CARNM: carNm, MANAGER_EMPNM: managerEmpNm, MANAGER_MOBILE: managerMobile, GARAGE_ADDR: garageAddr, src: dataUrl, bookMark: bBookMark, REQCNT: reqCnt, PENALTYCNT: penaltyCnt});
           setIsFilled(bBookMark);
         }
 
@@ -239,7 +240,11 @@ const MobileDrivingLog = () => {
   };
 
   const moveToPenalty = () => {
-    navigate('/mobile/MobileCarPenaltyList', { state: { carId: carId } });
+    if (carInfo.PENALTYCNT > 0) {
+      navigate('/mobile/MobileCarPenaltyList');      
+    } else {
+      alert('미납 과태료가 없습니다.');
+    }
   };
 
   return (
@@ -346,7 +351,7 @@ const MobileDrivingLog = () => {
           <div className="formDivBtnBox" onClick={moveToPenalty} >
             <div>
               <label className="formListTitle">과태료</label>
-              <label className="formDesc">선택된 차량의 과태료 목록을 확인합니다</label>
+              <label className="formDesc">미납 과태료가 <font style={{color: carInfo.PENALTYCNT > 0 ? 'red' : ''}} >{carInfo.PENALTYCNT}</font>건 있습니다.</label>
             </div>
             <div className="arrowContainer"></div>
           </div>
