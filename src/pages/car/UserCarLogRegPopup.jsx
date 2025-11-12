@@ -66,16 +66,21 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
       const response = await fetchData('carlog/userCarList', params);
 
       if (!response.success) {
-        throw new Error(response.errMsg || '차량목록 조회 중 오류가 발생했습니다.');
-      } else {
-        if (response.errMsg !== '' || response.data[0].errCd !== '00') {
-          let errMsg = response.errMsg;
-          if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
-          errorMsgPopup(errMsg);
-        } else {
-          setCarList(response.data);
-        }
+        errorMsgPopup(response.message || "차량목록 조회 중 오류가 발생했습니다.");
+        setCarList([]);
+        return;
       }
+
+      const responseData = Array.isArray(response.data) ? response.data : [];
+
+      if(responseData.length === 0) {
+        msgPopup("소속 조직에 등록된 차량이 없습니다. 담당자에게 문의하세요.");
+        onHide();
+      }
+      else {
+        setCarList(responseData);
+      }
+      
     } catch (error) {
       console.error('Registration error:', error);
       errorMsgPopup(error.message || '차량목록 조회 중 오류가 발생했습니다.');
@@ -84,7 +89,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
   
   useEffect(() => {
     // 컴포넌트 언마운트 시 테이블 정리
-    initializeComponent();
+    //initializeComponent();
     //return () => {
     //};
   }, []);
@@ -713,7 +718,9 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             <label className="form-label flex-shrink-0" htmlFor="carId" style={{width:'63px'}}>차량</label>
             <select id="carId" className={`form-select ${styles.formSelect}`} defaultValue={data.CARID} style={{width:200 +'px'}} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {searchCarInfo(e)}}>
               <option value="">선택하세요</option>
-              {carList.map((item) => <option key={item.CARID} value={item.CARID}>{item.CARNO}</option>)}
+              {carList.length > 0 ? (
+                carList.map((item) => <option key={item.CARID} value={item.CARID}>{item.CARNO}</option>)
+                ) : null}
             </select>
             <button className={`btn btn-sm btn-danger flex-shrink-0 ms-auto`} style={{width:60 +'px', display:`${vDelBtnDisplay}`}} onClick={handleDelete}>삭제</button>
           </div>

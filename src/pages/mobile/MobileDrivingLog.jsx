@@ -49,10 +49,21 @@ const MobileDrivingLog = () => {
     try {
       const params = { pEMPNO: user?.empNo, pDEBUG: "F" };
       const response = await fetchData('carlogM/userCarList', params);
-
+      
       if (!response.success) {
-        throw new Error(response.errMsg || '차량목록 조회 중 오류가 발생했습니다.');
-      } else {
+        errorMsgPopup(response.message || "차량목록 조회 중 오류가 발생했습니다.");
+        setCarList([]);
+        return;
+      }
+
+      const responseData = Array.isArray(response.data) ? response.data : [];
+      
+      if(responseData.length === 0) {
+        msgPopup("소속 조직에 등록된 차량이 없습니다. 담당자에게 문의하세요.");
+        navigate(-1);
+        return;
+      }
+      else {
         setCarList(response.data);
         if (response.data.length > 0) {
           getCarImgInfo(response.data[0].CARID);
