@@ -256,7 +256,20 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
     return (h === 24 ? 24 : h) * 60 + m;
   };
 
-  const isInvalidTimeRange = (start, end) => {
+  const LUNCH_ALLOWED_WORKTYPES = ['긴급출동', '휴일근무'];
+
+  // workTypeOptions 로드 후, 허용 라벨에 해당하는 코드(value)만 세트로
+  const lunchAllowedCodes = useMemo(() => {
+    return new Set(
+      (workTypeOptions || [])
+        .filter(opt => LUNCH_ALLOWED_WORKTYPES.includes(opt.label))
+        .map(opt => opt.value)
+    );
+  }, [workTypeOptions]);
+
+  const isInvalidTimeRange = (start, end, workType) => {
+    if (lunchAllowedCodes.has(workType)) return false;
+    
     const startMin = timeToMinutes(start);
     const endMin = timeToMinutes(end);
     const lunchStart = timeToMinutes(data[0]?.BSTARTDT || '12:00');
@@ -312,13 +325,13 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
         return;
       }
 
-      if (isInvalidTimeRange(formData.STARTTIME, formData.ENDTIME)) {
+      if (isInvalidTimeRange(formData.STARTTIME, formData.ENDTIME, formData.WORKTYPE)) {
         msgPopup(`${data[0]?.BSTARTDT || '12:00'} ~ ${data[0]?.BENDDT || '13:00'} 입력 불가 시간입니다.`);
         return;
       }
 
       if (checkTimeOverlap(formData.STARTTIME, formData.ENDTIME)) {
-        msgPopup('오류!\n이미 입력한 업무시간입니다.!!');
+        msgPopup('이미 입력한 업무시간입니다.');
         return;
       }
       params = {
@@ -349,7 +362,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
         return;
       }
 
-      if (isInvalidTimeRange(item.STARTTIME, item.ENDTIME)) {
+      if (isInvalidTimeRange(item.STARTTIME, item.ENDTIME, item.WORKTYPE)) {
         msgPopup(`${data[0]?.BSTARTDT || '12:00'} ~ ${data[0]?.BENDDT || '13:00'} 입력 불가 시간입니다.`);
         return;
       }

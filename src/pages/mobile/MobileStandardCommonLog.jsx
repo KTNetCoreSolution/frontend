@@ -91,8 +91,21 @@ const MobileStandardCommonLog = () => {
     return (h === 24 ? 24 : h) * 60 + m;
   };
 
+  const LUNCH_ALLOWED_WORKTYPES = ['긴급출동', '휴일근무'];
+  
+  // workTypeOptions 로드 후, 허용 라벨에 해당하는 코드(value)만 세트로
+  const lunchAllowedCodes = useMemo(() => {
+    return new Set(
+      (workTypeOptions || [])
+        .filter(opt => LUNCH_ALLOWED_WORKTYPES.includes(opt.label))
+         .map(opt => opt.value)
+    );
+  }, [workTypeOptions]);
+
   // 시간 범위 유효성 검사 (점심 시간 등 입력 불가 시간 확인)
-  const isInvalidTimeRange = (start, end) => {
+  const isInvalidTimeRange = (start, end, workType) => {
+    if (lunchAllowedCodes.has(workType)) return false;
+
     const startMin = timeToMinutes(start);
     const endMin = timeToMinutes(end);
     const lunchStart = timeToMinutes(classData[0]?.BSTARTDT || '12:00');
@@ -223,7 +236,7 @@ const MobileStandardCommonLog = () => {
     }
 
     // 점심 시간대 입력 불가 검사
-    if (isInvalidTimeRange(item.STARTTIME, item.ENDTIME)) {
+    if (isInvalidTimeRange(item.STARTTIME, item.ENDTIME, item.WORKTYPE)) {
       msgPopup(`${classData[0]?.BSTARTDT || '12:00'} ~ ${classData[0]?.BENDDT || '13:00'} 입력 불가 시간입니다.`);
       return;
     }
