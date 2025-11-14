@@ -86,7 +86,7 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   }, [show]);
 
   const setReqStatus = async (reqStatus, gubun, seq) => {
-    if (data.REQSTATUS !== 'R' || (reqStatus === 'Y' && !hasPermission(user?.auth, 'permissions')) || (reqStatus === 'N' && !hasPermission(user?.auth, 'permissions')) || (reqStatus === 'C' && !hasPermission(user?.auth, 'carManager'))) {
+    /*if (data.REQSTATUS !== 'R' || (reqStatus === 'Y' && !hasPermission(user?.auth, 'permissions')) || (reqStatus === 'N' && !hasPermission(user?.auth, 'permissions')) || (reqStatus === 'C' && !hasPermission(user?.auth, 'carManager'))) {
         msgPopup("잘못된 접근입니다.");
         onHide();
         onParentSearch();
@@ -124,8 +124,47 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
           errorMsgPopup(error.message || responseMsg + ' 처리 중 오류가 발생했습니다.');
         } 
       }
+    }*/
+    if (data.REQSTATUS === 'R' && (hasPermission(user?.auth, 'carManager') || (reqStatus === 'C' && user?.empNo !== data.REQUEST_EMPNO))) {
+      const responseMsg = '차량정보 ' + (gubun === 'I' ? '추가' : gubun === 'U' ? '수정' : '삭제') + ' 요청을 ' + (reqStatus === 'Y' ? '승인' : reqStatus === 'N' ? '반려' : '취소');
+
+      if(confirm(responseMsg + ' 하시겠습니까?')) { 
+        try {
+          const params = {
+            pREQSTATUS: reqStatus,
+            pSEQ: seq,
+            pEMPNO: user?.empNo
+          };
+
+          const response = await fetchData('car/RequestConfirmTransaction', params);
+
+          if (!response.success) {
+            throw new Error(response.errMsg || responseMsg + ' 처리 중 오류가 발생했습니다.');
+          } else {
+            if (response.errMsg !== '' || response.data[0].errCd !== '00') {
+              let errMsg = response.errMsg;
+
+              if (response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+
+              errorMsgPopup(errMsg);
+            } else {
+              msgPopup(responseMsg + ' 처리가 완료되었습니다.');
+              onHide();
+              onParentSearch();
+            }
+          }
+        } catch (error) {
+          console.error('Registration error:', error);
+          errorMsgPopup(error.message || responseMsg + ' 처리 중 오류가 발생했습니다.');
+        } 
+      }
     }
-  }
+    else {
+        msgPopup("잘못된 접근입니다.");
+        onHide();
+        onParentSearch();
+    }
+  };
 
   const handleCancel = async (e) => {
     setReqStatus('C', data.GUBUN, data.SEQ);
@@ -181,7 +220,7 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
             <input type="text" className={`form-control ${styles.formControl}`} id="carId" value={carInfo.CARID} disabled="disabled"/>
           </div>
           <div className="col d-flex">
-            <button className={`btn btn-sm btn-outline-secondary`} style={{display:`${data.REQSTATUS === 'R' && hasPermission(user?.auth, 'carManager') ? 'show' : 'none'}`}} onClick={handleCancel}>요청취소</button>
+            <button className={`btn btn-sm btn-outline-secondary`} style={{display:`${data.REQSTATUS === 'R' && (hasPermission(user?.auth, 'carManager') || user?.empNo !== data.REQUEST_EMPNO) ? 'show' : 'none'}`}} onClick={handleCancel}>요청취소</button>
           </div>
           <div className="col-4 d-flex justify-content-end align-items-center">
             <label className="form-guide" ><font color='red'>*</font>은 필수 입력 항목입니다.</label>
@@ -361,8 +400,8 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
       </Modal.Body>
       <Modal.Footer>
         <button className='btn btnSecondary' onClick={onHide}>닫기</button>
-        <button className='btn btnPrimary' style={{display:`${data.REQSTATUS === 'R' && hasPermission(user?.auth, 'permissions') ? 'show' : 'none'}`}} onClick={handleSubmit}>승인</button>
-        <button className={`btn ${styles.btnReject}`} style={{display:`${data.REQSTATUS === 'R' && hasPermission(user?.auth, 'permissions') ? 'show' : 'none'}`}} onClick={handleReject}>반려</button>
+        <button className='btn btnPrimary' style={{display:`${data.REQSTATUS === 'R' && hasPermission(user?.auth, 'carManager') ? 'show' : 'none'}`}} onClick={handleSubmit}>승인</button>
+        <button className={`btn ${styles.btnReject}`} style={{display:`${data.REQSTATUS === 'R' && hasPermission(user?.auth, 'carManager') ? 'show' : 'none'}`}} onClick={handleReject}>반려</button>
       </Modal.Footer>
     </Modal>
   )

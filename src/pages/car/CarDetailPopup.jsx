@@ -39,12 +39,12 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
       // 다른 컴포넌트 렌더링 대기
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      if (hasPermission(user?.auth, 'permissions')) {
+      if (hasPermission(user?.auth, 'carManager')) {
         setConfirmBtnNm('저장');
         setDelBtnNm('삭제');
       }
       else {
-        setConfirmBtnNm('저장요청');
+        setConfirmBtnNm('승인요청');
         setDelBtnNm('삭제요청');
       }
 
@@ -143,7 +143,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
       }
     }
   
-    if (!carInfo.CARID || !carInfo.CARNO || !carInfo.MGMTSTATUS|| !carInfo.USEFUEL || !carInfo.RENTALTYPE || !carInfo.CARCD || !carInfo.ORGGROUP || !carInfo.ORGCD || !carInfo.PRIMARYMNGEMPNM) {
+    if (!carInfo.CARID || !carInfo.CARNO || !carInfo.MGMTSTATUS|| !carInfo.USEFUEL || !carInfo.RENTALTYPE || !carInfo.CARCD || !carInfo.ORGGROUP || !carInfo.ORGCD || !carInfo.PRIMARYMNGEMPNM || !carInfo.PRIMARYGARAGEADDR) {
       return "필수 입력 항목을 모두 입력해주세요.";
     }
 
@@ -183,7 +183,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
     let Url = 'car/CarinfoRequest';
     let responseMsg = '';
 
-    if (hasPermission(user?.auth, 'permissions')) {
+    if (hasPermission(user?.auth, 'carManager')) {
       Url = 'car/CarinfoTransaction';
     }
     else {
@@ -271,7 +271,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
     let Url = 'car/CarinfoRequest';
     let responseMsg = '';
 
-    if (hasPermission(user?.auth, 'permissions')) {
+    if (hasPermission(user?.auth, 'carManager')) {
       Url = 'car/CarinfoTransaction';
     }
     else {
@@ -562,7 +562,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
                     const orgNm = selectedRows.length > 0 ? selectedRows[0].ORGNM : ''
                     const orgCd = selectedRows.length > 0 ? selectedRows[0].ORGCD : ''
                     setCarInfo({ ...carInfo, ORGCD: orgCd, ORGNM: orgNm });
-                  }}
+                  }} 
                   pGUBUN="CAROPEREMPNO" //차량용 트리 시(_fix 테이블 사용)
                   isMulti={false}
                   initialSelectedOrgs={carInfo.ORGCD} //초기 선택된 조직
@@ -581,7 +581,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
             <button type="button" className={`btn btn-secondary ${styles.btn} flex-shrink-0`} onClick={(e) => {setShowMngUserPopup(true)}}>선택</button>
           </div>
           <div className="col-6 d-flex">
-            <label className="form-label w100" htmlFor="primaryMngMobile">연락처 </label>
+            <label className="form-label w100" htmlFor="primaryMngMobile">연락처</label>
             <input type="text" value={carInfo.PRIMARYMNGMOBILE} className={`form-control ${styles.formControl}`} id="primaryMngMobile" disabled="disabled"/>
           </div>
         </div>
@@ -603,7 +603,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         </div>
         <div className="row">
           <div className="col-12 d-flex">
-            <label className="form-label w100" htmlFor="primaryGarageAddr">차고지주소</label>
+            <label className="form-label w100" htmlFor="primaryGarageAddr">차고지주소<font color='red'>*</font></label>
             <input type="text" value={carInfo.PRIMARYGARAGEADDR} className={`form-control ${styles.formControl}`} id="primaryGarageAddr" onChange={(e) => {setCarInfo({ ...carInfo, PRIMARYGARAGEADDR: e.target.value })}}/>
           </div>
         </div>

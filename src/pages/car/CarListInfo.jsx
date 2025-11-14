@@ -102,12 +102,12 @@ const CarListInfo = () => {
 
   const fn_DetailPopup = (carId) => {
     setCarId(carId);
-    if (hasPermission(user?.auth, 'carManager')) {
-      setShowDetailPopup(true);
-    }
-    else {
-      setShowDetailForUserPopup(true);
-    }
+    //if (hasPermission(user?.auth, 'carManager')) {
+    setShowDetailPopup(true);
+    //}
+    //else {
+      //setShowDetailForUserPopup(true);
+    //}
   };
 
   const handleDetailCancel = () => {
@@ -176,7 +176,15 @@ const CarListInfo = () => {
   };
 
   if (!hasPermission(user?.auth, 'permissions')) {
-    if (hasPermission(user?.auth, 'carManager')) {
+    searchConfig.areas.forEach(area => {
+      if (area.type === 'buttons') {
+        const index1 = area.fields.findIndex(field => field.id === 'excelUploadBtn');
+        if (index1 !== -1) {
+          area.fields.splice(index1, 1);
+        }
+      }
+    });
+    /*if (hasPermission(user?.auth, 'carManager')) {
       searchConfig.areas.forEach(area => {
         if (area.type === 'buttons') {
           const index1 = area.fields.findIndex(field => field.id === 'excelUploadBtn');
@@ -199,7 +207,7 @@ const CarListInfo = () => {
           }
         }
       });
-    }
+    }*/
   };
 
   const [filterTableFields, setFilterTableFields] = useState([
