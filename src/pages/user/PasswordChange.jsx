@@ -31,8 +31,11 @@ const PasswordChange = ({ show, onHide, initialEmpNo, isEditable, gubun }) => {
     const empNoValidation = commonUtils.validateVarcharLength(empNo, 20, '아이디');
     if (!empNoValidation.valid) return empNoValidation.error;
 
-    if (newPwd.length < 6) {
-      return "새 비밀번호는 최소 6자 이상이어야 합니다.";
+    // 비밀번호 정책: 영문 + 숫자 포함 8자리 이상
+    const pwdRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()-_+=]{8,}$/;
+
+    if (!pwdRegex.test(newPwd)) {
+      return "새 비밀번호는 영문과 숫자를 반드시 포함하여 8자리 이상이어야 합니다.";
     }
 
     if (newPwd !== confirmPwd) {
