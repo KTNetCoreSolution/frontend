@@ -4,7 +4,7 @@ import SsoMobileLogin from './SsoMobileLogin';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import { fetchDataGet } from '../../utils/dataUtils';
 
-const FIXED_TOKEN = 'MzIwMWVzawAAAAEAN+8aB2Jh4wuoOij1Ex9uCk7zthAG8OziOxXpNr/TPPKN1PBLUg6otvE2BMmbQ7Ph2dRd4YODr4F03BGlU8lFpcjpqzH4GTBUD6wz+mIMZ3piDSmrj4vjakH1frafSxj/Gl1C3Z3CH3CubT9XOpNnpCycczfPt82p5HY1NpwjKTuP/UZaEVF1WY+xhWjqPW0JoDt1x04THIedN9L9ODgUPAtcy+gUApI+redME7UXGzeSV1s5J/MOZssBwVoW91t3//9Jsp4ycpePBC77qvTK+eqfT8Bb14S8kLs9aZqB5yQcAippv0MSTNswlv93GzFtM8/TUHz8U4LmQoeh/YRW+WVuZHQAAABQHMK+37FoIxZStFs3ClMVO95lc1lwCf5Erv+DmxulRBWseCcL19VXQxrdLqUhmtHbhZ9muV8Sx5pKod8+tUuE6KGPp64BAW4/zI9Qz0SOmHo=';
+const FIXED_TOKEN = ''; //테스트 토큰값을 넣는다.
 
 const SsoMobileTest = () => {
   const navigate = useNavigate();
