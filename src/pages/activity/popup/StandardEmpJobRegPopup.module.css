@@ -120,7 +120,7 @@
 }
 
 .listTable tbody {
-  display: block;
+  /* display: block; 이거 있으면 항목에도 스크롤바 생김 */
   max-height: 250px;
   overflow-y: auto;
   width: 100%;
@@ -161,12 +161,15 @@
 .thClassC { width: 300px; } /* 소분류 */
 .thQuantity { width: 130px; } /* 건(구간/본/개소) */
 .thWorkType { width: 110px; } /* 근무형태 */
+.thDetail { width: 250px; }   /* 작업상세 */
 .thAction { width: 130px; } /* 작업 */
 
 .listTableContainer {
   width: 100%;
   max-height: 250px;
   display: block;
+  overflow-x: auto;  /* 가로 스크롤 */
+  overflow-y: auto; /* 세로 스크롤 */
 }
 
 .listTable thead {
