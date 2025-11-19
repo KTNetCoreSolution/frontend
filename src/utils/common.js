@@ -48,17 +48,25 @@ export default {
     return '192.168.1.1';
   },
 
-  validateVarcharLength(input, maxLength, fieldName) {
+  // UTF-8 바이트 길이를 계산하는 함수
+  getUtf8ByteLength(str) {
+    // TextEncoder는 브라우저와 Node.js에서 지원 (IE 구버전 제외)
+    return new TextEncoder().encode(str).length;
+  },
+
+  validateVarcharLength(input, maxBytes, fieldName) {
     if (typeof input !== 'string') {
       return { valid: false, error: `${fieldName}은(는) 문자열이어야 합니다.` };
     }
-    const charLength = input.length;
-    if (charLength > maxLength) {
+
+    const byteLength = this.getUtf8ByteLength(input);
+    if (byteLength > maxBytes) {
       return {
         valid: false,
-        error: `${fieldName}은(는) 최대 ${maxLength}자까지 입력 가능합니다. (현재: ${charLength}자)`,
+        error: `${fieldName}은(는) 최대 ${maxBytes}바이트까지 입력 가능합니다. (현재: ${byteLength}바이트)`,
       };
     }
+
     return { valid: true, error: '' };
   },
 
