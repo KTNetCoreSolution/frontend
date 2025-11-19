@@ -321,6 +321,7 @@ const StandardEmpJobManage = () => {
         tableInstance.current.showColumn('BIZMANNM');
         tableInstance.current.showColumn('BIZWORKGBNM');
         tableInstance.current.showColumn('WORKCNT2');
+        tableInstance.current.hideColumn('ATTRIBUTE1');
       } else {
         tableInstance.current.showColumn('WORKCNT');
         tableInstance.current.hideColumn('BIZTXT');
@@ -328,6 +329,7 @@ const StandardEmpJobManage = () => {
         tableInstance.current.hideColumn('BIZMANNM');
         tableInstance.current.hideColumn('BIZWORKGBNM');
         tableInstance.current.hideColumn('WORKCNT2');
+        tableInstance.current.showColumn('ATTRIBUTE1');
       }
     }
   }, [filters.classGubun, tableStatus, user]);
