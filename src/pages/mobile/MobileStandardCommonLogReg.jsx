@@ -159,6 +159,12 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
           errorMsgPopup(quantityValidation.error);
           return;
         }
+
+        const attribute1Validation = common.validateVarcharLength(String(formData.ATTRIBUTE1), 200, "작업상세");
+        if (!attribute1Validation.valid) {
+          errorMsgPopup(attribute1Validation.error);
+          return;
+        }
       }
 
       if (formData.CLASSCCD === 'all' || formData.WORKTYPE === '' || (!formData.isDuplicate && !formData.QUANTITY)) {
@@ -192,7 +198,8 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
         pWORKCD: formData.WORKTYPE,
         pWORKCNT: formData.isDuplicate ? "0" : formData.QUANTITY,
         pSECTIONCD: initialClassGubun,
-        pEMPNO: user?.empNo || ''
+        pEMPNO: user?.empNo || '',
+        pATTRIBUTE1: formData.ATTRIBUTE1 || '',  // 작업상세
       };
 
       const response = await fetchData('standard/empJob/common/reg/save', params);
@@ -380,6 +387,22 @@ const MobileStandardCommonLogReg = ({ workDate, classGubun, classData, workTypeO
                     </option>
                   ))}
                 </select>
+              </div>
+            </li>
+            <li>
+              <span className="formLabel" style={{width: '120px'}}>작업상세</span>
+              <div className="formData">
+                <div className="formListDataRow align-items-center">
+                  <input
+                    type="text"
+                    name="ATTRIBUTE1"
+                    value={formData.ATTRIBUTE1}
+                    onChange={handleChange}
+                    placeholder="간략히 입력"
+                    className="text-start"
+                    style={{width: '190px'}}
+                  />
+                </div>
               </div>
             </li>
           </ul>

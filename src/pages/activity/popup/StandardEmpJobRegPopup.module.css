@@ -1,5 +1,5 @@
 .customModal {
-  width: 1084px !important; /* 원하는 너비 설정 */
+  width: 1324px !important; /* 원하는 너비 설정 */
   max-width: 95vw !important; /* Responsive max-width */
   max-height: 95vh !important; /* Responsive max-width */
   margin: 0 auto;
@@ -120,7 +120,7 @@
 }
 
 .listTable tbody {
-  /* display: block; 이거 있으면 항목에도 스크롤바 생김 */
+  display: block;
   max-height: 250px;
   overflow-y: auto;
   width: 100%;
@@ -168,8 +168,6 @@
   width: 100%;
   max-height: 250px;
   display: block;
-  overflow-x: auto;  /* 가로 스크롤 */
-  overflow-y: auto; /* 세로 스크롤 */
 }
 
 .listTable thead {

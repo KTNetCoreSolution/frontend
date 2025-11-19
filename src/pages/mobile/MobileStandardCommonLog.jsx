@@ -34,6 +34,7 @@ const MobileStandardCommonLog = () => {
     STARTTIME: "09:00",
     ENDTIME: "18:00",
     QUANTITY: "1",
+    ATTRIBUTE1: '',  // 작업상세
     isWeekly: false,
     isDuplicate: false,
   });
@@ -205,6 +206,7 @@ const MobileStandardCommonLog = () => {
           QUANTITY: item.WORKCNT || '0',
           WORKDATETIME: `${item.DDATE} ${item.STARTTM} ~ ${item.ENDTM}`,
           WORKNM: item.WORKNM || '',
+          ATTRIBUTE1: item.ATTRIBUTE1 || '',  // 작업상세
         }));
       setRegisteredList(mappedData);
       if (response.data && response.data[0] && response.data[0].MODIFYN === 'N') {
@@ -226,6 +228,12 @@ const MobileStandardCommonLog = () => {
     const quantityValidation = common.validateVarcharLength(String(item.QUANTITY), 10, "건(구간/본/개소)");
     if (!quantityValidation.valid) {
       errorMsgPopup(quantityValidation.error);
+      return;
+    }
+
+    const attribute1Validation = common.validateVarcharLength(String(item.ATTRIBUTE1), 200, "작업상세");
+    if (!attribute1Validation.valid) {
+      errorMsgPopup(attribute1Validation.error);
       return;
     }
 
@@ -259,7 +267,8 @@ const MobileStandardCommonLog = () => {
         pWORKCD: item.WORKTYPE,
         pWORKCNT: item.QUANTITY,
         pSECTIONCD: classGubun,
-        pEMPNO: user?.empNo || ''
+        pEMPNO: user?.empNo || '',
+        pATTRIBUTE1: item.ATTRIBUTE1 || '',  // 작업상세
       };
 
       const response = await fetchData('standard/empJob/common/reg/save', params);
@@ -492,6 +501,17 @@ const MobileStandardCommonLog = () => {
                         </option>
                       ))}
                     </select>
+                  </div>
+                </li>
+                <li>
+                  <span className="formLabel" style={{width: '120px'}}>작업상세</span>
+                  <div className="formData">
+                    <input
+                      type="text"
+                      value={item.ATTRIBUTE1}
+                      onChange={(e) => handleRowChange(index, 'ATTRIBUTE1', e.target.value)}
+                      className="text-start"
+                    />
                   </div>
                 </li>
                 {isButtonVisible && (

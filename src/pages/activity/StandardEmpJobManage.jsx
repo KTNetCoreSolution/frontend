@@ -137,16 +137,15 @@ const StandardEmpJobManage = () => {
                     ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: 'BIZ', labelVisible: false, enabled: true, width:'60px' }]
                     : []
           ),
-          // row 수정 및 선택 버튼 label 수정 
-          { id: 'CLASSACD', type: 'select', row: 2, label: '대분류', labelVisible: true, options: [], enabled: true }, // 대분류 드롭다운
-          { id: 'CLASSBCD', type: 'select', row: 2, label: '중분류', labelVisible: true, options: [], enabled: true }, // 중분류 드롭다운
-          { id: 'CLASSCCD', type: 'select', row: 2, label: '소분류', labelVisible: true, options: [], enabled: true }, // 소분류 드롭다운
-          { id: 'selectBtn', type: 'button', row: 2, label: '업무 목록에서 선택', labelVisible: false, eventType: 'showClassPopup', enabled: true }, // 분류 선택 버튼
-          { id: 'dayGubunLbl', type: 'label', row: 3, label: '작업', labelVisible: false, enabled: true }, // 작업 라벨
-          { id: 'dayGubun', type: 'select', row: 3, label: '', labelVisible: false, options: [{ value: 'M', label: '월' }, { value: 'D', label: '일' }], defaultValue: 'M', enabled: true }, // 월/일 선택 드롭다운
-          { id: 'monthDate', type: 'month', row: 3, width:'74px', label: '', labelVisible: true, placeholder: '월 선택', enabled: false, defaultValue: today }, // 월 선택 입력 (dayGubun: 'M'일 때 표시)
-          { id: 'rangeStartDate', type: 'startday', row: 3, width:'100px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: false, defaultValue: today }, // 시작일 입력 (dayGubun: 'D'일 때 표시)
-          { id: 'rangeEndDate', type: 'endday', row: 3, width:'100px', label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', enabled: false, defaultValue: today }, // 종료일 입력 (dayGubun: 'D'일 때 표시)
+          { id: 'selectBtn', type: 'button', label: '선택', labelVisible: false, eventType: 'showClassPopup', enabled: true }, // 분류 선택 버튼
+          { id: 'CLASSACD', type: 'select', row: 1, label: '대분류', labelVisible: true, options: [], enabled: true }, // 대분류 드롭다운
+          { id: 'CLASSBCD', type: 'select', row: 1, label: '중분류', labelVisible: true, options: [], enabled: true }, // 중분류 드롭다운
+          { id: 'CLASSCCD', type: 'select', row: 1, label: '소분류', labelVisible: true, options: [], enabled: true }, // 소분류 드롭다운
+          { id: 'dayGubunLbl', type: 'label', row: 2, label: '작업', labelVisible: false, enabled: true }, // 작업 라벨
+          { id: 'dayGubun', type: 'select', row: 2, label: '', labelVisible: false, options: [{ value: 'M', label: '월' }, { value: 'D', label: '일' }], defaultValue: 'M', enabled: true }, // 월/일 선택 드롭다운
+          { id: 'monthDate', type: 'month', row: 2, width:'74px', label: '', labelVisible: true, placeholder: '월 선택', enabled: false, defaultValue: today }, // 월 선택 입력 (dayGubun: 'M'일 때 표시)
+          { id: 'rangeStartDate', type: 'startday', row: 2, width:'100px', label: '', labelVisible: true, placeholder: '시작일 선택', enabled: false, defaultValue: today }, // 시작일 입력 (dayGubun: 'D'일 때 표시)
+          { id: 'rangeEndDate', type: 'endday', row: 2, width:'100px', label: ' ~ ', labelVisible: true, placeholder: '종료일 선택', enabled: false, defaultValue: today }, // 종료일 입력 (dayGubun: 'D'일 때 표시)
         ],
       },
       {
@@ -376,7 +375,7 @@ const StandardEmpJobManage = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업일시', field: 'WORKDT', sorter: 'string', width: 190 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKH', sorter: 'number', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', width: 130 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업상세', field: 'ATTRIBUTE1', sorter: 'string', width: 600 },
+    { headerHozAlign: 'center', hozAlign: 'left', title: '작업상세', field: 'ATTRIBUTE1', sorter: 'string', width: 600 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '회선번호+고객명', field: 'BIZTXT', sorter: 'string', width: 200, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '출동여부', field: 'BIZRUNNM', sorter: 'string', width: 130, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업인원', field: 'BIZMANNM', sorter: 'string', width: 130, visible: false },

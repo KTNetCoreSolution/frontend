@@ -65,9 +65,9 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
     STARTTIME: '09:00',
     ENDTIME: '18:00',
     QUANTITY: '1',
+    ATTRIBUTE1: '',  // 작업상세
     isWeekly: false,
     isDuplicate: false,
-    ATTRIBUTE1: '',  // 작업상세
   });
   const [registeredList, setRegisteredList] = useState([]);
   const [class2Options, setClass2Options] = useState([]);
@@ -246,9 +246,6 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
           newData.STARTTIME = '09:00';
           newData.ENDTIME = '17:30';
         }
-      } else if (name === 'ATTRIBUTE1') {
-        // 혹시라도 maxLength가 안 먹는 상황 대비용
-        newData.ATTRIBUTE1 = value.slice(0, 50);
       } else {
         newData[name] = type === 'checkbox' ? checked : value;
       }
@@ -274,7 +271,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
 
   const isInvalidTimeRange = (start, end, workType) => {
     if (lunchAllowedCodes.has(workType)) return false;
-
+    
     const startMin = timeToMinutes(start);
     const endMin = timeToMinutes(end);
     const lunchStart = timeToMinutes(data[0]?.BSTARTDT || '12:00');
@@ -318,6 +315,12 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
           errorMsgPopup(quantityValidation.error);
           return;
         }
+
+        const attribute1Validation = common.validateVarcharLength(String(formData.ATTRIBUTE1), 200, "작업상세");
+        if (!attribute1Validation.valid) {
+          errorMsgPopup(attribute1Validation.error);
+          return;
+        }
       }
 
       if (formData.CLASSCCD === 'all' || formData.WORKTYPE === '' || (!formData.isDuplicate && !formData.QUANTITY)) {
@@ -339,12 +342,6 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
         msgPopup('이미 입력한 업무시간입니다.');
         return;
       }
-
-      if ((formData.ATTRIBUTE1 || '').length > 50) {
-        msgPopup('작업상세는 50자 이하로 입력해주세요.');
-        return;
-      }
-
       params = {
         pGUBUN: 'I',
         pDATE1: formData.WORKDATE,
@@ -357,7 +354,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
         pWORKCNT: formData.isDuplicate ? '0' : formData.QUANTITY,
         pSECTIONCD: classGubun,
         pEMPNO: user?.empNo || '',
-        pATTRIBUTE1: formData.ATTRIBUTE1 || '',   // 작업상세
+        pATTRIBUTE1: formData.ATTRIBUTE1 || '',  // 작업상세
       };
     } else if (action === 'update') {
       const item = registeredList[index];
@@ -369,6 +366,12 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
         return;
       }
 
+      const attribute1Validation = common.validateVarcharLength(String(item.QUANTITY), 200, "작업상세");
+      if (!attribute1Validation.valid) {
+        errorMsgPopup(attribute1Validation.error);
+        return;
+      }
+
       if (timeToMinutes(item.STARTTIME) >= timeToMinutes(item.ENDTIME)) {
         msgPopup('종료시간이 시작시간보다 큽니다.');
         return;
@@ -376,13 +379,6 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
 
       if (isInvalidTimeRange(item.STARTTIME, item.ENDTIME, item.WORKTYPE)) {
         msgPopup(`${data[0]?.BSTARTDT || '12:00'} ~ ${data[0]?.BENDDT || '13:00'} 입력 불가 시간입니다.`);
-        return;
-      }
-
-      // 작업상세 검증 (최대 50자)
-      const attributeValidation = common.validateVarcharLength(String(item.ATTRIBUTE1 || ''), 50, "작업상세");
-      if (!attributeValidation.valid) {
-        errorMsgPopup(attributeValidation.error);
         return;
       }
 
@@ -433,7 +429,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
       }
       await fetchRegisteredList(params.pDATE1);
       if (action !== 'register') {
-        msgPopup(`${action === 'update' ? '수정' : '삭제'} 완료`);
+          msgPopup(`${action === 'update' ? '수정' : '삭제'} 완료`);
       }
     } catch (err) {
       console.error(`${action} 실패:`, err);
@@ -530,7 +526,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
               </button>
             )}
             <button className={`btn text-bg-secondary`} onClick={() => handleClose()}>
-              닫기
+                닫기
             </button>
           </div>
         </div>
@@ -608,10 +604,9 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
               </td>
             </tr>
             <tr>
-              {/* 작업상세 입력란 */}
-              <td>작업상세(간략히)</td>
+              <td>작업상세</td>
               <td colSpan='3'>
-                <input type='text' name='ATTRIBUTE1'  value={formData.ATTRIBUTE1 || ''} onChange={handleChange} maxLength={50} placeholder='50자 이하로 입력' style={{ width: '100%' }} />
+                <input type='text' name='ATTRIBUTE1'  value={formData.ATTRIBUTE1 || ''} onChange={handleChange} placeholder='간략히 입력' />
               </td>
             </tr>
             <tr>
@@ -651,113 +646,111 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
             <tr>
               <td colSpan="4">
                 <p className='info'>
-                  ※ {formData.WORKDATE} 일자 등록 리스트 <sp></sp><span style={{ color: "#237FB3" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
+                ※ 등록 리스트 ({formData.WORKDATE}) <span style={{ color: "#237FB3" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
                 </p>
-                <div className={styles.listTableContainer}>
-                  <table className={styles.listTable}>
-                    <thead>
-                      <tr>
-                        <th className={styles.thNo}>No</th>
-                        <th className={styles.thDate}>날짜</th>
-                        <th className={styles.thTime}>시간</th>
-                        <th className={styles.thClassC}>소분류</th>
-                        <th className={styles.thQuantity}>건(구간/본/개소)</th>
-                        <th className={styles.thWorkType}>근무형태</th>
-                        <th className={styles.thDetail}>작업상세</th>
-                        <th className={styles.thAction}>작업</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {registeredList.map((item, index) => (
-                        <tr key={index}>
-                          <td className={styles.thNo}>{index + 1}</td>
-                          <td className={styles.thDate}>{item.WORKDATE}</td>
-                          <td className={styles.thTime}>
-                            <select
-                              value={item.STARTTIME}
-                              onChange={(e) => handleRowChange(index, 'STARTTIME', e.target.value)}
-                              className={styles.listSelect}
+                <table className={styles.listTable}>
+                  <thead>
+                    <tr>
+                      <th className={styles.thNo}>No</th>
+                      <th className={styles.thDate}>날짜</th>
+                      <th className={styles.thTime}>시간</th>
+                      <th className={styles.thClassC}>소분류</th>
+                      <th className={styles.thQuantity}>건(구간/본/개소)</th>
+                      <th className={styles.thWorkType}>근무형태</th>
+                      <th className={styles.thDetail}>작업상세</th>
+                      <th className={styles.thAction}>작업</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {registeredList.map((item, index) => (
+                      <tr key={index}>
+                        <td className={styles.thNo}>{index + 1}</td>
+                        <td className={styles.thDate}>{item.WORKDATE}</td>
+                        <td className={styles.thTime}>
+                          <select
+                            value={item.STARTTIME}
+                            onChange={(e) => handleRowChange(index, 'STARTTIME', e.target.value)}
+                            className={styles.listSelect}
+                          >
+                            {listTimeOptions.map((time) => (
+                              <option key={time} value={time}>
+                                {time}
+                              </option>
+                            ))}
+                          </select>
+                          ~
+                          <select
+                            value={item.ENDTIME}
+                            onChange={(e) => handleRowChange(index, 'ENDTIME', e.target.value)}
+                            className={styles.listSelect}
+                          >
+                            {getListEndTimeOptions(item.STARTTIME).map((time) => (
+                              <option key={time} value={time}>
+                                {time}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className={styles.thClassC}>
+                          {item.CLASSCNM}
+                          {isButtonVisible && (
+                            <button
+                              onClick={() => setClassPopupState({ show: true, editingIndex: index })}
+                              className={`${styles.btn} ${styles.listBtn}  text-bg-secondary`}
                             >
-                              {listTimeOptions.map((time) => (
-                                <option key={time} value={time}>
-                                  {time}
-                                </option>
-                              ))}
-                            </select>
-                            ~
-                            <select
-                              value={item.ENDTIME}
-                              onChange={(e) => handleRowChange(index, 'ENDTIME', e.target.value)}
-                              className={styles.listSelect}
-                            >
-                              {getListEndTimeOptions(item.STARTTIME).map((time) => (
-                                <option key={time} value={time}>
-                                  {time}
-                                </option>
-                              ))}
-                            </select>
-                          </td>
-                          <td className={styles.thClassC}>
-                            {item.CLASSCNM}
-                            {isButtonVisible && (
-                              <button
-                                onClick={() => setClassPopupState({ show: true, editingIndex: index })}
-                                className={`${styles.btn} ${styles.listBtn}  text-bg-secondary`}
-                              >
-                                선택
-                              </button>
-                            )}
-                          </td>
-                          <td className={styles.thQuantity}>
-                            <input
+                              선택
+                            </button>
+                          )}
+                        </td>
+                        <td className={styles.thQuantity}>
+                          <input
                             type="number"
-                              value={item.QUANTITY}
-                              onChange={(e) => handleRowChange(index, 'QUANTITY', e.target.value)}
+                            value={item.QUANTITY}
+                            onChange={(e) => handleRowChange(index, 'QUANTITY', e.target.value)}
                             min="0"
-                              className={`${styles.rowInput} ${styles.listInput}`}
-                            />
-                          </td>
-                          <td className={styles.thWorkType}>
-                            <select
-                              value={item.WORKTYPE || ''}
-                              onChange={(e) => handleRowChange(index, 'WORKTYPE', e.target.value)}
-                              className={styles.listSelect}
-                            >
+                            className={`${styles.rowInput} ${styles.listInput}`}
+                          />
+                        </td>
+                        <td className={styles.thWorkType}>
+                          <select
+                            value={item.WORKTYPE || ''}
+                            onChange={(e) => handleRowChange(index, 'WORKTYPE', e.target.value)}
+                            className={styles.listSelect}
+                          >
                             <option value="">선택</option>
-                              {workTypeOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                  {option.label}
-                                </option>
-                              ))}
-                            </select>
-                          </td>
-                          {/* 작업상세 입력란 */}
-                          <td className={styles.thDetail}>
-                            <input
-                              type='text'
-                              value={item.ATTRIBUTE1 || ''}
-                              onChange={(e) => handleRowChange(index, 'ATTRIBUTE1', e.target.value)}
-                              maxLength={50}
-                              placeholder="50자 이하로 입력"
-                            />
-                          </td>
-                          <td className={styles.thAction}>
-                            {isButtonVisible && (
-                              <>
+                            {workTypeOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className={styles.thDetail}>
+                          <input
+                            type='text'
+                            value={item.ATTRIBUTE1 || ''}
+                            onChange={(e) => handleRowChange(index, 'ATTRIBUTE1', e.target.value)}
+                            placeholder="간략히 입력"
+                          />
+                        </td>
+                        <td className={styles.thAction}>
+                          {isButtonVisible && (
+                            <>
                               <button onClick={() => handleSave('update', index)} className={`${styles.btn} ${styles.listBtn} btn-secondary`}>
-                                  수정
-                                </button>
+                                수정
+                              </button>
                               <button onClick={() => handleSave('delete', index)} className={`${styles.btn} ${styles.listBtn} btn-primary`}>
-                                  삭제
-                                </button>
-                              </>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                                삭제
+                              </button>
+                            </>
+                          )}
+                        </td>
+                        <td></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </td>
             </tr>
           </tbody>
