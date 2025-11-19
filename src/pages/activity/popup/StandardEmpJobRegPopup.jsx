@@ -606,7 +606,7 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
             <tr>
               <td>작업상세</td>
               <td colSpan='3'>
-                <input type='text' name='ATTRIBUTE1'  value={formData.ATTRIBUTE1 || ''} onChange={handleChange} placeholder='간략히 입력' />
+                <input type='text' name='ATTRIBUTE1'  value={formData.ATTRIBUTE1 || ''} onChange={handleChange} placeholder='간략히 입력' className={styles.input} />
               </td>
             </tr>
             <tr>
