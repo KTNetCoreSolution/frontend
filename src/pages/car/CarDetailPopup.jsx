@@ -133,7 +133,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
       return "차대번호가 변경되었습니다. 차대번호 확인 버튼을 클릭하여 차량 정보를 확인해주세요.";
     }
 
-    if (reqStatus === 'R') {
+    if (reqStatus === 'G') {
       if (reqGubun === 'I') {
         return "해당차량은 신규 등록 요청 승인 대기중입니다.";
       } else if (reqGubun === 'D') {
@@ -142,7 +142,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         return "해당차량은 수정 요청 승인 대기중입니다.";
       }
     }
-    else if (reqStatus === 'G') {
+    else if (reqStatus === 'R') {
       if (reqGubun === 'I') {
         return "해당차량은 신규 등록 검토 중입니다.";
       } else if (reqGubun === 'D') {
@@ -264,7 +264,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   const handleDelete = async (e) => {
     e.preventDefault();
 
-    if (reqStatus === 'R') {
+    if (reqStatus === 'G') {
       if (reqGubun === 'I') {
         msgPopup("해당차량은 신규 등록 요청 승인 대기중입니다.");
         return;
@@ -276,7 +276,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         return;
       }
     }
-    else if (reqStatus === 'G') {
+    else if (reqStatus === 'R') {
       if (reqGubun === 'I') {
         msgPopup("해당차량은 신규 등록 검토 중입니다.");
         return;
@@ -418,7 +418,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
             setReqStatus(vReqStatus);
             setReqGubun(vReqGubun);
             
-            if (vReqStatus === 'R') {
+            if (vReqStatus === 'G') {
               if (vReqGubun === 'I') {
                 msgPopup("해당차량은 신규 등록 요청 승인 대기중입니다.");
                 bDataSet = false;
@@ -428,7 +428,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
                 msgPopup("해당차량은 수정 요청 승인 대기중입니다.");
               }
             }
-            else if (vReqStatus === 'G') {
+            else if (vReqStatus === 'R') {
               if (vReqGubun === 'I') {
                 msgPopup("해당차량은 신규 등록 검토 중입니다.");
                 bDataSet = false;
