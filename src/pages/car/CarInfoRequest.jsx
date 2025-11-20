@@ -217,7 +217,7 @@ const CarListInfo = () => {
     { title: '승인자사번', field: 'CONFIRM_EMPNO', headerHozAlign: 'center', hozAlign: 'center' },
     { title: '승인자명', field: 'CONFIRM_EMPNM', headerHozAlign: 'center', hozAlign: 'center' },
     { title: '승인일시', field: 'CONFIRMDT', width: 140, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '상세', field: 'DETAILBUTTON', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('상세보기', `btn btn-outline-secondary`, (rowData) => handleDetail(rowData)) },
+    { title: '상세', field: 'DETAILBUTTON', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('승인관리', `btn btn-outline-secondary`, (rowData) => handleDetail(rowData)) },
   ];
 
   const handleDetail = (rowData) => {
