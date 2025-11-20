@@ -44,7 +44,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         setDelBtnNm('삭제');
       }
       else {
-        setConfirmBtnNm('승인요청');
+        setConfirmBtnNm('검토요청');
         setDelBtnNm('삭제요청');
       }
 
@@ -142,8 +142,17 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         return "해당차량은 수정 요청 승인 대기중입니다.";
       }
     }
+    else if (reqStatus === 'G') {
+      if (reqGubun === 'I') {
+        return "해당차량은 신규 등록 검토 중입니다.";
+      } else if (reqGubun === 'D') {
+        return "해당차량은 삭제 요청 검토 중입니다.";
+      } else if (reqGubun === 'U') {
+        return "해당차량은 수정 요청 검토 중입니다.";
+      }
+    }
   
-    if (!carInfo.CARID || !carInfo.CARNO || !carInfo.MGMTSTATUS|| !carInfo.USEFUEL || !carInfo.RENTALTYPE || !carInfo.CARCD || !carInfo.ORGGROUP || !carInfo.ORGCD || !carInfo.PRIMARYMNGEMPNM || !carInfo.PRIMARYGARAGEADDR) {
+    if (!carInfo.CARID || !carInfo.CARNO || !carInfo.MGMTSTATUS|| !carInfo.USEFUEL || !carInfo.RENTALTYPE || !carInfo.CARCD || !carInfo.ORGGROUP || !carInfo.ORGCD || !carInfo.PRIMARYMNGEMPNO || !carInfo.PRIMARYGARAGEADDR) {
       return "필수 입력 항목을 모두 입력해주세요.";
     }
 
@@ -176,7 +185,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
     const validationError = validateForm();
 
     if (validationError) {
-      errorMsgPopup(validationError);
+      msgPopup(validationError);
       return;
     }
         
@@ -188,7 +197,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
     }
     else {
       Url = 'car/CarinfoRequest';
-      responseMsg = '승인 요청';
+      responseMsg = ' 검토 요청 ';
     }
 
     if(confirm("차량 정보를 등록/수정" + responseMsg  + "하시겠습니까?")) { 
@@ -267,6 +276,18 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         return;
       }
     }
+    else if (reqStatus === 'G') {
+      if (reqGubun === 'I') {
+        msgPopup("해당차량은 신규 등록 검토 중입니다.");
+        return;
+      } else if (reqGubun === 'D') {
+        msgPopup("해당차량은 삭제 요청 검토 중입니다.");
+        return;
+      } else if (reqGubun === 'U') {
+        msgPopup("해당차량은 수정 요청 검토 중입니다.");
+        return;
+      }
+    }
 
     let Url = 'car/CarinfoRequest';
     let responseMsg = '';
@@ -276,7 +297,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
     }
     else {
       Url = 'car/CarinfoRequest';
-      responseMsg = '요청';
+      responseMsg = ' 검토요청 ';
     }
   
     if(confirm("차량 정보를 삭제" + responseMsg  + "하시겠습니까?")) { 
@@ -407,13 +428,23 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
                 msgPopup("해당차량은 수정 요청 승인 대기중입니다.");
               }
             }
-
+            else if (vReqStatus === 'G') {
+              if (reqvReqGubunGubun === 'I') {
+                msgPopup("해당차량은 신규 등록 검토 중입니다.");
+                bDataSet = false;
+              } else if (vReqGubun === 'D') {
+                msgPopup("해당차량은 삭제 요청 검토 중입니다.");
+              } else if (vReqGubun === 'U') {
+                msgPopup("해당차량은 수정 요청 검토 중입니다.");
+              }
+            }
+            
             if (bDataSet) {
                 setCarInfo({GUBUN: 'U', PRECARID: response.data[0].CARID, CARID: response.data[0].CARID, CARNO: response.data[0].CARNO, RENTALTYPE: response.data[0].RENTALTYPE, MGMTSTATUS: response.data[0].MGMTSTATUS, CARCD: response.data[0].CARCD, USEFUEL: response.data[0].USEFUEL
                           , RENTALCOMP: response.data[0].RENTALCOMP, CARACQUIREDDT: response.data[0].CARACQUIREDDT, RENTALEXFIREDDT: response.data[0].RENTALEXFIREDDT, CARREGDATE: response.data[0].CARREGDT, CARPRICE: response.data[0].CARPRICE
                           , RENTALPRICE: response.data[0].RENTALPRICE, INSURANCE: response.data[0].INSURANCE, DEDUCTIONYN: response.data[0].DEDUCTIONYN, ORGGROUP: response.data[0].ORG_GROUP, ORGCD: response.data[0].ORGCD, ORGNM: response.data[0].ORGNM
-                          , PRIMARYMNGEMPNM: response.data[0].PRIMARY_MANAGER_EMPNM, PRIMARYMNGMOBILE: response.data[0].PRIMARY_MANAGER_MOBILE, PRIMARYGARAGEADDR: response.data[0].PRIMARY_GARAGE_ADDR, FIREEXTINGUISHER: response.data[0].FIREEXTINGUISHER, SAFETYMANAGER: response.data[0].SAFETY_MANAGER
-                          , UNDER26AGEEMPNO: response.data[0].UNDER26AGE_EMPNO, UNDER26AGEEMPNM: response.data[0].UNDER26AGE_EMPNM, UNDER26AGEJUMINBTRTHNO: response.data[0].UNDER26AGE_JUMIN_BIRTH_NO
+                          , PRIMARYMNGEMPNO: response.data[0].PRIMARY_MANAGER_EMPNO, PRIMARYMNGEMPNM: response.data[0].PRIMARY_MANAGER_EMPNM, PRIMARYMNGMOBILE: response.data[0].PRIMARY_MANAGER_MOBILE, PRIMARYGARAGEADDR: response.data[0].PRIMARY_GARAGE_ADDR, FIREEXTINGUISHER: response.data[0].FIREEXTINGUISHER
+                          , SAFETYMANAGER: response.data[0].SAFETY_MANAGER, UNDER26AGEEMPNO: response.data[0].UNDER26AGE_EMPNO, UNDER26AGEEMPNM: response.data[0].UNDER26AGE_EMPNM, UNDER26AGEJUMINBTRTHNO: response.data[0].UNDER26AGE_JUMIN_BIRTH_NO
                           , UNDER26AGECHGDT: response.data[0].UNDER26AGE_CHGDT, CARDNO: response.data[0].CARDNO, EXFIREDT: response.data[0].EXFIREDT, NOTICE: response.data[0].NOTICE});
             } else {
                 setCarInfo({GUBUN: 'I', PRECARID: carId, CARID: carId, CARNO: '', RENTALTYPE: '', MGMTSTATUS: '', CARCD: '', USEFUEL: '', RENTALCOMP: '', CARACQUIREDDT: today, RENTALEXFIREDDT: today, CARREGDATE: today

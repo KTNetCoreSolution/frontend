@@ -174,6 +174,8 @@ const CarListInfo = () => {
     { title: '요청상태', field: 'REQSTATUSNM', width: 75, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '요청구분', field: 'GUBUN', width: 75, headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '요청구분', field: 'GUBUNNM', width: 75, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '요청자사번', field: 'REQUEST_EMPNO', headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '요청자명', field: 'REQUEST_EMPNM', headerHozAlign: 'center', hozAlign: 'center' },
     { title: '조직이관', field: 'CHG_ORG', minWidth: 100, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '변경내역', field: 'CHG_DATA', minWidth: 100, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '임대여부', field: 'RENTALTYPE', width: 75, headerHozAlign: 'center', hozAlign: 'center' },
@@ -209,6 +211,12 @@ const CarListInfo = () => {
     { title: '카드번호', field: 'CARDNO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '유효기간', field: 'EXFIREDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '비고', field: 'NOTICE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '검토자사번', field: 'GOOVER_EMPNO', headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '검토자명', field: 'GOOVER_EMPNM', headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '검토일시', field: 'GOOVERDT', width: 140, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '승인자사번', field: 'CONFIRM_EMPNO', headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '승인자명', field: 'CONFIRM_EMPNM', headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '승인일시', field: 'CONFIRMDT', width: 140, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '상세', field: 'DETAILBUTTON', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('상세보기', `btn btn-outline-secondary`, (rowData) => handleDetail(rowData)) },
   ];
 

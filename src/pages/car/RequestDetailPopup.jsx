@@ -14,14 +14,15 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   const [rentalCompList, setRentalCompList] = useState({});
   const initialCarInfo = {REQUESTDT: '', REQSTATUS: '', GUBUN: '', CARID: '', CARNO: '', RENTALTYPE: '', MGMTSTATUS: '', CARCD: '', USEFUEL: '', RENTALCOMP: '', CARACQUIREDDT: '', RENTALEXFIREDDT: '', CARREGDATE: ''
                           , CARPRICE: '', RENTALPRICE: '', INSURANCE: '', DEDUCTIONYN: '', ORGGROUP: '', ORGCD: '', ORGNM: '', PRIMARYMNGEMPNO: '', PRIMARYMNGEMPNM: '', PRIMARYMNGMOBILE: '', PRIMARYGARAGEADDR: '', SAFETYMANAGER: ''
-                          , FIREEXTINGUISHER: '', UNDER26AGEEMPNO: '', UNDER26AGEEMPNM: '', UNDER26AGEJUMINBTRTHNO: '', UNDER26AGECHGDT: '', CARDNO: '', EXFIREDT: '', NOTICE: ''};
+                          , FIREEXTINGUISHER: '', UNDER26AGEEMPNO: '', UNDER26AGEEMPNM: '', UNDER26AGEJUMINBTRTHNO: '', UNDER26AGECHGDT: '', CARDNO: '', EXFIREDT: '', NOTICE: '', REQUEST_ORGCD: '', REQUEST_EMPNO: ''};
   const [carInfo, setCarInfo] = useState(initialCarInfo);
-  
+  const [confirmBtnNm, setConfirmBtnNm] = useState('');
+
   useEffect(() => {
     // 컴포넌트 언마운트 시 테이블 정리
     const initializeComponent = async () => {
       // 다른 컴포넌트 렌더링 대기
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 300));
 
       // Component에 들어갈 데이터 로딩
       try {
@@ -73,8 +74,10 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   
   useEffect(() => {
     setCarInfo(initialCarInfo);
+    setConfirmBtnNm('');
+
     if (show) {
-      if(data !== null && data !== undefined) {   
+      if(data !== null && data !== undefined) {
         handleSearch(data); //차량정보 조회
       }
       else {
@@ -125,8 +128,9 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         } 
       }
     }*/
-    if (data.REQSTATUS === 'R' && (hasPermission(user?.auth, 'carManager') || (reqStatus === 'C' && user?.empNo !== data.REQUEST_EMPNO))) {
-      const responseMsg = '차량정보 ' + (gubun === 'I' ? '추가' : gubun === 'U' ? '수정' : '삭제') + ' 요청을 ' + (reqStatus === 'Y' ? '승인' : reqStatus === 'N' ? '반려' : '취소');
+   
+    if ((reqStatus === 'Y' && data.CONFIRMYN === 'Y') || (reqStatus === 'C' && data.CANCELYN === 'Y')) {
+      const responseMsg = '차량정보 ' + (gubun === 'I' ? '추가' : gubun === 'U' ? '수정' : '삭제') + ' 요청을 ' + (reqStatus === 'Y' ? '승인' : reqStatus === 'N' ? '반려' : reqStatus === 'G' ? '검토완료' : '취소');
 
       if(confirm(responseMsg + ' 하시겠습니까?')) { 
         try {
@@ -171,7 +175,12 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   };
 
   const handleSubmit = async (e) => {
-    setReqStatus('Y', data.GUBUN, data.SEQ);
+    if (hasPermission(user?.auth, 'carManager')) {
+      setReqStatus('Y', data.GUBUN, data.SEQ);
+    }
+    else if (user?.orgCd === carInfo.REQUEST_ORGCD && user?.levelCd === '41') {
+      setReqStatus('G', data.GUBUN, data.SEQ);
+    }
   };
 
   const handleReject = async (e) => {
@@ -199,6 +208,12 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
           onParentSearch();
         } else {
           setCarInfo(response.data[0]);
+          if (data.REQSTATUS === 'G' && hasPermission(user?.auth, 'carManager')) {
+            setConfirmBtnNm('승인');
+          }
+          else if (data.REQSTATUS === 'R' && user?.orgCd === response.data[0].REQUEST_ORGCD && user?.levelCd === '41') {
+            setConfirmBtnNm('검토완료');
+          }
         }
       }
     } catch (error) {
@@ -206,7 +221,7 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
       errorMsgPopup(error.message || '차량 정보 조회 중 오류가 발생했습니다.');
     }
   };
-
+  
   if (!show) return null;
   return (
     <Modal show={show} onHide={onHide} onParentSearch={onParentSearch} centered style={{overflowY: 'hidden'}} dialogClassName={styles.customModal}>
@@ -220,7 +235,7 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
             <input type="text" className={`form-control ${styles.formControl}`} id="carId" value={carInfo.CARID} disabled="disabled"/>
           </div>
           <div className="col d-flex">
-            <button className={`btn btn-sm btn-outline-secondary`} style={{display:`${data.REQSTATUS === 'R' && (hasPermission(user?.auth, 'carManager') || user?.empNo !== data.REQUEST_EMPNO) ? 'show' : 'none'}`}} onClick={handleCancel}>요청취소</button>
+            <button className={`btn btn-sm btn-outline-secondary`} style={{display:`${data.CANCELYN === 'Y' ? 'show' : 'none'}`}} onClick={handleCancel}>요청취소</button>
           </div>
           <div className="col-4 d-flex justify-content-end align-items-center">
             <label className="form-guide" ><font color='red'>*</font>은 필수 입력 항목입니다.</label>
@@ -400,8 +415,8 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
       </Modal.Body>
       <Modal.Footer>
         <button className='btn btnSecondary' onClick={onHide}>닫기</button>
-        <button className='btn btnPrimary' style={{display:`${data.REQSTATUS === 'R' && hasPermission(user?.auth, 'carManager') ? 'show' : 'none'}`}} onClick={handleSubmit}>승인</button>
-        <button className={`btn ${styles.btnReject}`} style={{display:`${data.REQSTATUS === 'R' && hasPermission(user?.auth, 'carManager') ? 'show' : 'none'}`}} onClick={handleReject}>반려</button>
+        <button className='btn btnPrimary' style={{display:`${data.CONFIRMYN === 'Y' ? 'show' : 'none'}`}} onClick={handleSubmit}>{confirmBtnNm}</button>
+        <button className={`btn ${styles.btnReject}`} style={{display:`${data.CONFIRMYN === 'Y' ? 'show' : 'none'}`}} onClick={handleReject}>반려</button>
       </Modal.Footer>
     </Modal>
   )
