@@ -429,7 +429,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
               }
             }
             else if (vReqStatus === 'G') {
-              if (reqvReqGubunGubun === 'I') {
+              if (vReqGubun === 'I') {
                 msgPopup("해당차량은 신규 등록 검토 중입니다.");
                 bDataSet = false;
               } else if (vReqGubun === 'D') {
