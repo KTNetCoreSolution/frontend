@@ -169,6 +169,7 @@ const CarListInfo = () => {
   // 테이블 컬럼 정의
   const columns = [
     { title: '번호', field: 'ID', width: 60, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '승인관리', field: 'DETAILBUTTON', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('승인관리', `btn btn-outline-secondary`, (rowData) => handleDetail(rowData)) },
     { title: '요청일시', field: 'REQUESTDT', width: 140, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '요청상태', field: 'REQSTATUS', width: 75, headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '요청상태', field: 'REQSTATUSNM', width: 75, headerHozAlign: 'center', hozAlign: 'center' },
@@ -217,7 +218,6 @@ const CarListInfo = () => {
     { title: '승인자사번', field: 'CONFIRM_EMPNO', headerHozAlign: 'center', hozAlign: 'center' },
     { title: '승인자명', field: 'CONFIRM_EMPNM', headerHozAlign: 'center', hozAlign: 'center' },
     { title: '승인일시', field: 'CONFIRMDT', width: 140, headerHozAlign: 'center', hozAlign: 'center' },
-    { title: '상세', field: 'DETAILBUTTON', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('승인관리', `btn btn-outline-secondary`, (rowData) => handleDetail(rowData)) },
   ];
 
   const handleDetail = (rowData) => {
