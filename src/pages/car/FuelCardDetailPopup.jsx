@@ -245,7 +245,7 @@ const FuelCardInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
           </div>
         </div>
         <div className="mb-2 d-flex">
-          <label className="form-label w60" htmlFor="exfireMonth">유효기간</label>
+          <label className="form-label w60" htmlFor="exfireMonth">유효기간<font color='red'>*</font></label>
           <input type="text" className={`form-control ${styles.formControl} flex-shrink-0 me-2`} id="exfireMonth" value={cardInfo.EXFIREMONTH || ''} style={{width:42 + 'px', textAlign:'center'}} placeholder="mm" onInput={(e) => {handleMaxLength(e, 2)}} onChange={(e) => {setCardInfo({ ...cardInfo, EXFIREMONTH: e.target.value, EXFIREDT: e.target.value + '/' + cardInfo.EXFIREDAY })}} />
           <label className="form-label" htmlFor="exfireDay">/</label>
           <input type="text" className={`form-control ${styles.formControl} flex-shrink-0 me-2`} id="exfireDay" value={cardInfo.EXFIREDAY || ''} style={{width:42 + 'px', textAlign:'center'}} placeholder="dd" onInput={(e) => {handleMaxLength(e, 2)}} onChange={(e) => {setCardInfo({ ...cardInfo, EXFIREDAY: e.target.value, EXFIREDT: cardInfo.EXFIREMONTH + '/' + e.target.value })}} />
