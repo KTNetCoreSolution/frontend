@@ -129,7 +129,7 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
       }
     }*/
    
-    if ((reqStatus === 'Y' && data.CONFIRMYN === 'Y') || (reqStatus === 'C' && data.CANCELYN === 'Y')) {
+    if (((reqStatus === 'Y' || reqStatus === 'G' || reqStatus === 'N') && data.CONFIRMYN === 'Y') || (reqStatus === 'C' && data.CANCELYN === 'Y')) {
       const responseMsg = '차량정보 ' + (gubun === 'I' ? '추가' : gubun === 'U' ? '수정' : '삭제') + ' 요청을 ' + (reqStatus === 'Y' ? '승인' : reqStatus === 'N' ? '반려' : reqStatus === 'G' ? '검토완료' : '취소');
 
       if(confirm(responseMsg + ' 하시겠습니까?')) { 
