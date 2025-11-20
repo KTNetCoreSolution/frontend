@@ -511,6 +511,7 @@ const MobileStandardCommonLog = () => {
                       value={item.ATTRIBUTE1}
                       onChange={(e) => handleRowChange(index, 'ATTRIBUTE1', e.target.value)}
                       className="text-start"
+                      style={{width: '100%',maxWidth: "180px"}}
                     />
                   </div>
                 </li>
