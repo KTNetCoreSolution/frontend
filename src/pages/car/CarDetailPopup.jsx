@@ -692,7 +692,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
       </FuelCardPopup>
       <MngUserListPopup show={showMngUserPopup} onHide={() => setShowMngUserPopup(false)}
         onConfirm={(selectedRows) => {
-          const userEmpNo = selectedRows.length > 0 ? selectedRows[0].PRIMARYMNGEMPNO : '';
+          const userEmpNo = selectedRows.length > 0 ? selectedRows[0].EMPNO : '';
           const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';
           const userMobile = selectedRows.length > 0 ? selectedRows[0].MOBILE : '';
           setCarInfo({ ...carInfo, PRIMARYMNGEMPNO: userEmpNo, PRIMARYMNGEMPNM: userEmpNm, PRIMARYMNGMOBILE: userMobile });
