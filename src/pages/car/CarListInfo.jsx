@@ -220,7 +220,7 @@ const CarListInfo = () => {
 
   // 엑셀 저장 시 추가로 보여줄 엑셀 field 설정
   const visibleColumns = ['RENTALCOMP|Y', 'CARACQUIREDDT|Y', 'RENTALEXFIREDDT|Y', 'CARREGDATE|Y', 'CARPRICE|Y', 'RENTALPRICE|Y', 'INSURANCE|Y', 'DEDUCTIONYN|Y', 'ORGCD|Y', 'PRIMARY_MANAGER_EMPNO|Y', 'PRIMARY_MANAGER_MOBILE|Y', 'PRIMARY_GARAGE_ADDR|Y'
-    , 'UNDER26AGE_EMPNO|Y', 'UNDER26AGE_EMPNM|Y', 'UNDER26AGE_JUMIN_BIRTH_NO|Y', 'UNDER26AGE_CHGDT|Y', 'CARDNO|Y', 'EXFIREDT|Y', 'NOTICE|Y', 'DETAILBUTTON|N'];  
+    , 'UNDER26AGE_EMPNO|Y', 'UNDER26AGE_EMPNM|Y', 'UNDER26AGE_JUMIN_BIRTH_NO|Y', 'UNDER26AGE_CHGDT|Y', 'CARDNO|Y', 'EXFIREDT|Y', 'NOTICE|Y', 'ENKM|Y', 'DETAILBUTTON|N'];  
 
   // const [filters, setFilters] = useState(initialFilters(searchConfig.areas.find((area) => area.type === 'search').fields));
   const [filters, setFilters] = useState({orgcd: selectedOrg, ...initialFilters(searchConfig.areas.find((area) => area.type === 'search').fields) });
@@ -285,6 +285,7 @@ const CarListInfo = () => {
     { title: '카드번호', field: 'CARDNO', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '유효기간', field: 'EXFIREDT', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '비고', field: 'NOTICE', headerHozAlign: 'center', hozAlign: 'center', visible: false },
+    { title: '종료km', field: 'ENKM', headerHozAlign: 'center', hozAlign: 'center', visible: false },
     { title: '상세', field: 'DETAILBUTTON', headerHozAlign: 'center', hozAlign: 'center', ...fn_CellButton('상세보기', `btn btn-outline-secondary`, (rowData) => handleDetail(rowData)) },
   ];
 
