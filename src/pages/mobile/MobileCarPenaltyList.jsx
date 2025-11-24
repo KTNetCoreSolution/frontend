@@ -48,12 +48,6 @@ const MobileCarPenaltyList = () => {
   const initializeComponent = async () => {
     await new Promise((resolve) => setTimeout(resolve, 300));
 
-    if (user?.empNo === '') {
-      errorMsgPopup("잘못된 접근입니다.");
-      navigate(-1);
-      return;
-    }
-
     try {
       const params = { pEMPNO: user?.empNo, pDEBUG: "F" };
       const response = await fetchData('carlogM/penaltyList', params);
