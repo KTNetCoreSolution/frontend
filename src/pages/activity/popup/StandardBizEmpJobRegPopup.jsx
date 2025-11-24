@@ -240,10 +240,10 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
   };
 
   useEffect(() => {
-    if (formData.WORKDATE && user?.empNo) {
+    if (show && formData.WORKDATE && user?.empNo) {
       fetchRegisteredList(formData.WORKDATE);
     }
-  }, [formData.WORKDATE, user?.empNo]);
+  }, [show, formData.WORKDATE, user?.empNo]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

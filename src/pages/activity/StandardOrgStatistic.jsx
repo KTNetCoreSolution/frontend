@@ -220,7 +220,7 @@ const StandardOrgStatistic = () => {
           { id: 'classGubunLbl', type: 'label', row: 1, label: '분야', labelVisible: false, enabled: true },
           ...(
             hasPermission(user?.auth, 'standardOper')
-              ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true }]
+              ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true, eventType: 'selectChange' }]
               : user?.standardSectionCd === 'LINE'
                 ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true, width:'60px' }]
                 : user?.standardSectionCd === 'DESIGN'
@@ -602,8 +602,21 @@ const StandardOrgStatistic = () => {
         const newFilters = {
           ...prev,
           [id]: value,
-          ...(id === 'CLASSACD' ? { CLASSBCD: 'all', CLASSCCD: 'all' } : id === 'CLASSBCD' ? { CLASSCCD: 'all' } : {}),
         };
+
+        if (id === 'classGubun') {
+          newFilters.CLASSACD = 'all';
+          newFilters.CLASSBCD = 'all';
+          newFilters.CLASSCCD = 'all';
+        }
+        else if (id === 'CLASSACD') {
+          newFilters.CLASSBCD = 'all';
+          newFilters.CLASSCCD = 'all';
+        }
+        else if (id === 'CLASSBCD') {
+          newFilters.CLASSCCD = 'all';
+        }
+
         if (id === 'dayGubun') {
           newFilters.monthDate = value === 'M' ? today.substring(0, 7) : '';
           newFilters.rangeStartDate = value === 'D' ? today : '';

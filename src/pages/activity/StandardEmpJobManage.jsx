@@ -108,6 +108,7 @@ const StandardEmpJobManage = () => {
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
   const isInitialRender = useRef(true);
+  const [popupClassFilters, setPopupClassFilters] = useState({CLASSACD: '', CLASSBCD: '', CLASSCCD: ''});
 
   // useMemo로 옵션 최적화
   const updatedClass2Options = useMemo(
@@ -128,7 +129,7 @@ const StandardEmpJobManage = () => {
           { id: 'classGubunLbl', type: 'label', row: 1, label: '분야', labelVisible: false, enabled: true },
           ...(
             hasPermission(user?.auth, 'standardOper')
-              ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true }]
+              ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true, eventType: 'selectChange' }]
               : user?.standardSectionCd === 'LINE'
                 ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true, width:'60px' }]
                 : user?.standardSectionCd === 'DESIGN'
@@ -160,6 +161,14 @@ const StandardEmpJobManage = () => {
 
   // 동적 searchConfig: dayGubun 값에 따라 monthDate 또는 rangeStartDate/rangeEndDate 표시
   const [searchConfig, setSearchConfig] = useState(baseSearchConfig);
+
+  useEffect(() => {
+    setPopupClassFilters({
+      CLASSACD: 'all',
+      CLASSBCD: 'all',
+      CLASSCCD: 'all',
+    });
+  }, [filters.classGubun]);
 
   useEffect(() => {
     setSearchConfig((prev) => {
@@ -347,8 +356,8 @@ const StandardEmpJobManage = () => {
         .find((area) => area.type === 'search')
         .fields.find((field) => field.id === 'CLASSCCD').options;
 
-      const isClass2OptionsChanged = JSON.stringify(prevClass2Options) !== JSON.stringify(updatedClass2Options);
-      const isClass3OptionsChanged = JSON.stringify(prevClass3Options) !== JSON.stringify(updatedClass3Options);
+      const isClass2OptionsChanged = !areArraysEqual(prevClass2Options, updatedClass2Options);
+      const isClass3OptionsChanged = !areArraysEqual(prevClass3Options, updatedClass3Options);
 
       if (!isClass2OptionsChanged && !isClass3OptionsChanged) return prev;
 
@@ -522,12 +531,21 @@ const StandardEmpJobManage = () => {
     } else if (eventType === 'showClassPopup') {
       setShowClassPopup(true);
     } else if (eventType === 'showAddPopup') {
+      setPopupClassFilters({
+        CLASSACD: '',
+        CLASSBCD: '',
+        CLASSCCD: '',
+      });
       setShowAddPopup(true);
     } else if (eventType === 'selectChange') {
       const { id, value } = payload;
       setFilters((prev) => {
         const newFilters = { ...prev, [id]: value };
-        if (id === 'CLASSACD') {
+        if (id === 'classGubun') {
+          newFilters.CLASSACD = '';
+          newFilters.CLASSBCD = '';
+          newFilters.CLASSCCD = '';
+        } else if (id === 'CLASSACD') {
           newFilters.CLASSBCD = '';
           newFilters.CLASSCCD = '';
         } else if (id === 'CLASSBCD') {
@@ -586,6 +604,21 @@ const StandardEmpJobManage = () => {
     setShowAddPopup(false);
   };
 
+  const areArraysEqual = (arr1, arr2) => {
+    if (arr1 === arr2) return true;
+    if (!arr1 || !arr2 || arr1.length !== arr2.length) return false;
+    return arr1.every((item, index) => 
+      item.value === arr2[index]?.value && item.label === arr2[index]?.label
+    );
+  };
+
+  const currentPopupFilters = {
+    ...filters,
+    CLASSACD: popupClassFilters.CLASSACD,
+    CLASSBCD: popupClassFilters.CLASSBCD,
+    CLASSCCD: popupClassFilters.CLASSCCD,
+  };
+
   return (
     <div className='container'>
       <MainSearch
@@ -610,9 +643,9 @@ const StandardEmpJobManage = () => {
       </div>
       <StandardClassSelectPopup show={showClassPopup} onHide={() => setShowClassPopup(false)} onSelect={handleClassSelect} data={classData} />
       {filters.classGubun === 'BIZ' ? (
-        <StandardBizEmpJobRegPopup show={showAddPopup} onHide={handleAddCancel} filters={filters} data={classData} bizWorkTypes={bizWorkTypes} />
+        <StandardBizEmpJobRegPopup show={showAddPopup} onHide={handleAddCancel} filters={currentPopupFilters} data={classData} bizWorkTypes={bizWorkTypes} />
       ) : (
-        <StandardEmpJobRegPopup show={showAddPopup} onHide={handleAddCancel} filters={filters} data={classData} />
+        <StandardEmpJobRegPopup show={showAddPopup} onHide={handleAddCancel} filters={currentPopupFilters} data={classData} />
       )}
     </div>
   );
