@@ -56,7 +56,7 @@ const MobileCarPenaltyList = () => {
 
     try {
       const params = { pEMPNO: user?.empNo, pDEBUG: "F" };
-      const response = await fetchData('carlogM/penalyList', params);
+      const response = await fetchData('carlogM/penaltyList', params);
 
       if (!response.success) {
         throw new Error(response.errMsg || '과태료 미납 목록 조회 중 오류가 발생했습니다.');
