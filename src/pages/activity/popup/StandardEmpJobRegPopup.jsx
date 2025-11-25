@@ -210,10 +210,10 @@ const StandardEmpJobRegPopup = ({ show, onHide, filters, data }) => {
   };
 
   useEffect(() => {
-    if (formData.WORKDATE) {
+    if (show && formData.WORKDATE && user?.empNo) {
       fetchRegisteredList(formData.WORKDATE);
     }
-  }, [formData.WORKDATE, user?.empNo]);
+  }, [show, formData.WORKDATE, user?.empNo]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

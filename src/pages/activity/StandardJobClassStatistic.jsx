@@ -139,7 +139,7 @@ const StandardJobClassStatistic = () => {
           { id: 'classGubunLbl', type: 'label', row: 1, label: '분야', labelVisible: false, enabled: true },
           ...(
             hasPermission(user?.auth, 'standardOper')
-              ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true }]
+              ? [{ id: 'classGubun', type: 'select', row: 1, label: '분야', labelVisible: false, options: [{ value: 'LINE', label: '선로' }, { value: 'DESIGN', label: '설계' }, { value: 'BIZ', label: 'BIZ' }], defaultValue: 'LINE', enabled: true, eventType: 'selectChange' }]
               : user?.standardSectionCd === 'LINE'
                 ? [{ id: 'classGubunTxt', type: 'text', row: 1, label: '분야', defaultValue: '선로', labelVisible: false, enabled: true, width:'60px' }]
                 : user?.standardSectionCd === 'DESIGN'
@@ -448,7 +448,12 @@ const StandardJobClassStatistic = () => {
       setFilters((prev) => ({
         ...prev,
         [payload.id]: payload.value,
-        ...(payload.id === 'CLASSACD' ? { CLASSBCD: 'all', CLASSCCD: 'all' } : payload.id === 'CLASSBCD' ? { CLASSCCD: 'all' } : {}),
+      // 분야(구분) 변경 시 → 대/중/소분류 전부 초기화
+      ...(payload.id === 'classGubun' ? { CLASSACD: 'all', CLASSBCD: 'all', CLASSCCD: 'all' } : {}),
+      // 대분류 변경 시 → 중/소분류 초기화
+      ...(payload.id === 'CLASSACD' ? { CLASSBCD: 'all', CLASSCCD: 'all' } : {}),
+      // 중분류 변경 시 → 소분류 초기화
+      ...(payload.id === 'CLASSBCD' ? { CLASSCCD: 'all' } : {}),
       }));
     }
   };

@@ -8,6 +8,28 @@ import { fetchData } from '../../../utils/dataUtils';
 import { errorMsgPopup } from '../../../utils/errorMsgPopup';
 import styles from './StandardTeamOrgDayStatisticPopup.module.css';
 
+const useDeepCompareEffect = (callback, dependencies) => {
+  const current = useRef(dependencies);
+  const changeCount = useRef(0);
+
+  // 깊은 비교 (배열/객체 내용 비교)
+  const isSame = current.current.length === dependencies.length &&
+    current.current.every((prev, i) => {
+      try {
+        return JSON.stringify(prev) === JSON.stringify(dependencies[i]);
+      } catch {
+        return Object.is(prev, dependencies[i]);
+      }
+    });
+
+  if (!isSame) {
+    current.current = dependencies;
+    changeCount.current += 1;
+  }
+
+  useEffect(callback, [changeCount.current]);
+};
+
 const StandardTeamOrgDayStatisticPopup = ({ show, onHide, data }) => {
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
@@ -120,7 +142,7 @@ const StandardTeamOrgDayStatisticPopup = ({ show, onHide, data }) => {
     }
   }, [tableStatus, show, data]);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (!show) return;
     let isMounted = true;
 
@@ -179,7 +201,7 @@ const StandardTeamOrgDayStatisticPopup = ({ show, onHide, data }) => {
     loadData();
 
     return () => { isMounted = false; };
-  }, [show, JSON.stringify(data)]);
+  }, [show, data]);
 
   // 데이터 반영
   useEffect(() => {
