@@ -201,8 +201,8 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
       if (data.CARID && data.CARID !== '') {
         getCarLogInfo();
       } else {
-        setStTime(timeOption('09:00', 'S'));
-        setEnTime(timeOption('09:00', 'E'));
+        setStTime(timeOption('00:00', 'S'));
+        setEnTime(timeOption('00:00', 'E'));
       }
     }
   }, [show]);
@@ -252,7 +252,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             const mimeType = fileUtils.mimeTypes[extension] || 'application/octet-stream';
             const fileData = response.data[0].IMGDATA;
             const logDate = response.data[0].LOGDATE <= todayDate ? todayDate : response.data[0].LOGDATE;            
-            const logStTime = response.data[0].LOGDATE === todayDate ? response.data[0].LOGENTIME : '09:00';
+            const logStTime = response.data[0].LOGDATE === todayDate ? response.data[0].LOGENTIME : '00:00';
             setStTime(timeOption(logStTime, 'S'));
 
             const carNm = response.data[0].CARNM;
@@ -266,7 +266,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             const bBookMark = response.data[0].BOOKMARK === 'Y' ? true : false;
             setEnTime(timeOption(logStTime, 'E'));
 
-            let logEnTime = '09:00';
+            let logEnTime = '00:00';
             timeOption(logInfo.LOGSTTIME, 'E').some(time => {
               if (time > logStTime) {
                 logEnTime = time; 
@@ -353,7 +353,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
 
   const handleLogDate = (e) => {
     let logDate = e.target.value;
-    let logStTime = '09:00';
+    let logStTime = '00:00';
     
     if(e.target.value < lastLogInfo.LOGDATE) {
       logDateRef.current.value = lastLogInfo.LOGDATE;
@@ -362,13 +362,13 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
     }
     else {
       logDate = e.target.value;
-      logStTime = lastLogInfo.LOGDATE >= e.target.value ? lastLogInfo.LOGENTIME : '09:00';
+      logStTime = lastLogInfo.LOGDATE >= e.target.value ? lastLogInfo.LOGENTIME : '00:00';
     }
 
     setStTime(timeOption(logStTime, 'S'));   
     setEnTime(timeOption(logStTime, 'E'));
 
-    let logEnTime = '09:00';
+    let logEnTime = '00:00';
     timeOption(logStTime, 'E').some(time => {
       if (time > logStTime) {
         logEnTime = time; 

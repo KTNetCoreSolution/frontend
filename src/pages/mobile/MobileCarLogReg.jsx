@@ -108,7 +108,7 @@ const MobileDrivingLog = () => {
         throw new Error(response.errMsg || '운행일지 상세정보 조회 중 오류가 발생했습니다.');
       } else {
         const logDate = pGubun === 'I' ? response.data[0].LOGDATE <= todayDate ? todayDate : response.data[0].LOGDATE : response.data[0].LOGDATE;            
-        const logStTime = pGubun === 'I' ? response.data[0].LOGDATE === todayDate ? response.data[0].LOGENTIME : '09:00' : response.data[0].LOGSTTIME;
+        const logStTime = pGubun === 'I' ? response.data[0].LOGDATE === todayDate ? response.data[0].LOGENTIME : '00:00' : response.data[0].LOGSTTIME;
         setStTime(timeOption(logStTime, 'S'));
 
         const safetyNote = pGubun === 'I' ? '' : response.data[0].SAFETYNOTE;
@@ -126,7 +126,7 @@ const MobileDrivingLog = () => {
 
         setEnTime(timeOption(logStTime, 'E'));
 
-        let logEnTime = '09:00';
+        let logEnTime = '00:00';
 
         if (pGubun === 'I') {
           timeOption(logInfo.LOGSTTIME, 'E').some(time => {
@@ -171,7 +171,7 @@ const MobileDrivingLog = () => {
 
   const handleLogDate = (e) => {
     let logDate = e.target.value;
-    let logStTime = '09:00';
+    let logStTime = '00:00';
     
     if(e.target.value < lastLogInfo.LOGDATE) {
       logDateRef.current.value = lastLogInfo.LOGDATE;
@@ -180,13 +180,13 @@ const MobileDrivingLog = () => {
     }
     else {
       logDate = e.target.value;
-      logStTime = lastLogInfo.LOGDATE >= e.target.value ? lastLogInfo.LOGENTIME : '09:00';
+      logStTime = lastLogInfo.LOGDATE >= e.target.value ? lastLogInfo.LOGENTIME : '00:00';
     }
 
     setStTime(timeOption(logStTime, 'S'));   
     setEnTime(timeOption(logStTime, 'E'));
 
-    let logEnTime = '09:00';
+    let logEnTime = '00:00';
     timeOption(logStTime, 'E').some(time => {
       if (time > logStTime) {
         logEnTime = time; 
