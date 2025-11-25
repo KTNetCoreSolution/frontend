@@ -37,7 +37,7 @@ const MobileDrivingLog = () => {
   const { state } = useLocation();
   const [carId, setCarId] = useState('');
   const [gubun, setGubun] = useState('');
-  const [logInfo, setLogInfo] = useState({GUBUN: '', CARID: '', CARNO: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:30', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: '', EMPNM: '', DELYN: 'N'});
+  const [logInfo, setLogInfo] = useState({GUBUN: '', CARID: '', CARNO: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:30', SAFETYNOTE: '', PRESTKM: 0, STKM: 0, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: '', EMPNM: '', DELYN: 'N'});
   const [lastLogInfo, setLastLogInfo] = useState({LOGDATE: '', LOGSTTIME: '', LOGENTIME: ''});
   const [modifyYn, setModifyYn] = useState('Y');
   const [isDamage, setIsDamage] = useState(true);
@@ -139,7 +139,7 @@ const MobileDrivingLog = () => {
           logEnTime = response.data[0].LOGENTIME;
         }
 
-        setLogInfo({GUBUN:pGubun, CARID: state?.carId, CARNO: response.data[0].CARNO, LOGDATE: logDate, LOGSTTIME: logStTime, LOGENTIME: logEnTime, SAFETYNOTE: safetyNote, STKM: stKm, ENKM: enKm, FUEL: fuel, NOTE: note, EMPNO: empNo, EMPNM: empNm, DELYN: delYn});
+        setLogInfo({GUBUN:pGubun, CARID: state?.carId, CARNO: response.data[0].CARNO, LOGDATE: logDate, LOGSTTIME: logStTime, LOGENTIME: logEnTime, SAFETYNOTE: safetyNote, PRESTKM: stKm, STKM: stKm, ENKM: enKm, FUEL: fuel, NOTE: note, EMPNO: empNo, EMPNM: empNm, DELYN: delYn});
         setLastLogInfo({LOGDATE: response.data[0].LOGDATE, LOGSTTIME: response.data[0].LOGDATE, LOGENTIME: response.data[0].LOGENTIME});
 
         const bDamage = response.data[0].DAMAGE === 'Y' || pGubun === 'I' ? true : false;
@@ -494,7 +494,7 @@ const MobileDrivingLog = () => {
             <li>
               <span className="formLabel" style={{width: '120px'}}>시작km</span>
               <div className="formData">
-                <input type="number" style={{width: '120px'}} value={logInfo.STKM} disabled={gubun === 'I' ? logInfo.STKM === 0 ? '' : 'disabled' : 'disabled'} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, STKM: e.target.value })}} />
+                <input type="number" style={{width: '120px'}} value={logInfo.STKM} disabled={gubun === 'I' ? logInfo.PRESTKM === 0 ? '' : 'disabled' : 'disabled'} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, STKM: e.target.value })}} />
               </div>
             </li>
             <li>
