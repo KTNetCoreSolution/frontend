@@ -175,7 +175,7 @@ const PenaltyListInfo = () => {
     { title: '세입구분', field: 'REVENUE_TYPE', width: 100, headerHozAlign: 'center', hozAlign: 'center'},
     { title: '차량번호', field: 'CARNO', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '가상계좌', field: 'VIRTUAL_ACCOUNT', minWidth: 100, maxWidth: 400, headerHozAlign: 'center', hozAlign: 'left' },
-    { title: '가상금합계', field: 'SURCHARGE_TOTAL', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
+    { title: '가산금합계', field: 'SURCHARGE_TOTAL', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '납부여부', field: 'PAYMENT_FLAG', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '납부자사번', field: 'PAYMENT_EMPNO', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
     { title: '납부자명', field: 'PAYMENT_EMPNM', width: 100, headerHozAlign: 'center', hozAlign: 'center' },
