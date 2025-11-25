@@ -4,7 +4,7 @@ import commonUtils from '../../utils/common.js';
 import { fetchData } from '../../utils/dataUtils.js';
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
-import { hasPermission } from '../../utils/authUtils.js';
+import { hasPermission, hasLvCdPermission } from '../../utils/authUtils.js';
 import Modal from 'react-bootstrap/Modal';
 import styles from './RequestDetailPopup.module.css';
 
@@ -178,7 +178,7 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
     if (hasPermission(user?.auth, 'carManager')) {
       setReqStatus('Y', data.GUBUN, data.SEQ);
     }
-    else if (user?.orgCd === carInfo.REQUEST_ORGCD && user?.levelCd === '41') {
+    else if (user?.orgCd === carInfo.REQUEST_ORGCD && hasLvCdPermission(user?.levelCd,'carConfirm')) {
       setReqStatus('G', data.GUBUN, data.SEQ);
     }
   };
@@ -211,7 +211,7 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
           if (data.REQSTATUS === 'G' && hasPermission(user?.auth, 'carManager')) {
             setConfirmBtnNm('승인');
           }
-          else if (data.REQSTATUS === 'R' && user?.orgCd === response.data[0].REQUEST_ORGCD && user?.levelCd === '41') {
+          else if (data.REQSTATUS === 'R' && user?.orgCd === response.data[0].REQUEST_ORGCD && hasLvCdPermission(user?.levelCd,'carConfirm')) {
             setConfirmBtnNm('검토완료');
           }
         }

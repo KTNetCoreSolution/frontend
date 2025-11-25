@@ -11,7 +11,7 @@ import UserSearchPopup from '../../components/popup/UserSearchPopup';
 import LogRegPopup from './UserCarLogRegPopup.jsx';
 import styles from '../../components/table/TableSearch.module.css';
 import common from '../../utils/common';
-import { hasPermission } from '../../utils/authUtils';
+import { hasPermission, hasLvCdPermission } from '../../utils/authUtils';
 import { fetchData } from '../../utils/dataUtils.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import { msgPopup } from '../../utils/msgPopup.js';
@@ -68,9 +68,7 @@ const UserCarLog = () => {
       const confYn = rowData.CONFYN;
       const logStat = rowData.LOGSTAT;
       let bBtn = false;
-
-      console.log('confYn:' + confYn);
-      console.log('logStat:' + confYn);
+      
       if (field === 'actions' && (logStat === 'R' && (confYn === 'Y'|| hasPermission(user?.auth, 'permissions'))) ) {
         bBtn = true;
       } else if (field === 'DETAIL') {
@@ -501,7 +499,7 @@ const UserCarLog = () => {
         return;
       }
 
-      if (hasPermission(user?.auth, 'permissions') || user?.levelCd === '41') {
+      if (hasPermission(user?.auth, 'permissions') ||  hasLvCdPermission(user?.levelCd,'carConfirm')) {
         visibleColumns = ['actions|Y', 'applyTarget|Y', 'DETAIL|Y'];
       } else {
         visibleColumns = [];
@@ -563,7 +561,7 @@ const UserCarLog = () => {
         setRowCount(rows);
       }
 
-      if (user?.levelCd === '41' || hasPermission(user?.auth, 'permissions')) {
+      if (hasLvCdPermission(user?.levelCd,'carConfirm') || hasPermission(user?.auth, 'permissions')) {
         table.showColumn('actions');
         table.showColumn('applyTarget');
       } else {
@@ -617,11 +615,11 @@ const UserCarLog = () => {
         rowCount={rowCount}
         onEvent={handleDynamicEvent}
       >
-      <div className='btnGroupCustom' style={{display:user?.levelCd === '41' || hasPermission(user?.auth, 'permissions') ? 'flex' : 'none'}}>
+      <div className='btnGroupCustom' style={{display: hasLvCdPermission(user?.levelCd,'carConfirm') || hasPermission(user?.auth, 'permissions') ? 'flex' : 'none'}}>
         <button className='btn text-bg-success' onClick={handleConfrim}>
           선택승인
         </button>
-        <button className='btn text-bg-success' style={{display:user?.levelCd === '41' ? 'flex' : 'none'}} onClick={handleConfrimAll}>
+        <button className='btn text-bg-success' style={{display: hasLvCdPermission(user?.levelCd,'carConfirm') ? 'flex' : 'none'}} onClick={handleConfrimAll}>
           일괄승인
         </button>
       </div>

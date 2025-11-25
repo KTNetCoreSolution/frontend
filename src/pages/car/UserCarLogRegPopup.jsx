@@ -6,7 +6,7 @@ import { fetchData, fetchFileUpload } from "../../utils/dataUtils";
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import CommonPopup from '../../components/popup/CommonPopup.jsx';
-import { hasPermission } from '../../utils/authUtils';
+import { hasPermission, hasLvCdPermission } from '../../utils/authUtils';
 import Modal from 'react-bootstrap/Modal';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
@@ -158,7 +158,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           const bEtc2 = response.data[0].ETC2 === 'Y' ? true : false;
           const saveBtnDisplay = empNo === user?.empNo ? 'block' : 'none';
           const delBtnDisplay = (response.data[0].DELYN === 'Y' && empNo === user?.empNo) ? 'block' : 'none';
-          const reJectBtnDisplay = (response.data[0].LOGSTAT === 'R' && ((orgCd === user?.orgCd && '41' === user?.levelCd) || hasPermission(user?.auth, 'permissions')))  ? 'block' : 'none';
+          const reJectBtnDisplay = (response.data[0].LOGSTAT === 'R' && ((orgCd === user?.orgCd &&  hasLvCdPermission(user?.levelCd,'carConfirm')) || hasPermission(user?.auth, 'permissions')))  ? 'block' : 'none';
           const modifyCheck = (response.data[0].DELYN === 'Y' && empNo === user?.empNo) ? 'Y' : 'N';
           
           setStTime(timeOption(data.LOGSTTIME, 'S'));

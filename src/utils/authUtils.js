@@ -2,6 +2,7 @@ import { fetchData, fetchDataGet } from './dataUtils';
 import useStore from '../store/store';
 
 const DEFAULT_READ_PERMISSIONS = ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', 'AUTH0005', 'AUTH0006', 'AUTH0007', 'AUTH0008', 'AUTH0009', '', null];
+const DEFAULT_READ_LEVEL_PERMISSIONS = ['07', '12', '13', '41', '81', '99', 'F6', 'K0', 'S1', '', null];
 
 const PERMISSION_MAP = {
   main: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', '', null],
@@ -14,6 +15,11 @@ const PERMISSION_MAP = {
   carManager: ['AUTH0001', 'AUTH0003', 'AUTH0005'],
   tabulatorDirect: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', '', null],
 };
+
+const LV_PERMISSION_MAP = {
+  carConfirm: ['07', '12', '13', '41', '81', 'K0'],
+};
+
 
 export function hasPermission(userAuth, screen) {
   if (!userAuth || !screen) return false;
@@ -32,6 +38,12 @@ export function mobileMenuStandardPermission(userAuth, standardSectionCd, menuId
     return menuId !== 'MMENU0006'; // 표준활동 제외
   }
   return true;
+}
+
+export function hasLvCdPermission(userLevel, screen) {
+  if (!userLevel || !screen) return false;
+  const allowedLevels = LV_PERMISSION_MAP[screen] || DEFAULT_READ_LEVEL_PERMISSIONS;
+  return allowedLevels.includes(userLevel);
 }
 
 export async function checkTokenValidity(navigate, user, setUser, clearUser) {
