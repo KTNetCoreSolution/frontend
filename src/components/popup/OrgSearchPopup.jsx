@@ -101,7 +101,7 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN, 
         const response = await fetchData("common/orginfo/list", params);
 
         if (!response.success || response.errMsg) {
-          errorMsgPopup(response.message || "데이터를 가져오는 중 오류가 발생했습니다.");
+          // errorMsgPopup(response.message || "데이터를 가져오는 중 오류가 발생했습니다.");
           setTreeData([]);
           return;
         }
@@ -179,7 +179,7 @@ const OrgSearchPopup = ({ onClose, onConfirm, initialSelectedOrgs = [], pGUBUN, 
         setExpanded(initialExpanded);
       } catch (error) {
         console.error("Error loading data:", error);
-        errorMsgPopup("데이터를 가져오는 중 오류가 발생했습니다.");
+        // errorMsgPopup("데이터를 가져오는 중 오류가 발생했습니다.");
         setTreeData([]);
       } finally {
         setLoading(false);
