@@ -61,6 +61,8 @@ const ExcelUploadPopup = ({ show, onHide, title, rptCd, templateParams }) => {
       formData.append("file", file);
       const result = await fetchFileUpload("excelupload/save", formData);
       if (result.errCd !== '00') {
+        alert(result.errCd);
+        alert(result.errMsg);
         setToastMessage(result.errMsg || "엑셀 업로드 실패");
         setShowToast(true);
       } else {
