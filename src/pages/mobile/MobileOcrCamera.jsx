@@ -106,7 +106,7 @@ const MobileOcrCamera = ({ onSuccess, onClose }) => {
   };
 
   return (
-    <div className="container-fluid p-0 vh-100 d-flex flex-column">
+    <div className="container-fluid p-0 vh-100 vw-100 d-flex flex-column">
       <header className="header d-flex align-items-center justify-content-between px-3 text-white" 
         style={{ backgroundColor: '#00c4b4', height: '56px' }}>
         <h1 className="h5 mb-0 fw-bold">계기판 촬영</h1>
@@ -117,8 +117,16 @@ const MobileOcrCamera = ({ onSuccess, onClose }) => {
 
       <video
         ref={videoRef}
-        className="flex-grow-1 w-100"
-        style={{ objectFit: 'cover', background: '#000' }}
+        className="w-100"
+        style={{
+          width: '100vw',
+          height: '72vh',
+          objectFit: 'cover',
+          background: '#000',
+          display: 'block',
+          margin: 0,
+          padding: 0
+        }}
         playsInline
         muted
         autoPlay
@@ -132,9 +140,14 @@ const MobileOcrCamera = ({ onSuccess, onClose }) => {
         </div>
       )}
 
-      <div className="p-4" style={{ backgroundColor: '#000' }}>
+      <div
+        style={{
+          padding: '24px 20px',
+          paddingBottom: 'calc(env(safe-area-inset-bottom, 34px) + 30px)',
+        }}
+      >
         <button
-          className="btn btn-primary w-100 py-4 rounded-pill fw-bold fs-4 shadow-lg"
+          className="btn btn-primary w-100 py-4 rounded-pill fw-bold fs-4 shadow-lg text-white"
           style={{ backgroundColor: '#00c4b4', border: 'none' }}
           onClick={captureAndRecognize}
           disabled={isCapturing}
