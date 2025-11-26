@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useStore from '../../store/store';
 import { fetchDataGet } from '../../utils/dataUtils';
@@ -11,6 +11,18 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
   const location = useLocation();
   const { user, setUser } = useStore();
   const offcanvasRef = useRef(null);
+
+  const [titleClickCount, setTitleClickCount] = useState(0);
+
+  const handleTitleClick = () => {
+    const newCount = titleClickCount + 1;
+    setTitleClickCount(newCount);
+
+    // 10번 클릭하면 알림 + 30초 후에 다시 리셋 (원한다면 제거 가능)
+    if (newCount === 10) {
+      setTimeout(() => setTitleClickCount(0), 30000); // 30초 후 리셋 (선택사항)
+    }
+  };
 
   // Validate props
   const isValidProps = typeof show === 'boolean' && typeof handleClose === 'function';
@@ -56,7 +68,16 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
     handleClose();
   };
 
-  const filteredUserMenu = mobileUserMenu.filter((item) => mobileMenuStandardPermission(user?.auth, user?.standardSectionCd, item.MENUID));
+  const baseMenu = mobileUserMenu.filter((item) => 
+    mobileMenuStandardPermission(user?.auth, user?.standardSectionCd, item.MENUID)
+  );
+
+  const filteredUserMenu = titleClickCount >= 10 
+    ? [
+        ...baseMenu,
+        {MENUID: "MMENU0091", MENUNM: "카메라테스트", URL: "/mobile/MobileOdometerReader", children: []}  //테스트화면 추가
+      ]
+    : baseMenu;
 
   if (!isValidProps) {
     return null;
@@ -76,7 +97,9 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
         aria-hidden={!show}
       >
         <div className="custom-offcanvas-header">
-          <h5>메뉴</h5>
+          <h5 onClick={handleTitleClick} style={{ cursor: 'pointer', userSelect: 'none' }}>
+            메뉴
+          </h5>
           <button type="button" className="btn text-white" onClick={handleClose} aria-label="Close">
             <i className="bi bi-x"></i>
           </button>

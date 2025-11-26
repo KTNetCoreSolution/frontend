@@ -1,0 +1,35 @@
+.pageMain {
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+.formDivBox {
+  padding: 10px;
+  border: 1px solid #d3d3d3;
+  border-radius: 10px;
+  background-color: #fff;
+}
+
+.formLabel {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.inputGroup {
+  display: flex;
+  align-items: center;
+}
+
+.formInput {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.btn {
+  padding: 8px 12px;
+  border-radius: 5px;
+}

@@ -1,0 +1,21 @@
+.modalContent {
+  text-align: center;
+}
+
+.video {
+  width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
+
+.error {
+  color: red;
+  margin: 10px 0;
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
