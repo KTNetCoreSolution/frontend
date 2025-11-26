@@ -6,29 +6,8 @@ import { handleDownloadExcel } from '../../../utils/tableExcel';
 import TableSearch from '../../../components/table/TableSearch';
 import { fetchData } from '../../../utils/dataUtils';
 import { errorMsgPopup } from '../../../utils/errorMsgPopup';
+import useDeepCompareEffect from '../../../hooks/useDeepCompareEffect';
 import styles from './StandardOrgDayStatisticPopup.module.css';
-
-const useDeepCompareEffect = (callback, dependencies) => {
-  const current = useRef(dependencies);
-  const changeCount = useRef(0);
-
-  // 깊은 비교 (배열/객체 내용 비교)
-  const isSame = current.current.length === dependencies.length &&
-    current.current.every((prev, i) => {
-      try {
-        return JSON.stringify(prev) === JSON.stringify(dependencies[i]);
-      } catch {
-        return Object.is(prev, dependencies[i]);
-      }
-    });
-
-  if (!isSame) {
-    current.current = dependencies;
-    changeCount.current += 1;
-  }
-
-  useEffect(callback, [changeCount.current]);
-};
 
 const StandardOrgDayStatisticPopup = ({ show, onHide, data }) => {
   const tableRef = useRef(null);

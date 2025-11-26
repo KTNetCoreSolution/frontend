@@ -6,6 +6,7 @@ import { handleDownloadExcel } from '../../../utils/tableExcel';
 import TableSearch from '../../../components/table/TableSearch';
 import { fetchData } from '../../../utils/dataUtils';
 import { errorMsgPopup } from '../../../utils/errorMsgPopup';
+import useDeepCompareEffect from '../../../hooks/useDeepCompareEffect';
 import styles from './StandardEmpStatisticPopup.module.css';
 
 const StandardEmpStatisticPopup = ({ show, onHide, data }) => {
@@ -101,7 +102,7 @@ const StandardEmpStatisticPopup = ({ show, onHide, data }) => {
   }, [show]);
 
   // 데이터 로딩
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     if (!show) return;
     let isMounted = true;
 
@@ -161,7 +162,7 @@ const StandardEmpStatisticPopup = ({ show, onHide, data }) => {
     loadData();
 
     return () => { isMounted = false; };
-  }, [show, JSON.stringify(data)]);
+  }, [show, data]);
 
 
   // 데이터 반영

@@ -8,28 +8,6 @@ import { fetchData } from '../../../utils/dataUtils';
 import { errorMsgPopup } from '../../../utils/errorMsgPopup';
 import styles from './StandardOrgStatisticPopup.module.css';
 
-const useDeepCompareEffect = (callback, dependencies) => {
-  const current = useRef(dependencies);
-  const changeCount = useRef(0);
-
-  // 깊은 비교 (배열/객체 내용 비교)
-  const isSame = current.current.length === dependencies.length &&
-    current.current.every((prev, i) => {
-      try {
-        return JSON.stringify(prev) === JSON.stringify(dependencies[i]);
-      } catch {
-        return Object.is(prev, dependencies[i]);
-      }
-    });
-
-  if (!isSame) {
-    current.current = dependencies;
-    changeCount.current += 1;
-  }
-
-  useEffect(callback, [changeCount.current]);
-};
-
 const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
   const tableRef = useRef(null);
   const tableInstance = useRef(null);
@@ -226,10 +204,32 @@ const StandardOrgStatisticPopup = ({ show, onHide, data, dynamicColumns }) => {
     };
   }, [show]);
 
-  // 초기 데이터 로드
-  useDeepCompareEffect(() => {
+  // 초기 데이터 로드 (무한 루프 방지 + 정확한 재호출)
+  const prevDataKeyRef = useRef(null);
+
+  useEffect(() => {
     if (!show) return;
-    loadData(data[0]);
+    if (!data || !Array.isArray(data) || data.length === 0) return;
+
+    // 핵심: 실제로 의미 있는 데이터가 바뀌었는지 확인
+    const currentKey = [
+      data[0].SECTIONCD || '',
+      data[0].ORGCD || '',
+      data[0].EMPNO || '',
+      data[0].DATEGB || '',
+      data[0].DATE1 || '',
+      data[0].DATE2 || '',
+      data[0].pCLASSACD || '',
+      data[0].pCLASSBCD || '',
+      data[0].pCLASSCCD || ''
+    ].join('||');
+
+    if (prevDataKeyRef.current === currentKey) {
+      return; // 똑같은 조건이면 loadData 호출 안 함 → 무한 루프 완전 차단
+    }
+
+    prevDataKeyRef.current = currentKey;
+    loadData(data[0]); // 진짜 바뀐 경우에만 호출
   }, [show, data]);
 
   // 테이블 데이터 및 컬럼 반영
