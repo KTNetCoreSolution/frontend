@@ -1,44 +1,92 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MobileMainUserMenu from '../../components/mobile/MobileMainUserMenu';
+import useStore from '../../store/store';
+import { fetchData } from "../../utils/dataUtils";
+import { errorMsgPopup } from '../../utils/errorMsgPopup';
+import { msgPopup } from "../../utils/msgPopup";
 import api from '../../utils/api';
 import common from '../../utils/common';
-import useStore from '../../store/store';
-import { msgPopup } from "../../utils/msgPopup";
+import styles from './MobileUserInfo.module.css';
 
 const MobileUserInfo = () => {
   const navigate = useNavigate();
-  const { clearUser } = useStore();
+  const { user, clearUser } = useStore();
   const [showSidebar, setShowSidebar] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleToggleSidebar = () => {
-    setShowSidebar(!showSidebar);
+  const handleToggleSidebar = () => setShowSidebar(prev => !prev);
+
+  const handleLogout = async () => {
+    try {
+      const response = await api.post(commonUtils.getServerUrl('auth/logout'), {});
+      if (response) {
+        clearUser();
+        navigate('/mobile/Login');
+      }
+    } catch (error) {
+      console.error('Logout failed:', error.message);
+      clearUser();
+      navigate('/mobile/Login');
+    }
   };
 
   useEffect(() => {
-    msgPopup("작업중입니다.");
-    navigate('/mobile/Main');
-  }, [navigate]);
+    const loadMyInfo = async () => {
+      if (!user?.empNo) {
+        setLoading(false);
+        return;
+      }
 
-const handleLogout = async () => {
-  try {
-    const response = await api.post(common.getServerUrl('auth/logout'), {});
-    if(response)
-    {
-      clearUser();
-      navigate('/Mobile/Login');
-    }
-  } catch (error) {
-    console.error('Logout failed:', error.message);
-    clearUser();
-    navigate('/Mobile/Login'); // 실패 시에도 로그인 페이지로 이동
-  }
-};
+      setLoading(true);
+      try {
+        const params = {
+          pGUBUN: "EMPNO",
+          pSEARCH: user.empNo,
+          pDEBUG: "F"
+        };
+
+        const response = await fetchData("common/userinfo/list", params);
+
+        if (!response.success || response.errMsg !== "") {
+          errorMsgPopup(response.message || response.errMsg || "사용자 정보를 불러오지 못했습니다.");
+          setUserInfo(null);
+          return;
+        }
+
+        const data = Array.isArray(response.data) ? response.data[0] : null;
+        if (data) {
+          setUserInfo(data);
+        } else {
+          msgPopup("사용자 정보를 찾을 수 없습니다.");
+        }
+      } catch (err) {
+        console.error(err);
+        errorMsgPopup("정보를 불러오는 중 오류가 발생했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMyInfo();
+  }, [user?.empNo]);
+
+  // 각 항목을 개별 타일로 렌더링하는 함수
+  const InfoTile = ({ label, value }) => (
+    <div className={styles.infoTile}>
+      <div className={styles.infoRow}>
+        <span className={styles.infoLabel}>{label}</span>
+        <span className={styles.infoValue}>{value || '-'}</span>
+      </div>
+    </div>
+  );
 
   return (
     <div className="container-fluid p-0">
+      {/* 헤더 */}
       <header className="header">
-        <h1 className="h5 mb-0">기본정보</h1>
+        <h1 className="h5 mb-0">나의 정보</h1>
         <button className="btn text-white" onClick={handleToggleSidebar}>
           <i className="bi bi-list"></i>
         </button>
@@ -50,86 +98,27 @@ const handleLogout = async () => {
         onLogout={handleLogout}
       />
 
-      <div className='subContainer'>
-        <ul className="nav nav-tabs" id="infoTabs" role="tablist">
-          <li className="nav-item" role="presentation">
-            <button
-              className="nav-link active"
-              id="info-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#info"
-              type="button"
-              role="tab"
-              aria-controls="info"
-              aria-selected="true"
-            >
-              인사정보
-            </button>
-          </li>
-          <li className="nav-item" role="presentation">
-            <button
-              className="nav-link"
-              id="equipment-tab"
-              data-bs-toggle="tab"
-              data-bs-target="#equipment"
-              type="button"
-              role="tab"
-              aria-controls="equipment"
-              aria-selected="false"
-            >
-              공기구
-            </button>
-          </li>
-        </ul>
-
-        <div className="tab-content mt-4">
-          <div
-            className="tab-pane fade show active formDivBox03"
-            id="info"
-            role="tabpanel"
-            aria-labelledby="info-tab"
-          >
-            <ul className="list-group">
-              <li className="list-group-item">사번: 12345</li>
-              <li className="list-group-item">사원명: 홍길동</li>
-              <li className="list-group-item">부서: 개발팀</li>
-              <li className="list-group-item">입사일: 2023-01-15</li>
-            </ul>
+      {/* 본문 */}
+      <div className="pageMain pt-3">
+        {loading ? (
+          <div className={styles.loadingWrapper}>
+            <div className={styles.loadingSpinner}></div>
+            <p>정보를 불러오는 중...</p>
           </div>
-          <div
-            className="tab-pane fade formDivBox03"
-            id="equipment"
-            role="tabpanel"
-            aria-labelledby="equipment-tab"
-          >
-            <ul className="list-group">
-              <li className="list-group-item">장비ID: EQ001</li>
-              <li className="list-group-item">장비명: 노트북 A100</li>
-              <li className="list-group-item">상태: 사용 중</li>
-              <li className="list-group-item">배정일: 2024-05-01</li>
-            </ul>
+        ) : !userInfo ? (
+          <div className={styles.noData}>
+            사용자 정보를 불러올 수 없습니다.
           </div>
-          <div
-            className="tab-pane fade"
-            id="ultimate"
-            role="tabpanel"
-            aria-labelledby="ultimate-tab"
-          >
-            <div className="alert alert-info">
-              항목이 발견되지 않았습니다.
-            </div>
-          </div>
-          <div
-            className="tab-pane fade"
-            id="safety"
-            role="tabpanel"
-            aria-labelledby="safety-tab"
-          >
-            <div className="alert alert-info">
-              항목이 발견되지 않았습니다.
-            </div>
-          </div>
-        </div>
+        ) : (
+          <>
+            <InfoTile label="사원번호" value={userInfo.EMPNO} />
+            <InfoTile label="성명" value={userInfo.EMPNM} />
+            <InfoTile label="소속" value={userInfo.ORGNM} />
+            <InfoTile label="직책" value={userInfo.LEVELNM} />
+            <InfoTile label="호칭" value={userInfo.TITLENM} />
+            <InfoTile label="분야" value={userInfo.SECTIONNM} />
+          </>
+        )}
       </div>
     </div>
   );
