@@ -196,6 +196,60 @@ const ExcelUploadTemplateManage = () => {
           { headerHozAlign: "center", hozAlign: "right", title: "파일용량", field: "FILESIZE", sorter: "string", width: 100, editable: false },
           { headerHozAlign: "center", hozAlign: "center", title: "등록일", field: "REGEDT", sorter: "string", width: 100, editable: false },
           { headerHozAlign: "center", hozAlign: "center", title: "등록자", field: "REGEDBY", sorter: "string", width: 100, editable: false },
+          {
+            headerHozAlign: "center",
+            hozAlign: "center",
+            title: "다운로드",
+            field: "DOWNLOAD",
+            width: 100,
+            formatter: (cell) => {
+              const rowData = cell.getRow().getData();
+              const wrapper = document.createElement("div");
+              wrapper.style.display = "flex";
+              wrapper.style.justifyContent = "center";
+              wrapper.style.alignItems = "center";
+              wrapper.style.height = "100%";
+
+              const button = document.createElement("button");
+              button.className = "btn btn-sm btn-success";
+              button.innerHTML = '<i class="bi bi-download"></i>';
+              button.title = "템플릿 다운로드";
+              button.onclick = async (e) => {
+                e.stopPropagation();
+                try {
+                  const result = await fetchData("excelupload/template/filelist", {
+                    pGUBUN: 'DETAIL',
+                    pTITLE: '',
+                    pFILEID: rowData.FILEID,
+                    pRPTCD: '',
+                    pDEBUG: 'F'
+                  });
+
+                  if (result.errCd === "00" && result.data && result.data[0]?.FILEDATA?.length > 0) {
+                    const fileData = result.data[0].FILEDATA;
+                    const fileName = result.data[0].FILENM || "template.xlsx";
+                    const mimeType =
+                      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+                    const link = document.createElement("a");
+                    link.href = `data:${mimeType};base64,${fileData}`;
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  } else {
+                    msgPopup(result.errMsg || "다운로드할 파일이 없습니다.", "error");
+                  }
+                } catch (err) {
+                  console.error(err);
+                  msgPopup("파일 다운로드 중 오류가 발생했습니다.", "error");
+                }
+              };
+
+              wrapper.appendChild(button);
+              return wrapper;
+            },
+          },
         ], [], {
           editable: true,
           rowFormatter: (row) => {

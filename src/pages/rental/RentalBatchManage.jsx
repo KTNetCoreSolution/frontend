@@ -732,7 +732,7 @@ const RentalBatchManage = () => {
         }}
         title={excelPopupTitle}
         rptCd="RENTALINFOEXCELUPLOAD|Y"
-        templateParams={{ pGUBUN: 'RPTCD', pTITLE: '', pFILEID: '14', pRPTCD: 'RENTALINFOEXCELUPLOAD', pDEBUG: 'F' }}
+        templateParams={{ pGUBUN: 'RPTCD', pTITLE: '', pFILEID: '', pRPTCD: 'RENTALINFOEXCELUPLOAD', pDEBUG: 'F' }}
       />
       <RentalProductPopup show={showProductPopup} onHide={() => setShowProductPopup(false)} data={classData} onSave={handleProductSelect} />
       <UserOrgSearchPopup show={showUserPopup} onHide={() => setShowUserPopup(false)} onSave={handleUserSelect} />
