@@ -108,7 +108,7 @@ const ExcelUploadPopup = ({ show, onHide, title, rptCd, templateParams }) => {
                           return;
                         }
                         if (!fileUtils.isValidFile(selectedFile, true)) {
-                          setToastMessage('엑셀 파일(xls, xlsx)만 업로드 가능합니다.');
+                          setToastMessage('엑셀 파일만 업로드 가능합니다.');
                           setShowToast(true);
                           e.target.value = null;
                           setFiles(null);

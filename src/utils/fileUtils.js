@@ -1,4 +1,6 @@
 const fileUtils = {
+  EXCEL_EXTENSIONS: ['xls', 'xlsx', 'ncs', 'ncsx'],
+
   // 상수 정의 (환경 변수에서 가져오거나 디폴트값 사용)
   _MAX_FILES: parseInt(import.meta.env.VITE_MAX_FILES, 10) || 10, // 최대 파일 수 (기본값 10)
   _MAX_FILE_SIZE: parseInt(import.meta.env.VITE_MAX_FILE_SIZE, 10) || 100 * 1024 * 1024, // 최대 파일 크기 (기본값 100MB)
@@ -66,12 +68,10 @@ const fileUtils = {
           .join(',');
       } else if (normalizedValue === 'document/*') {
         this._ACCEPT = 'document/*';
-      } else if (normalizedValue === 'excel/*' || normalizedValue === 'excel') { // Excel 전용 설정 추가
-        this._ACCEPT = this.excelExtensions
-          .map(ext => this.mimeTypes[ext])
-          .filter(mime => mime)
-          .join(',');
-      } else if (normalizedValue === '*' || normalizedValue === '*/*') {
+      } else if (normalizedValue === 'excel/*' || normalizedValue === 'excel') {
+        this._ACCEPT = this.EXCEL_EXTENSIONS.map(ext => '.' + ext).join(',');
+      }
+      else if (normalizedValue === '*' || normalizedValue === '*/*') {
         this._ACCEPT = '*';
       } else {
         this._ACCEPT = normalizedValue;
@@ -92,6 +92,10 @@ const fileUtils = {
   isValidFile(file, excelOnly = false) {
     const extension = this.getFileExtension(file.fileName || file.name);
     const mimeType = this.mimeTypes[extension];
+
+    if (excelOnly) {
+      return this.EXCEL_EXTENSIONS.includes(extension);
+    }
 
     if (this._ACCEPT === '*') {
       return !excelOnly || this.isExcelFileOnly(file); // Excel 전용 체크 적용
@@ -124,7 +128,7 @@ const fileUtils = {
   // Excel 파일만 체크
   isExcelFileOnly(file) {
     const extension = this.getFileExtension(file.fileName || file.name);
-    return this.excelExtensions.includes(extension);
+    return this.EXCEL_EXTENSIONS.includes(extension);
   },
 
   // MIME 타입 매핑
@@ -157,7 +161,9 @@ const fileUtils = {
     doc: 'application/msword',
     docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     xls: 'application/vnd.ms-excel',
+    ncs: 'application/vnd.ms-excel',
     xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ncsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     ppt: 'application/vnd.ms-powerpoint',
     pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
     txt: 'text/plain',
@@ -170,7 +176,6 @@ const fileUtils = {
   audioExtensions: ['mp3', 'wav', 'ogg', 'aac', 'flac'],
   textExtensions: ['txt', 'log'],
   documentExtensions: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'],
-  excelExtensions: ['xls', 'xlsx'],
 
   formatFileSize(bytes) { // 파일 크기를 가독성 있는 단위로 변환
     if (bytes === 0) return '0 Bytes';
@@ -233,7 +238,7 @@ const fileUtils = {
       return 'bi-file-earmark-pdf';
     } else if (['doc', 'docx'].includes(extension)) {
       return 'bi-file-earmark-word';
-    } else if (['xls', 'xlsx'].includes(extension)) {
+    } else if (this.EXCEL_EXTENSIONS.includes(extension)) {
       return 'bi-file-earmark-excel';
     } else if (['ppt', 'pptx'].includes(extension)) {
       return 'bi-file-earmark-slides';
