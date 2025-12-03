@@ -44,18 +44,22 @@ const StandardDashboard = () => {
         errorMsgPopup(totalResponse.message || '전사 데이터를 가져오는 중 오류가 발생했습니다.');
         return;
       }
-      const processedTotalData = totalResponse.data.map(item => ({
-        구분: item.SECTIONCD === 'TOTAL' ? '계' : item.SECTIONCD,
-        '대상인원(명)': Number(item.EMPTARGETCNT) || 0,
-        '입력인원(명)': Number(item.EMPINPUTCNT) || 0,
-        '대상시간(h)': Number(item.TARGETWORKH) || 0,
-        '입력시간(h)': Number(item.WORKH) || 0,
-        '비율(%)': item.WORKH && item.SECTIONCD !== 'TOTAL'
-          ? ((Number(item.WORKH) / Number(totalResponse.data.find(d => d.SECTIONCD === 'TOTAL')?.WORKH)) * 100).toFixed(2)
-          : 100,
-        '총대상시간(h)': item.SECTIONCD === 'TOTAL' ? Number(item.WORKH) : 0,
-      }));
-      setTotalData(processedTotalData);
+
+      if(totalResponse.data != null)
+      {
+        const processedTotalData = totalResponse.data.map(item => ({
+          구분: item.SECTIONCD === 'TOTAL' ? '계' : item.SECTIONCD,
+          '대상인원(명)': Number(item.EMPTARGETCNT) || 0,
+          '입력인원(명)': Number(item.EMPINPUTCNT) || 0,
+          '대상시간(h)': Number(item.TARGETWORKH) || 0,
+          '입력시간(h)': Number(item.WORKH) || 0,
+          '비율(%)': item.WORKH && item.SECTIONCD !== 'TOTAL'
+            ? ((Number(item.WORKH) / Number(totalResponse.data.find(d => d.SECTIONCD === 'TOTAL')?.WORKH)) * 100).toFixed(2)
+            : 100,
+          '총대상시간(h)': item.SECTIONCD === 'TOTAL' ? Number(item.WORKH) : 0,
+        }));
+        setTotalData(processedTotalData);
+      }
 
       // 2. 대분류별 표준활동 추이현황 (TOBELIST)
       const tobeResponse = await fetchData('standard/dashBoard/list', getApiParams('TOBELIST'));
@@ -63,11 +67,15 @@ const StandardDashboard = () => {
         errorMsgPopup(tobeResponse.message || '본부별 데이터를 가져오는 중 오류가 발생했습니다.');
         return;
       }
-      const processedTobeData = tobeResponse.data.map(item => ({
-        ...item,
-        ORGNM: item.ORGNM,
-      }));
-      setTobeData(processedTobeData);
+
+      if(tobeResponse.data != null)
+      {
+        const processedTobeData = tobeResponse.data.map(item => ({
+          ...item,
+          ORGNM: item.ORGNM,
+        }));
+        setTobeData(processedTobeData);
+      }
 
       // 3. 대분류별 표준활동 입력현황 (CLASSLIST)
       const classResponse = await fetchData('standard/dashBoard/list', getApiParams('CLASSLIST'));
@@ -75,7 +83,12 @@ const StandardDashboard = () => {
         errorMsgPopup(classResponse.message || '대분류 데이터를 가져오는 중 오류가 발생했습니다.');
         return;
       }
-      setClassData(classResponse.data);
+
+      if(classResponse.data != null)
+      {
+        setClassData(classResponse.data);
+      }
+
     } catch (err) {
       console.error('데이터 로드 실패:', err);
       errorMsgPopup('데이터를 가져오는 중 오류가 발생했습니다.');
