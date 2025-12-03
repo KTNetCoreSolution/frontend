@@ -345,6 +345,13 @@ const MobileDrivingLog = () => {
             </div>
             <div className="arrowContainer"></div>
           </div>
+          <div className="formDivBtnBox" onClick={moveToPenalty} >
+            <div>
+              <label className="formListTitle">과태료</label>
+              <label className="formDesc">미납 과태료가 <font style={{color: carInfo.PENALTYCNT > 0 ? 'red' : ''}} >{carInfo.PENALTYCNT}</font>건 있습니다.</label>
+            </div>
+            <div className="arrowContainer"></div>
+          </div>
           <div className="formDivBtnBox" onClick={(e) => navigate('/mobile/MobileCarLogList')} >
             <div>
               <label className="formListTitle">운행이력</label>
@@ -356,13 +363,6 @@ const MobileDrivingLog = () => {
             <div>
               <label className="formListTitle">차량상태</label>
               <label className="formDesc">내 조직의 차량상태를 확인합니다</label>
-            </div>
-            <div className="arrowContainer"></div>
-          </div>
-          <div className="formDivBtnBox" onClick={moveToPenalty} >
-            <div>
-              <label className="formListTitle">과태료</label>
-              <label className="formDesc">미납 과태료가 <font style={{color: carInfo.PENALTYCNT > 0 ? 'red' : ''}} >{carInfo.PENALTYCNT}</font>건 있습니다.</label>
             </div>
             <div className="arrowContainer"></div>
           </div>

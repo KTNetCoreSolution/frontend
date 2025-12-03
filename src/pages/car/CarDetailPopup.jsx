@@ -32,6 +32,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   const [delBtnNm, setDelBtnNm] = useState('삭제');
   const [reqStatus, setReqStatus] = useState('');
   const [reqGubun, setReqGubun] = useState('');
+  const [vDisabled, setVDisabled] = useState('disabled');
   
   useEffect(() => {
     // 컴포넌트 언마운트 시 테이블 정리
@@ -99,6 +100,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   useEffect(() => {
     setCarInfo(initialCarInfo);
     setReqStatus('');
+
     if (show) {
       if(data !== ''){ 
         setCarInfo({...carInfo, GUBUN:'U', PRECARID: data, CARID: data});
@@ -113,14 +115,23 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         }
 
         handleSearchCarInfo(data); //차량정보 조회
+
+        if (hasPermission(user?.auth, 'permissions')) {
+          setVDisabled('');
+        }
+        else {          
+          setVDisabled('disabled');
+        }
       }
       else {
         setCarInfo({...carInfo, GUBUN:''});
         setVStyle({vDISPLAY: 'show', vBTNDEL: 'none', vDISABLED: ''});
+        setVDisabled('');
       }
     }
     else {
       setVStyle({vDISPLAY: 'show', vBTNDEL: 'show', vDISABLED: ''});
+      setVDisabled('disabled');
     }
   }, [show]);
   
@@ -532,44 +543,44 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         <div className="row">
           <div className="col-6 d-flex">
             <label className="form-label w100" htmlFor="rentalComp">렌터카업체</label>
-            <select id="rentalComp" className={`form-select ${styles.formSelect}`} value={carInfo.RENTALCOMP} onChange={(e) => {setCarInfo({ ...carInfo, RENTALCOMP: e.target.value })}}>
+            <select id="rentalComp" className={`form-select ${styles.formSelect}`} value={carInfo.RENTALCOMP} disabled={`${vDisabled}`} onChange={(e) => {setCarInfo({ ...carInfo, RENTALCOMP: e.target.value })}}>
               <option value="">선택하세요</option>
               {rentalCompList.map((item) => <option key={item.RENTALCOMP} value={item.RENTALCOMP}>{item.RENTALCOMP}</option>)}
             </select>
           </div>
           <div className="col-6 d-flex">
             <label className="form-label w100" htmlFor="carAquireddt">차량취득일</label>
-            <input type="date" id="carAquireddt" className={`form-control ${styles.formControl}`} value={carInfo.CARACQUIREDDT} onChange={(e) => {setCarInfo({ ...carInfo, CARACQUIREDDT: e.target.value })}} />
+            <input type="date" id="carAquireddt" className={`form-control ${styles.formControl}`} value={carInfo.CARACQUIREDDT} disabled={`${vDisabled}`} onChange={(e) => {setCarInfo({ ...carInfo, CARACQUIREDDT: e.target.value })}} />
           </div>
         </div>
         <div className="row">
           <div className="col-6 d-flex">
             <label className="form-label w100" htmlFor="rentalExfiredDt">계약만료일</label>
-            <input type="date" id="rentalExfiredDt" className={`form-control ${styles.formControl}`} value={carInfo.RENTALEXFIREDDT} onChange={(e) => {setCarInfo({ ...carInfo, RENTALEXFIREDDT: e.target.value })}} />
+            <input type="date" id="rentalExfiredDt" className={`form-control ${styles.formControl}`} value={carInfo.RENTALEXFIREDDT} disabled={`${vDisabled}`} onChange={(e) => {setCarInfo({ ...carInfo, RENTALEXFIREDDT: e.target.value })}} />
           </div>
           <div className="col-6 d-flex">
             <label className="form-label w100" htmlFor="carRegDate">최초등록일</label>
-            <input type="date" id="carRegDate" className={`form-control ${styles.formControl}`} value={carInfo.CARREGDATE} onChange={(e) => {setCarInfo({ ...carInfo, CARREGDATE: e.target.value })}} />
+            <input type="date" id="carRegDate" className={`form-control ${styles.formControl}`} value={carInfo.CARREGDATE} disabled={`${vDisabled}`} onChange={(e) => {setCarInfo({ ...carInfo, CARREGDATE: e.target.value })}} />
           </div>
         </div>
         <div className="row">
           <div className="col-6 d-flex">
             <label className="form-label w100" htmlFor="carPrice">차량가</label>
-            <input type="number" id="carPrice" value={carInfo.CARPRICE} className={`form-control ${styles.formControl}`} onChange={(e) => {setCarInfo({ ...carInfo, CARPRICE: e.target.value })}} />
+            <input type="number" id="carPrice" value={carInfo.CARPRICE} className={`form-control ${styles.formControl}`} disabled={`${vDisabled}`} onChange={(e) => {setCarInfo({ ...carInfo, CARPRICE: e.target.value })}} />
           </div>
           <div className="col-6 d-flex">
             <label className="form-label w100" htmlFor="rentalPrice">월납부액</label>
-            <input type="number" id="rentalPrice" value={carInfo.RENTALPRICE} className={`form-control ${styles.formControl}`} onChange={(e) => {setCarInfo({ ...carInfo, RENTALPRICE: e.target.value })}} />
+            <input type="number" id="rentalPrice" value={carInfo.RENTALPRICE} className={`form-control ${styles.formControl}`} disabled={`${vDisabled}`} onChange={(e) => {setCarInfo({ ...carInfo, RENTALPRICE: e.target.value })}} />
           </div>
         </div>
         <div className="row">
           <div className="col-6 d-flex">
             <label className="form-label w100" htmlFor="insurance">보험료</label>
-            <input type="number" id="insurance" value={carInfo.INSURANCE} className={`form-control ${styles.formControl}`} onChange={(e) => {setCarInfo({ ...carInfo, INSURANCE: e.target.value })}} />
+            <input type="number" id="insurance" value={carInfo.INSURANCE} className={`form-control ${styles.formControl}`} disabled={`${vDisabled}`} onChange={(e) => {setCarInfo({ ...carInfo, INSURANCE: e.target.value })}} />
           </div>
           <div className="col-6 d-flex">
             <label className="form-label w100" htmlFor="deductionYn">공제여부</label>
-            <select id="deductionYn" value={carInfo.DEDUCTIONYN} className={`form-select ${styles.formSelect}`} onChange={(e) => {setCarInfo({ ...carInfo, DEDUCTIONYN: e.target.value })}}>
+            <select id="deductionYn" value={carInfo.DEDUCTIONYN} className={`form-select ${styles.formSelect}`} disabled={`${vDisabled}`} onChange={(e) => {setCarInfo({ ...carInfo, DEDUCTIONYN: e.target.value })}}>
               <option value="">선택하세요</option>
               {['공제', '불공제'].map((type) => (<option key={type} value={type}>{type}</option>))}
             </select>
