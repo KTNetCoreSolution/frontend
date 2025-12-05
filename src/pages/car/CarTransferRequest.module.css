@@ -1,0 +1,104 @@
+.container {
+  margin: 0 auto;
+  width: 100%;
+}
+
+.tableWrapper {
+  position: relative;
+}
+
+.tableSection {
+  /* border: 1px solid #ddd; */
+  width: 100%;
+}
+
+.noteSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 15px;
+  color: #6c757d;
+}
+
+.inputButtonWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.formTable {
+  width: 100%;
+  border-collapse: collapse;
+  box-sizing: border-box; /* padding과 border 포함 */
+  margin-bottom: 10px;
+}
+
+.formTable td {
+  padding: 8px;
+  border: 1px solid #ced4da;
+  vertical-align: middle;
+  box-sizing: border-box; /* padding과 border 포함 */
+  overflow: hidden; /* 내용 오버플로우 방지 */
+  font-size: 14px;
+}
+
+.td1 {
+  width: 11% !important;
+  background-color: rgb(207, 245, 241);
+}
+
+.td2 {
+  width: 14% !important;
+}
+
+.td3 {
+  width: 14% !important;
+  padding-top: 1px !important;
+  padding-bottom: 1px !important;
+  padding-left: 8px !important;
+}
+
+.td4 {
+  width: 11% !important;
+  padding-top: 1px !important;
+  padding-bottom: 1px !important;
+  background-color: rgb(207, 245, 241);
+}
+
+.select {
+  width: 100%; /* 부모 td에 맞춰 조정 */
+  max-width: 200px; /* 최대 너비 제한 */
+  padding: 6px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 14px;
+  box-sizing: border-box; /* padding 포함 계산 */
+}
+
+.input, .input2 {
+  width: 100%; /* 부모 td에 맞춰 조정 */
+  max-width: 200px; /* 최대 너비 제한 */
+  padding: 6px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 14px;
+  box-sizing: border-box; /* padding 포함 계산 */
+}
+
+.input2 {
+  max-width: 60px;
+}
+
+.btn {
+  padding: 6px;
+  margin-left: auto;
+  margin-right: 4px;
+  border: none;
+  border-radius: 4px;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
