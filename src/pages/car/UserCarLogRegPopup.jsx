@@ -551,6 +551,13 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
     const value = e.target.value;    
     e.target.value = value.substring(0, maxlength);
   }
+
+  const handleFuelChange = (e) => {    
+    const value = e.target.value.replace(/[^0-9.]/g, '')
+                                .replace(/(\..*?)\./g, '$1')
+                                .replace(/(\.\d{2})\d+/g, '$1').substring(0, 11);
+    e.target.value = value;
+  };
     
   const handleUpload = async () => {
     if (!logInfo.LOGDATE || logInfo.LOGDATE === '' || !logInfo.LOGSTTIME || logInfo.LOGSTTIME === '' || !logInfo.CARID || logInfo.CARID === '') {
@@ -865,7 +872,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           </div>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>종료km</label>
-            <input type="number" id="stKm" className={`form-control ${styles.formControl2}`} disabled={modifyYn === 'Y' ? '' : 'disabled'} value={logInfo.ENKM} style={{width:100 +'px'}} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, ENKM: e.target.value })}} />
+            <input type="number" id="enKm" className={`form-control ${styles.formControl2}`} disabled={modifyYn === 'Y' ? '' : 'disabled'} value={logInfo.ENKM} style={{width:100 +'px'}} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, ENKM: e.target.value })}} />
           </div>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>주행거리</label>
@@ -873,7 +880,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           </div>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>주유(ℓ)</label>
-            <input type="number" id="stKm" className={`form-control ${styles.formControl2}`} value={logInfo.FUEL} style={{width:100 +'px'}} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, FUEL: e.target.value })}} />
+            <input type="text" inputMode="decimal" id="fuel" className={`form-control ${styles.formControl2}`} value={logInfo.FUEL} style={{width:100 +'px'}} onInput={(e) => {handleFuelChange(e)}} onChange={(e) => {setLogInfo({ ...logInfo, FUEL: e.target.value })}}/>
           </div>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>비고</label>

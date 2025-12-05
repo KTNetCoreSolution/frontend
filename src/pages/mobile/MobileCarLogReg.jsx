@@ -367,6 +367,13 @@ const MobileDrivingLog = () => {
     e.target.value = value.substring(0, maxlength);
   };
 
+  const handleFuelChange = (e) => {    
+    const value = e.target.value.replace(/[^0-9.]/g, '')
+                                .replace(/(\..*?)\./g, '$1')
+                                .replace(/(\.\d{2})\d+/g, '$1').substring(0, 11);
+    e.target.value = value;
+  };
+
   const handleReturnPage = () => {
     if(gubun === 'U') {
       navigate(-1);
@@ -512,7 +519,7 @@ const MobileDrivingLog = () => {
             <li>
               <span className="formLabel" style={{width: '120px'}}>주유(ℓ)</span>
               <div className="formData">
-                <input type="number" className={`${styles.formInput}`} style={{width: '120px'}} value={logInfo.FUEL} onInput={(e) => {handleMaxLength(e, 11)}} onChange={(e) => {setLogInfo({ ...logInfo, FUEL: e.target.value })}} />
+                <input type="text" inputMode="decimal" className={`${styles.formInput}`} style={{width: '120px'}} value={logInfo.FUEL} onInput={(e) => {handleFuelChange(e)}} onChange={(e) => {setLogInfo({ ...logInfo, FUEL: e.target.value })}} />
               </div>
             </li>
             <li>
