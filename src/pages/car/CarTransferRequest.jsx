@@ -224,10 +224,10 @@ const CarTransferRequest = () => {
           </tbody>
         </table>
       )}
-      <div className={styles.noteSection} style={{width: '40%', marginTop: '40px', marginRight: 'auto', marginLeft: 'auto'}}>
+      <div className={styles.noteSection} style={{width: '40%', marginTop: '40px', marginLeft: '40%'}}>
         <span>이관받을 기관</span>
       </div>
-      <table className={styles.formTable} style={{width: '40%', marginRight: 'auto', marginLeft: 'auto'}}>
+      <table className={styles.formTable} style={{width: '40%', marginLeft: '40%'}}>
         <tbody>
           <tr>
             <td className={styles.td1}>조직</td>

@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import useStore from '../../store/store';
 import common from '../../utils/common';
 import styles from './MainLayout.module.css';
+import { el } from 'date-fns/locale';
 
 const MainTopNavLoc = () => {
   const { pathname } = useLocation();
@@ -16,9 +17,9 @@ const MainTopNavLoc = () => {
       normalizedPath = normalizedPath.replace(new RegExp(`^${basename}`), '');
     }
 
-    if (normalizedPath === '/main') {
+    if (normalizedPath === '/main' || normalizedPath === '/car/carTransferRequest') {
       return [''];
-    }
+    }    
 
     let trail = ['Home'];
     const searchMenu = (items, parentName = null) => {
