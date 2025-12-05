@@ -12,6 +12,7 @@ import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import { hasPermission } from '../../utils/authUtils';
 import Modal from 'react-bootstrap/Modal';
 import styles from './CarDetailPopup.module.css';
+import { set } from 'date-fns';
 
 const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   const { user } = useStore();
@@ -32,6 +33,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   const [delBtnNm, setDelBtnNm] = useState('삭제');
   const [reqStatus, setReqStatus] = useState('');
   const [reqGubun, setReqGubun] = useState('');
+  const [transfer_ReqStatus, setTransfer_ReqStatus] = useState('');
   const [vDisabled, setVDisabled] = useState('disabled');
   
   useEffect(() => {
@@ -100,6 +102,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
   useEffect(() => {
     setCarInfo(initialCarInfo);
     setReqStatus('');
+    setTransfer_ReqStatus('');
 
     if (show) {
       if(data !== ''){ 
@@ -161,6 +164,12 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
       } else if (reqGubun === 'U') {
         return "해당차량은 수정 요청 검토 중입니다.";
       }
+    }
+    else if (transfer_ReqStatus === 'R') {
+      return "해당차량은 이관요청 승인 대기 중입니다.";
+    }
+    else if (transfer_ReqStatus === 'Y') {
+      return "해당차량은 이관요청 인수 대기 중입니다.";
     }
   
     if (!carInfo.CARID || !carInfo.CARNO || !carInfo.MGMTSTATUS|| !carInfo.USEFUEL || !carInfo.RENTALTYPE || !carInfo.CARCD || !carInfo.ORGGROUP || !carInfo.ORGCD || !carInfo.PRIMARYMNGEMPNO || !carInfo.PRIMARYGARAGEADDR) {
@@ -299,6 +308,14 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
         return;
       }
     }
+    else if (transfer_ReqStatus === 'R') {
+      msgPopup("해당차량은 이관요청 승인 대기 중입니다.");
+      return;
+    }
+    else if (transfer_ReqStatus === 'Y') {
+      msgPopup("해당차량은 이관요청 인수 대기 중입니다.");
+      return;
+    }
 
     let Url = 'car/CarinfoRequest';
     let responseMsg = '';
@@ -424,10 +441,12 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
             //차량정보 컴포넌트에 바인딩
             const vReqStatus = response.data[0].REQSTATUS || '';
             const vReqGubun = response.data[0].REQGUBUN || '';
+            const vTransfer_ReqStatus = response.data[0].TRANSFER_REQSTATUS || '';
             let bDataSet = true;
 
             setReqStatus(vReqStatus);
             setReqGubun(vReqGubun);
+            setTransfer_ReqStatus(vTransfer_ReqStatus);
             
             if (vReqStatus === 'G') {
               if (vReqGubun === 'I') {
@@ -448,6 +467,12 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
               } else if (vReqGubun === 'U') {
                 msgPopup("해당차량은 수정 요청 검토 중입니다.");
               }
+            }
+            else if (vTransfer_ReqStatus === 'R') {
+              msgPopup("해당차량은 이관요청 승인 대기 중입니다.");
+            }
+            else if (vTransfer_ReqStatus === 'Y') {
+              msgPopup("해당차량은 이관요청 인수 대기 중입니다.");
             }
             
             if (bDataSet) {
