@@ -350,6 +350,7 @@ const StandardTeamJobManage = () => {
           pWORKCNT: '',
           pSECTIONCD: selectedRow.SECTIONCD,
           pEMPNO: user?.empNo || '',
+          pATTRIBUTE1: '',
         };
       } else if (selectedRow.SECTIONCD === 'BIZ') {
         apiPath = 'standard/empJob/biz/reg/save';
