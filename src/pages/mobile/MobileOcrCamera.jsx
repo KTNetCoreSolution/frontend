@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+/* tesseract.js 카메라 라이브러리 사용 시 npm install tesseract.js@6.0.1 로 설치 후 사용할 것
 import { createWorker } from 'tesseract.js';
 
 const MobileOcrCamera = ({ onSuccess, onClose }) => {
@@ -158,5 +159,5 @@ const MobileOcrCamera = ({ onSuccess, onClose }) => {
     </div>
   );
 };
-
+*/
 export default MobileOcrCamera;

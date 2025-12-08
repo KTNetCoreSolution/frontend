@@ -5,6 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import MobileMainUserMenu from '../../components/mobile/MobileMainUserMenu';
 import MobileOcrCamera from './MobileOcrCamera';
 
+// OCR 테스트를 위해 만든 샘플 파일임.
 const MobileOdometerReader = () => {
   const { user, clearUser } = useStore();
   const navigate = useNavigate();

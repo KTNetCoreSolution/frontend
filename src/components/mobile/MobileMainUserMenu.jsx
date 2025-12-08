@@ -72,10 +72,12 @@ const MobileMainUserMenu = ({ show, handleClose }) => {
     mobileMenuStandardPermission(user?.auth, user?.standardSectionCd, item.MENUID)
   );
 
+  //10번 클릭 시 나오는 테스트 메뉴 설정
   const filteredUserMenu = titleClickCount >= 10 
     ? [
         ...baseMenu,
-        {MENUID: "MMENU0091", MENUNM: "카메라테스트", URL: "/mobile/MobileOdometerReader", children: []}  //테스트화면 추가
+        // {MENUID: "MMENU0091", MENUNM: "카메라테스트", URL: "/mobile/MobileOdometerReader", children: []}  
+        //테스트화면 메뉴를 추가 시
       ]
     : baseMenu;
 
