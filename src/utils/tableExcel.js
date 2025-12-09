@@ -139,3 +139,92 @@ export const handleDownloadExcel2 = (
     });
   }
 };
+
+/**
+ * 컬럼별 소수점 제어 + 숨긴 컬럼 포함 옵션
+ */
+export const handleDownloadExcelWithCustomDecimals = (
+  tableInstance,
+  tableStatus,
+  fileName = "table_data.xlsx",
+  sheetName = "Sheet1",
+  intColumns = [],
+  oneDecimalColumns = [],
+  twoDecimalColumns = [],
+  includeHiddenColumns = false
+) => {
+  if (!tableInstance || tableStatus !== "ready") {
+    console.error("Table instance not ready:", tableInstance, tableStatus);
+    return;
+  }
+
+  try {
+    const data = tableInstance.getData();
+    if (!data || data.length === 0) {
+      console.warn("No data available to download");
+      return;
+    }
+
+    // 보이는 컬럼만 또는 모두 선택
+    const columns = includeHiddenColumns
+      ? tableInstance.getColumns()
+      : tableInstance.getColumns().filter(col => col.isVisible());
+
+    const headers = columns.map(col => col.getDefinition().title || '');
+    const fields = columns.map(col => col.getField());
+
+    // 숫자 컬럼 맵핑
+    const decimalMap = {};
+    intColumns.forEach(f => decimalMap[f] = 0);
+    oneDecimalColumns.forEach(f => decimalMap[f] = 1);
+    twoDecimalColumns.forEach(f => decimalMap[f] = 2);
+    const numberFields = new Set([...intColumns, ...oneDecimalColumns, ...twoDecimalColumns]);
+
+    // 헤더 행
+    const headerRow = headers.map(h => ({ v: h, t: 's' })); // 무조건 텍스트
+
+    // 데이터 행들 (aoa 형식으로 직접 구성)
+    const dataRows = data.map(row => {
+      return fields.map(field => {
+        let value = row[field] ?? '';
+        let cell = { v: value };
+
+        // 숫자 컬럼 처리
+        if (numberFields.has(field)) {
+          const num = parseFloat(value);
+          if (!isNaN(num) && value !== '' && value !== null) {
+            const decimals = decimalMap[field] || 0;
+            cell.t = 'n';
+            cell.z = decimals > 0 ? `0.${'0'.repeat(decimals)}` : '0';
+            cell.v = Number(num.toFixed(decimals));
+          } else {
+            cell.t = 's';
+            cell.v = String(value);
+          }
+        } else {
+          cell.t = 's';
+          cell.v = String(value);
+        }
+        return cell;
+      });
+    });
+
+    // 최종 aoa 데이터: [헤더, ...데이터]
+    const aoa = [headerRow, ...dataRows];
+
+    // 워크시트 생성
+    const worksheet = XLSX.utils.aoa_to_sheet(aoa);
+
+    // 컬럼 너비 설정
+    worksheet['!cols'] = headers.map(h => ({
+      wch: Math.max(h.length, 12)
+    }));
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+    XLSX.writeFile(workbook, fileName);
+
+  } catch (err) {
+    console.error("Excel download failed:", err);
+  }
+};
