@@ -153,9 +153,6 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           const orgCd = response.data[0].ORGCD;
           const driverEmpNo = response.data[0].DRIVER_EMPNO;
           const driver = response.data[0].DRIVER;
-
-          alert(driverEmpNo);
-          alert(driver);
           
           const bBookMark = response.data[0].BOOKMARK === 'Y' ? true : false;
           const bDamage = response.data[0].DAMAGE === 'Y' ? true : false;
