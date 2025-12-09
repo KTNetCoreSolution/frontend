@@ -171,7 +171,7 @@ const CarInfoDetailPopup = ({ show, onHide, onParentSearch, data }) => {
     else if (transfer_ReqStatus === 'Y') {
       return "해당차량은 이관요청 인수 대기 중입니다.";
     }
-  
+    
     if (!carInfo.CARID || !carInfo.CARNO || !carInfo.MGMTSTATUS|| !carInfo.USEFUEL || !carInfo.RENTALTYPE || !carInfo.CARCD || !carInfo.ORGGROUP || !carInfo.ORGCD || !carInfo.PRIMARYMNGEMPNO || !carInfo.PRIMARYGARAGEADDR) {
       return "필수 입력 항목을 모두 입력해주세요.";
     }

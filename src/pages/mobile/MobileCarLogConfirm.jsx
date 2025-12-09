@@ -207,6 +207,10 @@ const MobileCarLogConfirm = () => {
               </li>
               <li>
                 <span className="formLabel" style={{width: '120px'}}>운행자</span>
+                <div className="formText">{item.DRIVER} ({item.DRIVER_EMPNO})</div>
+              </li>
+              <li>
+                <span className="formLabel" style={{width: '120px'}}>작성자</span>
                 <div className="formText">{item.EMPNM} ({item.EMPNO})</div>
               </li>
               <li>

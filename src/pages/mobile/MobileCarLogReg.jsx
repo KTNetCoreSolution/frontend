@@ -7,6 +7,7 @@ import { fetchData, fetchFileUpload } from "../../utils/dataUtils.js";
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import MobileMainUserMenu from '../../components/mobile/MobileMainUserMenu.jsx';
+import UserListPopup from '../../components/popup/MobileUserListPopup';
 import styles from './MobileCarLogReg.module.css';
 import api from '../../utils/api.js';
 
@@ -35,9 +36,10 @@ const MobileDrivingLog = () => {
   const navigate = useNavigate();
   const [showSidebar, setShowSidebar] = useState(false);
   const { state } = useLocation();
+  const [showUserPopup, setShowUserPopup] = useState(false);
   const [carId, setCarId] = useState('');
   const [gubun, setGubun] = useState('');
-  const [logInfo, setLogInfo] = useState({GUBUN: '', CARID: '', CARNO: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:30', SAFETYNOTE: '', PRESTKM: 0, STKM: 0, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: '', EMPNM: '', DELYN: 'N'});
+  const [logInfo, setLogInfo] = useState({GUBUN: '', CARID: '', CARNO: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:30', SAFETYNOTE: '', PRESTKM: 0, STKM: 0, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: '', EMPNM: '', DRIVER_EMPNO: '', DRIVER: '', DELYN: 'N'});
   const [lastLogInfo, setLastLogInfo] = useState({LOGDATE: '', LOGSTTIME: '', LOGENTIME: ''});
   const [modifyYn, setModifyYn] = useState('Y');
   const [isDamage, setIsDamage] = useState(true);
@@ -118,6 +120,8 @@ const MobileDrivingLog = () => {
         const note = pGubun === 'I' ? '' : response.data[0].NOTE;
         const empNo = pGubun === 'I' ? user?.empNo : response.data[0].EMPNO;
         const empNm = pGubun === 'I' ? user?.empNm : response.data[0].EMPNM;
+        const driverEmpNo = pGubun === 'I' ? user?.empNo : response.data[0].DRIVER_EMPNO;
+        const driver = pGubun === 'I' ? user?.empNm + '(' + user?.empNo + ')' : response.data[0].DRIVER + '(' + response.data[0].DRIVER_EMPNO + ')';
         const delYn = response.data[0].DELYN;
 
         const modifyCheck = pGubun === 'I' || delYn === 'Y' ? 'Y' : 'N';
@@ -139,7 +143,7 @@ const MobileDrivingLog = () => {
           logEnTime = response.data[0].LOGENTIME;
         }
 
-        setLogInfo({GUBUN:pGubun, CARID: state?.carId, CARNO: response.data[0].CARNO, LOGDATE: logDate, LOGSTTIME: logStTime, LOGENTIME: logEnTime, SAFETYNOTE: safetyNote, PRESTKM: stKm, STKM: stKm, ENKM: enKm, FUEL: fuel, NOTE: note, EMPNO: empNo, EMPNM: empNm, DELYN: delYn});
+        setLogInfo({GUBUN:pGubun, CARID: state?.carId, CARNO: response.data[0].CARNO, LOGDATE: logDate, LOGSTTIME: logStTime, LOGENTIME: logEnTime, SAFETYNOTE: safetyNote, PRESTKM: stKm, STKM: stKm, ENKM: enKm, FUEL: fuel, NOTE: note, EMPNO: empNo, EMPNM: empNm, DRIVER_EMPNO: driverEmpNo, DRIVER: driver, DELYN: delYn});
         setLastLogInfo({LOGDATE: response.data[0].LOGDATE, LOGSTTIME: response.data[0].LOGDATE, LOGENTIME: response.data[0].LOGENTIME});
 
         const bDamage = response.data[0].DAMAGE === 'Y' || pGubun === 'I' ? true : false;
@@ -298,7 +302,7 @@ const MobileDrivingLog = () => {
       const Etc1 = isEtc1 ? 'Y' : 'N';
       const Etc2 = isEtc2 ? 'Y' : 'N';
 
-      const params = {pCARID: logInfo.CARID, pEMPNO: user?.empNo, pLOGDATE: logInfo.LOGDATE, pLOGSTTIME: logInfo.LOGSTTIME, pLOGENTIME: logInfo.LOGENTIME, pSTKM: logInfo.STKM, pENKM: logInfo.ENKM, pFUEL: logInfo.FUEL, pNOTE: logInfo.NOTE
+      const params = {pCARID: logInfo.CARID, pEMPNO: user?.empNo, pDRIVEREMPNO: logInfo.DRIVER_EMPNO, pLOGDATE: logInfo.LOGDATE, pLOGSTTIME: logInfo.LOGSTTIME, pLOGENTIME: logInfo.LOGENTIME, pSTKM: logInfo.STKM, pENKM: logInfo.ENKM, pFUEL: logInfo.FUEL, pNOTE: logInfo.NOTE
                     , pDAMAGE: Damage, pOILLEAK: OilLeak, pTIRE: Tire, pLUGGAGE: Luggage, pETC1: Etc1, pETC2: Etc2, pSAFETYNOTE: logInfo.SAFETYNOTE};
 
       const response = await fetchData('carlog/carLogTransaction', params);
@@ -493,9 +497,23 @@ const MobileDrivingLog = () => {
         <div className="formDivBox">
           <ul className="formDataWrap">
             <li>
-              <span className="formLabel" style={{width: '120px'}}>운행자</span>
+              <span className="formLabel" style={{width: '120px'}}>작성자</span>
               <div className="formData">
-                <span style={{width: '200px'}}>{user?.empNm + ' (' + user?.empNo + ')'}</span>
+                <span style={{width: '200px'}}>{logInfo.EMPNM + ' (' + logInfo.EMPNO + ')'}</span>
+              </div>
+            </li>
+            <li>
+              <span className="formLabel" style={{width: '120px'}}>운행자</span>
+              <div className="formData d-flex gap-1">
+                <input type="text" value={logInfo.DRIVER} className={`${styles.formInput}`} style={{width: '140px'}} id="driver" disabled="disabled"/>
+                <button type="button" className={`btn btn-secondary ${styles.btn} flex-shrink-0`} style={{display: logInfo.GUBUN === 'I' ? 'block' : 'none'}} onClick={(e) => {setShowUserPopup(true)}}>선택</button>
+                <UserListPopup show={showUserPopup} onHide={() => setShowUserPopup(false)}
+                  onConfirm={(selectedRows) => {
+                    const userEmpNo = selectedRows.length > 0 ? selectedRows[0].EMPNO : '';
+                    const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';
+                    setLogInfo({ ...logInfo, DRIVER_EMPNO: userEmpNo, DRIVER: userEmpNm + ' (' + userEmpNo + ')' });
+                  }}>
+                </UserListPopup>
               </div>
             </li>
             <li>

@@ -6,6 +6,7 @@ import { fetchData, fetchFileUpload } from "../../utils/dataUtils";
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
 import CommonPopup from '../../components/popup/CommonPopup.jsx';
+import MngUserListPopup from '../../components/popup/UserListPopup';
 import { hasPermission, hasLvCdPermission } from '../../utils/authUtils';
 import Modal from 'react-bootstrap/Modal';
 import JSZip from 'jszip';
@@ -36,7 +37,8 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
   const [carId, setCarId] = useState('');
   const [carList, setCarList] = useState({});
   const [carInfo, setCarInfo] = useState({CARNM: '', MANAGER_EMPNM: '', MANAGER_MOBILE: '', GARAGE_ADDR: '', STKM: 0, src: null, bookMark: false, ORGCD: ''});
-  const [logInfo, setLogInfo] = useState({CARID: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:10', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, EMPNO: ''});
+  const [logInfo, setLogInfo] = useState({CARID: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:10', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, EMPNO: user?.empNo, EMPNM: user?.empNm + ' (' + user?.empNo + ')', DRIVER_EMPNO: user?.empNo, DRIVER: user?.empNm + ' (' + user?.empNo + ')'});
+  const [showMngUserPopup, setShowMngUserPopup] = useState(false);
   const [lastLogInfo, setLastLogInfo] = useState({LOGDATE: '', LOGSTTIME: '', LOGENTIME: ''});
   const [vImgDisplay, setImgDisplay] = useState('none');
   const [vDisplay, setDisplay] = useState('false');
@@ -147,7 +149,13 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           const fuel = response.data[0].FUEL;
           const note = response.data[0].NOTE;
           const empNo = response.data[0].EMPNO;
+          const empNm = response.data[0].EMPNM;
           const orgCd = response.data[0].ORGCD;
+          const driverEmpNo = response.data[0].DRIVER_EMPNO;
+          const driver = response.data[0].DRIVER;
+
+          alert(driverEmpNo);
+          alert(driver);
           
           const bBookMark = response.data[0].BOOKMARK === 'Y' ? true : false;
           const bDamage = response.data[0].DAMAGE === 'Y' ? true : false;
@@ -164,7 +172,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           setStTime(timeOption(data.LOGSTTIME, 'S'));
           setEnTime(timeOption(data.LOGSTTIME, 'E'));
           setCarInfo({CARNM: carNm, MANAGER_EMPNM: managerEmpNm, MANAGER_MOBILE: managerMobile, GARAGE_ADDR: garageAddr, STKM: 0, src: dataUrl, bookMark: bBookMark, ORGCD: orgCd});
-          setLogInfo({GUBUN:'U', CARID: data.CARID, LOGDATE: data.LOGDATE, LOGSTTIME: data.LOGSTTIME, LOGENTIME: logEnTime, SAFETYNOTE: safetyNote, STKM: stKm, ENKM: enKm, FUEL: fuel, NOTE: note, EMPNO: empNo});
+          setLogInfo({GUBUN:'U', CARID: data.CARID, LOGDATE: data.LOGDATE, LOGSTTIME: data.LOGSTTIME, LOGENTIME: logEnTime, SAFETYNOTE: safetyNote, STKM: stKm, ENKM: enKm, FUEL: fuel, NOTE: note, EMPNO: empNo, EMPNM: empNm, DRIVER_EMPNO: driverEmpNo, DRIVER: driver});
           setIsDamage(bDamage);
           setIsOilLeak(bOilLeak);
           setIsTire(bTire);
@@ -209,7 +217,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
 
   const initializing = () => {
     setCarInfo({CARNM: '', MANAGER_EMPNM: '', MANAGER_MOBILE: '', GARAGE_ADDR: '', STKM: 0, src: null, bookMark: false, ORGCD: ''});
-    setLogInfo({GUBUN:'I', CARID: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:10', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: ''});
+    setLogInfo({GUBUN:'I', CARID: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:10', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: user?.empNo, EMPNM: user?.empNm + ' (' + user?.empNo + ')', DRIVER_EMPNO: user?.empNo, DRIVER: user?.empNm + ' (' + user?.empNo + ')'});
     setLastLogInfo({LOGDATE: '', LOGSTTIME: '', LOGENTIME: ''});
     setIsFilled(false);
     setIsDamage(true);
@@ -274,7 +282,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
               }
             });
             setCarInfo({CARNM: carNm, MANAGER_EMPNM: managerEmpNm, MANAGER_MOBILE: managerMobile, GARAGE_ADDR: garageAddr, STKM: stKm, src: dataUrl, bookMark: bBookMark, DELYN: 'N', LOGSTAT: '', ORGCD: orgCd});
-            setLogInfo({GUBUN:'I', CARID: e.target.value, LOGDATE: logDate, LOGSTTIME: logStTime, LOGENTIME: logEnTime, SAFETYNOTE: '', STKM: stKm, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: ''});
+            setLogInfo({GUBUN:'I', CARID: e.target.value, LOGDATE: logDate, LOGSTTIME: logStTime, LOGENTIME: logEnTime, SAFETYNOTE: '', STKM: stKm, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: user?.empNo, EMPNM: user?.empNm + ' (' + user?.empNo + ')', DRIVER_EMPNO: user?.empNo, DRIVER: user?.empNm + ' (' + user?.empNo + ')'});
             setLastLogInfo({LOGDATE: response.data[0].LOGDATE, LOGSTTIME: response.data[0].LOGDATE, LOGENTIME: response.data[0].LOGENTIME});
 
             setIsDamage(true);
@@ -458,7 +466,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
       const Etc1 = isEtc1 ? 'Y' : 'N';
       const Etc2 = isEtc2 ? 'Y' : 'N';
 
-      const params = {pCARID: logInfo.CARID, pEMPNO: user?.empNo, pLOGDATE: logInfo.LOGDATE, pLOGSTTIME: logInfo.LOGSTTIME, pLOGENTIME: logInfo.LOGENTIME, pSTKM: logInfo.STKM, pENKM: logInfo.ENKM, pFUEL: logInfo.FUEL, pNOTE: logInfo.NOTE
+      const params = {pCARID: logInfo.CARID, pEMPNO: user?.empNo, pDRIVERMPNO: logInfo.DRIVER_EMPNO, pLOGDATE: logInfo.LOGDATE, pLOGSTTIME: logInfo.LOGSTTIME, pLOGENTIME: logInfo.LOGENTIME, pSTKM: logInfo.STKM, pENKM: logInfo.ENKM, pFUEL: logInfo.FUEL, pNOTE: logInfo.NOTE
                     , pDAMAGE: Damage, pOILLEAK: OilLeak, pTIRE: Tire, pLUGGAGE: Luggage, pETC1: Etc1, pETC2: Etc2, pSAFETYNOTE: logInfo.SAFETYNOTE};
 
       const response = await fetchData('carlog/carLogTransaction', params);
@@ -860,11 +868,24 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
         <div className='flex-column gap-2' style={{display: `${vDisplay ? 'flex' : 'none'}`}}>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>운행일시</label>
-            <div className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`}>{logInfo.LOGDATE + ' ' + logInfo.LOGSTTIME + ' ~ ' + logInfo.LOGENTIME}</div>
+            <div>{logInfo.LOGDATE + ' ' + logInfo.LOGSTTIME + ' ~ ' + logInfo.LOGENTIME}</div>
+          </div>
+          <div className="d-flex">
+            <label className='form-label' style={{width:'100px'}}>작성자</label>
+            <div>{logInfo.EMPNM}</div>
           </div>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>운행자</label>
-            <div className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`}>{user?.empNm + ' (' + user?.empNo + ')'}</div>
+            <input type="text" value={logInfo.DRIVER} className={`form-control ${styles.formControl2}`} style={{width:160 +'px'}} id="driver" disabled="disabled"/>
+            <button type="button" className={`btn btn-secondary ${styles.btn} flex-shrink-0`} style={{display: logInfo.GUBUN === 'I' ? 'block' : 'none'}} onClick={(e) => {setShowMngUserPopup(true)}}>선택</button>
+            <MngUserListPopup show={showMngUserPopup} onHide={() => setShowMngUserPopup(false)}
+              onConfirm={(userInfo) => {
+                alert(JSON.stringify(userInfo));
+                const userEmpNo = userInfo.length > 0 ? userInfo.EMPNO : '';
+                const userEmpNm = userInfo.length > 0 ? userInfo.EMPNM : '';
+                setLogInfo({ ...logInfo, DRIVER_EMPNO: userEmpNo, DRIVER: userEmpNm + ' (' + userEmpNo + ')' });
+              }}>
+            </MngUserListPopup>
           </div>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>시작km</label>
@@ -876,7 +897,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
           </div>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>주행거리</label>
-            <div className={`form-label flex-shrink-0 me-2 ${styles.formLabel}`}>{logInfo.ENKM - logInfo.STKM}</div>
+            <div>{logInfo.ENKM - logInfo.STKM}</div>
           </div>
           <div className="d-flex">
             <label className='form-label' style={{width:'100px'}}>주유(ℓ)</label>
