@@ -82,7 +82,7 @@ const MobileUserListPopup = ({ show, onHide, onConfirm }) => {
 
   const handleListClick = (userInfo) => {    
     if (onConfirm) {
-      onConfirm(userInfo ? [userInfo] : []);
+      onConfirm(userInfo);
     }
     handleClose();
   };  

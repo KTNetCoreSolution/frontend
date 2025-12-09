@@ -879,10 +879,9 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             <input type="text" value={logInfo.DRIVER} className={`form-control ${styles.formControl2}`} style={{width:160 +'px'}} id="driver" disabled="disabled"/>
             <button type="button" className={`btn btn-secondary ${styles.btn} flex-shrink-0`} style={{display: logInfo.GUBUN === 'I' ? 'block' : 'none'}} onClick={(e) => {setShowMngUserPopup(true)}}>선택</button>
             <MngUserListPopup show={showMngUserPopup} onHide={() => setShowMngUserPopup(false)}
-              onConfirm={(userInfo) => {
-                alert(JSON.stringify(userInfo));
-                const userEmpNo = userInfo.length > 0 ? userInfo.EMPNO : '';
-                const userEmpNm = userInfo.length > 0 ? userInfo.EMPNM : '';
+              onConfirm={(selectedRows) => {
+                const userEmpNo = selectedRows.length > 0 ? selectedRows[0].EMPNO : '';
+                const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';
                 setLogInfo({ ...logInfo, DRIVER_EMPNO: userEmpNo, DRIVER: userEmpNm + ' (' + userEmpNo + ')' });
               }}>
             </MngUserListPopup>

@@ -508,9 +508,9 @@ const MobileDrivingLog = () => {
                 <input type="text" value={logInfo.DRIVER} className={`${styles.formInput}`} style={{width: '140px'}} id="driver" disabled="disabled"/>
                 <button type="button" className={`btn btn-secondary ${styles.btn} flex-shrink-0`} style={{display: logInfo.GUBUN === 'I' ? 'block' : 'none'}} onClick={(e) => {setShowUserPopup(true)}}>선택</button>
                 <UserListPopup show={showUserPopup} onHide={() => setShowUserPopup(false)}
-                  onConfirm={(selectedRows) => {
-                    const userEmpNo = selectedRows.length > 0 ? selectedRows[0].EMPNO : '';
-                    const userEmpNm = selectedRows.length > 0 ? selectedRows[0].EMPNM : '';
+                  onConfirm={(userInfo) => {
+                    const userEmpNo = userInfo?.EMPNO? userInfo.EMPNO : '';
+                    const userEmpNm = userInfo?.EMPNM? userInfo.EMPNM : '';
                     setLogInfo({ ...logInfo, DRIVER_EMPNO: userEmpNo, DRIVER: userEmpNm + ' (' + userEmpNo + ')' });
                   }}>
                 </UserListPopup>
