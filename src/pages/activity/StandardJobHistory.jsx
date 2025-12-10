@@ -6,7 +6,7 @@ import MainSearch from '../../components/main/MainSearch';
 import TableSearch from '../../components/table/TableSearch';
 import { createTable } from '../../utils/tableConfig';
 import { initialFilters } from '../../utils/tableEvent';
-import { handleDownloadExcel } from '../../utils/tableExcel';
+import { handleDownloadExcelWithCustomDecimals } from '../../utils/tableExcel';
 import { fetchData } from '../../utils/dataUtils';
 import { msgPopup } from '../../utils/msgPopup';
 import styles from '../../components/table/TableSearch.module.css';
@@ -193,6 +193,7 @@ const StandardJobHistory = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false, frozen: true },
     { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야', field: 'SECTIONNM', sorter: 'string', width: 100, frozen: true },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업자', field: 'EMPNM', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업자사번', field: 'EMPNO', sorter: 'string', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '조직1', field: 'ORGNM1', sorter: 'string', width: 130 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '조직2', field: 'ORGNM2', sorter: 'string', width: 130 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '조직3', field: 'ORGNM3', sorter: 'string', width: 130 },
@@ -310,6 +311,7 @@ const StandardJobHistory = () => {
       table.setData(data);
       if (isSearched && data.length === 0 && !loading) {
         tableInstance.current.alert('검색 결과 없음', 'info');
+        setRowCount(0);
       } else {
         tableInstance.current.clearAlert();
         setRowCount(tableInstance.current.getDataCount());
@@ -390,7 +392,18 @@ const StandardJobHistory = () => {
         filters={tableFilters}
         setFilters={setTableFilters}
         rowCount={rowCount}
-        onDownloadExcel={() => handleDownloadExcel(tableInstance.current, tableStatus, '업무내역조회.xlsx')}
+        onDownloadExcel={() => {
+          handleDownloadExcelWithCustomDecimals(
+            tableInstance.current,
+            tableStatus,
+            '업무내역조회.xlsx',
+            'Sheet1',
+            ['WORKCNT'],           // 정수 (0자리)
+            [],                    // 소수점 1자리
+            ['WORKH'],             // 소수점 2자리 ['AAA', 'BBB', ...]
+            false
+          );
+        }}
         buttonStyles={styles}
       />
       <div className={styles.tableWrapper}>

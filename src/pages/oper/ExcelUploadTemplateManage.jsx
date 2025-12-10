@@ -286,6 +286,7 @@ const ExcelUploadTemplateManage = () => {
       table.setData(data);
       if (isSearched && data.length === 0 && !loading) {
         tableInstance.current.alert("검색 결과 없음", "info");
+        setRowCount(0);
       } else {
         tableInstance.current.clearAlert();
         const rows = tableInstance.current.getDataCount();
