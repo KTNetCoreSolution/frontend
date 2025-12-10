@@ -211,7 +211,7 @@ const RequestDetailPopup = ({ show, onHide, onParentSearch, data }) => {
           if (data.REQSTATUS === 'G' && hasPermission(user?.auth, 'carManager')) {
             setConfirmBtnNm('승인');
           }
-          else if (data.REQSTATUS === 'R' && user?.orgCd === response.data[0].REQUEST_ORGCD && hasLvCdPermission(user?.levelCd,'carConfirm')) {
+          else if (data.REQSTATUS === 'R' && data.CONFIRMYN === 'Y' && hasLvCdPermission(user?.levelCd,'carConfirm')) {
             setConfirmBtnNm('검토완료');
           }
         }
