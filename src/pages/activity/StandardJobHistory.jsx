@@ -178,11 +178,13 @@ const StandardJobHistory = () => {
         tableInstance.current.showColumn('BIZRUNNM');
         tableInstance.current.showColumn('BIZMANNM');
         tableInstance.current.showColumn('BIZWORKGBNM');
+        tableInstance.current.hideColumn('ATTRIBUTE1');
       } else {
         tableInstance.current.hideColumn('BIZTXT');
         tableInstance.current.hideColumn('BIZRUNNM');
         tableInstance.current.hideColumn('BIZMANNM');
         tableInstance.current.hideColumn('BIZWORKGBNM');
+        tableInstance.current.showColumn('ATTRIBUTE1');
       }
     }
   }, [filters.classGubun, tableStatus, user]);
@@ -207,6 +209,7 @@ const StandardJobHistory = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '업무량(시간)', field: 'WORKH', sorter: 'string', width: 110 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 },
+    { headerHozAlign: 'center', hozAlign: 'left', title: '작업상세', field: 'ATTRIBUTE1', sorter: 'string', width: 600 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '회선번호+고객명', field: 'BIZTXT', sorter: 'string', width: 200, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '출동여부', field: 'BIZRUNNM', sorter: 'string', width: 130, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업인원', field: 'BIZMANNM', sorter: 'string', width: 130, visible: false },

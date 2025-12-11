@@ -130,6 +130,7 @@ const StandardTeamJobManage = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 }, //LINE,DESIGN
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKDT', sorter: 'string', width: 100 }, //LINE,DESIGN
     { headerHozAlign: 'center', hozAlign: 'center', title: '업무량(시간)', field: 'WORKH', sorter: 'number', width: 120 }, //LINE,DESIGN
+    { headerHozAlign: 'center', hozAlign: 'left', title: '작업상세', field: 'ATTRIBUTE1', sorter: 'string', width: 600 }, //LINE,DESIGN
     { headerHozAlign: 'center', hozAlign: 'center', title: '업무분야코드', field: 'SECTIONCD', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '시작시간', field: 'STARTTM', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: 'BIZ입력키', field: 'BIZINPUTKEY', sorter: 'string', width: 100, visible: false },
@@ -211,6 +212,7 @@ const StandardTeamJobManage = () => {
         tableInstance.current.hideColumn('WORKNM');
         tableInstance.current.hideColumn('WORKDT');
         tableInstance.current.hideColumn('WORKH');
+        tableInstance.current.hideColumn('ATTRIBUTE1');
 
         tableInstance.current.showColumn('BIZTXT');
         tableInstance.current.showColumn('BIZRUNNM');
@@ -225,6 +227,7 @@ const StandardTeamJobManage = () => {
         tableInstance.current.showColumn('WORKNM');
         tableInstance.current.showColumn('WORKDT');
         tableInstance.current.showColumn('WORKH');
+        tableInstance.current.showColumn('ATTRIBUTE1');
         
         tableInstance.current.hideColumn('BIZTXT');
         tableInstance.current.hideColumn('BIZRUNNM');
