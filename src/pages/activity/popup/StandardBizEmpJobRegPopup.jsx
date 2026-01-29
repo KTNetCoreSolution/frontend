@@ -64,8 +64,10 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
     CUSTOMER: "",
     DISPATCH: "",
     WORKERS: "",
+    BIZWORKTYPE: "",
     WORKTIME: "",
     LINES: "",
+    VEHICLETIME: "",
   });
   const [processTimes, setProcessTimes] = useState({});
   const [registeredList, setRegisteredList] = useState([]);
@@ -74,6 +76,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
   const [class3Options, setClass3Options] = useState([]);
   const [dispatchOptions, setDispatchOptions] = useState([]);
   const [workersOptions, setWorkersOptions] = useState([]);
+  const [bizWorkTypeOptions, setBizWorkTypeOptions] = useState([]);
   const [workTimeOptions, setWorkTimeOptions] = useState([]);
   const [classPopupState, setClassPopupState] = useState({ show: false, editingIndex: -1 });
   const [isButtonVisible, setIsButtonVisible] = useState(true);
@@ -109,6 +112,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
 
     fetchDropdownOptions('DISPATCH', setDispatchOptions);
     fetchDropdownOptions('WORKERS', setWorkersOptions);
+    fetchDropdownOptions('BIZWORKTYPE', setBizWorkTypeOptions);
     fetchDropdownOptions('WORKTIME', setWorkTimeOptions);
   }, []);
 
@@ -215,6 +219,9 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
           DISPATCH: item.BIZRUNNM || '',
           WORKERSCD: item.BIZMAN || '',
           WORKERS: item.BIZMANNM || '',
+          BIZWORKTYPE: item.BIZWORKTYPE || '',
+          BIZWORKTYPENM: item.BIZWORKTYPENM || '',
+          VEHICLETIME: item.VEHICLETIME || '',
           WORKTIMECD: item.WORKCD || '',
           WORKTIME: item.WORKNM || '',
           LINES: item.WORKCNT || '',
@@ -317,9 +324,11 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         formData.DISPATCH === "" ||
         formData.WORKERS === "" ||
         formData.WORKTIME === "" ||
+        formData.BIZWORKTYPE === "" ||
+        formData.VEHICLETIME === "" ||
         (formData.LINES !== "" && formData.LINES <= 0)
       ) {
-        msgPopup("소분류, 출동여부, 작업인원, 근무시간, 회선수를 확인해주세요.");
+        msgPopup("소분류, 작업유형, 차량이동시간, 출동여부, 작업인원, 근무시간, 회선수를 확인해주세요.");
         return;
       }
 
@@ -356,6 +365,8 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         pBIZTXT: formData.CUSTOMER,
         pBIZRUN: formData.DISPATCH,
         pBIZMAN: formData.WORKERS,
+        pBIZWORKTYPE: formData.BIZWORKTYPE,
+        pVEHICLETIME: formData.VEHICLETIME,
         pWORKCD: formData.WORKTIME,
         pWORKCNT: formData.LINES,
         pWORKGBCD: workGbCodes.join('^'),
@@ -395,6 +406,8 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         pBIZTXT: item.CUSTOMER,
         pBIZRUN: item.DISPATCHCD,
         pBIZMAN: item.WORKERSCD,
+        pBIZWORKTYPE: item.BIZWORKTYPE,
+        pVEHICLETIME: item.VEHICLETIME,
         pWORKCD: item.WORKTIMECD,
         pWORKCNT: item.LINES,
         pWORKGBCD: item.PROCESS,
@@ -413,6 +426,8 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         pBIZTXT: item.CUSTOMER,
         pBIZRUN: item.DISPATCHCD,
         pBIZMAN: item.WORKERSCD,
+        pBIZWORKTYPE: item.BIZWORKTYPE,
+        pVEHICLETIME: item.VEHICLETIME,
         pWORKCD: item.WORKTIMECD,
         pWORKCNT: item.LINES,
         pWORKGBCD: item.PROCESS,
@@ -535,7 +550,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                 </select>
               </td>
               <td className={styles.td5}>소분류</td>
-              <td className={styles.td6} colSpan="5">
+              <td className={styles.td7}>
                 <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange} className={styles.select}>
                   <option value="all">==소분류==</option>
                   {class3Options.slice(1).map((option) => (
@@ -544,6 +559,21 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                     </option>
                   ))}
                 </select>
+              </td>
+              <td className={styles.td5}>작업유형</td>
+              <td className={styles.td6}>
+                <select name="BIZWORKTYPE" value={formData.BIZWORKTYPE} onChange={handleChange} className={styles.select}>
+                  <option value="">== 선택 ==</option>
+                  {bizWorkTypeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </td>
+              <td className={styles.td1}>차량이동시간(분)</td>
+              <td className={styles.td6} colSpan="5">
+                <input type="number" name="VEHICLETIME" value={formData.VEHICLETIME} onChange={handleChange} min="1" className={styles.input} />
               </td>
             </tr>
             <tr>
@@ -655,6 +685,8 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                         <th className={styles.thClassA}>대분류</th>
                         <th className={styles.thClassB}>중분류</th>
                         <th className={styles.thClassC}>소분류</th>
+                        <th className={styles.thBizWorkType}>작업유형</th>
+                        <th className={styles.thVehicleTime}>차량이동시간(분)</th>
                         <th className={styles.thCustomer}>회선번호<br />+고객명</th>
                         <th className={styles.thDispatch}>출동여부</th>
                         <th className={styles.thWorkers}>작업인원</th>
@@ -676,6 +708,8 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                           <td className={styles.thClassC}>
                             {item.CLASSCNM}
                           </td>
+                          <td className={styles.thBizWorkType}>{item.BIZWORKTYPENM}</td>
+                          <td className={styles.thVehicleTime}>{item.VEHICLETIME}</td>
                           <td className={styles.thCustomer}>
                             <input
                               type="text"

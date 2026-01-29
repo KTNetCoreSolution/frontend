@@ -134,6 +134,9 @@ const MobileStandardBizLog = () => {
           CLASSANM: item.CLASSANM || '',
           CLASSBNM: item.CLASSBNM || '',
           CLASSCNM: item.CLASSCNM || '',
+          BIZWORKTYPE: item.BIZWORKTYPENM || '',
+          VEHICLETIME: item.VEHICLETIME || '',
+          ORIGINAL_VEHICLETIME: item.VEHICLETIME || '',
           CUSTOMER: item.BIZTXT || '',
           ORIGINAL_CUSTOMER: item.BIZTXT || '', // 원본 값 저장
           DISPATCHCD: item.BIZRUN || '',
@@ -197,6 +200,8 @@ const MobileStandardBizLog = () => {
         pBIZTXT: item.CUSTOMER,
         pBIZRUN: item.DISPATCHCD,
         pBIZMAN: item.WORKERSCD,
+        pBIZWORKTYPE: item.BIZWORKTYPE,
+        pVEHICLETIMEE: item.VEHICLETIME,
         pWORKCD: item.WORKTIMECD,
         pWORKCNT: item.LINES,
         pWORKGBCD: item.PROCESS,
@@ -352,6 +357,14 @@ const MobileStandardBizLog = () => {
                       }}
                     />
                   </div>
+                </li>
+                <li>
+                  <span className="formLabel" style={{width: '120px'}}>작업유형</span>
+                  <div className="formData">{item.BIZWORKTYPE}</div>
+                </li>
+                <li>
+                  <span className="formLabel" style={{width: '120px'}}>차량이동시간(분)</span>
+                  <div className="formData">{item.VEHICLETIME}</div>
                 </li>
                 <li>
                   <span className="formLabel" style={{width: '120px'}}>출동여부</span>

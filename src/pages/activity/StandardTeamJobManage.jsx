@@ -135,6 +135,8 @@ const StandardTeamJobManage = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '시작시간', field: 'STARTTM', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: 'BIZ입력키', field: 'BIZINPUTKEY', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '사원번호', field: 'EMPNO', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업유형', field: 'BIZWORKTYPE', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '차량이동시간(분)', field: 'VEHICLETIME', sorter: 'string', width: 150, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '회선번호+고객명', field: 'BIZTXT', sorter: 'string', width: 128 }, //BIZ
     { headerHozAlign: 'center', hozAlign: 'center', title: '출동여부', field: 'BIZRUNNM', sorter: 'string', width: 100 }, //BIZ
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업인원', field: 'BIZMANNM', sorter: 'string', width: 100 }, //BIZ
@@ -221,6 +223,8 @@ const StandardTeamJobManage = () => {
         tableInstance.current.showColumn('BIZWORKCNT');
         tableInstance.current.showColumn('BIZWORKGBNM');
         tableInstance.current.showColumn('BIZWORKH');
+        tableInstance.current.showColumn('BIZWORKTYPE');
+        tableInstance.current.showColumn('VEHICLETIME');
       }
       else{
         tableInstance.current.showColumn('WORKCNT');
@@ -236,6 +240,8 @@ const StandardTeamJobManage = () => {
         tableInstance.current.hideColumn('BIZWORKCNT');
         tableInstance.current.hideColumn('BIZWORKGBNM');
         tableInstance.current.hideColumn('BIZWORKH');
+        tableInstance.current.hideColumn('BIZWORKTYPE');
+        tableInstance.current.hideColumn('VEHICLETIME');
 
       }
     }
@@ -366,6 +372,8 @@ const StandardTeamJobManage = () => {
           pBIZTXT: '',
           pBIZRUN: '',
           pBIZMAN: '',
+          ppBIZWORKTYPE: '',
+          pVEHICLETIME: '',
           pWORKCD: '',
           pWORKCNT: '',
           pWORKGBCD: selectedRow.BIZWORKGB || '',

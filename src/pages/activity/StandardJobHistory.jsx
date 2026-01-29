@@ -179,15 +179,29 @@ const StandardJobHistory = () => {
         tableInstance.current.showColumn('BIZMANNM');
         tableInstance.current.showColumn('BIZWORKGBNM');
         tableInstance.current.hideColumn('ATTRIBUTE1');
+        tableInstance.current.showColumn('BIZWORKTYPE');
+        tableInstance.current.showColumn('VEHICLETIME');
+        tableInstance.current.hideColumn('STARTTM');
+        tableInstance.current.hideColumn('ENDTM');
       } else {
         tableInstance.current.hideColumn('BIZTXT');
         tableInstance.current.hideColumn('BIZRUNNM');
         tableInstance.current.hideColumn('BIZMANNM');
         tableInstance.current.hideColumn('BIZWORKGBNM');
         tableInstance.current.showColumn('ATTRIBUTE1');
+        tableInstance.current.hideColumn('BIZWORKTYPE');
+        tableInstance.current.hideColumn('VEHICLETIME');
+        tableInstance.current.showColumn('STARTTM');
+        tableInstance.current.showColumn('ENDTM');
       }
     }
   }, [filters.classGubun, tableStatus, user]);
+
+  const isBiz = useMemo(() => {
+    return hasPermission(user?.auth, 'standardOper')
+      ? filters.classGubun === 'BIZ'
+      : user?.standardSectionCd === 'BIZ';
+  }, [filters.classGubun, user]);
 
   const columns = [
     { headerHozAlign: 'center', hozAlign: 'center', title: 'No', field: 'ID', sorter: 'number', width: 60, frozen: true },
@@ -202,14 +216,15 @@ const StandardJobHistory = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '조직4', field: 'ORGNM4', sorter: 'string', width: 130 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '대분류', field: 'CLASSANM', sorter: 'string', width: 180 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '중분류', field: 'CLASSBNM', sorter: 'string', width: 180 },
-    { headerHozAlign: 'center', hozAlign: 'left', title: '소분류', field: 'CLASSCNM', sorter: 'string', width: 220 },
-    { headerHozAlign: 'center', hozAlign: 'center', title: '작업건수', field: 'WORKCNT', sorter: 'number', width: 130 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: isBiz ? '회선수' : '작업건수', field: 'WORKCNT', sorter: 'number', width: 130 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '시작시간', field: 'STARTTM', sorter: 'string', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '종료시간', field: 'ENDTM', sorter: 'string', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '업무량(시간)', field: 'WORKH', sorter: 'string', width: 110 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태코드', field: 'WORKCD', sorter: 'string', width: 100, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '근무형태', field: 'WORKNM', sorter: 'string', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'left', title: '작업상세', field: 'ATTRIBUTE1', sorter: 'string', width: 600 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업유형', field: 'BIZWORKTYPE', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '차량이동시간(분)', field: 'VEHICLETIME', sorter: 'string', width: 150, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '회선번호+고객명', field: 'BIZTXT', sorter: 'string', width: 200, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '출동여부', field: 'BIZRUNNM', sorter: 'string', width: 130, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업인원', field: 'BIZMANNM', sorter: 'string', width: 130, visible: false },
@@ -345,6 +360,15 @@ const StandardJobHistory = () => {
       tableInstance.current.clearFilter();
     }
   }, [tableFilters.filterSelect, tableFilters.filterText, tableStatus, loading]);
+  
+  useEffect(() => {
+    if (!tableInstance.current || tableStatus !== 'ready') return;
+
+    const col = tableInstance.current.getColumn('WORKCNT');
+    if (col) {
+      col.updateDefinition({ title: isBiz ? '회선수' : '작업건수' });
+    }
+  }, [isBiz, tableStatus]);
 
   const handleDynamicEvent = (eventType, payload) => {
     if (eventType === 'search') {

@@ -16,6 +16,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
   const [class2Options, setClass2Options] = useState([]);
   const [class3Options, setClass3Options] = useState([]);
   const [dispatchOptions, setDispatchOptions] = useState([]);
+  const [bizworktypeOptions, setbizworktypeOptions] = useState([]);
   const [workersOptions, setWorkersOptions] = useState([]);
   const [workTimeOptions, setWorkTimeOptions] = useState([]);
   const [isButtonVisible, setIsButtonVisible] = useState(true);
@@ -23,6 +24,8 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
   const initialFormData = {
     PROCESSTIME: 0,           // 내부 계산용 (항상 숫자)
     PROCESSTIME_DISPLAY: "",  // 텍스트박스 표시용 (빈값 가능)
+    VEHICLETIME: 0,           // 내부 계산용 (항상 숫자)
+    VEHICLETIME_DISPLAY: "",  // 텍스트박스 표시용 (빈값 가능)
     LINES: "",                // 드롭다운 빈값
   };
 
@@ -48,6 +51,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
     };
 
     fetchDropdownOptions('DISPATCH', setDispatchOptions);
+    fetchDropdownOptions('BIZWORKTYPE', setbizworktypeOptions);
     fetchDropdownOptions('WORKERS', setWorkersOptions);
     fetchDropdownOptions('WORKTIME', setWorkTimeOptions);
   }, []);
@@ -195,19 +199,36 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
       return;
     }
 
-    // 필수 입력값 검증
-    if (
-      formData.CLASSCCD === "all" ||
-      formData.DISPATCH === "" ||
-      formData.WORKERS === "" ||
-      formData.WORKTIME === "" ||
-      formData.PROCESSTIME <= 0 ||
-      formData.PROCESS === "" ||
-      (formData.LINES !== "" && formData.LINES <= 0)
-    ) {
-      msgPopup("소분류, 출동여부, 작업인원, 근무시간, 회선수, 프로세스, 처리시간(분)을 확인해주세요.");
+    // 값 비어있음 판정 헬퍼(공백 포함 방지)
+    const isEmpty = (v) => v === null || v === undefined || String(v).trim() === "";
+
+    // 필수 입력값 개별 검증
+    if (formData.CLASSCCD === "all") { msgPopup("소분류를 선택해주세요."); return; }
+    if (isEmpty(formData.BIZWORKTYPE)) { msgPopup("작업유형을 선택해주세요."); return; }
+    if (isEmpty(formData.DISPATCH)) {  msgPopup("출동여부를 선택해주세요."); return; }
+    if (isEmpty(formData.WORKERS)) {  msgPopup("작업인원을 선택해주세요.");  return; }
+    if (isEmpty(formData.WORKTIME)) { msgPopup("근무시간을 선택해주세요."); return; }
+
+    // 처리시간(분) - 숫자/0 이하 방지
+    if (!Number.isFinite(Number(formData.PROCESSTIME)) || Number(formData.PROCESSTIME) <= 0) {
+      msgPopup("처리시간(분)을 1분 이상 입력해주세요.");
       return;
     }
+
+    // 차량이동시간(분) - 숫자/0 미만 방지
+    if (!Number.isFinite(Number(formData.VEHICLETIME)) || Number(formData.VEHICLETIME) <= 0) {
+      msgPopup("차량이동시간(분)을 0분 이상 입력해주세요.");
+      return;
+    }
+
+    if (isEmpty(formData.PROCESS)) { msgPopup("프로세스를 선택해주세요."); return; }
+
+    // 회선수는 "입력했을 때만" 0 초과 체크 (현재 로직 유지)
+    if (!isEmpty(formData.LINES) && Number(formData.LINES) <= 0) {
+      msgPopup("회선수는 1 이상으로 입력해주세요.");
+      return;
+    }
+
 
     try {
       const params = {
@@ -218,6 +239,8 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
         pBIZTXT: formData.CUSTOMER,
         pBIZRUN: formData.DISPATCH,
         pBIZMAN: formData.WORKERS,
+        pBIZWORKTYPE: formData.BIZWORKTYPE,
+        pVEHICLETIME: formData.VEHICLETIME,
         pWORKCD: formData.WORKTIME,
         pWORKCNT: formData.LINES,
         pWORKGBCD: formData.PROCESS,
@@ -278,6 +301,11 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
         const numValue = value === "" ? 0 : parseInt(value, 10) || 0;
         newData.PROCESSTIME = numValue;
         newData.PROCESSTIME_DISPLAY = value;   // ← 빈 문자열 허용
+      }
+      else if (name === "VEHICLETIME_DISPLAY") {
+        const numValue = value === "" ? 0 : parseInt(value, 10) || 0;
+        newData.VEHICLETIME = numValue;
+        newData.VEHICLETIME_DISPLAY = value; 
       }
       else if (name === "LINES") {
         newData.LINES = value; // 빈값 허용
@@ -349,7 +377,56 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
               <div className="formData">
                 <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.formDate} />
               </div>
-            </li>            
+            </li>
+            <li>
+              <span className="formLabel" style={{width: '120px'}}>대분류</span>
+              <div className="formData">
+                <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange} style={{width: '190px'}}>
+                  {class1Options.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <span className="formLabel" style={{width: '120px'}}>중분류</span>
+              <div className="formData">
+                <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange} style={{width: '190px'}}>
+                  {class2Options.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <span className="formLabel" style={{width: '120px'}}>소분류</span>
+              <div className="formData">
+                <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange} style={{width: '190px'}}>
+                  {class3Options.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <span className="formLabel" style={{width: '120px'}}>작업유형</span>
+              <div className="formData">
+                <select name="BIZWORKTYPE" value={formData.BIZWORKTYPE} onChange={handleChange} style={{width: '190px'}}>
+                  <option value="">선택</option>
+                  {bizworktypeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
             <li>
               <span className="formLabel" style={{width: '120px'}}>회선번호+고객명</span>
               <div className="formData">
@@ -402,6 +479,33 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
               </div>
             </li>
             <li>
+              <span className="formLabel" style={{width: '120px'}}>차량이동시간(분)</span>
+              <div className="formData d-flex align-items-center">
+                <input
+                  type="number"
+                  name="VEHICLETIME_DISPLAY"
+                  value={formData.VEHICLETIME_DISPLAY ?? ""}
+                  onChange={handleChange}
+                  min="0"
+                  placeholder=""
+                  className="text-end me-2"
+                  style={{width: '150px'}}
+                />
+                <button 
+                  type="button"
+                  className="btn btn-outline-secondary btn-sm"
+                  onClick={() => setFormData(prev => ({ 
+                    ...prev, 
+                    VEHICLETIME: 0, 
+                    VEHICLETIME_DISPLAY: ""
+                  }))}
+                  title="초기화"
+                >
+                  <i className="bi bi-eraser"></i>
+                </button>
+              </div>
+          </li>
+            <li>
               <span className="formLabel" style={{width: '120px'}}>회선수</span>
               <div className="formData">
                 <select 
@@ -418,43 +522,7 @@ const MobileStandardBizLogReg = ({ workDate, classGubun, classData, bizWorkTypes
               </div>
             </li>
             <li>
-              <span className="formLabel" style={{width: '120px'}}>대분류</span>
-              <div className="formData">
-                <select name="CLASSACD" value={formData.CLASSACD} onChange={handleChange} style={{width: '190px'}}>
-                  {class1Options.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </li>
-            <li>
-              <span className="formLabel" style={{width: '120px'}}>중분류</span>
-              <div className="formData">
-                <select name="CLASSBCD" value={formData.CLASSBCD} onChange={handleChange} style={{width: '190px'}}>
-                  {class2Options.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </li>
-            <li>
-              <span className="formLabel" style={{width: '120px'}}>소분류</span>
-              <div className="formData">
-                <select name="CLASSCCD" value={formData.CLASSCCD} onChange={handleChange} style={{width: '190px'}}>
-                  {class3Options.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </li>
-            <li>
-              <span className="formLabel" style={{width: '120px'}}>구분</span>
+              <span className="formLabel" style={{width: '120px'}}>프로세스 구분</span>
               <div className="formData">
                 <select name="PROCESSSECTION" value={formData.PROCESSSECTION} onChange={handleChange} style={{width: '190px'}}>
                   <option value="">선택</option>

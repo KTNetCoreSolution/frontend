@@ -11,8 +11,8 @@ const StandardClassSelectPopup = ({ show, onHide, onSelect, data }) => {
   const tableInstance = useRef(null);
   const [_selectedRow, setSelectedRow] = useState(null);
   const [filters, setFilters] = useState(initialFilters([
-    { id: "filterSelect", label: "", type: "select", options: [{ value: "", label: "선택" }, { value: "CLASSANM", label: "대분류" }, { value: "CLASSBNM", label: "중분류" }, { value: "CLASSCNM", label: "소분류" }] },
-    { id: "filterText", label: "", type: "text", placeholder: "검색값을 입력하세요", width: "200px" },
+    { id: "filterSelect2", label: "", type: "select", options: [{ value: "", label: "선택" }, { value: "CLASSANM", label: "대분류" }, { value: "CLASSBNM", label: "중분류" }, { value: "CLASSCNM", label: "소분류" }] },
+    { id: "filterText2", label: "", type: "text", placeholder: "검색값을 입력하세요", width: "200px" },
   ]));
   const [tableStatus, setTableStatus] = useState("initializing");
   const [rowCount, setRowCount] = useState(0);
@@ -100,15 +100,15 @@ const StandardClassSelectPopup = ({ show, onHide, onSelect, data }) => {
 
   useEffect(() => {
     if (!tableInstance.current || tableStatus !== "ready") return;
-    const { filterSelect, filterText } = filters;
+    const { filterSelect2, filterText2 } = filters;
     try {
-      if (filterText && filterSelect) {
-        tableInstance.current.setFilter(filterSelect, "like", filterText);
-      } else if (filterText) {
+      if (filterText2 && filterSelect2) {
+        tableInstance.current.setFilter(filterSelect2, "like", filterText2);
+      } else if (filterText2) {
         tableInstance.current.setFilter([
-          { field: "CLASSANM", type: "like", value: filterText },
-          { field: "CLASSBNM", type: "like", value: filterText },
-          { field: "CLASSCNM", type: "like", value: filterText },
+          { field: "CLASSANM", type: "like", value: filterText2 },
+          { field: "CLASSBNM", type: "like", value: filterText2 },
+          { field: "CLASSCNM", type: "like", value: filterText2 },
         ], "or");
       } else {
         tableInstance.current.clearFilter();
@@ -131,8 +131,8 @@ const StandardClassSelectPopup = ({ show, onHide, onSelect, data }) => {
       <Modal.Body className={`${styles.modalBody} modal-body`}>
         <TableSearch
           filterFields={[
-            { id: "filterSelect", label: "", type: "select", options: [{ value: "", label: "선택" }, { value: "CLASSANM", label: "대분류" }, { value: "CLASSBNM", label: "중분류" }, { value: "CLASSCNM", label: "소분류" }] },
-            { id: "filterText", label: "", type: "text", placeholder: "검색값을 입력하세요", width: "200px" },
+            { id: "filterSelect2", label: "", type: "select", options: [{ value: "", label: "선택" }, { value: "CLASSANM", label: "대분류" }, { value: "CLASSBNM", label: "중분류" }, { value: "CLASSCNM", label: "소분류" }] },
+            { id: "filterText2", label: "", type: "text", placeholder: "검색값을 입력하세요", width: "200px" },
           ]}
           filters={filters}
           setFilters={setFilters}

@@ -145,10 +145,12 @@
 
 .thNo { width: 40px; }
 .thWorkDate { width: 80px; }
-.thClassA { width: 200px; }
-.thClassB { width: 200px; }
-.thClassC { width: 250px; }
+.thClassA { width: 150px; }
+.thClassB { width: 150px; }
+.thClassC { width: 150px; }
 .thCustomer { width: 150px; }
+.thBizWorkType { width: 80px; }
+.thVehicleTime { width: 110px; }
 .thDispatch { width: 100px; }
 .thWorkers { width: 90px; }
 .thWorkTime { width: 80px; }

@@ -331,6 +331,8 @@ const StandardEmpJobManage = () => {
         tableInstance.current.showColumn('BIZWORKGBNM');
         tableInstance.current.showColumn('WORKCNT2');
         tableInstance.current.hideColumn('ATTRIBUTE1');
+        tableInstance.current.showColumn('BIZWORKTYPE');
+        tableInstance.current.showColumn('VEHICLETIME');
       } else {
         tableInstance.current.showColumn('WORKCNT');
         tableInstance.current.hideColumn('BIZTXT');
@@ -339,6 +341,8 @@ const StandardEmpJobManage = () => {
         tableInstance.current.hideColumn('BIZWORKGBNM');
         tableInstance.current.hideColumn('WORKCNT2');
         tableInstance.current.showColumn('ATTRIBUTE1');
+        tableInstance.current.hideColumn('BIZWORKTYPE');
+        tableInstance.current.hideColumn('VEHICLETIME');
       }
     }
   }, [filters.classGubun, tableStatus, user]);
@@ -387,6 +391,8 @@ const StandardEmpJobManage = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업시간', field: 'WORKH', sorter: 'number', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '건(구간/본/개소)', field: 'WORKCNT', sorter: 'number', width: 130 },
     { headerHozAlign: 'center', hozAlign: 'left', title: '작업상세', field: 'ATTRIBUTE1', sorter: 'string', width: 600 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '작업유형', field: 'BIZWORKTYPE', sorter: 'string', width: 100, visible: false },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '차량이동시간(분)', field: 'VEHICLETIME', sorter: 'string', width: 150, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '회선번호+고객명', field: 'BIZTXT', sorter: 'string', width: 200, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '출동여부', field: 'BIZRUNNM', sorter: 'string', width: 130, visible: false },
     { headerHozAlign: 'center', hozAlign: 'center', title: '작업인원', field: 'BIZMANNM', sorter: 'string', width: 130, visible: false },
