@@ -89,6 +89,12 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
     setClassGubun(filters.classGubun || 'BIZ');
   }, [filters.classGubun]);
 
+  useEffect(() => {
+    if (formData.DISPATCH === 'DISP003') {
+      setFormData(prev => ({ ...prev, VEHICLETIME: '0' }));
+    }
+  }, [formData.DISPATCH]);
+
   // API 호출로 드롭리스트 옵션 가져오기
   useEffect(() => {
     const fetchDropdownOptions = async (pGUBUN, setOptions) => {
@@ -261,6 +267,9 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         newData.CLASSCCD = "all";
       } else if (name === "CLASSBCD") {
         newData.CLASSCCD = "all";
+      }
+      if (name === "DISPATCH" && value === "DISP003") {  // 무출동 선택 시 차량이동시간 강제 0
+        newData.VEHICLETIME = "0";
       }
       return newData;
     });
@@ -502,7 +511,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       <Modal.Body className={styles.modalBody}>
         <div className={styles.noteSection}>
           <span>* 익월 {closedt}일 지나면 전월자료 수정 불가 합니다.<br/>
-          * 등록은 이미 등록 된 자료 중 분류, 회선번호+고객명, 출동여부, 작업인원, 근무시간이 같으면 회선수만 수정됩니다.</span>
+          * 등록은 이미 등록 된 자료 중 분류, 회선번호+고객명, 출동여부, 작업인원, 근무시간, 작업유형이 같으면 회선수, 차량이동시간만 수정됩니다.</span>
           <div className={styles.inputButtonWrapper}>
             <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.dateInput} />
             {isButtonVisible && (
@@ -573,7 +582,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
               </td>
               <td className={styles.td1}>차량이동시간(분)</td>
               <td className={styles.td6} colSpan="5">
-                <input type="number" name="VEHICLETIME" value={formData.VEHICLETIME} onChange={handleChange} min="1" className={styles.input} />
+                <input type="number" name="VEHICLETIME" value={formData.VEHICLETIME} onChange={handleChange} min="0" disabled={formData.DISPATCH === 'DISP003'} className={styles.input} />
               </td>
             </tr>
             <tr>
