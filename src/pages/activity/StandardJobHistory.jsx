@@ -216,6 +216,7 @@ const StandardJobHistory = () => {
     { headerHozAlign: 'center', hozAlign: 'center', title: '조직4', field: 'ORGNM4', sorter: 'string', width: 130 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '대분류', field: 'CLASSANM', sorter: 'string', width: 180 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '중분류', field: 'CLASSBNM', sorter: 'string', width: 180 },
+    { headerHozAlign: 'center', hozAlign: 'center', title: '소분류', field: 'CLASSCNM', sorter: 'string', width: 180 },
     { headerHozAlign: 'center', hozAlign: 'center', title: isBiz ? '회선수' : '작업건수', field: 'WORKCNT', sorter: 'number', width: 130 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '시작시간', field: 'STARTTM', sorter: 'string', width: 100 },
     { headerHozAlign: 'center', hozAlign: 'center', title: '종료시간', field: 'ENDTM', sorter: 'string', width: 100 },
