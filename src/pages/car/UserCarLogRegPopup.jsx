@@ -256,10 +256,15 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             const extension = fileUtils.getFileExtension(response.data[0].IMGNM)?.toLowerCase();
             const mimeType = fileUtils.mimeTypes[extension] || 'application/octet-stream';
             const fileData = response.data[0].IMGDATA;
-            const logDate = response.data[0].LOGDATE <= todayDate ? todayDate : response.data[0].LOGDATE;            
-            const logStTime = response.data[0].LOGDATE === todayDate ? response.data[0].LOGENTIME : '08:00';
-            setStTime(timeOption(logStTime, 'S'));
+            const logDate = response.data[0].LOGDATE <= todayDate ? todayDate : response.data[0].LOGDATE;
+            const lastLogDate = response.data[0].LOGDATE;
+            const lastLogEnTime = response.data[0].LOGENTIME;
 
+            // 오늘에 마지막 운행이 있으면 그 종료시간, 아니면 08:00
+            const logStTime = lastLogDate === todayDate && lastLogEnTime ? lastLogEnTime : '08:00';
+            setStTime(timeOption(logStTime, 'S'));
+            setEnTime(timeOption(logStTime, 'E'));
+            
             const carNm = response.data[0].CARNM;
             const managerEmpNm = response.data[0].PRIMARY_MANAGER_EMPNM;
             const managerMobile = response.data[0].PRIMARY_MANAGER_MOBILE;
@@ -271,7 +276,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             const bBookMark = response.data[0].BOOKMARK === 'Y' ? true : false;
             setEnTime(timeOption(logStTime, 'E'));
 
-            let logEnTime = '08:00';
+            let logEnTime = '00:00';
             timeOption(logInfo.LOGSTTIME, 'E').some(time => {
               if (time > logStTime) {
                 logEnTime = time; 
@@ -358,7 +363,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
 
   const handleLogDate = (e) => {
     let logDate = e.target.value;
-    let logStTime = '08:00';
+    let logStTime = '00:00';
     
     if(e.target.value < lastLogInfo.LOGDATE) {
       logDateRef.current.value = lastLogInfo.LOGDATE;
@@ -367,13 +372,13 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
     }
     else {
       logDate = e.target.value;
-      logStTime = lastLogInfo.LOGDATE >= e.target.value ? lastLogInfo.LOGENTIME : '08:00';
+      logStTime = lastLogInfo.LOGDATE >= e.target.value ? lastLogInfo.LOGENTIME : '00:00';
     }
 
     setStTime(timeOption(logStTime, 'S'));   
     setEnTime(timeOption(logStTime, 'E'));
 
-    let logEnTime = '08:00';
+    let logEnTime = '00:00';
     timeOption(logStTime, 'E').some(time => {
       if (time > logStTime) {
         logEnTime = time; 
