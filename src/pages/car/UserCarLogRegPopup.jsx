@@ -37,7 +37,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
   const [carId, setCarId] = useState('');
   const [carList, setCarList] = useState({});
   const [carInfo, setCarInfo] = useState({CARNM: '', MANAGER_EMPNM: '', MANAGER_MOBILE: '', GARAGE_ADDR: '', STKM: 0, src: null, bookMark: false, ORGCD: ''});
-  const [logInfo, setLogInfo] = useState({CARID: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:10', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, EMPNO: user?.empNo, EMPNM: user?.empNm + ' (' + user?.empNo + ')', DRIVER_EMPNO: user?.empNo, DRIVER: user?.empNm + ' (' + user?.empNo + ')'});
+  const [logInfo, setLogInfo] = useState({CARID: '', LOGDATE: todayDate, LOGSTTIME: '08:00', LOGENTIME: '08:10', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, EMPNO: user?.empNo, EMPNM: user?.empNm + ' (' + user?.empNo + ')', DRIVER_EMPNO: user?.empNo, DRIVER: user?.empNm + ' (' + user?.empNo + ')'});
   const [showMngUserPopup, setShowMngUserPopup] = useState(false);
   const [lastLogInfo, setLastLogInfo] = useState({LOGDATE: '', LOGSTTIME: '', LOGENTIME: ''});
   const [vImgDisplay, setImgDisplay] = useState('none');
@@ -214,7 +214,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
 
   const initializing = () => {
     setCarInfo({CARNM: '', MANAGER_EMPNM: '', MANAGER_MOBILE: '', GARAGE_ADDR: '', STKM: 0, src: null, bookMark: false, ORGCD: ''});
-    setLogInfo({GUBUN:'I', CARID: '', LOGDATE: todayDate, LOGSTTIME: '00:00', LOGENTIME: '00:10', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: user?.empNo, EMPNM: user?.empNm + ' (' + user?.empNo + ')', DRIVER_EMPNO: user?.empNo, DRIVER: user?.empNm + ' (' + user?.empNo + ')'});
+    setLogInfo({GUBUN:'I', CARID: '', LOGDATE: todayDate, LOGSTTIME: '08:00', LOGENTIME: '08:10', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, NOTE: '', EMPNO: user?.empNo, EMPNM: user?.empNm + ' (' + user?.empNo + ')', DRIVER_EMPNO: user?.empNo, DRIVER: user?.empNm + ' (' + user?.empNo + ')'});
     setLastLogInfo({LOGDATE: '', LOGSTTIME: '', LOGENTIME: ''});
     setIsFilled(false);
     setIsDamage(true);
@@ -257,7 +257,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             const mimeType = fileUtils.mimeTypes[extension] || 'application/octet-stream';
             const fileData = response.data[0].IMGDATA;
             const logDate = response.data[0].LOGDATE <= todayDate ? todayDate : response.data[0].LOGDATE;            
-            const logStTime = response.data[0].LOGDATE === todayDate ? response.data[0].LOGENTIME : '00:00';
+            const logStTime = response.data[0].LOGDATE === todayDate ? response.data[0].LOGENTIME : '08:00';
             setStTime(timeOption(logStTime, 'S'));
 
             const carNm = response.data[0].CARNM;
@@ -271,7 +271,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             const bBookMark = response.data[0].BOOKMARK === 'Y' ? true : false;
             setEnTime(timeOption(logStTime, 'E'));
 
-            let logEnTime = '00:00';
+            let logEnTime = '08:00';
             timeOption(logInfo.LOGSTTIME, 'E').some(time => {
               if (time > logStTime) {
                 logEnTime = time; 
@@ -358,7 +358,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
 
   const handleLogDate = (e) => {
     let logDate = e.target.value;
-    let logStTime = '00:00';
+    let logStTime = '08:00';
     
     if(e.target.value < lastLogInfo.LOGDATE) {
       logDateRef.current.value = lastLogInfo.LOGDATE;
@@ -367,13 +367,13 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
     }
     else {
       logDate = e.target.value;
-      logStTime = lastLogInfo.LOGDATE >= e.target.value ? lastLogInfo.LOGENTIME : '00:00';
+      logStTime = lastLogInfo.LOGDATE >= e.target.value ? lastLogInfo.LOGENTIME : '08:00';
     }
 
     setStTime(timeOption(logStTime, 'S'));   
     setEnTime(timeOption(logStTime, 'E'));
 
-    let logEnTime = '00:00';
+    let logEnTime = '08:00';
     timeOption(logStTime, 'E').some(time => {
       if (time > logStTime) {
         logEnTime = time; 
