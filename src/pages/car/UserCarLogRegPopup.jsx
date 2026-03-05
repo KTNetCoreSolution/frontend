@@ -257,13 +257,13 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             const mimeType = fileUtils.mimeTypes[extension] || 'application/octet-stream';
             const fileData = response.data[0].IMGDATA;
             const logDate = response.data[0].LOGDATE <= todayDate ? todayDate : response.data[0].LOGDATE;
-            const lastLogDate = response.data[0].LOGDATE;
-            const lastLogEnTime = response.data[0].LOGENTIME;
+            const logStTime = response.data[0].LOGDATE === todayDate ? response.data[0].LOGENTIME : '08:00';
 
-            // 오늘에 마지막 운행이 있으면 그 종료시간, 아니면 08:00
-            const logStTime = lastLogDate === todayDate && lastLogEnTime ? lastLogEnTime : '08:00';
-            setStTime(timeOption(logStTime, 'S'));
-            setEnTime(timeOption(logStTime, 'E'));
+            if (response.data[0].LOGDATE === todayDate) {
+              setStTime(timeOption(logStTime, 'S')); // 당일 기록 있으면 종료시간부터
+            } else {
+              setStTime(timeOption('00:00', 'S'));   // 기록 없으면 00:00부터 목록
+            }
             
             const carNm = response.data[0].CARNM;
             const managerEmpNm = response.data[0].PRIMARY_MANAGER_EMPNM;
