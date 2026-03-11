@@ -53,22 +53,6 @@ const getFieldOptions = (fieldId, dependentValue = "", classData) => {
   return [];
 };
 
-// 회선번호+고객명 형식 검증
-const validateCustomerFormat = (value) => {
-  const trimmedValue = value.trim();
-
-  // 8자리숫자-4자리숫자+텍스트
-  const regex = /^\d{8}-\d{4}\+.+$/;
-  if (!regex.test(trimmedValue)) {
-    return {
-      valid: false,
-      error: "회선번호+고객명은 '8자리숫자-4자리숫자+텍스트' 형식으로 입력해주세요.<br>예: 12345678-1234+홍길동",
-    };
-  }
-
-  return { valid: true };
-};
-
 const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }) => {
   const { user } = useStore();
   const today = common.getTodayDate();
@@ -326,13 +310,6 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         return;
       }
 
-      // 회선번호+고객명 형식 검증
-      const customerFormatValidation = validateCustomerFormat(formData.CUSTOMER);
-      if (!customerFormatValidation.valid) {
-        errorMsgPopup(customerFormatValidation.error);
-        return;
-      }
-
       // 회선수 검증 (최대 10자)
       const linesValidation = common.validateVarcharLength(String(formData.LINES), 10, "회선수");
       if (!linesValidation.valid) {
@@ -414,13 +391,6 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       const customerValidation = common.validateVarcharLength(item.CUSTOMER, 200, "회선번호+고객명");
       if (!customerValidation.valid) {
         errorMsgPopup(customerValidation.error);
-        return;
-      }
-
-      // 회선번호+고객명 형식 검증
-      const customerFormatValidation = validateCustomerFormat(item.CUSTOMER);
-      if (!customerFormatValidation.valid) {
-        errorMsgPopup(customerFormatValidation.error);
         return;
       }
 
@@ -618,7 +588,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
             <tr>
               <td className={styles.td1}>회선번호+고객명</td>
               <td className={styles.td2}>
-                <input type="text" name="CUSTOMER" value={formData.CUSTOMER} onChange={handleChange} className={styles.input} placeholder="예: 12345678-1234+홍길동" />
+                <input type="text" name="CUSTOMER" value={formData.CUSTOMER} onChange={handleChange} className={styles.input} placeholder="12345678-1234+홍길동" />
               </td>
               <td className={styles.td3}>출동여부</td>
               <td className={styles.td4}>
@@ -755,7 +725,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                               value={item.CUSTOMER}
                               onChange={(e) => handleRowChange(index, "CUSTOMER", e.target.value)}
                               className={`${styles.input} ${styles.listInput}`}
-                              placeholder="예: 12345678-1234+홍길동"
+                              placeholder="12345678-1234+홍길동"
                               style={{
                                 backgroundColor: item.CUSTOMER !== originalRegisteredList[index]?.ORIGINAL_CUSTOMER ? '#fff9e6' : '#fff',
                               }}
