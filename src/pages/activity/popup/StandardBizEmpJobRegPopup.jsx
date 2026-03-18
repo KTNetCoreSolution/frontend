@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
-import useStore from '../../../store/store';
+import useStore from "../../../store/store";
 import Modal from "react-bootstrap/Modal";
 import styles from "./StandardBizEmpJobRegPopup.module.css";
 import StandardClassSelectPopup from "./StandardClassSelectPopup";
 import { fetchData } from "../../../utils/dataUtils";
 import { msgPopup } from "../../../utils/msgPopup";
-import { errorMsgPopup } from '../../../utils/errorMsgPopup';
+import { errorMsgPopup } from "../../../utils/errorMsgPopup";
 import common from "../../../utils/common";
 
 const getFieldOptions = (fieldId, dependentValue = "", classData) => {
@@ -80,18 +80,18 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
   const [workTimeOptions, setWorkTimeOptions] = useState([]);
   const [classPopupState, setClassPopupState] = useState({ show: false, editingIndex: -1 });
   const [isButtonVisible, setIsButtonVisible] = useState(true);
-  const [classGubun, setClassGubun] = useState(filters.classGubun || 'BIZ');
+  const [classGubun, setClassGubun] = useState(filters.classGubun || "BIZ");
 
   // CLOSEDT 값 추출
-  const closedt = data[0]?.CLOSEDT || '10';
+  const closedt = data[0]?.CLOSEDT || "10";
 
   useEffect(() => {
-    setClassGubun(filters.classGubun || 'BIZ');
+    setClassGubun(filters.classGubun || "BIZ");
   }, [filters.classGubun]);
 
   useEffect(() => {
-    if (formData.DISPATCH === 'DISP003') {
-      setFormData(prev => ({ ...prev, VEHICLETIME: '0' }));
+    if (formData.DISPATCH === "DISP003") {
+      setFormData((prev) => ({ ...prev, VEHICLETIME: "0" }));
     }
   }, [formData.DISPATCH]);
 
@@ -101,9 +101,9 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       try {
         const params = {
           pGUBUN,
-          pDEBUG: 'F',
+          pDEBUG: "F",
         };
-        const response = await fetchData('standard/ddlList', params);
+        const response = await fetchData("standard/ddlList", params);
         if (!response.success) {
           msgPopup(response.message || `${pGUBUN} 옵션을 가져오는 중 오류가 발생했습니다.`);
           return;
@@ -116,10 +116,10 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       }
     };
 
-    fetchDropdownOptions('DISPATCH', setDispatchOptions);
-    fetchDropdownOptions('WORKERS', setWorkersOptions);
-    fetchDropdownOptions('BIZWORKTYPE', setBizWorkTypeOptions);
-    fetchDropdownOptions('WORKTIME', setWorkTimeOptions);
+    fetchDropdownOptions("DISPATCH", setDispatchOptions);
+    fetchDropdownOptions("WORKERS", setWorkersOptions);
+    fetchDropdownOptions("BIZWORKTYPE", setBizWorkTypeOptions);
+    fetchDropdownOptions("WORKTIME", setWorkTimeOptions);
   }, []);
 
   // 선택된 소분류에 해당하는 BIZMCODE 찾기
@@ -132,9 +132,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
   // BIZMCODE에 해당하는 bizWorkTypes 필터링 및 정렬
   const filteredBizWorkTypes = useMemo(() => {
     if (!selectedBizMCode) return [];
-    return bizWorkTypes
-      .filter((item) => item.BIZMCODE === selectedBizMCode)
-      .sort((a, b) => a.ODR - b.ODR);
+    return bizWorkTypes.filter((item) => item.BIZMCODE === selectedBizMCode).sort((a, b) => a.ODR - b.ODR);
   }, [selectedBizMCode, bizWorkTypes]);
 
   // 필터링된 항목으로 flatProcessItems 설정
@@ -147,13 +145,13 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       acc[item.BIZMCODE].push(item);
       return acc;
     }, {});
-    return Object.values(grouped).map(group => group.sort((a, b) => a.ODR - b.ODR));
+    return Object.values(grouped).map((group) => group.sort((a, b) => a.ODR - b.ODR));
   }, [flatProcessItems]);
 
   // 각 그룹을 14개씩 청크로 나눔
   const chunkedGroups = useMemo(() => {
-    return groupedProcessItems.map(group =>
-      Array.from({ length: Math.ceil(group.length / 14) }, (_, i) => group.slice(i * 14, (i + 1) * 14))
+    return groupedProcessItems.map((group) =>
+      Array.from({ length: Math.ceil(group.length / 14) }, (_, i) => group.slice(i * 14, (i + 1) * 14)),
     );
   }, [groupedProcessItems]);
 
@@ -180,7 +178,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
   const formatTime = (minutes) => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-    return `${hours}:${mins.toString().padStart(2, '0')}`;
+    return `${hours}:${mins.toString().padStart(2, "0")}`;
   };
 
   // useMemo로 옵션 최적화
@@ -198,57 +196,57 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
   const fetchRegisteredList = async (date) => {
     try {
       const params = {
-        pGUBUN: 'LIST',
-        pEMPNO: user?.empNo || '',
+        pGUBUN: "LIST",
+        pEMPNO: user?.empNo || "",
         pDATE1: date,
         pSECTIONCD: classGubun,
-        pDEBUG: 'F',
+        pDEBUG: "F",
       };
-      const response = await fetchData('standard/empJob/biz/reg/list', params);
+      const response = await fetchData("standard/empJob/biz/reg/list", params);
       if (!response.success) {
-        msgPopup(response.message || '등록 리스트를 가져오는 중 오류가 발생했습니다.');
+        msgPopup(response.message || "등록 리스트를 가져오는 중 오류가 발생했습니다.");
         return;
       }
       const fetchedData = Array.isArray(response.data) ? response.data : [];
       const mappedData = fetchedData
-        .filter((item) => item.DDATE !== '')
+        .filter((item) => item.DDATE !== "")
         .map((item) => ({
-          CLASSACD: item.CLASSACD || '',
-          CLASSBCD: item.CLASSBCD || '',
-          CLASSCCD: item.CLASSCCD || '',
-          CLASSANM: item.CLASSANM || '',
-          CLASSBNM: item.CLASSBNM || '',
-          CLASSCNM: item.CLASSCNM || '',
-          CUSTOMER: item.BIZTXT || '',
-          ORIGINAL_CUSTOMER: item.BIZTXT || '', // 원본 값 저장
-          DISPATCHCD: item.BIZRUN || '',
-          DISPATCH: item.BIZRUNNM || '',
-          WORKERSCD: item.BIZMAN || '',
-          WORKERS: item.BIZMANNM || '',
-          BIZWORKTYPE: item.BIZWORKTYPE || '',
-          BIZWORKTYPENM: item.BIZWORKTYPENM || '',
-          VEHICLETIME: item.VEHICLETIME || '',
-          WORKTIMECD: item.WORKCD || '',
-          WORKTIME: item.WORKNM || '',
-          LINES: item.WORKCNT || '',
-          PROCESS: item.BIZWORKGB || '',
-          PROCESSNM: item.BIZWORKGBNM || '',
-          PROCESSTIME: item.WORKM || '0',
-          ORIGINAL_PROCESSTIME: item.WORKM || '0', // 원본 값 저장
-          WORKDATE: item.DDATE || '',
-          BIZINPUTKEY: item.BIZINPUTKEY || '',
+          CLASSACD: item.CLASSACD || "",
+          CLASSBCD: item.CLASSBCD || "",
+          CLASSCCD: item.CLASSCCD || "",
+          CLASSANM: item.CLASSANM || "",
+          CLASSBNM: item.CLASSBNM || "",
+          CLASSCNM: item.CLASSCNM || "",
+          CUSTOMER: item.BIZTXT || "",
+          ORIGINAL_CUSTOMER: item.BIZTXT || "", // 원본 값 저장
+          DISPATCHCD: item.BIZRUN || "",
+          DISPATCH: item.BIZRUNNM || "",
+          WORKERSCD: item.BIZMAN || "",
+          WORKERS: item.BIZMANNM || "",
+          BIZWORKTYPE: item.BIZWORKTYPE || "",
+          BIZWORKTYPENM: item.BIZWORKTYPENM || "",
+          VEHICLETIME: item.VEHICLETIME || "",
+          WORKTIMECD: item.WORKCD || "",
+          WORKTIME: item.WORKNM || "",
+          LINES: item.WORKCNT || "",
+          PROCESS: item.BIZWORKGB || "",
+          PROCESSNM: item.BIZWORKGBNM || "",
+          PROCESSTIME: item.WORKM || "0",
+          ORIGINAL_PROCESSTIME: item.WORKM || "0", // 원본 값 저장
+          WORKDATE: item.DDATE || "",
+          BIZINPUTKEY: item.BIZINPUTKEY || "",
         }));
 
       setRegisteredList(mappedData);
       setOriginalRegisteredList(mappedData); // 원본 데이터 저장
-      if (response.data && response.data[0] && response.data[0].MODIFYN === 'N') {
+      if (response.data && response.data[0] && response.data[0].MODIFYN === "N") {
         setIsButtonVisible(false);
       } else {
         setIsButtonVisible(true);
       }
     } catch (err) {
-      console.error('등록 리스트 로드 실패:', err);
-      msgPopup(err.response?.data?.message || '등록 리스트를 가져오는 중 오류가 발생했습니다.');
+      console.error("등록 리스트 로드 실패:", err);
+      msgPopup(err.response?.data?.message || "등록 리스트를 가져오는 중 오류가 발생했습니다.");
     }
   };
 
@@ -268,7 +266,8 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       } else if (name === "CLASSBCD") {
         newData.CLASSCCD = "all";
       }
-      if (name === "DISPATCH" && value === "DISP003") {  // 무출동 선택 시 차량이동시간 강제 0
+      if (name === "DISPATCH" && value === "DISP003") {
+        // 무출동 선택 시 차량이동시간 강제 0
         newData.VEHICLETIME = "0";
       }
       return newData;
@@ -276,22 +275,22 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
   };
 
   const handleProcessChange = (workcd, value) => {
-    setProcessTimes((prev) => ({ ...prev, [workcd]: value === '' ? '' : parseInt(value) || 0 }));
+    setProcessTimes((prev) => ({ ...prev, [workcd]: value === "" ? "" : parseInt(value) || 0 }));
   };
 
   const handleProcessFocus = (workcd) => {
-    setProcessTimes((prev) => ({ ...prev, [workcd]: prev[workcd] === 0 ? '' : prev[workcd] }));
+    setProcessTimes((prev) => ({ ...prev, [workcd]: prev[workcd] === 0 ? "" : prev[workcd] }));
   };
 
   const handleProcessBlur = (workcd) => {
-    setProcessTimes((prev) => ({ ...prev, [workcd]: prev[workcd] === '' ? 0 : parseInt(prev[workcd]) || 0 }));
+    setProcessTimes((prev) => ({ ...prev, [workcd]: prev[workcd] === "" ? 0 : parseInt(prev[workcd]) || 0 }));
   };
 
   const handleRowChange = (index, field, value) => {
     setRegisteredList((prev) =>
       prev.map((item, i) =>
-        i === index ? { ...item, [field]: field === "PROCESSTIME" ? (value === '' ? '0' : parseInt(value) || 0) : value } : item
-      )
+        i === index ? { ...item, [field]: field === "PROCESSTIME" ? (value === "" ? "0" : parseInt(value) || 0) : value } : item,
+      ),
     );
   };
 
@@ -302,7 +301,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
 
   const handleSave = async (action, index = -1) => {
     let params;
-    if (action === 'register') {
+    if (action === "register") {
       // 회선번호+고객명 검증 (최대 200자)
       const customerValidation = common.validateVarcharLength(formData.CUSTOMER, 200, "회선번호+고객명");
       if (!customerValidation.valid) {
@@ -344,7 +343,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       const workGbCodes = [];
       const workGbTms = [];
       flatProcessItems.forEach((item) => {
-        const time = processTimes[item.WORKCD] === '' ? 0 : parseInt(processTimes[item.WORKCD]) || 0;
+        const time = processTimes[item.WORKCD] === "" ? 0 : parseInt(processTimes[item.WORKCD]) || 0;
         if (time > 0) {
           workGbCodes.push(item.WORKCD);
           workGbTms.push(time);
@@ -367,7 +366,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       }
 
       params = {
-        pGUBUN: 'I',
+        pGUBUN: "I",
         pDATE1: formData.WORKDATE,
         pDATE2: formData.WORKDATE,
         pCLASSCD: formData.CLASSCCD,
@@ -378,13 +377,13 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         pVEHICLETIME: formData.VEHICLETIME,
         pWORKCD: formData.WORKTIME,
         pWORKCNT: formData.LINES,
-        pWORKGBCD: workGbCodes.join('^'),
-        pWORKGBTM: workGbTms.join('^'),
+        pWORKGBCD: workGbCodes.join("^"),
+        pWORKGBTM: workGbTms.join("^"),
         pSECTIONCD: classGubun,
-        pORIGINBIZINPUTKEY: '',
-        pEMPNO: user?.empNo || '',
+        pORIGINBIZINPUTKEY: "",
+        pEMPNO: user?.empNo || "",
       };
-    } else if (action === 'update') {
+    } else if (action === "update") {
       const item = registeredList[index];
 
       // 회선번호+고객명 검증 (최대 200자)
@@ -408,7 +407,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       }
 
       params = {
-        pGUBUN: 'U',
+        pGUBUN: "U",
         pDATE1: item.WORKDATE,
         pDATE2: item.WORKDATE,
         pCLASSCD: item.CLASSCCD,
@@ -422,13 +421,13 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         pWORKGBCD: item.PROCESS,
         pWORKGBTM: item.PROCESSTIME,
         pSECTIONCD: classGubun,
-        pORIGINBIZINPUTKEY: item.BIZINPUTKEY || '',
-        pEMPNO: user?.empNo || '',
+        pORIGINBIZINPUTKEY: item.BIZINPUTKEY || "",
+        pEMPNO: user?.empNo || "",
       };
     } else {
       const item = registeredList[index];
       params = {
-        pGUBUN: 'DD',
+        pGUBUN: "DD",
         pDATE1: item.WORKDATE,
         pDATE2: item.WORKDATE,
         pCLASSCD: item.CLASSCCD,
@@ -442,29 +441,31 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
         pWORKGBCD: item.PROCESS,
         pWORKGBTM: item.PROCESSTIME,
         pSECTIONCD: classGubun,
-        pORIGINBIZINPUTKEY: item.BIZINPUTKEY || '',
-        pEMPNO: user?.empNo || '',
+        pORIGINBIZINPUTKEY: item.BIZINPUTKEY || "",
+        pEMPNO: user?.empNo || "",
       };
     }
 
     try {
-      const response = await fetchData('standard/empJob/biz/reg/save', params);
+      const response = await fetchData("standard/empJob/biz/reg/save", params);
       if (!response.success) {
-        msgPopup(response.errMsg || `${action === 'register' ? '등록' : action === 'update' ? '수정' : '삭제'} 중 오류가 발생했습니다.`);
+        msgPopup(response.errMsg || `${action === "register" ? "등록" : action === "update" ? "수정" : "삭제"} 중 오류가 발생했습니다.`);
         return;
       } else {
-        if (response.errMsg !== '' || (response.data[0] && response.data[0].errCd !== '00')) {
+        if (response.errMsg !== "" || (response.data[0] && response.data[0].errCd !== "00")) {
           let errMsg = response.errMsg;
-          if (response.data[0] && response.data[0].errMsg !== '') errMsg = response.data[0].errMsg;
+          if (response.data[0] && response.data[0].errMsg !== "") errMsg = response.data[0].errMsg;
           msgPopup(errMsg);
           return;
         }
       }
       await fetchRegisteredList(params.pDATE1);
-      msgPopup(`${action === 'register' ? '등록' : action === 'update' ? '수정' : '삭제'} 완료`);
+      msgPopup(`${action === "register" ? "등록" : action === "update" ? "수정" : "삭제"} 완료`);
     } catch (err) {
       console.error(`${action} 실패:`, err);
-      msgPopup(err.response?.data?.errMsg || `${action === 'register' ? '등록' : action === 'update' ? '수정' : '삭제'} 중 오류가 발생했습니다.`);
+      msgPopup(
+        err.response?.data?.errMsg || `${action === "register" ? "등록" : action === "update" ? "수정" : "삭제"} 중 오류가 발생했습니다.`,
+      );
     }
   };
 
@@ -492,12 +493,12 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                 CLASSACD: major,
                 CLASSBCD: middle,
                 CLASSCCD: minor,
-                CLASSANM: selectedMajor ? selectedMajor.CLASSANM : '',
-                CLASSBNM: selectedMiddle ? selectedMiddle.CLASSBNM : '',
-                CLASSCNM: selectedMinor ? selectedMinor.CLASSCNM : '',
+                CLASSANM: selectedMajor ? selectedMajor.CLASSANM : "",
+                CLASSBNM: selectedMiddle ? selectedMiddle.CLASSBNM : "",
+                CLASSCNM: selectedMinor ? selectedMinor.CLASSCNM : "",
               }
-            : item
-        )
+            : item,
+        ),
       );
     }
     setClassPopupState({ show: false, editingIndex: -1 });
@@ -510,17 +511,20 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
       </Modal.Header>
       <Modal.Body className={styles.modalBody}>
         <div className={styles.noteSection}>
-          <span>* 익월 {closedt}일 지나면 전월자료 수정 불가 합니다.<br/>
-          * 등록은 이미 등록 된 자료 중 분류, 회선번호+고객명, 출동여부, 작업인원, 근무시간, 작업유형이 같으면 회선수, 차량이동시간만 수정됩니다.</span>
+          <span>
+            * 익월 {closedt}일 지나면 전월자료 수정 불가 합니다.
+            <br />* 등록은 이미 등록 된 자료 중 분류, 회선번호+고객명, 출동여부, 작업인원, 근무시간, 작업유형이 같으면 회선수,
+            차량이동시간만 수정됩니다.
+          </span>
           <div className={styles.inputButtonWrapper}>
             <input type="date" name="WORKDATE" value={formData.WORKDATE} onChange={handleChange} className={styles.dateInput} />
             {isButtonVisible && (
-              <button className={`btn text-bg-success`} onClick={() => handleSave('register')}>
+              <button className={`btn text-bg-success`} onClick={() => handleSave("register")}>
                 등록
               </button>
             )}
             <button className={`btn text-bg-secondary`} onClick={() => handleClose()}>
-                닫기
+              닫기
             </button>
           </div>
         </div>
@@ -530,7 +534,10 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
               <td className={styles.td1}>
                 대분류
                 {isButtonVisible && (
-                  <button onClick={() => setClassPopupState({ show: true, editingIndex: -1 })} className={`${styles.btn} text-bg-secondary`}>
+                  <button
+                    onClick={() => setClassPopupState({ show: true, editingIndex: -1 })}
+                    className={`${styles.btn} text-bg-secondary`}
+                  >
                     선택
                   </button>
                 )}
@@ -582,13 +589,28 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
               </td>
               <td className={styles.td1}>차량이동시간(분)</td>
               <td className={styles.td6} colSpan="5">
-                <input type="number" name="VEHICLETIME" value={formData.VEHICLETIME} onChange={handleChange} min="0" disabled={formData.DISPATCH === 'DISP003'} className={styles.input} />
+                <input
+                  type="number"
+                  name="VEHICLETIME"
+                  value={formData.VEHICLETIME}
+                  onChange={handleChange}
+                  min="0"
+                  disabled={formData.DISPATCH === "DISP003"}
+                  className={styles.input}
+                />
               </td>
             </tr>
             <tr>
               <td className={styles.td1}>회선번호+고객명</td>
               <td className={styles.td2}>
-                <input type="text" name="CUSTOMER" value={formData.CUSTOMER} onChange={handleChange} className={styles.input} placeholder="12345678-1234+홍길동" />
+                <input
+                  type="text"
+                  name="CUSTOMER"
+                  value={formData.CUSTOMER}
+                  onChange={handleChange}
+                  className={styles.input}
+                  placeholder="000000000000+홍길동"
+                />
               </td>
               <td className={styles.td3}>출동여부</td>
               <td className={styles.td4}>
@@ -630,8 +652,11 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
             </tr>
             <tr>
               <td colSpan="10">
-                <p className='info'>
-                  프로세스 <span style={{ color: "red" }}>[총 처리시간: {totalProcessTime}(분), {formatTime(totalProcessTime)}(시간)]</span>
+                <p className="info">
+                  프로세스{" "}
+                  <span style={{ color: "red" }}>
+                    [총 처리시간: {totalProcessTime}(분), {formatTime(totalProcessTime)}(시간)]
+                  </span>
                 </p>
                 <div className={styles.processTableContainer}>
                   <table className={styles.processTable}>
@@ -642,12 +667,19 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                             <tr>
                               <td className={`${styles.processTable} ${styles.processTableCell}`}>항목</td>
                               {chunk.map((item) => (
-                                <td key={item.WORKCD} className={`${styles.processTable} ${styles.processTableCell}`}>{item.WORKNM}</td>
+                                <td key={item.WORKCD} className={`${styles.processTable} ${styles.processTableCell}`}>
+                                  {item.WORKNM}
+                                </td>
                               ))}
                               {chunk.length < 14 &&
                                 Array(14 - chunk.length)
                                   .fill()
-                                  .map((_, j) => <td key={`empty-${groupIndex}-${chunkIndex}-${j}`} className={`${styles.processTable} ${styles.processTableCell}`}></td>)}
+                                  .map((_, j) => (
+                                    <td
+                                      key={`empty-${groupIndex}-${chunkIndex}-${j}`}
+                                      className={`${styles.processTable} ${styles.processTableCell}`}
+                                    ></td>
+                                  ))}
                             </tr>
                             <tr>
                               <td className={`${styles.processTable} ${styles.processTableCell}`}>처리시간(분)</td>
@@ -656,12 +688,12 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                                   <input
                                     type="number"
                                     min="0"
-                                    value={processTimes[item.WORKCD] === 0 ? '' : processTimes[item.WORKCD] ?? ''}
+                                    value={processTimes[item.WORKCD] === 0 ? "" : (processTimes[item.WORKCD] ?? "")}
                                     onChange={(e) => handleProcessChange(item.WORKCD, e.target.value)}
                                     onFocus={() => handleProcessFocus(item.WORKCD)}
                                     onBlur={() => handleProcessBlur(item.WORKCD)}
                                     className={styles.rowInput}
-                                    style={{ backgroundColor: (processTimes[item.WORKCD] || 0) > 0 ? '#fff9e6' : '#fff' }}
+                                    style={{ backgroundColor: (processTimes[item.WORKCD] || 0) > 0 ? "#fff9e6" : "#fff" }}
                                     name={`txt${item.WORKCD}`}
                                     id={`txt${item.WORKCD}`}
                                   />
@@ -670,10 +702,15 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                               {chunk.length < 14 &&
                                 Array(14 - chunk.length)
                                   .fill()
-                                  .map((_, j) => <td key={`empty-input-${groupIndex}-${chunkIndex}-${j}`} className={`${styles.processTable} ${styles.processTableCell}`}></td>)}
+                                  .map((_, j) => (
+                                    <td
+                                      key={`empty-input-${groupIndex}-${chunkIndex}-${j}`}
+                                      className={`${styles.processTable} ${styles.processTableCell}`}
+                                    ></td>
+                                  ))}
                             </tr>
                           </React.Fragment>
-                        ))
+                        )),
                       )}
                     </tbody>
                   </table>
@@ -683,7 +720,10 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
             <tr>
               <td colSpan="10">
                 <h5>
-                  등록 리스트 <span style={{ color: "#237FB3" }}>[총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]</span>
+                  등록 리스트{" "}
+                  <span style={{ color: "#237FB3" }}>
+                    [총 처리시간: {totalRegisteredTime}(분), {formatTime(totalRegisteredTime)}(시간)]
+                  </span>
                 </h5>
                 <div className={styles.listTableContainer}>
                   <table className={styles.listTable}>
@@ -696,7 +736,11 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                         <th className={styles.thClassC}>소분류</th>
                         <th className={styles.thBizWorkType}>작업유형</th>
                         <th className={styles.thVehicleTime}>차량이동시간(분)</th>
-                        <th className={styles.thCustomer}>회선번호<br />+고객명</th>
+                        <th className={styles.thCustomer}>
+                          회선번호
+                          <br />
+                          +고객명
+                        </th>
                         <th className={styles.thDispatch}>출동여부</th>
                         <th className={styles.thWorkers}>작업인원</th>
                         <th className={styles.thWorkTime}>근무시간</th>
@@ -714,9 +758,7 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                           <td className={styles.thWorkDate}>{item.WORKDATE}</td>
                           <td className={styles.thClassA}>{item.CLASSANM}</td>
                           <td className={styles.thClassB}>{item.CLASSBNM}</td>
-                          <td className={styles.thClassC}>
-                            {item.CLASSCNM}
-                          </td>
+                          <td className={styles.thClassC}>{item.CLASSCNM}</td>
                           <td className={styles.thBizWorkType}>{item.BIZWORKTYPENM}</td>
                           <td className={styles.thVehicleTime}>{item.VEHICLETIME}</td>
                           <td className={styles.thCustomer}>
@@ -725,9 +767,9 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                               value={item.CUSTOMER}
                               onChange={(e) => handleRowChange(index, "CUSTOMER", e.target.value)}
                               className={`${styles.input} ${styles.listInput}`}
-                              placeholder="12345678-1234+홍길동"
+                              placeholder="000000000000+홍길동"
                               style={{
-                                backgroundColor: item.CUSTOMER !== originalRegisteredList[index]?.ORIGINAL_CUSTOMER ? '#fff9e6' : '#fff',
+                                backgroundColor: item.CUSTOMER !== originalRegisteredList[index]?.ORIGINAL_CUSTOMER ? "#fff9e6" : "#fff",
                               }}
                             />
                           </td>
@@ -744,17 +786,24 @@ const StandardBizEmpJobRegPopup = ({ show, onHide, data, filters, bizWorkTypes }
                               onChange={(e) => handleRowChange(index, "PROCESSTIME", e.target.value)}
                               className={`${styles.rowInput} ${styles.listInput}`}
                               style={{
-                                backgroundColor: item.PROCESSTIME !== originalRegisteredList[index]?.ORIGINAL_PROCESSTIME ? '#fff9e6' : '#fff',
+                                backgroundColor:
+                                  item.PROCESSTIME !== originalRegisteredList[index]?.ORIGINAL_PROCESSTIME ? "#fff9e6" : "#fff",
                               }}
                             />
                           </td>
                           <td className={styles.thAction}>
                             {isButtonVisible && (
                               <>
-                                <button onClick={() => handleSave('update', index)} className={`${styles.btn} ${styles.listBtn} btn-secondary`}>
+                                <button
+                                  onClick={() => handleSave("update", index)}
+                                  className={`${styles.btn} ${styles.listBtn} btn-secondary`}
+                                >
                                   수정
                                 </button>
-                                <button onClick={() => handleSave('delete', index)} className={`${styles.btn} ${styles.listBtn} btn-primary`}>
+                                <button
+                                  onClick={() => handleSave("delete", index)}
+                                  className={`${styles.btn} ${styles.listBtn} btn-primary`}
+                                >
                                   삭제
                                 </button>
                               </>
