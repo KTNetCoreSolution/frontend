@@ -685,8 +685,7 @@ const ProjectManageDetail = ({ projectId }) => {
     {
       key: "reviewWorkField",
       label: "업무분야",
-      type: "select",
-      options: WORKFIELD_OPTIONS.filter((o) => o.value),
+      type: "text",
       readonly: (data) => COMMON_LABEL(data.reviewWorkField),
     },
     {
