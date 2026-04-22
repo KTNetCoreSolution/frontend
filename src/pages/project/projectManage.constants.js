@@ -19,9 +19,8 @@ export const STATUS_OPTIONS = [
 
 export const IMPROVETYPE_OPTIONS = [
   { value: "", label: "선택" },
-  { value: "신규", label: "신규" },
-  { value: "개선", label: "개선" },
-  { value: "오류", label: "오류" },
+  { value: "현장요청", label: "현장요청" },
+  { value: "사업부서진행", label: "사업부서진행" },
   { value: "기타", label: "기타" },
 ];
 
@@ -43,6 +42,7 @@ export const SYSTEM_OPTIONS = [
   { value: "BI/DW", label: "BI/DW" },
   { value: "표준활동", label: "표준활동" },
   { value: "차량관리", label: "차량관리" },
+  { value: "사외공사장 통합관리", label: "사외공사장 통합관리" },
   { value: "기타", label: "기타" },
 ];
 
