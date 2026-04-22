@@ -30,6 +30,87 @@ const themeStyle = {
   primaryColor: "var(--bs-primary, #0d6efd)",
 };
 
+const DEFAULT_SELECT_OPTION = [{ value: "", label: "선택하세요" }];
+const COMMON_CLASS_OPTIONS = [
+  { value: "", label: "선택하세요" },
+  { value: "COMMON", label: "공통" },
+];
+
+const getFieldOptions = (fieldName, parentCode = "", source = []) => {
+  if (!Array.isArray(source) || source.length === 0) {
+    return DEFAULT_SELECT_OPTION;
+  }
+
+  let mapped = [];
+
+  if (fieldName === "CLASSACD") {
+    mapped = source
+      .map((item) => ({
+        value: item.CLASSACD || item.classACd || "",
+        label: item.CLASSANM || item.classANm || item.CLASSACD || "",
+      }))
+      .filter((item) => item.value);
+  } else if (fieldName === "CLASSBCD") {
+    mapped = source
+      .filter((item) => {
+        if (!parentCode) return true;
+        return (item.CLASSACD || item.classACd || "") === parentCode;
+      })
+      .map((item) => ({
+        value: item.CLASSBCD || item.classBCd || "",
+        label: item.CLASSBNM || item.classBNm || item.CLASSBCD || "",
+      }))
+      .filter((item) => item.value);
+  }
+
+  const unique = mapped.filter((item, index, arr) => arr.findIndex((v) => v.value === item.value) === index);
+
+  return [...DEFAULT_SELECT_OPTION, ...unique];
+};
+
+const normalizeString = (value) => String(value || "").trim();
+
+const resolveOption = (options = [], rawValue = "", rawLabel = "") => {
+  const valueText = normalizeString(rawValue);
+  const labelText = normalizeString(rawLabel);
+
+  if (!Array.isArray(options) || options.length === 0) {
+    return { value: valueText, label: labelText };
+  }
+
+  const byValue = options.find((option) => normalizeString(option.value) === valueText);
+  if (byValue) return byValue;
+
+  const byLabelFromValue = options.find((option) => normalizeString(option.label) === valueText);
+  if (byLabelFromValue) return byLabelFromValue;
+
+  const byLabel = options.find((option) => normalizeString(option.label) === labelText);
+  if (byLabel) return byLabel;
+
+  const byValueFromLabel = options.find((option) => normalizeString(option.value) === labelText);
+  if (byValueFromLabel) return byValueFromLabel;
+
+  return { value: "", label: "" };
+};
+
+const resolveWorkFieldValue = (rawValue = "", rawLabel = "") => {
+  const resolved = resolveOption(
+    WORKFIELD_OPTIONS.filter((o) => o.value),
+    rawValue,
+    rawLabel,
+  );
+  return resolved.value || "";
+};
+
+const resolveWorkFieldLabel = (rawValue = "", rawLabel = "") => {
+  const resolved = resolveOption(
+    WORKFIELD_OPTIONS.filter((o) => o.value),
+    rawValue,
+    rawLabel,
+  );
+  return resolved.label || rawLabel || rawValue || "";
+};
+
 const SectionTitle = ({ children, right }) => (
   <div
     style={{
@@ -201,6 +282,7 @@ const EditField = ({ field, value, onChange }) => {
           maxLength={field.maxLength || 255}
           placeholder={field.placeholder || ""}
           onChange={(e) => onChange(e.target.value)}
+          disabled={field.disabled}
         />
       );
 
@@ -212,12 +294,13 @@ const EditField = ({ field, value, onChange }) => {
           value={value || ""}
           placeholder={field.placeholder || ""}
           onChange={(e) => onChange(e.target.value)}
+          disabled={field.disabled}
         />
       );
 
     case "select":
       return (
-        <select className="form-select" value={value || ""} onChange={(e) => onChange(e.target.value)}>
+        <select className="form-select" value={value || ""} onChange={(e) => onChange(e.target.value)} disabled={field.disabled}>
           {(field.options || []).map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -229,7 +312,15 @@ const EditField = ({ field, value, onChange }) => {
     case "day":
     case "startday":
     case "endday":
-      return <CommonDateInput type={field.type} value={value || ""} onChange={onChange} placeholder={field.placeholder} />;
+      return (
+        <CommonDateInput
+          type={field.type}
+          value={value || ""}
+          onChange={onChange}
+          placeholder={field.placeholder}
+          disabled={field.disabled}
+        />
+      );
 
     default:
       return <ReadonlyBox value={value} />;
@@ -246,6 +337,13 @@ const ProjectManageDetail = ({ projectId }) => {
 
   const [isEdit, setIsEdit] = useState(false);
   const [editData, setEditData] = useState(null);
+
+  const [isRequestEdit, setIsRequestEdit] = useState(false);
+  const [requestEditData, setRequestEditData] = useState(null);
+
+  const [requestClassData, setRequestClassData] = useState([]);
+  const [requestClassAOptions, setRequestClassAOptions] = useState(DEFAULT_SELECT_OPTION);
+  const [requestClassBOptions, setRequestClassBOptions] = useState(DEFAULT_SELECT_OPTION);
 
   const [files, setFiles] = useState([]);
   const [fileLoading, setFileLoading] = useState(false);
@@ -342,6 +440,11 @@ const ProjectManageDetail = ({ projectId }) => {
       setFiles([]);
       setIsEdit(false);
       setEditData(null);
+      setIsRequestEdit(false);
+      setRequestEditData(null);
+      setRequestClassData([]);
+      setRequestClassAOptions(DEFAULT_SELECT_OPTION);
+      setRequestClassBOptions(DEFAULT_SELECT_OPTION);
       return;
     }
 
@@ -349,16 +452,138 @@ const ProjectManageDetail = ({ projectId }) => {
     loadFiles(projectId);
   }, [projectId, isAuthed]);
 
+  useEffect(() => {
+    const fetchRequestClassData = async () => {
+      const workField = requestEditData?.workField;
+
+      if (!isRequestEdit) return;
+
+      if (!workField) {
+        setRequestClassData([]);
+        setRequestClassAOptions(DEFAULT_SELECT_OPTION);
+        setRequestClassBOptions(DEFAULT_SELECT_OPTION);
+        return;
+      }
+
+      if (workField === "COMMON") {
+        setRequestClassData([]);
+        setRequestClassAOptions(COMMON_CLASS_OPTIONS);
+        setRequestClassBOptions(COMMON_CLASS_OPTIONS);
+
+        setRequestEditData((prev) => {
+          if (!prev) return prev;
+
+          const resolvedA = resolveOption(COMMON_CLASS_OPTIONS, prev.classACd, prev.classANm);
+          const resolvedB = resolveOption(COMMON_CLASS_OPTIONS, prev.classBCd, prev.classBNm);
+
+          return {
+            ...prev,
+            classACd: resolvedA.value || "COMMON",
+            classBCd: resolvedB.value || "COMMON",
+            classANm: resolvedA.label || "공통",
+            classBNm: resolvedB.label || "공통",
+          };
+        });
+
+        return;
+      }
+
+      try {
+        const response = await fetchData("standard/classinfoList", {
+          pGUBUN: workField,
+          pDEBUG: "F",
+        });
+
+        if (!response.success) {
+          errorMsgPopup(response.message || "분류 목록을 가져오는 중 오류가 발생했습니다.");
+          return;
+        }
+
+        const fetchedClassData = Array.isArray(response.data) ? response.data : [];
+        setRequestClassData(fetchedClassData);
+
+        const classAOptions = getFieldOptions("CLASSACD", "", fetchedClassData);
+        setRequestClassAOptions(classAOptions);
+
+        setRequestEditData((prev) => {
+          if (!prev) return prev;
+
+          const resolvedA = resolveOption(classAOptions, prev.classACd, prev.classANm);
+          const classBOptions = getFieldOptions("CLASSBCD", resolvedA.value || "", fetchedClassData);
+          setRequestClassBOptions(classBOptions);
+
+          const resolvedB = resolveOption(classBOptions, prev.classBCd, prev.classBNm);
+
+          return {
+            ...prev,
+            classACd: resolvedA.value || "",
+            classANm: resolvedA.label || "",
+            classBCd: resolvedB.value || "",
+            classBNm: resolvedB.label || "",
+          };
+        });
+      } catch (err) {
+        console.error("요청 내역 분류 목록 로드 실패:", err);
+        errorMsgPopup(err?.response?.data?.message || "분류 목록을 가져오는 중 오류가 발생했습니다.");
+      }
+    };
+
+    fetchRequestClassData();
+  }, [isRequestEdit, requestEditData?.workField]);
+
+  useEffect(() => {
+    if (!isRequestEdit) return;
+
+    const workField = requestEditData?.workField;
+    const classACd = requestEditData?.classACd;
+
+    if (!workField) {
+      setRequestClassBOptions(DEFAULT_SELECT_OPTION);
+      return;
+    }
+
+    if (workField === "COMMON") {
+      setRequestClassBOptions(COMMON_CLASS_OPTIONS);
+      return;
+    }
+
+    setRequestClassBOptions(getFieldOptions("CLASSBCD", classACd || "", requestClassData));
+  }, [isRequestEdit, requestEditData?.workField, requestEditData?.classACd, requestClassData]);
+
   const handleEditStart = () => {
     if (!detail) return;
 
+    const initialReviewWorkField = resolveWorkFieldValue(
+      detail.reviewWorkFieldCode || detail.rvwWorkFieldCode || detail.reviewWorkField || detail.workFieldCode || detail.workField || "",
+      detail.reviewWorkFieldNm || detail.rvwWorkFieldNm || detail.workFieldNm || detail.workField || "",
+    );
+
+    const initialReviewClassANm =
+      detail.reviewClassANm ||
+      detail.rvwClassANm ||
+      detail.classANm ||
+      detail.reviewClassACd ||
+      detail.rvwClassAcd ||
+      detail.classACd ||
+      "";
+
+    const initialReviewClassBNm =
+      detail.reviewClassBNm ||
+      detail.rvwClassBNm ||
+      detail.classBNm ||
+      detail.reviewClassBCd ||
+      detail.rvwClassBcd ||
+      detail.classBCd ||
+      "";
+
     setEditData({
       ...detail,
+      reviewerEmpNo: detail.reviewerEmpNo || detail.reviewer || "",
       reviewProjectNm: detail.reviewProjectNm || detail.projectNm || "",
       reviewImproveType: detail.reviewImproveType || detail.improveType || "",
-      reviewWorkField: detail.reviewWorkField || detail.workField || "",
-      reviewClassANm: detail.reviewClassANm || detail.classANm || "",
-      reviewClassBNm: detail.reviewClassBNm || detail.classBNm || "",
+      reviewWorkField: initialReviewWorkField,
+      reviewClassANm: initialReviewClassANm,
+      reviewClassBNm: initialReviewClassBNm,
       reviewSystemNm: detail.reviewSystemNm || detail.systemNm || "",
       reviewIssueCn: detail.reviewIssueCn || detail.issueCn || "",
       reviewReqCn: detail.reviewReqCn || detail.reqCn || "",
@@ -379,6 +604,39 @@ const ProjectManageDetail = ({ projectId }) => {
     setEditData(null);
   };
 
+  const handleRequestEditStart = () => {
+    if (!detail) return;
+
+    const initialWorkField = resolveWorkFieldValue(
+      detail.workFieldCode || detail.workField || "",
+      detail.workFieldNm || detail.workField || "",
+    );
+
+    setRequestEditData({
+      ...detail,
+      ownerEmpNo: detail.ownerEmpNo || detail.owner || "",
+      projectNm: detail.projectNm || "",
+      improveType: detail.improveType || "",
+      workField: initialWorkField,
+      classACd: detail.classACd || detail.classANm || "",
+      classANm: detail.classANm || "",
+      classBCd: detail.classBCd || detail.classBNm || "",
+      classBNm: detail.classBNm || "",
+      systemNm: detail.systemNm || "",
+      issueCn: detail.issueCn || "",
+      reqCn: detail.reqCn || "",
+    });
+    setIsRequestEdit(true);
+  };
+
+  const handleRequestEditCancel = () => {
+    setIsRequestEdit(false);
+    setRequestEditData(null);
+    setRequestClassData([]);
+    setRequestClassAOptions(DEFAULT_SELECT_OPTION);
+    setRequestClassBOptions(DEFAULT_SELECT_OPTION);
+  };
+
   const validateReview = () => {
     if (!editData) return false;
 
@@ -395,11 +653,11 @@ const ProjectManageDetail = ({ projectId }) => {
       return false;
     }
     if (!String(editData.reviewClassANm || "").trim()) {
-      errorMsgPopup("대분류 코드가 없습니다.");
+      errorMsgPopup("대분류를 입력해주세요.");
       return false;
     }
     if (!String(editData.reviewClassBNm || "").trim()) {
-      errorMsgPopup("중분류 코드가 없습니다.");
+      errorMsgPopup("중분류를 입력해주세요.");
       return false;
     }
     if (!String(editData.reviewSystemNm || "").trim()) {
@@ -414,7 +672,7 @@ const ProjectManageDetail = ({ projectId }) => {
       errorMsgPopup("개선방향을 입력해주세요.");
       return false;
     }
-    if (!String(editData.reviewer || "").trim()) {
+    if (!String(editData.reviewerEmpNo || editData.reviewer || "").trim()) {
       errorMsgPopup("검토자 정보가 없습니다.");
       return false;
     }
@@ -431,6 +689,49 @@ const ProjectManageDetail = ({ projectId }) => {
     return true;
   };
 
+  const validateRequest = () => {
+    if (!requestEditData) return false;
+
+    if (!String(requestEditData.projectNm || "").trim()) {
+      errorMsgPopup("요청제목을 입력해주세요.");
+      return false;
+    }
+    if (!String(requestEditData.improveType || "").trim()) {
+      errorMsgPopup("개선유형을 선택해주세요.");
+      return false;
+    }
+    if (!String(requestEditData.workField || "").trim()) {
+      errorMsgPopup("업무분야를 선택해주세요.");
+      return false;
+    }
+    if (!String(requestEditData.classACd || "").trim()) {
+      errorMsgPopup("대분류를 선택해주세요.");
+      return false;
+    }
+    if (!String(requestEditData.classBCd || "").trim()) {
+      errorMsgPopup("중분류를 선택해주세요.");
+      return false;
+    }
+    if (!String(requestEditData.systemNm || "").trim()) {
+      errorMsgPopup("시스템명을 입력해주세요.");
+      return false;
+    }
+    if (!String(requestEditData.issueCn || "").trim()) {
+      errorMsgPopup("문제점/이슈사항을 입력해주세요.");
+      return false;
+    }
+    if (!String(requestEditData.reqCn || "").trim()) {
+      errorMsgPopup("개선요청사항을 입력해주세요.");
+      return false;
+    }
+    if (!String(requestEditData.ownerEmpNo || requestEditData.owner || "").trim()) {
+      errorMsgPopup("작성자 정보가 없습니다.");
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSave = async () => {
     if (!editData) return;
     if (!validateReview()) return;
@@ -438,31 +739,31 @@ const ProjectManageDetail = ({ projectId }) => {
     try {
       const payload = {
         gubun: "U",
-        projectId: editData.id || "",
-        improvementType: detail?.improveType || "",
-        projectNm: detail?.projectNm || "",
-        ownerDept: detail?.ownerDept || "",
-        owner: detail?.owner || "",
-        systemNm: detail?.systemNm || "",
-        workField: detail?.workField || "",
-        classACd: detail?.classACd || "",
-        classBCd: detail?.classBCd || "",
-        requestDate: detail?.requestDate || detail?.regDt || getToday(),
+        projectId: editData.id || editData.projectId || "",
+        improvementType: "",
+        projectNm: "",
+        ownerDept: "",
+        owner: "",
+        systemNm: "",
+        workField: "",
+        classACd: "",
+        classBCd: "",
+        requestDate: "",
         requestDept: editData.requestDept || "",
-        issueCn: detail?.issueCn || "",
-        reqCn: detail?.reqCn || "",
+        issueCn: "",
+        reqCn: "",
         meetingDt: editData.meetingDt || "",
         startDt: editData.startDt || "",
         endDt: editData.endDt || "",
         status: editData.status || "RECEIVED",
         progress: clampPercent(editData.progress),
         useYn: "Y",
-        reviewer: editData.reviewer || "",
+        reviewer: editData.reviewerEmpNo || editData.reviewer || "",
         rvwProjectNm: editData.reviewProjectNm || "",
         rvwImproveType: editData.reviewImproveType || "",
         rvwWorkField: editData.reviewWorkField || "",
-        rvwClassAcd: editData.reviewClassANm || detail?.classACd || "",
-        rvwClassBcd: editData.reviewClassBNm || detail?.classBCd || "",
+        rvwClassAcd: editData.reviewClassANm || "",
+        rvwClassBcd: editData.reviewClassBNm || "",
         rvwSystemNm: editData.reviewSystemNm || "",
         rvwIssueCn: editData.reviewIssueCn || "",
         rvwReqCn: editData.reviewReqCn || "",
@@ -480,11 +781,71 @@ const ProjectManageDetail = ({ projectId }) => {
 
       setIsEdit(false);
       setEditData(null);
-      await loadDetail(editData.id);
-      await loadFiles(editData.id);
+      await loadDetail(editData.id || editData.projectId);
+      await loadFiles(editData.id || editData.projectId);
     } catch (e) {
       console.error(e);
       errorMsgPopup("저장 중 오류가 발생했습니다.");
+    }
+  };
+
+  const handleRequestSave = async () => {
+    if (!requestEditData) return;
+    if (!validateRequest()) return;
+
+    try {
+      const payload = {
+        gubun: "U",
+        projectId: requestEditData.id || requestEditData.projectId || projectId || "",
+        improvementType: requestEditData.improveType || "",
+        projectNm: requestEditData.projectNm || "",
+        ownerDept: detail?.ownerDept || "",
+        owner: requestEditData.ownerEmpNo || detail?.ownerEmpNo || detail?.owner || "",
+        systemNm: requestEditData.systemNm || "",
+        workField: requestEditData.workField || "",
+        classACd: requestEditData.classACd || "",
+        classBCd: requestEditData.classBCd || "",
+        requestDate: detail?.requestDate || detail?.regDt || getToday(),
+        requestDept: detail?.requestDept || "",
+        issueCn: requestEditData.issueCn || "",
+        reqCn: requestEditData.reqCn || "",
+        meetingDt: detail?.meetingDt || "",
+        startDt: detail?.startDt || "",
+        endDt: detail?.endDt || "",
+        status: detail?.status || "",
+        progress: clampPercent(detail?.progress ?? 0),
+        useYn: "Y",
+        reviewer: "",
+        rvwProjectNm: "",
+        rvwImproveType: "",
+        rvwWorkField: "",
+        rvwClassAcd: "",
+        rvwClassBcd: "",
+        rvwSystemNm: "",
+        rvwIssueCn: "",
+        rvwReqCn: "",
+      };
+
+      const result = await fetchData("project/save", payload);
+
+      const errCd = result?.data?.errCd ?? result?.errCd;
+      const errMsg = result?.data?.errMsg ?? result?.errMsg;
+
+      if (errCd !== "00") {
+        errorMsgPopup(errMsg || "요청 내역 저장 실패");
+        return;
+      }
+
+      setIsRequestEdit(false);
+      setRequestEditData(null);
+      setRequestClassData([]);
+      setRequestClassAOptions(DEFAULT_SELECT_OPTION);
+      setRequestClassBOptions(DEFAULT_SELECT_OPTION);
+      await loadDetail(requestEditData.id || requestEditData.projectId || projectId);
+      await loadFiles(requestEditData.id || requestEditData.projectId || projectId);
+    } catch (e) {
+      console.error(e);
+      errorMsgPopup("요청 내역 저장 중 오류가 발생했습니다.");
     }
   };
 
@@ -495,6 +856,7 @@ const ProjectManageDetail = ({ projectId }) => {
     try {
       const result = await fetchData("project/save", {
         gubun: "D",
+        saveType: "REQUEST",
         projectId,
         improvementType: "",
         projectNm: "",
@@ -538,6 +900,11 @@ const ProjectManageDetail = ({ projectId }) => {
       setFiles([]);
       setIsEdit(false);
       setEditData(null);
+      setIsRequestEdit(false);
+      setRequestEditData(null);
+      setRequestClassData([]);
+      setRequestClassAOptions(DEFAULT_SELECT_OPTION);
+      setRequestClassBOptions(DEFAULT_SELECT_OPTION);
     } catch (e) {
       console.error(e);
       errorMsgPopup("삭제 중 오류가 발생했습니다.");
@@ -642,6 +1009,7 @@ const ProjectManageDetail = ({ projectId }) => {
   };
 
   const right = isEdit ? editData : detail;
+  const requestView = isRequestEdit ? requestEditData : detail;
 
   const reviewView = useMemo(() => {
     if (isEdit) return editData;
@@ -650,13 +1018,44 @@ const ProjectManageDetail = ({ projectId }) => {
       ...detail,
       reviewProjectNm: detail?.reviewProjectNm || detail?.projectNm || "",
       reviewImproveType: detail?.reviewImproveType || detail?.improveType || "",
-      reviewWorkField: detail?.reviewWorkField || detail?.workField || "",
-      reviewClassANm: detail?.reviewClassANm || detail?.classANm || "",
-      reviewClassBNm: detail?.reviewClassBNm || detail?.classBNm || "",
+      reviewWorkField: resolveWorkFieldLabel(
+        detail?.reviewWorkFieldCode ||
+          detail?.rvwWorkFieldCode ||
+          detail?.reviewWorkField ||
+          detail?.RVW_WORKFIELDCODE ||
+          detail?.RVW_WORKFIELD ||
+          detail?.workFieldCode ||
+          detail?.workField ||
+          "",
+        detail?.reviewWorkFieldNm ||
+          detail?.rvwWorkFieldNm ||
+          detail?.RVW_WORKFIELD ||
+          detail?.reviewWorkField ||
+          detail?.workFieldNm ||
+          detail?.workField ||
+          "",
+      ),
+      reviewClassANm:
+        detail?.reviewClassANm ||
+        detail?.rvwClassANm ||
+        detail?.classANm ||
+        detail?.reviewClassACd ||
+        detail?.rvwClassAcd ||
+        detail?.classACd ||
+        "",
+      reviewClassBNm:
+        detail?.reviewClassBNm ||
+        detail?.rvwClassBNm ||
+        detail?.classBNm ||
+        detail?.reviewClassBCd ||
+        detail?.rvwClassBcd ||
+        detail?.classBCd ||
+        "",
       reviewSystemNm: detail?.reviewSystemNm || detail?.systemNm || "",
       reviewIssueCn: detail?.reviewIssueCn || detail?.issueCn || "",
       reviewReqCn: detail?.reviewReqCn || detail?.reqCn || "",
       requestDept: detail?.requestDept || "",
+      reviewerEmpNo: detail?.reviewerEmpNo || detail?.reviewer || "",
       reviewer: detail?.reviewer || "",
       reviewDate: detail?.reviewDate || getToday(),
       status: detail?.status || "RECEIVED",
@@ -666,6 +1065,67 @@ const ProjectManageDetail = ({ projectId }) => {
       endDt: detail?.endDt || "",
     };
   }, [detail, editData, isEdit]);
+
+  const requestFields = [
+    {
+      key: "projectNm",
+      label: "요청제목",
+      type: "text",
+      maxLength: 200,
+      readonly: (data) => data.projectNm,
+    },
+    {
+      key: "improveType",
+      label: "개선유형",
+      type: "select",
+      options: IMPROVETYPE_OPTIONS.filter((o) => o.value),
+      readonly: (data) => COMMON_LABEL(data.improveType),
+    },
+    {
+      key: "workField",
+      label: "업무분야",
+      type: "select",
+      options: WORKFIELD_OPTIONS.filter((o) => o.value),
+      readonly: (data) => COMMON_LABEL(data.workField),
+    },
+    {
+      key: "classACd",
+      label: "대분류",
+      type: "select",
+      options: requestClassAOptions,
+      readonly: (data) => data.classANm || COMMON_LABEL(data.classACd),
+    },
+    {
+      key: "classBCd",
+      label: "중분류",
+      type: "select",
+      options: requestClassBOptions,
+      readonly: (data) => data.classBNm || COMMON_LABEL(data.classBCd),
+    },
+    {
+      key: "systemNm",
+      label: "시스템명",
+      type: "text",
+      maxLength: 100,
+      readonly: (data) => data.systemNm,
+    },
+    {
+      key: "issueCn",
+      label: "문제점/이슈사항",
+      type: "textarea",
+      rows: 5,
+      full: true,
+      readonly: (data) => data.issueCn,
+    },
+    {
+      key: "reqCn",
+      label: "개선요청사항",
+      type: "textarea",
+      rows: 5,
+      full: true,
+      readonly: (data) => data.reqCn,
+    },
+  ];
 
   const reviewFields = [
     {
@@ -685,7 +1145,8 @@ const ProjectManageDetail = ({ projectId }) => {
     {
       key: "reviewWorkField",
       label: "업무분야",
-      type: "text",
+      type: "select",
+      options: WORKFIELD_OPTIONS.filter((o) => o.value),
       readonly: (data) => COMMON_LABEL(data.reviewWorkField),
     },
     {
@@ -693,14 +1154,14 @@ const ProjectManageDetail = ({ projectId }) => {
       label: "대분류",
       type: "text",
       maxLength: 100,
-      readonly: (data) => COMMON_LABEL(data.reviewClassANm),
+      readonly: (data) => data.reviewClassANm,
     },
     {
       key: "reviewClassBNm",
       label: "중분류",
       type: "text",
       maxLength: 100,
-      readonly: (data) => COMMON_LABEL(data.reviewClassBNm),
+      readonly: (data) => data.reviewClassBNm,
     },
     {
       key: "reviewSystemNm",
@@ -769,6 +1230,57 @@ const ProjectManageDetail = ({ projectId }) => {
     }));
   };
 
+  const handleRequestFieldChange = (key, value) => {
+    if (key === "workField") {
+      setRequestEditData((prev) => ({
+        ...prev,
+        workField: value,
+        classACd: "",
+        classBCd: "",
+        classANm: "",
+        classBNm: "",
+      }));
+
+      setRequestClassData([]);
+      setRequestClassAOptions(DEFAULT_SELECT_OPTION);
+      setRequestClassBOptions(DEFAULT_SELECT_OPTION);
+      return;
+    }
+
+    if (key === "classACd") {
+      const nextClassBOptions = value === "COMMON" ? COMMON_CLASS_OPTIONS : getFieldOptions("CLASSBCD", value, requestClassData);
+
+      setRequestClassBOptions(nextClassBOptions);
+
+      const selectedClassA = requestClassAOptions.find((option) => option.value === value);
+
+      setRequestEditData((prev) => ({
+        ...prev,
+        classACd: value,
+        classANm: selectedClassA?.label || "",
+        classBCd: "",
+        classBNm: "",
+      }));
+      return;
+    }
+
+    if (key === "classBCd") {
+      const selectedClassB = requestClassBOptions.find((option) => option.value === value);
+
+      setRequestEditData((prev) => ({
+        ...prev,
+        classBCd: value,
+        classBNm: selectedClassB?.label || "",
+      }));
+      return;
+    }
+
+    setRequestEditData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
   return (
     <div className={styles.container}>
       <div className="boardSection">
@@ -805,7 +1317,36 @@ const ProjectManageDetail = ({ projectId }) => {
               }}
             >
               <div style={cardStyle}>
-                <SectionTitle>요청 내역</SectionTitle>
+                <SectionTitle
+                  right={
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        flexWrap: "wrap",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      {!isRequestEdit ? (
+                        <button className="btn btn-outline-secondary btn-sm" onClick={handleRequestEditStart} disabled={!detail || isEdit}>
+                          요청 내역 수정
+                        </button>
+                      ) : (
+                        <>
+                          <button className="btn btn-secondary btn-sm" onClick={handleRequestEditCancel}>
+                            취소
+                          </button>
+                          <button className="btn btn-primary btn-sm" onClick={handleRequestSave}>
+                            저장
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  }
+                >
+                  요청 내역
+                </SectionTitle>
 
                 <div
                   style={{
@@ -816,7 +1357,7 @@ const ProjectManageDetail = ({ projectId }) => {
                     wordBreak: "break-word",
                   }}
                 >
-                  {detail.projectNm || "-"}
+                  {requestView?.projectNm || "-"}
                 </div>
 
                 <MetaRow
@@ -824,33 +1365,19 @@ const ProjectManageDetail = ({ projectId }) => {
                   right={`등록일 ${detail.requestDate || detail.regDt || "-"}`}
                 />
 
-                <LabelValue label="개선유형">
-                  <ReadonlyBox value={COMMON_LABEL(detail.improveType)} />
-                </LabelValue>
-
-                <LabelValue label="업무분야">
-                  <ReadonlyBox value={COMMON_LABEL(detail.workField)} />
-                </LabelValue>
-
-                <LabelValue label="대분류">
-                  <ReadonlyBox value={COMMON_LABEL(detail.classANm)} />
-                </LabelValue>
-
-                <LabelValue label="중분류">
-                  <ReadonlyBox value={COMMON_LABEL(detail.classBNm)} />
-                </LabelValue>
-
-                <LabelValue label="시스템명">
-                  <ReadonlyBox value={detail.systemNm} />
-                </LabelValue>
-
-                <LabelValue label="문제점/이슈사항" full>
-                  <ReadonlyBox value={detail.issueCn} />
-                </LabelValue>
-
-                <LabelValue label="개선방향" full>
-                  <ReadonlyBox value={detail.reqCn} />
-                </LabelValue>
+                {requestFields.map((field) => (
+                  <LabelValue key={field.key} label={field.label} full={field.full}>
+                    {isRequestEdit && field.type !== "readonly" ? (
+                      <EditField
+                        field={field}
+                        value={requestView?.[field.key]}
+                        onChange={(value) => handleRequestFieldChange(field.key, value)}
+                      />
+                    ) : (
+                      <ReadonlyBox value={field.readonly ? field.readonly(requestView) : requestView?.[field.key]} />
+                    )}
+                  </LabelValue>
+                ))}
               </div>
 
               <div style={cardStyle}>
@@ -867,10 +1394,14 @@ const ProjectManageDetail = ({ projectId }) => {
                     >
                       {!isEdit ? (
                         <>
-                          <button className="btn btn-outline-secondary btn-sm" onClick={handleEditStart} disabled={!detail}>
+                          <button
+                            className="btn btn-outline-secondary btn-sm"
+                            onClick={handleEditStart}
+                            disabled={!detail || isRequestEdit}
+                          >
                             {detail?.reviewProjectNm ? "검토 수정" : "검토 작성"}
                           </button>
-                          <button className="btn btn-primary btn-sm" onClick={handleDelete} disabled={!detail}>
+                          <button className="btn btn-primary btn-sm" onClick={handleDelete} disabled={!detail || isRequestEdit}>
                             삭제
                           </button>
                         </>
@@ -906,7 +1437,7 @@ const ProjectManageDetail = ({ projectId }) => {
 
                 {reviewFields.map((field) => (
                   <LabelValue key={field.key} label={field.label} full={field.full}>
-                    {isEdit ? (
+                    {isEdit && field.type !== "readonly" ? (
                       <EditField field={field} value={reviewView?.[field.key]} onChange={(value) => handleFieldChange(field.key, value)} />
                     ) : (
                       <ReadonlyBox value={field.readonly ? field.readonly(reviewView) : reviewView?.[field.key]} />
