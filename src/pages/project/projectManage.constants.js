@@ -8,24 +8,26 @@ export const STATUS_LABEL = {
 };
 
 export const STATUS_OPTIONS = [
-  { value: "", label: "선택" },
+  { value: "", label: "선택하세요" },
   { value: "RECEIVED", label: "접수" },
   { value: "UNDER_REVIEW", label: "검토중" },
   { value: "APPROVED", label: "개선확정" },
   { value: "REJECTED", label: "반려" },
   { value: "IN_PROGRESS", label: "개선중" },
   { value: "COMPLETED", label: "개선완료" },
+  { value: "PROJECTING", label: "프로젝트" },
 ];
 
 export const IMPROVETYPE_OPTIONS = [
-  { value: "", label: "선택" },
-  { value: "현장요청", label: "현장요청" },
-  { value: "사업부서진행", label: "사업부서진행" },
+  { value: "", label: "선택하세요" },
+  { value: "신규", label: "신규" },
+  { value: "개선", label: "개선" },
+  { value: "오류", label: "오류" },
   { value: "기타", label: "기타" },
 ];
 
 export const WORKFIELD_OPTIONS = [
-  { value: "", label: "선택" },
+  { value: "", label: "선택하세요" },
   { value: "LINE", label: "선로" },
   { value: "DESIGN", label: "설계" },
   { value: "BIZ", label: "BIZ" },
