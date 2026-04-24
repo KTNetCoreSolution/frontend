@@ -914,7 +914,6 @@ const ProjectManageDetail = ({ projectId }) => {
     try {
       const result = await fetchData("project/save", {
         gubun: "D",
-        saveType: "REQUEST",
         projectId,
         improvementType: "",
         projectNm: "",
