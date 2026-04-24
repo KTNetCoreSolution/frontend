@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import useStore from "../../store/store";
 import styles from "../../components/table/TableSearch.module.css";
-import { fetchData } from "../../utils/dataUtils";
+import { fetchData, fetchFileUpload } from "../../utils/dataUtils";
 import { errorMsgPopup } from "../../utils/errorMsgPopup";
+import { msgPopup } from "../../utils/msgPopup";
 import ImageViewPopup from "../../components/popup/ImageViewPopup";
 import TextViewPopup from "../../components/popup/TextViewPopup";
 import DatePickerCommon from "../../components/common/DatePickerCommon";
@@ -153,11 +154,11 @@ const MetaRow = ({ left, right }) => (
   </div>
 );
 
-const LabelValue = ({ label, children, full = false }) => (
+const LabelValue = ({ label, children }) => (
   <div
     style={{
       display: "grid",
-      gridTemplateColumns: full ? "160px 1fr" : "140px 1fr",
+      gridTemplateColumns: "140px 1fr",
       gap: 10,
       alignItems: "start",
       marginBottom: 12,
@@ -351,6 +352,22 @@ const ProjectManageDetail = ({ projectId }) => {
   const [selectedText, setSelectedText] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
 
+  const [uploadFileInputs, setUploadFileInputs] = useState([{ id: Date.now() }]);
+  const [uploadFiles, setUploadFiles] = useState([null]);
+  const [uploading, setUploading] = useState(false);
+
+  const resetUploadFiles = () => {
+    setUploadFileInputs([{ id: Date.now() }]);
+    setUploadFiles([null]);
+  };
+
+  useEffect(() => {
+    fileUtils.setAccept("*");
+    return () => {
+      fileUtils.getAccept();
+    };
+  }, []);
+
   const closeImagePopup = () => {
     setSelectedImage(null);
     setZoomLevel(1);
@@ -378,6 +395,7 @@ const ProjectManageDetail = ({ projectId }) => {
         projectId: id,
         debug: "F",
         projectNm: "",
+        owner: "",
         improveType: "",
         workField: "",
         status: "",
@@ -445,11 +463,13 @@ const ProjectManageDetail = ({ projectId }) => {
       setRequestClassData([]);
       setRequestClassAOptions(DEFAULT_SELECT_OPTION);
       setRequestClassBOptions(DEFAULT_SELECT_OPTION);
+      resetUploadFiles();
       return;
     }
 
     loadDetail(projectId);
     loadFiles(projectId);
+    resetUploadFiles();
   }, [projectId, isAuthed]);
 
   useEffect(() => {
@@ -626,6 +646,7 @@ const ProjectManageDetail = ({ projectId }) => {
       issueCn: detail.issueCn || "",
       reqCn: detail.reqCn || "",
     });
+    resetUploadFiles();
     setIsRequestEdit(true);
   };
 
@@ -635,6 +656,7 @@ const ProjectManageDetail = ({ projectId }) => {
     setRequestClassData([]);
     setRequestClassAOptions(DEFAULT_SELECT_OPTION);
     setRequestClassBOptions(DEFAULT_SELECT_OPTION);
+    resetUploadFiles();
   };
 
   const validateReview = () => {
@@ -665,7 +687,7 @@ const ProjectManageDetail = ({ projectId }) => {
       return false;
     }
     if (!String(editData.reviewIssueCn || "").trim()) {
-      errorMsgPopup("문제점/이슈사항을 입력해주세요.");
+      errorMsgPopup("문제사항을 입력해주세요.");
       return false;
     }
     if (!String(editData.reviewReqCn || "").trim()) {
@@ -717,11 +739,11 @@ const ProjectManageDetail = ({ projectId }) => {
       return false;
     }
     if (!String(requestEditData.issueCn || "").trim()) {
-      errorMsgPopup("문제점/이슈사항을 입력해주세요.");
+      errorMsgPopup("문제사항을 입력해주세요.");
       return false;
     }
     if (!String(requestEditData.reqCn || "").trim()) {
-      errorMsgPopup("개선요청사항을 입력해주세요.");
+      errorMsgPopup("개선요청을 입력해주세요.");
       return false;
     }
     if (!String(requestEditData.ownerEmpNo || requestEditData.owner || "").trim()) {
@@ -758,7 +780,7 @@ const ProjectManageDetail = ({ projectId }) => {
         status: editData.status || "RECEIVED",
         progress: clampPercent(editData.progress),
         useYn: "Y",
-        reviewer: editData.reviewerEmpNo || editData.reviewer || "",
+        reviewer: user?.empNo || user?.empno || user?.userId || user?.id || user?.name || "",
         rvwProjectNm: editData.reviewProjectNm || "",
         rvwImproveType: editData.reviewImproveType || "",
         rvwWorkField: editData.reviewWorkField || "",
@@ -789,14 +811,42 @@ const ProjectManageDetail = ({ projectId }) => {
     }
   };
 
+  const uploadRequestFiles = async (targetProjectId) => {
+    const validFiles = uploadFiles.filter((file) => file != null);
+
+    if (!targetProjectId || validFiles.length === 0) return;
+
+    const formData = new FormData();
+    formData.append("gubun", "I");
+    formData.append("fileId", "");
+    formData.append("projectId", String(targetProjectId));
+
+    validFiles.forEach((file) => {
+      formData.append("files", file);
+    });
+
+    const uploadResponse = await fetchFileUpload("project/filesave", formData);
+
+    const uploadErrCd = uploadResponse?.data?.errCd ?? uploadResponse?.errCd;
+    const uploadErrMsg = uploadResponse?.data?.errMsg ?? uploadResponse?.errMsg;
+
+    if (uploadErrCd !== "00") {
+      throw new Error(uploadErrMsg || "파일 업로드 실패");
+    }
+  };
+
   const handleRequestSave = async () => {
     if (!requestEditData) return;
     if (!validateRequest()) return;
 
+    setUploading(true);
+
     try {
+      const targetProjectId = requestEditData.id || requestEditData.projectId || projectId || "";
+
       const payload = {
         gubun: "U",
-        projectId: requestEditData.id || requestEditData.projectId || projectId || "",
+        projectId: targetProjectId,
         improvementType: requestEditData.improveType || "",
         projectNm: requestEditData.projectNm || "",
         ownerDept: detail?.ownerDept || "",
@@ -836,16 +886,24 @@ const ProjectManageDetail = ({ projectId }) => {
         return;
       }
 
+      await uploadRequestFiles(targetProjectId);
+
       setIsRequestEdit(false);
       setRequestEditData(null);
       setRequestClassData([]);
       setRequestClassAOptions(DEFAULT_SELECT_OPTION);
       setRequestClassBOptions(DEFAULT_SELECT_OPTION);
-      await loadDetail(requestEditData.id || requestEditData.projectId || projectId);
-      await loadFiles(requestEditData.id || requestEditData.projectId || projectId);
+      resetUploadFiles();
+
+      await loadDetail(targetProjectId);
+      await loadFiles(targetProjectId);
+
+      msgPopup("요청 내역과 첨부파일이 저장되었습니다.");
     } catch (e) {
       console.error(e);
-      errorMsgPopup("요청 내역 저장 중 오류가 발생했습니다.");
+      errorMsgPopup(e.message || "요청 내역 저장 중 오류가 발생했습니다.");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -905,6 +963,7 @@ const ProjectManageDetail = ({ projectId }) => {
       setRequestClassData([]);
       setRequestClassAOptions(DEFAULT_SELECT_OPTION);
       setRequestClassBOptions(DEFAULT_SELECT_OPTION);
+      resetUploadFiles();
     } catch (e) {
       console.error(e);
       errorMsgPopup("삭제 중 오류가 발생했습니다.");
@@ -1002,6 +1061,52 @@ const ProjectManageDetail = ({ projectId }) => {
     for (const file of files) {
       await handleDownload(file);
     }
+  };
+
+  const handleAddUploadFileInput = () => {
+    const validFilesCount = uploadFiles.filter((file) => file != null).length;
+
+    if (validFilesCount + uploadFileInputs.length < fileUtils.getMaxFiles()) {
+      setUploadFileInputs((prev) => [...prev, { id: Date.now() }]);
+      setUploadFiles((prev) => [...prev, null]);
+    }
+  };
+
+  const handleRemoveUploadFileInput = (id) => {
+    const index = uploadFileInputs.findIndex((input) => input.id === id);
+    if (index === -1) return;
+
+    if (uploadFileInputs.length > 1) {
+      setUploadFileInputs((prev) => prev.filter((input) => input.id !== id));
+      setUploadFiles((prev) => prev.filter((_, i) => i !== index));
+      return;
+    }
+
+    resetUploadFiles();
+  };
+
+  const handleUploadFileChange = (id, e) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
+
+    if (selectedFile.size > fileUtils.getMaxFileSize()) {
+      errorMsgPopup(`파일 크기는 ${fileUtils.formatFileSize(fileUtils.getMaxFileSize())}를 초과할 수 없습니다.`);
+      return;
+    }
+
+    if (!fileUtils.isValidFile(selectedFile)) {
+      errorMsgPopup("문서 파일(pdf, doc, docx, xls, xlsx, ppt, pptx)만 업로드 가능합니다.");
+      return;
+    }
+
+    const index = uploadFileInputs.findIndex((input) => input.id === id);
+    if (index === -1) return;
+
+    setUploadFiles((prev) => {
+      const next = [...prev];
+      next[index] = selectedFile;
+      return next;
+    });
   };
 
   const getFileIcon = (file) => {
@@ -1111,7 +1216,7 @@ const ProjectManageDetail = ({ projectId }) => {
     },
     {
       key: "issueCn",
-      label: "문제점/이슈사항",
+      label: "문제사항",
       type: "textarea",
       rows: 5,
       full: true,
@@ -1119,7 +1224,7 @@ const ProjectManageDetail = ({ projectId }) => {
     },
     {
       key: "reqCn",
-      label: "개선요청사항",
+      label: "개선요청",
       type: "textarea",
       rows: 5,
       full: true,
@@ -1136,43 +1241,8 @@ const ProjectManageDetail = ({ projectId }) => {
       readonly: (data) => data.reviewProjectNm,
     },
     {
-      key: "reviewImproveType",
-      label: "개선유형",
-      type: "select",
-      options: IMPROVETYPE_OPTIONS.filter((o) => o.value),
-      readonly: (data) => COMMON_LABEL(data.reviewImproveType),
-    },
-    {
-      key: "reviewWorkField",
-      label: "업무분야",
-      type: "select",
-      options: WORKFIELD_OPTIONS.filter((o) => o.value),
-      readonly: (data) => COMMON_LABEL(data.reviewWorkField),
-    },
-    {
-      key: "reviewClassANm",
-      label: "대분류",
-      type: "text",
-      maxLength: 100,
-      readonly: (data) => data.reviewClassANm,
-    },
-    {
-      key: "reviewClassBNm",
-      label: "중분류",
-      type: "text",
-      maxLength: 100,
-      readonly: (data) => data.reviewClassBNm,
-    },
-    {
-      key: "reviewSystemNm",
-      label: "시스템명",
-      type: "text",
-      maxLength: 100,
-      readonly: (data) => data.reviewSystemNm,
-    },
-    {
       key: "reviewIssueCn",
-      label: "문제점/이슈사항",
+      label: "문제사항",
       type: "textarea",
       rows: 5,
       full: true,
@@ -1202,7 +1272,7 @@ const ProjectManageDetail = ({ projectId }) => {
     },
     {
       key: "startDt",
-      label: "시작일",
+      label: "시작(예정)일",
       type: "startday",
       placeholder: "시작일 선택",
       readonly: (data) => data.startDt,
@@ -1293,7 +1363,7 @@ const ProjectManageDetail = ({ projectId }) => {
             justifyContent: "space-between",
           }}
         >
-          <span>시스템 개선 요청 상세</span>
+          <span>검토 내역은 담당 부서 검토 후 작성됩니다.</span>
 
           <button type="button" className="btn btn-secondary btn-sm" onClick={() => setSearchParams({})}>
             목록
@@ -1334,11 +1404,11 @@ const ProjectManageDetail = ({ projectId }) => {
                         </button>
                       ) : (
                         <>
-                          <button className="btn btn-secondary btn-sm" onClick={handleRequestEditCancel}>
+                          <button className="btn btn-secondary btn-sm" onClick={handleRequestEditCancel} disabled={uploading}>
                             취소
                           </button>
-                          <button className="btn btn-primary btn-sm" onClick={handleRequestSave}>
-                            저장
+                          <button className="btn btn-primary btn-sm" onClick={handleRequestSave} disabled={uploading}>
+                            {uploading ? "저장 중..." : "저장"}
                           </button>
                         </>
                       )}
@@ -1366,7 +1436,7 @@ const ProjectManageDetail = ({ projectId }) => {
                 />
 
                 {requestFields.map((field) => (
-                  <LabelValue key={field.key} label={field.label} full={field.full}>
+                  <LabelValue key={field.key} label={field.label}>
                     {isRequestEdit && field.type !== "readonly" ? (
                       <EditField
                         field={field}
@@ -1378,6 +1448,118 @@ const ProjectManageDetail = ({ projectId }) => {
                     )}
                   </LabelValue>
                 ))}
+
+                <div style={{ marginTop: 28 }}>
+                  <SectionTitle
+                    right={
+                      <button className="btn btn-sm btn-primary" onClick={handleDownloadAll} disabled={fileLoading || files.length === 0}>
+                        전체 다운로드
+                      </button>
+                    }
+                  >
+                    첨부파일
+                  </SectionTitle>
+                </div>
+
+                {fileLoading ? (
+                  <div className="text-center">파일 목록 로딩 중...</div>
+                ) : files.length === 0 ? (
+                  <div className="list-group-item nodata">첨부파일이 없습니다.</div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {files.map((file) => (
+                      <div key={file.fileId} style={fileItemStyle}>
+                        <button type="button" style={fileLinkButtonStyle} onClick={() => handleFileClick(file)} title={file.fileName}>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              minWidth: 0,
+                            }}
+                          >
+                            {getFileIcon(file)}
+                            <span
+                              style={{
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: "nowrap",
+                              }}
+                            >
+                              {file.fileName || "-"}
+                            </span>
+                          </div>
+                        </button>
+
+                        <button type="button" className="btn btn-sm btn-secondary" onClick={() => handleDownload(file)}>
+                          다운로드
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {isRequestEdit && (
+                  <div style={{ marginTop: 30 }}>
+                    <div style={{ color: themeStyle.secondaryColor, fontSize: 13, marginBottom: 8 }}>
+                      ※ 개선이 필요한 화면 및 절차 등의 파일을 첨부해주세요
+                    </div>
+
+                    <div style={{ fontWeight: 600, marginBottom: 8 }}>
+                      파일 추가
+                      <span style={{ color: themeStyle.secondaryColor, fontWeight: 400, marginLeft: 8, fontSize: 13 }}>
+                        (최대 {fileUtils.getMaxFiles()}개, {fileUtils.formatFileSize(fileUtils.getMaxFileSize())}까지, 문서 파일만 가능)
+                      </span>
+                    </div>
+
+                    {uploadFileInputs.map((input, index) => (
+                      <div key={input.id} style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
+                        <input
+                          type="file"
+                          className="form-control"
+                          onChange={(e) => handleUploadFileChange(input.id, e)}
+                          accept={fileUtils.getAccept()}
+                          disabled={uploading}
+                        />
+
+                        <button
+                          type="button"
+                          className="btn btn-outline-secondary btn-sm"
+                          onClick={() => handleRemoveUploadFileInput(input.id)}
+                          disabled={uploading}
+                        >
+                          -
+                        </button>
+
+                        {index === uploadFileInputs.length - 1 && (
+                          <button
+                            type="button"
+                            className="btn btn-outline-secondary btn-sm"
+                            onClick={handleAddUploadFileInput}
+                            disabled={uploading || uploadFileInputs.length >= fileUtils.getMaxFiles()}
+                          >
+                            +
+                          </button>
+                        )}
+                      </div>
+                    ))}
+
+                    {uploadFiles.some((file) => file != null) && (
+                      <div style={{ marginTop: 12 }}>
+                        <div style={{ fontWeight: 600, marginBottom: 6 }}>선택된 파일</div>
+                        <ul style={{ marginBottom: 0, paddingLeft: 18 }}>
+                          {uploadFiles.map(
+                            (file, index) =>
+                              file && (
+                                <li key={index}>
+                                  {file.name} ({fileUtils.formatFileSize(file.size)})
+                                </li>
+                              ),
+                          )}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div style={cardStyle}>
@@ -1433,7 +1615,7 @@ const ProjectManageDetail = ({ projectId }) => {
                   {reviewView.reviewProjectNm || detail.projectNm || "-"}
                 </div>
 
-                <MetaRow left={`검토자 ${reviewView.reviewer || "-"}`} right={`검토일 ${reviewView.reviewDate || "-"}`} />
+                <MetaRow left={`검토자 ${reviewView.reviewer || "-"}`} right={`최종 검토일 ${reviewView.reviewDate || "-"}`} />
 
                 {reviewFields.map((field) => (
                   <LabelValue key={field.key} label={field.label} full={field.full}>
@@ -1445,55 +1627,6 @@ const ProjectManageDetail = ({ projectId }) => {
                   </LabelValue>
                 ))}
               </div>
-            </div>
-
-            <div style={{ ...cardStyle, marginTop: 20 }}>
-              <SectionTitle
-                right={
-                  <button className="btn btn-sm btn-primary" onClick={handleDownloadAll} disabled={fileLoading || files.length === 0}>
-                    전체 다운로드
-                  </button>
-                }
-              >
-                첨부파일
-              </SectionTitle>
-
-              {fileLoading ? (
-                <div className="text-center">파일 목록 로딩 중...</div>
-              ) : files.length === 0 ? (
-                <div className="list-group-item nodata">첨부파일이 없습니다.</div>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {files.map((file) => (
-                    <div key={file.fileId} style={fileItemStyle}>
-                      <button type="button" style={fileLinkButtonStyle} onClick={() => handleFileClick(file)} title={file.fileName}>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            minWidth: 0,
-                          }}
-                        >
-                          {getFileIcon(file)}
-                          <span
-                            style={{
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                            }}
-                          >
-                            {file.fileName || "-"}
-                          </span>
-                        </div>
-                      </button>
-
-                      <button type="button" className="btn btn-sm btn-secondary" onClick={() => handleDownload(file)}>
-                        다운로드
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
         )}
