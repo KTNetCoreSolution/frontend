@@ -85,51 +85,51 @@ const createBaseSearchConfig = () => ({
           label: "개선유형",
           labelVisible: true,
           options: IMPROVETYPE_OPTIONS,
-          width: "160px",
+          width: "167px",
           enabled: true,
           eventType: "selectChange",
         },
         {
           id: "workField",
           type: "select",
-          row: 1,
+          row: 2,
           label: "업무분야",
           labelVisible: true,
           options: WORKFIELD_OPTIONS,
-          width: "160px",
+          width: "167px",
           enabled: true,
           eventType: "selectChange",
         },
         {
           id: "classA",
           type: "select",
-          row: 1,
+          row: 2,
           label: "대분류",
           labelVisible: true,
           options: [{ value: "", label: "선택하세요" }],
-          width: "220px",
+          width: "167px",
           enabled: true,
           eventType: "selectChange",
         },
         {
           id: "classB",
           type: "select",
-          row: 1,
+          row: 2,
           label: "중분류",
           labelVisible: true,
           options: [{ value: "", label: "선택하세요" }],
-          width: "220px",
+          width: "167px",
           enabled: true,
           eventType: "selectChange",
         },
         {
           id: "system",
           type: "select",
-          row: 2,
-          label: "시스템명",
+          row: 1,
+          label: "시스템",
           labelVisible: true,
           options: SYSTEM_OPTIONS,
-          width: "200px",
+          width: "167px",
           enabled: true,
         },
         {
@@ -140,14 +140,14 @@ const createBaseSearchConfig = () => ({
           labelVisible: true,
           placeholder: "예) 차량 이전 신청 프로세스 개선",
           maxLength: 200,
-          width: "320px",
+          width: "620px",
           enabled: true,
         },
         {
           id: "issue",
           type: "textarea",
           row: 4,
-          label: "문제점/이슈사항",
+          label: "문제사항",
           labelVisible: true,
           placeholder: "현재 문제점 또는 이슈사항을 입력하세요",
           maxLength: 2000,
@@ -158,7 +158,7 @@ const createBaseSearchConfig = () => ({
           id: "requestDetail",
           type: "textarea",
           row: 5,
-          label: "개선요청사항",
+          label: "개선요청",
           labelVisible: true,
           placeholder: "개선이 필요한 내용을 구체적으로 입력하세요",
           maxLength: 2000,
@@ -575,7 +575,7 @@ const ProjectCreate = ({ show, onClose, onCreated }) => {
   return (
     <Modal show={show} onHide={onClose} centered dialogClassName={styles.customModal}>
       <Modal.Header closeButton>
-        <Modal.Title>시스템 개선 요청 등록</Modal.Title>
+        <Modal.Title>시스템 개선 요청</Modal.Title>
       </Modal.Header>
 
       <Modal.Body className={styles.modalBody}>
@@ -585,6 +585,7 @@ const ProjectCreate = ({ show, onClose, onCreated }) => {
           </div>
 
           <div style={{ marginTop: "16px" }}>
+            <div className="text-muted"> ※ 개선이 필요한 화면 및 절차 등의 파일을 첨부해주세요 </div>
             <div className="attachLabelWrap">
               <label className="form-label">
                 첨부파일{" "}
