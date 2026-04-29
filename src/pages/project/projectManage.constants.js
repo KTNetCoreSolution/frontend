@@ -1,21 +1,38 @@
 export const STATUS_LABEL = {
   RECEIVED: "접수",
-  UNDER_REVIEW: "검토중",
-  APPROVED: "개선확정",
-  REJECTED: "반려",
-  IN_PROGRESS: "개선중",
-  COMPLETED: "개선완료",
+  // UNDER_REVIEW: "검토중",
+  // APPROVED: "개선확정",
+  // REJECTED: "반려",
+  IN_PROGRESS: "진행중",
+  COMPLETED: "완료",
 };
 
 export const STATUS_OPTIONS = [
   { value: "", label: "선택하세요" },
   { value: "RECEIVED", label: "접수" },
-  { value: "UNDER_REVIEW", label: "검토중" },
-  { value: "APPROVED", label: "개선확정" },
-  { value: "REJECTED", label: "반려" },
-  { value: "IN_PROGRESS", label: "개선중" },
-  { value: "COMPLETED", label: "개선완료" },
-  { value: "PROJECTING", label: "프로젝트" },
+  // { value: "UNDER_REVIEW", label: "검토중" },
+  // { value: "APPROVED", label: "개선확정" },
+  // { value: "REJECTED", label: "반려" },
+  { value: "IN_PROGRESS", label: "진행중" },
+  { value: "COMPLETED", label: "완료" },
+];
+
+export const REVIEWTYPE_OPTIONS = [
+  { value: "", label: "선택하세요" },
+  { value: "개선필요", label: "개선필요" },
+  { value: "단순편의", label: "단순편의" },
+  { value: "기능있음", label: "기능있음" },
+  { value: "정책제약", label: "정책제약" },
+  { value: "단순문의", label: "단순문의" },
+];
+
+export const IMPROVEMETHOD_OPTIONS = [
+  { value: "", label: "선택하세요" },
+  { value: "일반과제(자체)", label: "일반과제(자체)" },
+  { value: "일반과제(KT)", label: "일반과제(KT)" },
+  { value: "프로젝트관리", label: "프로젝트관리" },
+  { value: "검토회신", label: "검토회신" },
+  { value: "반려", label: "반려" },
 ];
 
 export const IMPROVETYPE_OPTIONS = [
@@ -114,6 +131,8 @@ export const normalizeDetailData = (raw) => {
     reviewer: pickFirst(d.REVIEWER, d.reviewer),
     reviewDate: formatDate(pickFirst(d.REVIEWDT, d.reviewDt, d.RVW_UPDDT, d.rvwUpddt, d.UPDDT)),
 
+    reviewType: pickFirst(d.REVIEWTYPE, d.reviewType),
+    improveMethod: pickFirst(d.IMPROVEMETHOD, d.improveMethod),
     status: pickFirst(d.STATUS, d.status, "RECEIVED"),
     progress: clampPercent(pickFirst(d.PROGRESS, d.progress, 0)),
     meetingDt: formatDate(pickFirst(d.MEETINGDT, d.meetingDt)),

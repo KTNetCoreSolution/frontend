@@ -119,7 +119,6 @@ const ProjectManageList = () => {
 
   const columns = useMemo(
     () => [
-      { title: "업무분야", field: "WORKFIELD", width: 80, headerHozAlign: "center", hozAlign: "center" },
       {
         title: "대분류",
         field: "CLASSANM",
@@ -142,6 +141,8 @@ const ProjectManageList = () => {
           return cell.getValue() || (row.CLASSBCD === "COMMON" ? "공통" : "");
         },
       },
+      { title: "시스템명", field: "SYSTEMNM", width: 120, headerHozAlign: "center", hozAlign: "center" },
+      { title: "요청제목", field: "PROJECTNM", width: 280, headerHozAlign: "center" },
       {
         title: "상태",
         field: "STATUS",
@@ -150,13 +151,17 @@ const ProjectManageList = () => {
         hozAlign: "center",
         formatter: (cell) => STATUS_LABEL[cell.getValue()] ?? cell.getValue(),
       },
+      { title: "검토유형", field: "REVIEWTYPE", width: 80, headerHozAlign: "center", hozAlign: "center" },
+      { title: "개선분류", field: "IMPROVEMETHOD", width: 100, headerHozAlign: "center", hozAlign: "center" },
+      { title: "요청일", field: "REQUESTDATE", width: 100, headerHozAlign: "center", hozAlign: "center" },
+      { title: "최초 검토일", field: "MEETINGDT", width: 100, headerHozAlign: "center", hozAlign: "center" },
+      { title: "최종 검토일", field: "REVIEWDATE", width: 100, headerHozAlign: "center", hozAlign: "center" },
+      { title: "시작(예정)일", field: "STARTDT", width: 100, headerHozAlign: "center", hozAlign: "center" },
       { title: "완료(예정)일", field: "ENDDT", width: 100, headerHozAlign: "center", hozAlign: "center" },
-      { title: "시스템명", field: "SYSTEMNM", width: 120, headerHozAlign: "center", hozAlign: "center" },
-      { title: "요청제목", field: "PROJECTNM", width: 280, headerHozAlign: "center" },
       { title: "문제사항", field: "ISSUECN", width: 320, headerHozAlign: "center" },
       { title: "개선요청", field: "REQCN", width: 320, headerHozAlign: "center" },
       { title: "개선유형", field: "IMPROVETYPE", width: 80, headerHozAlign: "center", hozAlign: "center" },
-      { title: "요청일", field: "REQUESTDATE", width: 100, headerHozAlign: "center", hozAlign: "center" },
+      { title: "업무분야", field: "WORKFIELD", width: 80, headerHozAlign: "center", hozAlign: "center" },
       { title: "등록자소속", field: "OWNERDEPT", width: 100, headerHozAlign: "center", hozAlign: "center" },
       { title: "등록자", field: "OWNER", width: 80, headerHozAlign: "center", hozAlign: "center" },
       {
@@ -179,7 +184,6 @@ const ProjectManageList = () => {
         },
       },
       { title: "검토자", field: "REVIEWER", width: 80, headerHozAlign: "center", hozAlign: "center" },
-      { title: "최종 검토일", field: "REVIEWDATE", width: 120, headerHozAlign: "center", hozAlign: "center" },
       { title: "검토제목", field: "REVIEWPROJECTNM", width: 280, headerHozAlign: "center" },
       // { title: "검토 개선유형", field: "REVIEWIMPROVETYPE", width: 100, headerHozAlign: "center", hozAlign: "center" },
       // { title: "검토 업무분야", field: "REVIEWWORKFIELD", width: 100, headerHozAlign: "center", hozAlign: "center" },
@@ -201,8 +205,6 @@ const ProjectManageList = () => {
       { title: "검토 문제사항", field: "REVIEWISSUECN", width: 320, headerHozAlign: "center" },
       { title: "개선방향", field: "REVIEWREQCN", width: 320, headerHozAlign: "center" },
       { title: "검토부서", field: "REQUESTDEPT", width: 100, headerHozAlign: "center", hozAlign: "center" },
-      { title: "협의일", field: "MEETINGDT", width: 100, headerHozAlign: "center", hozAlign: "center" },
-      { title: "시작(예정)일", field: "STARTDT", width: 100, headerHozAlign: "center", hozAlign: "center" },
     ],
     [],
   );

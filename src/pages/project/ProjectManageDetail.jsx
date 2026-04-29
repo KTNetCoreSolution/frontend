@@ -14,6 +14,8 @@ import {
   STATUS_OPTIONS,
   IMPROVETYPE_OPTIONS,
   WORKFIELD_OPTIONS,
+  REVIEWTYPE_OPTIONS,
+  IMPROVEMETHOD_OPTIONS,
   clampPercent,
   getToday,
   normalizeDetailData,
@@ -607,6 +609,8 @@ const ProjectManageDetail = ({ projectId }) => {
       reviewSystemNm: detail.reviewSystemNm || detail.systemNm || "",
       reviewIssueCn: detail.reviewIssueCn || detail.issueCn || "",
       reviewReqCn: detail.reviewReqCn || detail.reqCn || "",
+      reviewType: detail.reviewType || "",
+      improveMethod: detail.improveMethod || "",
       reviewer: detail.reviewer || user?.empNo || user?.empno || user?.userId || user?.id || user?.name || "",
       reviewDate: detail.reviewDate || getToday(),
       status: detail.status || "RECEIVED",
@@ -698,7 +702,6 @@ const ProjectManageDetail = ({ projectId }) => {
       errorMsgPopup("검토자 정보가 없습니다.");
       return false;
     }
-
     if (editData.meetingDt && editData.startDt && editData.meetingDt > editData.startDt) {
       errorMsgPopup("협의일이 시작일보다 늦을 수 없습니다.");
       return false;
@@ -789,6 +792,8 @@ const ProjectManageDetail = ({ projectId }) => {
         rvwSystemNm: editData.reviewSystemNm || "",
         rvwIssueCn: editData.reviewIssueCn || "",
         rvwReqCn: editData.reviewReqCn || "",
+        reviewType: editData.reviewType || "",
+        improveMethod: editData.improveMethod || "",
       };
 
       const result = await fetchData("project/save", payload);
@@ -874,6 +879,8 @@ const ProjectManageDetail = ({ projectId }) => {
         rvwSystemNm: "",
         rvwIssueCn: "",
         rvwReqCn: "",
+        reviewType: "",
+        improveMethod: "",
       };
 
       const result = await fetchData("project/save", payload);
@@ -942,6 +949,8 @@ const ProjectManageDetail = ({ projectId }) => {
         rvwSystemNm: "",
         rvwIssueCn: "",
         rvwReqCn: "",
+        reviewType: "",
+        improveMethod: "",
       });
 
       const errCd = result?.data?.errCd ?? result?.errCd;
@@ -1158,6 +1167,8 @@ const ProjectManageDetail = ({ projectId }) => {
       reviewSystemNm: detail?.reviewSystemNm || detail?.systemNm || "",
       reviewIssueCn: detail?.reviewIssueCn || detail?.issueCn || "",
       reviewReqCn: detail?.reviewReqCn || detail?.reqCn || "",
+      reviewType: detail?.reviewType || "",
+      improveMethod: detail?.improveMethod || "",
       requestDept: detail?.requestDept || "",
       reviewerEmpNo: detail?.reviewerEmpNo || detail?.reviewer || "",
       reviewer: detail?.reviewer || "",
@@ -1264,9 +1275,9 @@ const ProjectManageDetail = ({ projectId }) => {
     },
     {
       key: "meetingDt",
-      label: "협의일",
+      label: "최초 검토일",
       type: "day",
-      placeholder: "협의일 선택",
+      placeholder: "최초 검토일 선택",
       readonly: (data) => data.meetingDt,
     },
     {
@@ -1289,6 +1300,20 @@ const ProjectManageDetail = ({ projectId }) => {
       type: "select",
       options: STATUS_OPTIONS.filter((o) => o.value),
       readonly: (data) => STATUS_LABEL[data.status] ?? data.status,
+    },
+    {
+      key: "reviewType",
+      label: "검토유형",
+      type: "select",
+      options: REVIEWTYPE_OPTIONS.filter((o) => o.value),
+      readonly: (data) => REVIEWTYPE_OPTIONS[data.status] ?? data.reviewType,
+    },
+    {
+      key: "improveMethod",
+      label: "개선분류",
+      type: "select",
+      options: IMPROVEMETHOD_OPTIONS.filter((o) => o.value),
+      readonly: (data) => IMPROVEMETHOD_OPTIONS[data.status] ?? data.improveMethod,
     },
   ];
 
