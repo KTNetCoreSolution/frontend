@@ -521,6 +521,8 @@ const ProjectCreate = ({ show, onClose, onCreated }) => {
         rvwSystemNm: "",
         rvwIssueCn: "",
         rvwReqCn: "",
+        reviewType: "",
+        improveMethod: "",
       };
 
       const saveResponse = await fetchData("project/save", payload);
