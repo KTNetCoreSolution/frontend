@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import useStore from "../../store/store";
 import styles from "../../components/table/TableSearch.module.css";
@@ -7,8 +7,9 @@ import { errorMsgPopup } from "../../utils/errorMsgPopup";
 import { msgPopup } from "../../utils/msgPopup";
 import ImageViewPopup from "../../components/popup/ImageViewPopup";
 import TextViewPopup from "../../components/popup/TextViewPopup";
-import DatePickerCommon from "../../components/common/DatePickerCommon";
 import fileUtils from "../../utils/fileUtils";
+import common from "../../utils/common";
+
 import {
   STATUS_LABEL,
   STATUS_OPTIONS,
@@ -230,47 +231,197 @@ const fileLinkButtonStyle = {
   color: themeStyle.primaryColor,
 };
 
-const normalizeDateValue = (input) => {
-  if (!input) return "";
+const normalizeDateValue = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") return value.slice(0, 10);
 
-  if (typeof input === "string") return input;
+  if (value instanceof Date) {
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, "0");
+    const day = String(value.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
 
-  if (typeof input === "object") {
-    if (typeof input.target?.value === "string") return input.target.value;
-    if (typeof input.value === "string") return input.value;
-    if (typeof input.date === "string") return input.date;
-    if (typeof input.start === "string") return input.start;
-    if (typeof input.end === "string") return input.end;
+  if (typeof value === "object") {
+    if (typeof value.target?.value === "string") return value.target.value.slice(0, 10);
+    if (typeof value.value === "string") return value.value.slice(0, 10);
+    if (typeof value.date === "string") return value.date.slice(0, 10);
   }
 
   return "";
 };
 
-const CommonDateInput = ({ value, onChange, type = "day", placeholder = "날짜 선택", disabled = false }) => {
-  const [innerValue, setInnerValue] = useState(value || "");
+const getDateParts = (dateText) => {
+  const normalized = normalizeDateValue(dateText);
+  if (!normalized) return null;
+
+  const [year, month, day] = normalized.split("-").map(Number);
+  if (!year || !month || !day) return null;
+
+  return { year, month, day };
+};
+
+const formatDate = (year, month, day) => {
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+};
+
+const getCalendarDays = (year, month) => {
+  const firstDay = new Date(year, month - 1, 1).getDay();
+  const lastDate = new Date(year, month, 0).getDate();
+  const prevLastDate = new Date(year, month - 1, 0).getDate();
+  const days = [];
+
+  for (let i = firstDay - 1; i >= 0; i -= 1) {
+    days.push({ day: prevLastDate - i, currentMonth: false, value: null });
+  }
+
+  for (let day = 1; day <= lastDate; day += 1) {
+    days.push({ day, currentMonth: true, value: formatDate(year, month, day) });
+  }
+
+  while (days.length % 7 !== 0) {
+    days.push({ day: days.length, currentMonth: false, value: null });
+  }
+
+  return days;
+};
+
+const dateInputWrapperStyle = {
+  position: "relative",
+  width: "100%",
+};
+
+const dateInputButtonStyle = {
+  width: "100%",
+  minHeight: 38,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 8,
+  padding: "6px 12px",
+  border: `1px solid ${themeStyle.borderColor}`,
+  borderRadius: 6,
+  background: themeStyle.bodyBg,
+  color: themeStyle.bodyColor,
+  cursor: "pointer",
+};
+
+const calendarPopupStyle = {
+  position: "absolute",
+  top: "calc(100% + 6px)",
+  left: 0,
+  zIndex: 9999,
+  width: 280,
+  padding: 12,
+  border: `1px solid ${themeStyle.borderColor}`,
+  borderRadius: 12,
+  background: themeStyle.bodyBg,
+  boxShadow: "0 8px 24px rgba(0,0,0,0.16)",
+};
+
+const CommonDateInput = ({ value, onChange, placeholder = "날짜 선택", disabled = false }) => {
+  const wrapperRef = useRef(null);
+  const dateValue = normalizeDateValue(value);
+  const selectedParts = getDateParts(dateValue);
+  const today = new Date();
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [viewYear, setViewYear] = useState(selectedParts?.year || today.getFullYear());
+  const [viewMonth, setViewMonth] = useState(selectedParts?.month || today.getMonth() + 1);
 
   useEffect(() => {
-    setInnerValue(value || "");
-  }, [value]);
+    if (!selectedParts) return;
+    setViewYear(selectedParts.year);
+    setViewMonth(selectedParts.month);
+  }, [selectedParts?.year, selectedParts?.month]);
 
-  const handleChange = (next) => {
-    const nextValue = normalizeDateValue(next);
-    setInnerValue(nextValue);
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleClickOutside = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
+  const moveMonth = (diff) => {
+    const next = new Date(viewYear, viewMonth - 1 + diff, 1);
+    setViewYear(next.getFullYear());
+    setViewMonth(next.getMonth() + 1);
+  };
+
+  const handleSelectDate = (nextValue) => {
+    if (!nextValue) return;
     onChange?.(nextValue);
+    setIsOpen(false);
   };
 
   return (
-    <div style={{ width: "100%" }}>
-      <DatePickerCommon
-        key={`${type}-${innerValue || "empty"}`}
-        type={type}
-        value={innerValue || ""}
-        defaultValue={innerValue || ""}
-        onChange={handleChange}
-        placeholder={placeholder}
-        enabled={!disabled}
-        width="100%"
-      />
+    <div ref={wrapperRef} style={dateInputWrapperStyle}>
+      <button
+        type="button"
+        className="form-control"
+        style={dateInputButtonStyle}
+        disabled={disabled}
+        onClick={() => !disabled && setIsOpen((prev) => !prev)}
+      >
+        <span style={{ color: dateValue ? themeStyle.bodyColor : themeStyle.secondaryColor }}>{dateValue || placeholder}</span>
+        <i className="bi bi-calendar3" />
+      </button>
+
+      {isOpen && !disabled && (
+        <div style={calendarPopupStyle}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => moveMonth(-1)}>
+              이전
+            </button>
+            <strong>{`${viewYear}.${String(viewMonth).padStart(2, "0")}`}</strong>
+            <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => moveMonth(1)}>
+              다음
+            </button>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4, marginBottom: 4, textAlign: "center" }}>
+            {["일", "월", "화", "수", "목", "금", "토"].map((dayName) => (
+              <div key={dayName} style={{ fontSize: 12, fontWeight: 700, color: themeStyle.secondaryColor }}>
+                {dayName}
+              </div>
+            ))}
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4 }}>
+            {getCalendarDays(viewYear, viewMonth).map((item, index) => {
+              const isSelected = item.value && item.value === dateValue;
+
+              return (
+                <button
+                  key={`${item.value || "empty"}-${index}`}
+                  type="button"
+                  className={isSelected ? "btn btn-sm btn-primary" : "btn btn-sm btn-light"}
+                  disabled={!item.currentMonth}
+                  onClick={() => handleSelectDate(item.value)}
+                  style={{ minHeight: 34, opacity: item.currentMonth ? 1 : 0.25 }}
+                >
+                  {item.day}
+                </button>
+              );
+            })}
+          </div>
+
+          <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
+            <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => handleSelectDate(getToday())}>
+              오늘
+            </button>
+            <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => onChange?.("")}>
+              지우기
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -1172,7 +1323,7 @@ const ProjectManageDetail = ({ projectId }) => {
       requestDept: detail?.requestDept || "",
       reviewerEmpNo: detail?.reviewerEmpNo || detail?.reviewer || "",
       reviewer: detail?.reviewer || "",
-      reviewDate: detail?.reviewDate || getToday(),
+      reviewDate: detail?.reviewDate || "",
       status: detail?.status || "RECEIVED",
       progress: detail?.progress ?? 0,
       meetingDt: detail?.meetingDt || "",
@@ -1305,15 +1456,15 @@ const ProjectManageDetail = ({ projectId }) => {
       key: "reviewType",
       label: "검토유형",
       type: "select",
-      options: REVIEWTYPE_OPTIONS.filter((o) => o.value),
-      readonly: (data) => REVIEWTYPE_OPTIONS[data.status] ?? data.reviewType,
+      options: REVIEWTYPE_OPTIONS,
+      readonly: (data) => data.reviewType,
     },
     {
       key: "improveMethod",
       label: "개선분류",
       type: "select",
-      options: IMPROVEMETHOD_OPTIONS.filter((o) => o.value),
-      readonly: (data) => IMPROVEMETHOD_OPTIONS[data.status] ?? data.improveMethod,
+      options: IMPROVEMETHOD_OPTIONS,
+      readonly: (data) => data.improveMethod,
     },
   ];
 

@@ -204,7 +204,7 @@ const ProjectManageList = () => {
       // { title: "검토 시스템명", field: "REVIEWSYSTEMNM", width: 120, headerHozAlign: "center", hozAlign: "center" },
       { title: "검토 문제사항", field: "REVIEWISSUECN", width: 320, headerHozAlign: "center" },
       { title: "개선방향", field: "REVIEWREQCN", width: 320, headerHozAlign: "center" },
-      { title: "검토부서", field: "REQUESTDEPT", width: 100, headerHozAlign: "center", hozAlign: "center" },
+      { title: "협의부서", field: "REQUESTDEPT", width: 100, headerHozAlign: "center", hozAlign: "center" },
     ],
     [],
   );
