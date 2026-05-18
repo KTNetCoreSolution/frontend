@@ -8,6 +8,7 @@ import { ErrorMsgPopupProvider } from './components/popup/context/ErrorMsgPopupC
 
 // 로그인 컴포넌트 직접 import
 import Login from './pages/Login';
+import SsoLogin from './pages/sso/SsoLogin';
 import MobileLogin from './pages/mobile/MobileLogin';
 import SsoMobileLogin from './pages/sso/SsoMobileLogin';
 import SsoMobileTest from './pages/sso/SsoMobileTest';
@@ -130,6 +131,17 @@ const App = () => {
               );
             })}
 
+            {/* SSO Login route */}
+            <Route
+              path="/ssoLogin"
+              element={
+                user ? (
+                  <Navigate to="/Main" replace />
+                ) : (
+                  <SsoLogin />
+                )
+              }
+            />
             {/* SSO Mobile Login route */}
             <Route
               path="/mobile/ssoMLogin"

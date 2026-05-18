@@ -7,12 +7,12 @@ const DEFAULT_READ_LEVEL_PERMISSIONS = ['07', '12', '13', '41', '81', '99', 'F6'
 const PERMISSION_MAP = {
   main: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', '', null],
   mainhome: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', 'AUTH0005', 'AUTH0006', 'AUTH0007', 'AUTH0008', 'AUTH0009', '', null],
-  oper: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', '', null],
-  standardOper: ['AUTH0001', 'AUTH0002', '', null],
+  oper: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', 'AUTH0006', '', null],
+  standardOper: ['AUTH0001', 'AUTH0002', 'AUTH0006', '', null],
   rentalOper: ['AUTH0001', 'AUTH0004', 'AUTH0005', '', null],
   mainBoard: ['AUTH0001', null],
   permissions: ['AUTH0001'],
-  carManager: ['AUTH0001', 'AUTH0003', 'AUTH0005'],
+  carManager: ['AUTH0001', 'AUTH0003', 'AUTH0005', 'AUTH0006'],
   tabulatorDirect: ['AUTH0001', 'AUTH0002', 'AUTH0003', 'AUTH0004', '', null],
 };
 
