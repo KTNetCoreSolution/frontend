@@ -14,21 +14,15 @@ const SsoLogin = ({ setIsLoading }) => {
     try {
       const response = await fetchData('auth/logout', {}, { withCredentials: true });
       if (response.success) {
-        clearUser();
-        clearMenu();
         sessionStorage.removeItem('user-storage');
         navigate('/', { replace: true });
       } else {
         console.error('Logout failed:', response.errMsg);
-        clearUser();
-        clearMenu();
         sessionStorage.removeItem('user-storage');
         navigate('/', { replace: true });
       }
     } catch (error) {
       console.error('Logout error:', error);
-      clearUser();
-      clearMenu();
       sessionStorage.removeItem('user-storage');
       navigate('/', { replace: true });
     }
@@ -102,8 +96,8 @@ const SsoLogin = ({ setIsLoading }) => {
         const errMsg = err.message || '로그인에 실패했습니다.';
         setErrorMsg(errMsg);
         errorMsgPopup(errMsg);
-        handleLogout();
       }
+      handleLogout();
     } finally {
       setLocalIsLoading(false);
       if (setIsLoading) setIsLoading(false);
