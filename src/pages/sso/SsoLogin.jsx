@@ -73,7 +73,6 @@ const SsoLogin = ({ setIsLoading }) => {
         }
       }
     } catch (err) {
-        alert(8);
       console.error('SSO 로그인 오류:', err);
       if (!isSsoMobileTest) {
         const errMsg = err.message || '로그인에 실패했습니다.';
