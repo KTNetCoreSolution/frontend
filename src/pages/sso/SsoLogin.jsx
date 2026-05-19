@@ -44,7 +44,6 @@ const SsoLogin = ({ setIsLoading }) => {
       } else {
         const accessResponse = await performMobileSsoLoginAccess(result.data.user.empNo, (error) => {
           const errMsg = error || '접근권한이 없습니다.';
-          errorMsgPopup(errMsg);
           setErrorMsg(errMsg);
         });
 
@@ -69,7 +68,7 @@ const SsoLogin = ({ setIsLoading }) => {
 
         if (hasError) {
           alert(errMsg); // 이미 콜백에서 호출되었지만 보장
-          errorMsgPopup(errMsg);
+          // errorMsgPopup(errMsg);
           navigate('/', { replace: true });
         }
       }
