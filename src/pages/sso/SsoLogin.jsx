@@ -9,24 +9,6 @@ const SsoLogin = ({ setIsLoading }) => {
   const [isLoading, setLocalIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const { user, setUser, clearUser } = useStore();
-  
-  const handleLogout = async () => {
-    try {
-      const response = await fetchData('auth/logout', {}, { withCredentials: true });
-      if (response.success) {
-        sessionStorage.removeItem('user-storage');
-        navigate('/', { replace: true });
-      } else {
-        console.error('Logout failed:', response.errMsg);
-        sessionStorage.removeItem('user-storage');
-        navigate('/', { replace: true });
-      }
-    } catch (error) {
-      console.error('Logout error:', error);
-      sessionStorage.removeItem('user-storage');
-      navigate('/', { replace: true });
-    }
-  };
 
   const ssoLogin = async () => {
     if (isLoading) return;
@@ -41,7 +23,7 @@ const SsoLogin = ({ setIsLoading }) => {
 
       if (!token && !isSsoMobileTest) {
         alert('토큰이 존재하지 않습니다.');
-        handleLogout();
+        navigate('/', { replace: true });
         return;
       }
 
@@ -57,8 +39,8 @@ const SsoLogin = ({ setIsLoading }) => {
       if (!result.success && !isSsoMobileTest) {
         const errMsg = result.errMsg || '로그인에 실패했습니다.';
         setErrorMsg(errMsg);
-        errorMsgPopup(errMsg);
-        handleLogout();
+        alert(errMsg);
+        navigate('/', { replace: true });
       } else {
         const accessResponse = await performMobileSsoLoginAccess(result.data.user.empNo, (error) => {
           const errMsg = error || '접근권한이 없습니다.';
@@ -86,18 +68,20 @@ const SsoLogin = ({ setIsLoading }) => {
         }
 
         if (hasError) {
-          errorMsgPopup(errMsg); // 이미 콜백에서 호출되었지만 보장
-          handleLogout();
+          alert(errMsg); // 이미 콜백에서 호출되었지만 보장
+          errorMsgPopup(errMsg);
+          navigate('/', { replace: true });
         }
       }
     } catch (err) {
+        alert(8);
       console.error('SSO 로그인 오류:', err);
       if (!isSsoMobileTest) {
         const errMsg = err.message || '로그인에 실패했습니다.';
         setErrorMsg(errMsg);
-        errorMsgPopup(errMsg);
+        alert(errMsg);
       }
-      handleLogout();
+      navigate('/', { replace: true });
     } finally {
       setLocalIsLoading(false);
       if (setIsLoading) setIsLoading(false);
