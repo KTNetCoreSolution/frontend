@@ -197,6 +197,41 @@ export const performSsoLoginCheck = (gubun, params, navigate) => {
     });
 };
 
+export const performQPortalSsoLogin = (params, navigate) => {
+  return fetchPromiseData('auth/sso/QPortalLogin', params, {}, 'N', false)
+    .then(response => {
+     if (!response.success) {
+        throw new Error(response.errMsg || 'SSO 로그인 오류');
+      } else if (response.errMsg !== '') {
+        return { success: false, errMsg: response.errMsg };
+      } else {
+        return { success: true, data: response.data };
+      }
+    })
+    .catch(error => {
+      console.error('Login error:', error.message);
+      return { success: false, errMsg: error.message || '로그인에 실패했습니다. 다시 시도해주세요.' };
+    });
+};
+
+export const performMakeQPortalToken = (params, navigate) => {
+  alert(1);
+  return fetchPromiseData('auth/sso/makeQPortalToken', params, {}, 'N', false)
+    .then(response => {
+     if (!response.success) {
+        throw new Error(response.errMsg || 'SSO 로그인 오류');
+      } else if (response.errMsg !== '') {
+        return { success: false, errMsg: response.errMsg };
+      } else {
+        return { success: true, data: response.data };
+      }
+    })
+    .catch(error => {
+      console.error('Login error:', error.message);
+      return { success: false, errMsg: error.message || '로그인에 실패했습니다. 다시 시도해주세요.' };
+    });
+};
+
 export const fetchCaptcha = async () => {
   try {
     const config = {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { performSsoLogin, performMobileSsoLoginAccess } from '../../service/login';
+import { performQPortalSsoLogin, performMakeQPortalToken } from '../../service/login';
 import { errorMsgPopup } from '../../utils/errorMsgPopup';
 import useStore from '../../store/store';
 
@@ -15,13 +15,11 @@ const SsoLogin = ({ setIsLoading }) => {
     setLocalIsLoading(true);
     if (setIsLoading) setIsLoading(true); // setIsLoading이 있을 때만 호출
 
-    const isSsoMobileTest = window.location.pathname.includes('/ssoMobileTest');
-
     try {
       const urlParams = new URLSearchParams(window.location.search);
-      let token = urlParams.get('token');
+      let token = urlParams.get('sso_token'); // ssoToken 파라미터 추가
 
-      if (!token && !isSsoMobileTest) {
+      if (!token || token.trim() === '') {
         alert('토큰이 존재하지 않습니다.');
         navigate('/', { replace: true });
         return;
@@ -31,54 +29,28 @@ const SsoLogin = ({ setIsLoading }) => {
       const encodedToken = encodeURIComponent(token);
 
       const params = {
-        token: token,
-        test: isSsoMobileTest ? 'Y' : 'N'
+        ssoToken: token,
+        empNo: empNo,
       };
 
-      const result = await performSsoLogin('mobile', params, navigate);
-      if (!result.success && !isSsoMobileTest) {
+      const result = await performQPortalSsoLogin(params, navigate);
+      
+      if (!result.success) {
         const errMsg = result.errMsg || '로그인에 실패했습니다.';
         setErrorMsg(errMsg);
-        alert(errMsg);
         navigate('/', { replace: true });
       } else {
-        const accessResponse = await performMobileSsoLoginAccess(result.data.user.empNo, (error) => {
-          const errMsg = error || '접근권한이 없습니다.';
-          setErrorMsg(errMsg);
+        // 에러가 없으면 setUser 호출 및 네비게이트
+        setUser({
+          ...result.data.user,
+          expiresAt: result.data.expiresAt * 1000,
         });
-
-        // 모든 에러 판단 로직
-        let hasError = false;
-        let errMsg = '';
-
-        if (!accessResponse.success) {
-          hasError = true;
-          errMsg = accessResponse.errMsg || '접근권한이 없습니다.';
-        } else if (accessResponse.errMsg !== '' || (accessResponse.data?.[0]?.errCd && accessResponse.data[0].errCd !== '00')) {
-          hasError = true;
-          errMsg = accessResponse.data?.[0]?.errMsg || accessResponse.errMsg || '접근권한이 없습니다.';
-        } else {
-          // 에러가 없으면 setUser 호출 및 네비게이트
-          setUser({
-            ...result.data.user,
-            expiresAt: result.data.expiresAt * 1000,
-          });
-          navigate('/main', { replace: true });
-        }
-
-        if (hasError) {
-          alert(errMsg); // 이미 콜백에서 호출되었지만 보장
-          // errorMsgPopup(errMsg);
-          navigate('/', { replace: true });
-        }
+        navigate('/main', { replace: true });
       }
     } catch (err) {
       console.error('SSO 로그인 오류:', err);
-      if (!isSsoMobileTest) {
-        const errMsg = err.message || '로그인에 실패했습니다.';
-        setErrorMsg(errMsg);
-        alert(errMsg);
-      }
+      const errMsg = err.message || '로그인에 실패했습니다.';
+      setErrorMsg(errMsg);
       navigate('/', { replace: true });
     } finally {
       setLocalIsLoading(false);

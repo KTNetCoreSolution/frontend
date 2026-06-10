@@ -33,11 +33,16 @@ const getFieldOptions = (fieldId, dependentValue = '') => {
     ],
     filterSelect: [
       { value: '', label: '선택' },
-      { value: 'ORGNM', label: '소속' },
       { value: 'EMPNO', label: '사번' },
       { value: 'EMPNM', label: '이름' },
     ],
-  };
+    logstat: [
+      { value: '', label: '전체' },
+      { value: 'Y', label: '승인완료' },
+      { value: 'N', label: '승인대기' },
+      { value: 'R', label: '반려' },
+    ],
+  };  
   return optionsMap[fieldId] || [];
 };
 
@@ -162,6 +167,7 @@ const UserCarLog = () => {
           { id: 'userText', type: 'text', row: 1, label: '이름', labelVisible: true, width: '100px', height: '30px', backgroundColor: '#f0f0f0', color: '#000000', enabled: false },
           { id: 'userPopupBtn', type: 'popupIcon', row: 1, label: '사용자 선택', labelVisible: false, eventType: 'showUserPopup', width: '30px', height: '30px', backgroundColor: '#f0f0f0', color: '#000000', enabled: true },
           { id: 'mgmtstatus', type: 'select', row: 1, label: '운용관리상태', labelVisible: true, options: getFieldOptions('mgmtstatus'), width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
+          { id: 'logstat', type: 'select', row: 1, label: '승인상태', labelVisible: true, options: getFieldOptions('logstat'), width: '100px', height: '30px', backgroundColor: '#ffffff', color: '#000000', enabled: true },
         ],
       },
       {
@@ -402,7 +408,7 @@ const UserCarLog = () => {
 
     // API 로 통신할 경우 fetchData()
     try {
-      const params = {pSTDT: currentFilters.startDate, pENDT: currentFilters.endDate, pORGCD: selectedOrgRef.current, pCARNO: currentFilters.carno || '', pEMPNO: selectedUsers || '', pSTATUS: currentFilters.mgmtstatus || '', pTRTEMPNO: user?.empNo, pDEBUG: "F"};
+      const params = {pSTDT: currentFilters.startDate, pENDT: currentFilters.endDate, pORGCD: selectedOrgRef.current, pCARNO: currentFilters.carno || '', pEMPNO: selectedUsers || '', pSTATUS: currentFilters.mgmtstatus || '', pLOGSTAT: currentFilters.logstat || '', pTRTEMPNO: user?.empNo, pDEBUG: "F"};
 
       const response = await fetchData("carlog/logInfoList", params);
       if (!response.success) {
