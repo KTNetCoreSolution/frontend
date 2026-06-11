@@ -356,7 +356,6 @@ const StandardOrgStatistic = () => {
       return {
         ...prev,
         ...dateFilters,
-        dayGubun: prev.dayGubun || 'M',
         monthDate: prev.monthDate || today.substring(0, 7),
         rangeStartDate: prev.rangeStartDate || today,
         rangeEndDate: prev.rangeEndDate || today,
