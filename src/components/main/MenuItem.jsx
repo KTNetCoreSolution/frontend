@@ -42,6 +42,23 @@ const MenuItem = ({ item }) => {
     }
   };
 
+  // 한전공가시설관리 등 외부 링크 판단
+  const isExternalAppPath = (url) => {
+    return url === '/klfm' || url?.startsWith('/klfm/');
+  };
+
+  // 한전공가시설관리 등 외부 링크일 경우 핸들러
+  const handleExternalAppClick = async (e) => {
+    e.preventDefault();
+
+    const isValid = await checkTokenValidity(navigate, user, setUser, clearUser);
+    if (!isValid) {
+      return;
+    }
+
+    window.location.href = item.URL;
+  };
+
   // ⛳ 페이지 이동 시 서브메뉴 자동 닫힘
   useEffect(() => {
     setShowChildren(false);
@@ -77,30 +94,41 @@ const MenuItem = ({ item }) => {
           )}
         </>
       ) : hasValidPath ? (
-        <NavLink
-          to={item.URL}
-          className={({ isActive }) =>
-            // `${styles.navLink} ${styles.scrolly} ${isActive ? styles.navLinkActive : ''}`
-            `navLink scrolly ${isActive ? 'navLinkActive' : ''}`
-          }
-          data-path={item.URL}
-          end={item.URL === '/main'}
-          onClick={async (e) => {
-            const screen = getScreenName(item.URL);
-            if (!hasPermission(user?.auth, screen)) {
-              e.preventDefault();
-              console.warn(`Permission denied for ${screen}`);
-              return;
+        isExternalAppPath(item.URL) ? (
+          <a
+            href={item.URL}
+            className="navLink scrolly"
+            data-path={item.URL}
+            onClick={handleExternalAppClick}
+          >
+            {item.MENUNM}
+          </a>
+        ) : (
+          <NavLink
+            to={item.URL}
+            className={({ isActive }) =>
+              // `${styles.navLink} ${styles.scrolly} ${isActive ? styles.navLinkActive : ''}`
+              `navLink scrolly ${isActive ? 'navLinkActive' : ''}`
             }
+            data-path={item.URL}
+            end={item.URL === '/main'}
+            onClick={async (e) => {
+              const screen = getScreenName(item.URL);
+              if (!hasPermission(user?.auth, screen)) {
+                e.preventDefault();
+                console.warn(`Permission denied for ${screen}`);
+                return;
+              }
 
-            const isValid = await checkTokenValidity(navigate, user, setUser, clearUser);
-            if (!isValid) {
-              e.preventDefault();
-            }
-          }}
-        >
-          {item.MENUNM}
-        </NavLink>
+              const isValid = await checkTokenValidity(navigate, user, setUser, clearUser);
+              if (!isValid) {
+                e.preventDefault();
+              }
+            }}
+          >
+            {item.MENUNM}
+          </NavLink>
+        )
       ) : (
         <span className="menuLink scrolly">
           {item.MENUNM}
