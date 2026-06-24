@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 //import { fetchJsonData } from '../../utils/dataUtils';
 //import sampleData from '../../data/data.json';
 import { createTable } from '../../utils/tableConfig';
@@ -22,47 +22,90 @@ import common from '../../utils/common';
  * @param {string} dependentValue - 의존 값
  * @returns {Array} 옵션 배열
  */
-const getFieldOptions = (fieldId, dependentValue = '') => {
-  const optionsMap = {
-    status: [
-      { value: '', label: '전체' },
-      { value: 'active', label: '활성' },
-      { value: 'inactive', label: '비활성' },
-    ],
-    org1: [
-      { value: '', label: '전체' },
-      { value: 'org1', label: '강남본부' },
-      { value: 'org2', label: '강북본부' },
-    ],
-    org2: dependentValue === 'org2' ? [
-      { value: '', label: '전체' },
-      { value: 'org21', label: '테스트지사' },
-      { value: 'org22', label: '강북지사' },
-      { value: 'org23', label: '하남지사' },
-    ] : [{ value: '', label: '전체' }],
-    org3: dependentValue === 'org22' ? [
-      { value: '', label: '전체' },
-      { value: 'org221', label: '노원지점' },
-      { value: 'org222', label: '성동지점' },
-      { value: 'org223', label: '테스트지점' },
-    ] : [{ value: '', label: '전체' }],
-    role: [
-      { value: 'admin', label: '관리자' },
-      { value: 'user', label: '사용자' },
-    ],
-    filterSelect: [
-      { value: '', label: '선택' },
-      { value: 'name', label: '이름' },
-      { value: 'age', label: '나이' },
-      { value: 'status', label: '상태' },
-    ],
-    orgSelect: [
-      { value: '', label: '선택' },
-      { value: 'A0001', label: '강남본부' },
-      { value: 'A0002', label: '강북본부' },
-    ],
-  };
-  return optionsMap[fieldId] || [];
+const getFieldOptions = (fieldId, dependentValue = '', orgList = []) => {
+  if (!Array.isArray(orgList)) return [];  
+  
+  const uniqueMap = new Map();
+
+  if (fieldId === 'ORGLV1') {
+    orgList
+      .filter((item) => item.ORGLEVEL === '1')
+      .forEach((item) => {
+        if (item.ORGCD && item.ORGNM && !uniqueMap.has(item.ORGCD)) {
+          uniqueMap.set(item.ORGCD, { value: item.ORGCD, label: item.ORGNM });
+        }
+      });
+    return Array.from(uniqueMap.values());
+  }
+  else if (['ORGLV2', 'ORGLV3', 'ORGLV4'].includes(fieldId)) {
+    if (!dependentValue || String(dependentValue).trim() === '') {
+      return [];   // 빈 값 보장
+    }
+
+    // 콤마로 구분된 문자열을 배열로 변환 + 공백 제거
+    const depValues = String(dependentValue)
+      .split(',')
+      .map(v => String(v).trim())
+      .filter(Boolean);   // 빈 문자열 제거
+
+    if (depValues.length === 0) return [];
+    
+    orgList
+      .filter((item) => {
+        const upperOrgStr = String(item.UPPERORGCD || '').trim();
+        const level = fieldId.replace('ORGLV', ''); // '2', '3', '4'
+        return depValues.some(dep => dep === upperOrgStr) && 
+              item.ORGLEVEL === level;
+      })
+      .forEach((item) => {
+        if (item.ORGCD && item.ORGNM && !uniqueMap.has(item.ORGCD)) {
+          uniqueMap.set(item.ORGCD, { value: item.ORGCD, label: item.ORGNM });
+        }
+      });
+    return Array.from(uniqueMap.values());
+  }
+  else {
+    const optionsMap = {
+      status: [
+        { value: '', label: '전체' },
+        { value: 'active', label: '활성' },
+        { value: 'inactive', label: '비활성' },
+      ],
+      org1: [
+        { value: '', label: '전체' },
+        { value: 'org1', label: '강남본부' },
+        { value: 'org2', label: '강북본부' },
+      ],
+      org2: dependentValue === 'org2' ? [
+        { value: '', label: '전체' },
+        { value: 'org21', label: '테스트지사' },
+        { value: 'org22', label: '강북지사' },
+        { value: 'org23', label: '하남지사' },
+      ] : [{ value: '', label: '전체' }],
+      org3: dependentValue === 'org22' ? [
+        { value: '', label: '전체' },
+        { value: 'org221', label: '노원지점' },
+        { value: 'org222', label: '성동지점' },
+        { value: 'org223', label: '테스트지점' },
+      ] : [{ value: '', label: '전체' }],
+      role: [
+        { value: 'admin', label: '관리자' },
+        { value: 'user', label: '사용자' },
+      ],
+      filterSelect: [
+        { value: '', label: '선택' },
+        { value: 'name', label: '이름' },
+        { value: 'age', label: '나이' },
+        { value: 'status', label: '상태' },
+      ],
+      orgSelect: [
+        { value: '', label: '선택' },
+        { value: 'A0001', label: '강남본부' },
+        { value: 'A0002', label: '강북본부' },
+      ],
+    };
+    return optionsMap[fieldId] || [];
+  }
 };
 
 /**
@@ -81,6 +124,30 @@ const TabulatorDirect = () => {
   const [status2Options, setStatus2Options] = useState(getFieldOptions('org2'));
   const [status3Options, setStatus3Options] = useState(getFieldOptions('org3'));
   const [_selectedUsers, setSelectedUsers] = useState([]);
+  const [orgList, setOrgList] = useState([]);
+  const [_orglv1Options, setOrgLv1Options] = useState([]);
+  const [_orglv2Options, setOrgLv2Options] = useState([]);
+  const [_orglv3Options, setOrgLv3Options] = useState([]);
+  const [_orglv4Options, setOrgLv4Options] = useState([]);
+  const [filters, setFilters] = useState({});
+
+  const updatedOrgLv1Options = useMemo(
+    () => getFieldOptions('ORGLV1', '', orgList),
+    [orgList]
+  );
+  const updatedOrgLv2Options = useMemo(
+    () => getFieldOptions('ORGLV2', filters.ORGLV1, orgList),
+    [filters.ORGLV1, orgList]
+  );
+  const updatedOrgLv3Options = useMemo(
+    () => getFieldOptions('ORGLV3', filters.ORGLV2, orgList),
+    [filters.ORGLV2, orgList]
+  );
+  const updatedOrgLv4Options = useMemo(
+    () => getFieldOptions('ORGLV4', filters.ORGLV3, orgList),
+    [filters.ORGLV3, orgList]
+  );
+
   const selectedOrgRef = useRef(selectedOrg);
 
   useEffect(() => {
@@ -120,7 +187,7 @@ const TabulatorDirect = () => {
   // - color: 요소의 글자색(예: '#000000'). 'default' 또는 미설정 시 defaultStyles.color('#000000') 적용. 버튼은 기본값 '#ffffff'.
   // - enabled: 요소 활성화 여부(boolean). true(기본값)면 입력/클릭 가능, false면 비활성화(disabled).
   // - defaultValue: 초기값 설정. 'day', 'startday', 'endday'는 날짜 문자열(예: '2025-05-31'), 'month', 'startmonth', 'endmonth'는 월 문자열(예: '2025-05'), 'dayperiod', 'monthperiod'는 { start, end } 객체. 미설정 시 오늘 날짜/월 적용.
-  const searchConfig = {
+  const baseSearchConfig = {
     areas: [
       {
         type: 'search',
@@ -147,6 +214,10 @@ const TabulatorDirect = () => {
           { id: 'monthPeriod', type: 'monthperiod', row: 6, label: '월범위 예제', labelVisible: true, placeholder: '월 범위 선택', width: '145px', enabled: false, defaultValue: { start: todayMonth, end: todayMonth } },
           { id: 'isActive', type: 'checkbox', row: 7, label: '체크박스 예제', labelVisible: true, width: 'default', height: 'default', enabled: true },
           { id: 'role', type: 'radio', row: 8, label: '라디오버튼 예제', labelVisible: true, options: getFieldOptions('role'), width: 'default', height: 'default', enabled: true },
+          { id: 'ORGLV1', type: 'multiselect', row: 9, label: '조직레벨1', labelVisible: true, options: [], width: '190px', height: '30px', enabled: true, cascading: true, cascadingGroup: 'ORG' }, // 조직레벨1 드롭다운
+          { id: 'ORGLV2', type: 'multiselect', row: 9, label: '조직레벨2', labelVisible: true, options: [], width: '190px', height: '30px', enabled: true, cascading: true, cascadingGroup: 'ORG' }, // 조직레벨2 드롭다운
+          { id: 'ORGLV3', type: 'multiselect', row: 9, label: '조직레벨3', labelVisible: true, options: [], width: '190px', height: '30px', enabled: true, cascading: true, cascadingGroup: 'ORG' }, // 조직레벨3 드롭다운
+          { id: 'ORGLV4', type: 'multiselect', row: 9, label: '조직레벨4', labelVisible: true, options: [], width: '190px', height: '30px', enabled: true, cascading: true, cascadingGroup: 'ORG' }, // 조직레벨4 드롭다운
         ],
       },
       {
@@ -161,16 +232,14 @@ const TabulatorDirect = () => {
       },
     ],
   };
+  
+  const [searchConfig, setSearchConfig] = useState(baseSearchConfig);
 
   const filterTableFields = [
     { id: 'filterSelect', type: 'select', label: '', options: getFieldOptions('filterSelect'), width: 'default', height: 'default', backgroundColor: 'default', color: 'default', enabled: true },
     { id: 'filterText', type: 'text', label: '', placeholder: '찾을 내용을 입력하세요', width: 'default', height: 'default', backgroundColor: 'default', color: 'default', enabled: true },
   ];
 
-  const [filters, setFilters] = useState({
-    ...initialFilters(searchConfig.areas.find((area) => area.type === 'search').fields),
-    orgText: user?.orgNm || '',
-  });
   const [tableFilters, setTableFilters] = useState(initialFilters(filterTableFields));
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -310,7 +379,7 @@ const TabulatorDirect = () => {
         setStatus3Options(getFieldOptions('org3', value));
         setFilters((prev) => ({ ...prev, status3: '' }));
       }
-    }
+    } 
   };
 
   useEffect(() => {
@@ -343,7 +412,27 @@ const TabulatorDirect = () => {
       }
     };
 
+    const loadOrgData = async () => {
+      try {
+        const params = {
+          pGUBUN: "CAREMPNO", //"CAREMPNO", "STABIZEMPNO",  "STADESIGNEMPNO", "STALINEEMPNO", "RENTALEMPNO", "OPEREMPNO" 등 조직 구성 시 조회 조건에 따라 변경
+          pMDATE: common.getTodayMonth(),
+          pSEARCH: user?.empNo || "",
+          pDEBUG: "F",
+        };
+        const response = await fetchData("common/orginfo/list", params);
+        if (response.success && Array.isArray(response.data)) {
+          setOrgList(response.data);
+        }
+
+      } catch (err) {
+        console.error('조직 데이터를 가져오는 중 오류 발생:', err.response?.data?.message || err.message);
+      }
+    };
+
     initializeTable();
+
+    loadOrgData();
 
     return () => {
       if (tableInstance.current) {
@@ -398,7 +487,62 @@ const TabulatorDirect = () => {
       tableInstance.current.clearFilter();
     }
   }, [tableFilters.filterSelect, tableFilters.filterText, tableStatus, loading]);
+  
+  // useEffect에서 filters.ORGLV1, filters.ORGLV2, filters.ORGLV3 변경 시 options 및 searchConfig 업데이트
+  useEffect(() => {
+    setSearchConfig((prev) => {
+      const searchArea = prev.areas?.find((area) => area.type === 'search');
+      if (!searchArea) return prev;
 
+      const newFields = searchArea.fields.map((field) => {
+        if (field.type === 'multiselect' && field.cascading === true) {
+          let newOptions = [];
+
+          switch (field.id) {
+            case 'ORGLV1':
+              newOptions = updatedOrgLv1Options;
+              break;
+            case 'ORGLV2':
+              newOptions = updatedOrgLv2Options;
+              break;
+            case 'ORGLV3':
+              newOptions = updatedOrgLv3Options;
+              break;
+            case 'ORGLV4':
+              newOptions = updatedOrgLv4Options;
+              break;
+            default:
+              newOptions = field.options;
+          }
+
+          return { ...field, options: newOptions };
+        }
+        return field;
+      });
+
+      return {
+        ...prev,
+        areas: prev.areas.map((area) =>
+          area.type === 'search' ? { ...area, fields: newFields } : area
+        )
+      };
+    });
+  }, [updatedOrgLv1Options, updatedOrgLv2Options, updatedOrgLv3Options, updatedOrgLv4Options]);
+
+  const areArraysEqual = (arr1, arr2) => {
+    if (arr1 === arr2) return true;
+    if (!arr1 || !arr2) return false;
+    if (arr1.length !== arr2.length) return false;
+    
+    return arr1.every((item, index) => {
+      const other = arr2[index];
+      return (
+        item?.value === other?.value && 
+        item?.label === other?.label
+      );
+    });
+  };
+  
   return (
     <div className={styles.container}>
       <MainSearch

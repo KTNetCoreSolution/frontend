@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import Select from 'react-select';
 import { handleInputChange } from '../../utils/tableEvent';
 import DatePickerCommon from '../common/DatePickerCommon';
 import common from '../../utils/common';
@@ -44,12 +45,24 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
             start: field.type === 'dayperiod' ? todayDate : todayMonth,
             end: field.type === 'dayperiod' ? todayDate : todayMonth,
           };
+        } else if (field.type === 'multiselect' && filters[field.id] === undefined) {
+          initialFilters[field.id] = field.defaultValue || [];// multiSelected 상태에도 초기화
+          
+          if (!multiSelected[field.id]) {
+            setMultiSelected(prev => ({
+              ...prev,
+              [field.id]: (field.options || []).filter(opt => 
+                filters[field.id]?.includes(opt.value)
+              )
+            }));
+          }
         } else if (field.defaultValue !== undefined) {
           // text, textarea, select, radio, checkbox, popupIcon, button, label 등 다른 필드에 대한 defaultValue 적용
           initialFilters[field.id] = field.defaultValue;
         }
       }
     });
+
     if (Object.keys(initialFilters).length > 0) {
       setFilters((prevFilters) => ({
         ...prevFilters,
@@ -83,7 +96,7 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
       onEvent('selectChange', { id, value });
     } else if (['day', 'startday', 'endday', 'startmonth', 'endmonth', 'month', 'dayperiod', 'monthperiod'].includes(type)) {
       onEvent('dateChange', { id, value }); // 날짜 선택 이벤트 트리거
-    }
+    } 
   };
 
   const handleCheckboxChange = (e, field) => {
@@ -147,6 +160,223 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
     return {};
   };
 
+  // 여기부터 multiselect 관련 로직
+  const [multiSelected, setMultiSelected] = useState({})
+  const handleMultiChange = (fieldId) => (newValue) => {
+    const updated = newValue || [];    
+    setMultiSelected(prev => ({
+      ...prev,
+      [fieldId]: updated
+    }));
+
+    // filters에도 값 저장
+    setFilters(prev => ({
+      ...prev,
+      [fieldId]: updated.map(item => item.value)   // value 배열로 저장
+    }));
+
+    // 부모 컴포넌트에 이벤트 전달
+    if (onEvent) {
+      onEvent('multiselectChange', {
+        id: fieldId,
+        values: updated.map(item => item.value),
+        labels: updated.map(item => item.label),
+        options: updated
+      });
+    }
+  };
+
+  // 선택된 값 표시용 함수
+  const getDisplayValue = (fieldId) => {
+    const selected = multiSelected[fieldId] || [];
+    if (selected.length === 0) return '';
+    if (selected.length === 1) return selected[0].label;
+    return `${selected[0].label} 외 ${selected.length - 1}개`;
+  };
+
+  // CustomOption
+  const CustomOption = (props) => {
+    const { data, isSelected, innerRef, innerProps } = props;
+    return (
+      <div
+        ref={innerRef}
+        {...innerProps}
+        style={{
+          paddingLeft: '8px',
+          paddingTop: '4px',
+          display: 'flex',
+          alignItems: 'center',
+          cursor: 'pointer',
+        }}
+      >
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={() => {}}
+          style={{ marginRight: '4px' }}
+        />
+        {data.label}
+      </div>
+    );
+  };
+
+  // CustomValueContainer
+  const CustomValueContainer = (props) => {
+    const { children, ...rest } = props;
+    const fieldId = rest.selectProps?.name || rest.selectProps?.inputId?.split('-')[0]; 
+    const displayValue = getDisplayValue(fieldId);
+
+    return (
+      <div>
+        {displayValue ? (
+          <div>
+            {displayValue}
+          </div>
+        ) : (
+          children
+        )}
+      </div>
+    );
+  };
+
+  // ==================== cascading clear (filters + multiSelected) ====================
+  const prevFiltersRef = useRef(filters);
+
+  useEffect(() => {
+    if (!filters || !config?.areas || !setFilters) return;
+
+    const currentFiltersStr = JSON.stringify(filters);
+    const prevFiltersStr = JSON.stringify(prevFiltersRef.current);
+
+    // filters가 실제로 변경된 경우에만 실행
+    if (currentFiltersStr === prevFiltersStr) return;
+
+    const searchFields = config.areas
+      .find((area) => area.type === 'search')?.fields || [];
+
+    const cascadingFields = searchFields
+      .filter((field) => field.type === 'multiselect' && field.cascading === true)
+      .sort((a, b) => (a.row || 0) - (b.row || 0));
+
+    const fieldsToClear = [];
+
+    for (let i = 0; i < cascadingFields.length; i++) {
+      const field = cascadingFields[i];
+      const value = filters[field.id];
+
+      if (!value || (Array.isArray(value) && value.length === 0)) {
+        for (let j = i + 1; j < cascadingFields.length; j++) {
+          const childId = cascadingFields[j].id;
+          if (filters[childId] && (Array.isArray(filters[childId]) ? filters[childId].length > 0 : true)) {
+            fieldsToClear.push(childId);
+          }
+        }
+        break;
+      }
+    }
+
+    if (fieldsToClear.length > 0) {
+      setFilters((prevFilters) => {
+        const newFilters = { ...prevFilters };
+        fieldsToClear.forEach((id) => {
+          newFilters[id] = [];
+        });
+        return newFilters;
+      });
+
+      setMultiSelected((prevMulti) => {
+        const newMulti = { ...prevMulti };
+        fieldsToClear.forEach((id) => {
+          newMulti[id] = [];
+        });
+        return newMulti;
+      });
+    }
+
+    prevFiltersRef.current = filters;
+  }, [filters, config, setFilters]);
+
+  const multiSelectStyles = (field) => ({
+    control: (provided, state) => ({
+      ...provided,
+      width: getStyleValue(field.width, defaultStyles.width),
+      minWidth: getStyleValue(field.width, defaultStyles.width),
+      height: getStyleValue(field.height, defaultStyles.height),
+      minHeight: getStyleValue(field.height, defaultStyles.height),
+      paddingLeft: '6px',
+      fontSize: '15px',
+      fontFamily: 'kt',
+      borderColor: state.isFocused ? '#000' : '#ced4da',
+      boxShadow: state.isFocused ? '0 0 0 1.1px #000' : 'none',
+      '&:hover': {
+        borderColor: '0 0 0 1.1px #000',
+      },
+    }),
+
+    menu: (provided) => ({
+      ...provided,
+      zIndex: 9999,
+      fontSize: '15px',
+      fontFamily: 'kt',
+      marginTop: '1px',
+      marginBottom: '1px',
+    }),
+
+    placeholder: (provided) => ({
+      ...provided,
+      position: 'relative',
+      marginTop: '6px',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      flexShrink: 1,
+      zIndex: 2,
+      color: '#6c757d',
+      fontSize: '14px',
+      fontFamily: 'kt',
+    }),
+
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected ? '#e3f2fd': state.isFocused ? '#f8f9fa': 'white',
+      color: '#333',
+      padding: '10px 12px',
+      cursor: 'pointer',
+    }),
+
+    clearIndicator: (provided) => ({
+      ...provided,
+      padding: '0',
+      color: '#333',
+      cursor: 'pointer'
+    }),
+
+    indicatorSeparator: (provided) => ({
+      ...provided,
+      display: 'none',
+    }),
+    
+    indicatorsContainer: (provided) => ({
+      ...provided,
+      position: 'absolute',
+      right: '2px',
+      top: '55%',
+      transform: 'translateY(-50%)',
+      display: 'flex',
+      alignItems: 'center',
+      zIndex: 10,
+      pointerEvents: 'auto',
+    }),
+
+    dropdownIndicator: (provided) => ({
+      ...provided,
+      padding: '2px',
+      color: '#333',
+    }),
+  });
+
+  // multiselect 관련 로직 끝
+  
   const renderRows = () => {
     const searchFields = config.areas.find((area) => area.type === 'search')?.fields || [];
     const buttonFields = config.areas.find((area) => area.type === 'buttons')?.fields || [];
@@ -337,6 +567,30 @@ const MainSearch = ({ config, filters, setFilters, onEvent }) => {
                   >
                     {field.label}
                   </span>
+                )}
+                {field.type === 'multiselect' && (
+                  <div>
+                    <Select
+                      isMulti
+                      id={field.id}
+                      name={field.id}
+                      options={field.options || []}
+                      value={multiSelected[field.id] || []}
+                      onChange={handleMultiChange(field.id)}
+                      isDisabled={!field.enabled}
+                      isSearchable={false}
+                      closeMenuOnSelect={false}
+                      hideSelectedOptions={false}
+                      placeholder={'선택하세요'}
+                      styles={multiSelectStyles(field)}
+                      components={{
+                        Option: CustomOption,
+                        MultiValue: () => null,
+                        ValueContainer: CustomValueContainer,
+                        Input: () => null,
+                      }}
+                    />
+                  </div>
                 )}
               </div>
             </div>
