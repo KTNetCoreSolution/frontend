@@ -39,8 +39,8 @@ const getFieldOptions = (fieldId, dependentValue = '') => {
     logstat: [
       { value: '', label: '전체' },
       { value: 'Y', label: '승인완료' },
-      { value: 'N', label: '승인대기' },
-      { value: 'R', label: '반려' },
+      { value: 'R', label: '승인대기' },
+      { value: 'N', label: '반려' },
     ],
   };  
   return optionsMap[fieldId] || [];
