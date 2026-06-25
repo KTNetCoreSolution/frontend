@@ -215,7 +215,6 @@ export const performQPortalSsoLogin = (params, navigate) => {
 };
 
 export const performMakeQPortalToken = (params, navigate) => {
-  alert(1);
   return fetchPromiseData('auth/sso/makeQPortalToken', params, {}, 'N', false)
     .then(response => {
      if (!response.success) {

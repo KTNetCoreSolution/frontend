@@ -17,8 +17,18 @@ const SsoLogin = ({ setIsLoading }) => {
 
     try {
       const urlParams = new URLSearchParams(window.location.search);
-      let token = urlParams.get('sso_token'); // ssoToken 파라미터 추가
+      //let token = urlParams.get('sso_Token'); // ssoToken 파라미터 추가      
+      let token = '';
 
+      for (const [key, value] of urlParams.entries()) {
+        const lowerKey = key.toLowerCase();
+        if (lowerKey.toLowerCase() === 'sso_token') {
+          token = value;
+          console.log(`발견된 토큰 Key: ${key} = ${value}`);
+          break;
+        }
+      }
+      
       if (!token || token.trim() === '') {
         alert('토큰이 존재하지 않습니다.');
         navigate('/', { replace: true });
@@ -30,7 +40,6 @@ const SsoLogin = ({ setIsLoading }) => {
 
       const params = {
         ssoToken: token,
-        empNo: empNo,
       };
 
       const result = await performQPortalSsoLogin(params, navigate);
@@ -45,13 +54,13 @@ const SsoLogin = ({ setIsLoading }) => {
           ...result.data.user,
           expiresAt: result.data.expiresAt * 1000,
         });
-        navigate('/main', { replace: true });
+        //navigate('/main', { replace: true });
       }
     } catch (err) {
       console.error('SSO 로그인 오류:', err);
       const errMsg = err.message || '로그인에 실패했습니다.';
       setErrorMsg(errMsg);
-      navigate('/', { replace: true });
+      //navigate('/', { replace: true });
     } finally {
       setLocalIsLoading(false);
       if (setIsLoading) setIsLoading(false);
