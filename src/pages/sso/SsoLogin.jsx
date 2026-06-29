@@ -19,7 +19,8 @@ const SsoLogin = ({ setIsLoading }) => {
       const urlParams = new URLSearchParams(window.location.search);
       //let token = urlParams.get('sso_Token'); // ssoToken 파라미터 추가      
       let token = '';
-
+      const domains = window.location.hostname;
+      
       for (const [key, value] of urlParams.entries()) {
         const lowerKey = key.toLowerCase();
         if (lowerKey.toLowerCase() === 'sso_token') {
@@ -40,6 +41,7 @@ const SsoLogin = ({ setIsLoading }) => {
 
       const params = {
         ssoToken: token,
+        domain: domains,
       };
 
       const result = await performQPortalSsoLogin(params, navigate);
