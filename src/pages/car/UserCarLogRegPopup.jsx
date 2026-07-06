@@ -905,7 +905,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
             <input type="text" inputMode="decimal" id="fuel" className={`form-control ${styles.formControl2}`} value={logInfo.FUEL} style={{width:100 +'px'}} onInput={(e) => {handleFuelChange(e)}} onChange={(e) => {setLogInfo({ ...logInfo, FUEL: e.target.value })}}/>
           </div>
           <div className="d-flex">
-            <label className='form-label' style={{width:'100px'}}>비고</label>
+            <label className='form-label' style={{width:'100px'}}>운행목적</label>
             <input type="text" id="notice" className={`form-control ${styles.formControl2}`} value={logInfo.NOTE} onInput={(e) => {handleMaxLength(e, 1000)}} onChange={(e) => {setLogInfo({ ...logInfo, NOTE: e.target.value })}} />
           </div>
           <div className="mb-2">

@@ -739,7 +739,7 @@ const MobileDrivingLog = () => {
             </li>
             <li>
               <span className="formLabel" style={{ width: "120px" }}>
-                비고
+                운행목적
               </span>
               <div className="formData">
                 <input
