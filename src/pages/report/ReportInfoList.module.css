@@ -1,0 +1,56 @@
+.card {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  overflow: hidden;
+  border: 1px solid #eee;
+  margin-bottom: 25px;
+  width: 50%;           /* 원하는 너비 */
+  min-width: 800px;     /* 최소 너비 */
+  max-width: 1100px;    /* 너무 커지지 않도록 최대 너비 설정 */
+  margin-left: auto;
+  margin-right: auto;   /* 중앙 정렬 */
+  cursor: pointer;
+}
+
+.cardHeader {
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.title {
+  width:20%;
+  text-align: center;
+  padding: 8px 20px;
+  border-radius: 30px;
+  color: white;
+  font-weight: bold;
+  font-size: 1.03em;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.date {
+  color: #555;
+  font-weight: 500;
+}
+
+.cardBody {
+  padding: 22px 20px;
+}
+
+.contents {
+  font-size: 1.12em;
+  font-weight: bold;
+  margin: 8px 0 10px 0;
+  line-height: 1.35;
+}
+
+.mngempno {
+  color: #444;
+  font-size: 0.97em;
+  line-height: 1.45;
+}
