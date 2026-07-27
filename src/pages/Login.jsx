@@ -74,6 +74,7 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    
     const response = await performLogin('web', empNo, empPwd, captchaInput, navigate, (error) => {
       errorMsgPopup(error);
     });
@@ -190,7 +191,7 @@ const Login = () => {
                 value={captchaInput}
                 onChange={(e) => setCaptchaInput(e.target.value.toUpperCase())}
                 placeholder="코드를 입력하세요"
-                required
+                //required
                 className={styles.input}
               />
             </div>
