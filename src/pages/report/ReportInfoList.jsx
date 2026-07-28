@@ -19,14 +19,8 @@ const ReportInfoList = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedNumber, setSelectedNumber] = useState(null);
   const [selectedReportId, setSelectedReportId] = useState(null);
-  const [selectedReportColor, setSelectedReportColor] = useState(null);
-  const colors = [
-    { className: 'navi', color: '#002b5f' },
-    { className: 'blue', color: '#0078d4' },
-    { className: 'green', color: '#107c10' },
-    { className: 'orange', color: '#d83b01' }
-  ];
 
   useEffect(() => {
     const loadReportInfo = async () => {
@@ -58,50 +52,75 @@ const ReportInfoList = () => {
   if (loading) return <div className={styles.container}>로딩 중...</div>;
   if (error) return <div className={styles.container}>{error}</div>;
     
-  const fn_callReportDetail = (reportId) => {
+  const fn_callReportDetail = (number, reportId) => {
+    setSelectedNumber(number);
     setSelectedReportId(reportId);
-    const report = data.find(r => r.REPORTID === reportId);
-    if (report) {
-      const color = colors[data.indexOf(report) % colors.length];
-      setSelectedReportColor(color.color);
-    }
   };
 
   // 목록으로 돌아가기
   const goBackToList = () => {
+    setSelectedNumber(null);
     setSelectedReportId(null);
-    setSelectedReportColor(null);
   };
 
   if (selectedReportId !== null) {
-    return <ReportInfoManage reportId={selectedReportId} reportTitle={data.find(r => r.REPORTID === selectedReportId)?.TITLE} color={selectedReportColor} onBack={goBackToList} />;
+    return <ReportInfoManage reportId={selectedReportId} reportTitle={data.find(r => r.REPORTID === selectedReportId)?.TITLE} number={selectedNumber} onBack={goBackToList} />;
   }
 
   return (
-    <div className={styles.container}>
+      <div className={reportStyles.pageWrapper}>
+        <div className={reportStyles.headerBanner}>
+          <div className={reportStyles.headerLeft}>
+            <div className={reportStyles.iconCircle}>R</div>
+            <div>
+              <h1 className={reportStyles.headerTitle}>성과 REPORT 관리</h1>
+              <p className={reportStyles.headerDesc}>
+                등록된 성과 REPORT를 확인하고 세부 실적을 관리합니다.
+              </p>
+            </div>
+          </div>
+          <div className={reportStyles.totalBadge}>
+            <span className={reportStyles.label}>전체</span>
+            <span className={reportStyles.count}>{data.length}</span>
+            <span className={reportStyles.label}>건</span>
+          </div>
+        </div>
       {data.length === 0 ? (
-        <p>등록된 성과 Report 정보가 없습니다.</p>
+        <p className={reportStyles.emptyText}>등록된 성과 Report 정보가 없습니다.</p>
       ) : (
-        data.map((report, index) => {
-          const color = colors[index % colors.length];
-          
-          return (
-            <div key={report.REPORTID || index} className={`card ${reportStyles.card}`} onClick={() => fn_callReportDetail(report.REPORTID)}>
-              <div className={reportStyles.cardHeader}>
-                <div className={reportStyles.title} style={{ backgroundColor: color.color }}>{report.TITLE}</div>
-                <div className={reportStyles.date}>{report.RPTDATE}</div>
-              </div>
-              <div className={reportStyles.cardBody}>
-                <div className={reportStyles.contents}>{report.CONTENTS}</div>
-                <div className={reportStyles.mngempno}>
-                  {report.ORGNM} {report.EMPNM}
+        <div className={reportStyles.cardGrid}>
+          {data.map((report, index) => {
+            const number = String(index + 1).padStart(2, '0');
+
+            return (
+              <div key={report.REPORTID || index} className={reportStyles.card}>
+                {/* 번호 */}
+                <div className={reportStyles.cardNumber}>{number}</div>
+
+                {/* 제목 */}
+                <h2 className={reportStyles.cardTitle}>{report.TITLE}</h2>
+
+                {/* 내용 */}
+                <p className={reportStyles.cardContents}>{report.CONTENTS}</p>
+
+                {/* 담당자 */}
+                <div className={reportStyles.managerArea}>
+                  <span className={reportStyles.managerLabel}>담당자</span>
+                  <span className={reportStyles.managerName}>
+                    {report.ORGNM} {report.EMPNM}
+                  </span>
+                </div>
+
+                {/* 상세보기 */}
+                <div className={reportStyles.detailLink} onClick={() => fn_callReportDetail(number, report.REPORTID)}>
+                  상세보기
                 </div>
               </div>
-            </div>
-          );
-        })
+            );
+          })}
+        </div>
       )}
-    </div>
+  </div>
   );
 };
 

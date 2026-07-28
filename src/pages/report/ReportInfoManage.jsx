@@ -15,7 +15,7 @@ import ReportViewPopup from "./ReportViewPopup";
 import ReportWritePopup from "./ReportWritePopup";
 import fileUtils from '../../utils/fileUtils';
 
-const ReportInfoManage = ({ reportId: initialReportId, reportTitle, color, onBack }) => {
+const ReportInfoManage = ({ reportId: initialReportId, reportTitle, number, onBack }) => {
   const { user } = useStore();
   const canWriteBoard = user && hasPermission(user.auth, 'mainBoard');
   const [showWriteModal, setShowWriteModal] = useState(false);
@@ -151,8 +151,12 @@ const ReportInfoManage = ({ reportId: initialReportId, reportTitle, color, onBac
   
   return (
     <div className='container'>
-      <div className="d-flex justify-content-between align-items-center mb-2">
-        <div className={reportStyles.innerTitle} style={{ backgroundColor: color || '#002b5f' }}>{reportTitle || "REPORT 관리"}</div>        
+      <div className="d-flex justify-content-between align-items-center mb-2">      
+        <div className={reportStyles.detailBanner}>
+          <div className={reportStyles.detailTitleLeft}>
+            <div className={reportStyles.detailTitle}>{number}.&nbsp;&nbsp;{reportTitle || "REPORT 관리"}</div>        
+          </div>
+        </div>
         {onBack && (
           <button className="btn btn-secondary" onClick={onBack} >
             ← 돌아가기
