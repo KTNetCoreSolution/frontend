@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import useStore from '../../store/store';
 import commonUtils from '../../utils/common';
 import fileUtils from '../../utils/fileUtils';
+import Select from 'react-select';
 import { fetchData, fetchFileUpload } from "../../utils/dataUtils";
 import { msgPopup } from '../../utils/msgPopup.js';
 import { errorMsgPopup } from '../../utils/errorMsgPopup.js';
@@ -35,7 +36,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
 
   const { user } = useStore();
   const [carId, setCarId] = useState('');
-  const [carList, setCarList] = useState({});
+  const [carList, setCarList] = useState([]);
   const [carInfo, setCarInfo] = useState({CARNM: '', MANAGER_EMPNM: '', MANAGER_MOBILE: '', GARAGE_ADDR: '', STKM: 0, src: null, bookMark: false, ORGCD: ''});
   const [logInfo, setLogInfo] = useState({CARID: '', LOGDATE: todayDate, LOGSTTIME: '08:00', LOGENTIME: '08:10', SAFETYNOTE: '', STKM: 0, ENKM: 0, FUEL: 0, EMPNO: user?.empNo, EMPNM: user?.empNm + ' (' + user?.empNo + ')', DRIVER_EMPNO: user?.empNo, DRIVER: user?.empNm + ' (' + user?.empNo + ')'});
   const [showMngUserPopup, setShowMngUserPopup] = useState(false);
@@ -235,14 +236,18 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
   };
   
   const searchCarInfo = async (e) => {
-    e.preventDefault();  
+    if (e && typeof e.preventDefault === 'function') {
+      e.preventDefault();
+    }
+
+    const value = e?.target?.value ?? e;
 
     try {
       setCarId(e.target.value);
       initializing();
       
       if (e.target.value !== '') {
-        const params = { pEMPNO: user?.empNo, pCARID: e.target.value, pDEBUG: "F" };
+        const params = { pEMPNO: user?.empNo, pCARID: value, pDEBUG: "F" };
         const response = await fetchData('carlog/carInfo', params);
 
         if (!response.success) {
@@ -733,14 +738,25 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
         <div className='flex-column justify-content-start gap-2' style={{display: `${vDisplay ? 'none' : 'flex'}`}}>
           <div className='d-flex align-items-center'>
             <label className="form-label flex-shrink-0" htmlFor="carId" style={{width:'63px'}}>차량</label>
-            <select id="carId" className={`form-select ${styles.formSelect}`} defaultValue={data.CARID} style={{width:200 +'px'}} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {searchCarInfo(e)}}>
+            <div style={{ width: 200 }}>
+              <Select inputId="carId"
+                options={(Array.isArray(carList) ? carList : []).map((item) => ({value: item.CARID, label: item.CARNO, ...item, }))}// 필요하면 원본 데이터도 같이 넘김                
+                value={logInfo.CARID ? {value: logInfo.CARID, label: (Array.isArray(carList) ? carList : []).find((c) => c.CARID === logInfo.CARID)?.CARNO || logInfo.CARID, } : null }
+                onChange={(selected) => {searchCarInfo({target: { value: selected ? selected.value : '' }, });}}
+                isDisabled={logInfo.GUBUN !== 'I'} isClearable={logInfo.GUBUN === 'I'} isSearchable placeholder="차량번호 검색" noOptionsMessage={() => '검색 결과가 없습니다'}
+                classNamePrefix="react-select"
+              />
+            </div>
+            <button className={`btn btn-sm btn-danger flex-shrink-0 ms-auto`} style={{width:60 +'px', display:`${vDelBtnDisplay}`}} onClick={handleDelete}>삭제</button>
+          </div>
+            {/*<select id="carId" className={`form-select ${styles.formSelect}`} defaultValue={data.CARID} style={{width:200 +'px'}} disabled={logInfo.GUBUN === 'I' ? '' : 'disabled'} onChange={(e) => {searchCarInfo(e)}}>
               <option value="">선택하세요</option>
               {carList.length > 0 ? (
                 carList.map((item) => <option key={item.CARID} value={item.CARID}>{item.CARNO}</option>)
                 ) : null}
             </select>
             <button className={`btn btn-sm btn-danger flex-shrink-0 ms-auto`} style={{width:60 +'px', display:`${vDelBtnDisplay}`}} onClick={handleDelete}>삭제</button>
-          </div>
+          </div>*/}
           <div className='my-3' style={{minHeight: '245px'}}>
             <div className='d-flex flex-column gap-2'>
               <div className='d-flex justify-content-center gap-2'>

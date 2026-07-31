@@ -69,7 +69,7 @@ const ReportInfoList = () => {
 
   return (
       <div className={reportStyles.pageWrapper}>
-        <div className={reportStyles.headerBanner}>
+        {/*<div className={reportStyles.headerBanner}>
           <div className={reportStyles.headerLeft}>
             <div className={reportStyles.iconCircle}>R</div>
             <div>
@@ -84,7 +84,7 @@ const ReportInfoList = () => {
             <span className={reportStyles.count}>{data.length}</span>
             <span className={reportStyles.label}>건</span>
           </div>
-        </div>
+        </div>*/}
       {data.length === 0 ? (
         <p className={reportStyles.emptyText}>등록된 성과 Report 정보가 없습니다.</p>
       ) : (

@@ -23,6 +23,8 @@ const MobileDrivingLog = () => {
   const [boardList, setBoardList] = useState([]);
   const [carInfo, setCarInfo] = useState({CARNO: '', CARNM: '', MANAGER_EMPNM: '', MANAGER_MOBILE: '', GARAGE_ADDR: '', src: null, bookMark: false, REQCNT: 0, PENALTYCNT: 0});
   const [isFilled, setIsFilled] = useState(false);
+  const [searchText, setSearchText] = useState('');
+  const [appliedSearch, setAppliedSearch] = useState('');
 
   const handleToggleSidebar = () => {
     setShowSidebar(!showSidebar);
@@ -101,15 +103,16 @@ const MobileDrivingLog = () => {
   
   const calculateActiveIndex = (index) => {
     setCurrentIndex(index);
+    const len = filteredCarList.length;
 
     if (index === 0) {
       return 0; // 첫 페이지
-    } else if (index === carList.length - 1) {
-      return Math.min(9, carList.length - 1); // 마지막 페이지
-    } else if(carList.length <= 10) {
+    } else if (index === len - 1) {
+      return Math.min(9, len - 1); // 마지막 페이지
+    } else if(len <= 10) {
       // 페이지가 10개 이하일 때
       return index; 
-    } else if (carList.length > 10 && index < 9) {
+    } else if (len > 10 && index < 9) {
       // 페이지가 10개 초과일 때
       if (activeIndex === 1 && index <= currentIndex) {
         return 1; // currentIndex가 1일 때는 첫 도트
@@ -119,7 +122,7 @@ const MobileDrivingLog = () => {
       } else {
         return activeIndex - 1; // currentIndex가 9 초과일 때는 9번째 도트 유지
       }
-    } else if (carList.length > 10 && index >= 9) { 
+    } else if (len > 10 && index >= 9) { 
       if (index >= currentIndex) {
         if (activeIndex == 8) {
           return 8;
@@ -147,18 +150,20 @@ const MobileDrivingLog = () => {
     },
     onSwipedLeft: () => {
       const index = currentIndex + 1;
-      if (currentIndex < carList.length - 1) {
-        const carId = carList[index].CARID;
+      if (currentIndex < filteredCarList.length - 1) {
+        const carId = filteredCarList[index].CARID;
         getCarImgInfo(carId);
         setActiveIndex(calculateActiveIndex(index));
+        setCurrentIndex(index);
       }
     },
     onSwipedRight: () => {
       const index = currentIndex - 1;
       if (currentIndex > 0) {
-        const carId = carList[index].CARID;
+        const carId = filteredCarList[index].CARID;
         getCarImgInfo(carId);
         setActiveIndex(calculateActiveIndex(index));
+        setCurrentIndex(index);
       };
     },
     trackTouch: true,
@@ -258,6 +263,37 @@ const MobileDrivingLog = () => {
     }
   };
 
+  const filteredCarList = carList.filter((item) => {
+    const keyword = appliedSearch.trim().toLowerCase();
+    if (!keyword) return true;
+    return item.CARNO?.toLowerCase().includes(keyword);
+  });
+
+  const handleTextChange = (e) => {
+    setSearchText(e.target.value);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  const handleSearch = () => {
+    setAppliedSearch(searchText);
+    setCurrentIndex(0);
+    setActiveIndex(0);
+
+    const keyword = searchText.trim().toLowerCase();
+    const filtered = carList.filter((item) =>
+      !keyword ? true : item.CARNO?.toLowerCase().includes(keyword)
+    );
+
+    if (filtered.length > 0) {
+      getCarImgInfo(filtered[0].CARID);
+    }
+  };
+  
   return (
       <div className="container-fluid p-0">
         <header className="header">
@@ -271,38 +307,48 @@ const MobileDrivingLog = () => {
         <div className="pageMain">
           <div>
             <div className="p-1 align-items-center">
+              <div className="d-flex justify-content-end p-0">
+                <input type="text" className="form-control" style={{ width: 120, marginBottom: 10 }} placeholder="차량번호 입력" value={searchText} onChange={(e) => {handleTextChange(e)}} onKeyDown={(e) => {handleKeyDown(e)}} />
+                <button type="button" className="btn btn-primary btn-sm" style={{ width: 50 }} onClick={handleSearch}>검색</button>
+              </div>
               <div {...handlers} className={styles.sliderContainer}>
                 <div className={styles.sliderWrapper} style={{transform: `translateX(-${currentIndex * 100}%)`}}>
-                    {carList.map((item, index) =>  
+                    {filteredCarList.map((item, index) =>  
                       <div key={item.CARID} className={styles.slide}>            
                         <div className={styles.container}>
                             <div className='d-flex justify-content-center align-items-center gap-2'>
-                              <label className={`${styles.formCarNm}`}>{carInfo.CARNM} - {carInfo.CARNO}</label>
+                              <label className={`${styles.formCarNm}`}>{index === currentIndex ? `${carInfo.CARNM} - ${carInfo.CARNO}` : item.CARNO}</label>
                               {/* <div className={`${styles.starBorder}`}>
                                 <button onClick={(e) => {handleBookMark(e)}} className={`${styles.star} ${isFilled ? styles.filled : ''}`}  />
                               </div> */}
-                              <svg
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill={isFilled ? 'gold' : '#e0e0e0'}
-                                // stroke="#888"
-                                // strokeWidth="1" 
-                                strokeLinejoin="round"
-                                onClick={handleBookMark}
-                                style={{ cursor: 'pointer' }}
-                              >
-                                <path d="M12 2.5l2.95 6.11 6.73.98-4.87 4.74 1.15 6.7L12 17.77 6.04 21l1.15-6.7-4.87-4.74 6.73-.98L12 2.5z" />
-                              </svg>
+                              {index === currentIndex && (
+                                <svg
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill={isFilled ? 'gold' : '#e0e0e0'}
+                                  // stroke="#888"
+                                  // strokeWidth="1" 
+                                  strokeLinejoin="round"
+                                  onClick={handleBookMark}
+                                  style={{ cursor: 'pointer' }}
+                                >
+                                  <path d="M12 2.5l2.95 6.11 6.73.98-4.87 4.74 1.15 6.7L12 17.77 6.04 21l1.15-6.7-4.87-4.74 6.73-.98L12 2.5z" />
+                                </svg>
+                              )}
                             </div>
-                            <img src={carInfo.src} className={styles.carImage} />
+                            {index === currentIndex && carInfo.src ? (
+                              <img src={carInfo.src} className={styles.carImage} alt="" />
+                            ) : (
+                              <div className={styles.carImage} />  // 크기만 유지, 배경 없음
+                            )}
                         </div>
                       </div>
                     )}
                 </div>
               </div>
               <div className={styles.dotNavigation}>
-                {carList.slice(0, Math.min(10, carList.length)).map((item, index) => (
+                {filteredCarList.slice(0, Math.min(10, filteredCarList.length)).map((item, index) => (
                   <span key={index} className={`dot ${index === activeIndex ? styles.dotActive : styles.dot}`}></span>
                 ))}
               </div>
