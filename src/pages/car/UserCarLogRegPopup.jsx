@@ -745,6 +745,10 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
                 onChange={(selected) => {searchCarInfo({target: { value: selected ? selected.value : '' }, });}}
                 isDisabled={logInfo.GUBUN !== 'I'} isClearable={logInfo.GUBUN === 'I'} isSearchable placeholder="차량번호 검색" noOptionsMessage={() => '검색 결과가 없습니다'}
                 classNamePrefix="react-select"
+                filterOption={(option, inputValue) => {
+                  if (!inputValue) return true; // 입력 없으면 전체 표시
+                  return option.label.toLowerCase().includes(inputValue.toLowerCase());
+                }}
               />
             </div>
             <button className={`btn btn-sm btn-danger flex-shrink-0 ms-auto`} style={{width:60 +'px', display:`${vDelBtnDisplay}`}} onClick={handleDelete}>삭제</button>
