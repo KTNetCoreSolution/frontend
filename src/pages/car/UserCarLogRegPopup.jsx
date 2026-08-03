@@ -738,7 +738,7 @@ const UserCarLogRegPopup = ({ show, onHide, onParentSearch, data }) => {
         <div className='flex-column justify-content-start gap-2' style={{display: `${vDisplay ? 'none' : 'flex'}`}}>
           <div className='d-flex align-items-center'>
             <label className="form-label flex-shrink-0" htmlFor="carId" style={{width:'63px'}}>차량</label>
-            <div style={{ width: 200 }}>
+            <div style={{ width: 250 }}>
               <Select inputId="carId"
                 options={(Array.isArray(carList) ? carList : []).map((item) => ({value: item.CARID, label: item.CARNO, ...item, }))}// 필요하면 원본 데이터도 같이 넘김                
                 value={logInfo.CARID ? {value: logInfo.CARID, label: (Array.isArray(carList) ? carList : []).find((c) => c.CARID === logInfo.CARID)?.CARNO || logInfo.CARID, } : null }
