@@ -40,23 +40,37 @@ const ReportInfoManage = ({ reportId: initialReportId, reportTitle, number, onBa
       { 
         type: 'buttons', 
         fields: [
-          { id: 'searchBtn', type: 'button', row: 1, label: '검색', eventType: 'search', width: '80px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true }
+          //{ id: 'searchBtn', type: 'button', row: 1, label: '검색', eventType: 'search', width: '80px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true }
+          { id: 'addBtn', type: 'button', row: 1, label: '추가', eventType: 'showWriteModal', width: '80px', height: '30px', backgroundColor: '#00c4b4', color: '#ffffff', enabled: true }
         ]
       }
     ]
   };
 
-  const filterTableFields = [
-    { id: "filterSelect", label: "", type: "select", options: [{ value: "", label: "선택" }, { value: "TITLE", label: "제목" }] },
+  const [filterTableFields, setFilterTableFields] = useState([
+    { id: "filterSelect", label: "", type: "select", options: [{ value: "", label: "선택" }, { value: "TITLE", label: "제목" }, { value: "EMPNM", label: "작성자" }] },
     { id: "filterText", label: "", type: "text", placeholder: "검색값을 입력하세요", width: "200px" },
-  ];
+  ]);
 
-  const [filters, setFilters] = useState(initialFilters(searchConfig.areas.find(a => a.type === 'search')?.fields || []));
+  //const [filters, setFilters] = useState(initialFilters(searchConfig.areas.find(a => a.type === 'search')?.fields || []));
+  const [filters, setFilters] = useState([]);
   const [tableFilters, setTableFilters] = useState(initialFilters(filterTableFields));
 
   const handleSearch = async () => {
     setLoading(true);
     setIsSearched(true);
+    setTableFilters(initialFilters(filterTableFields));
+
+    setFilterTableFields((prevFields) => {
+      return prevFields.map((filter) => {
+        if (filter.id === 'filterSelect') {  
+          return { ...filter };
+        } else {
+          return { ...filter, disabled: filterSelect !== '' ? '' : 'disabled', value: '' }; // 기본적으로 숨김 처리
+        }
+      });
+    });
+
     try {
       const params = { pREPORTID: reportId, pDEBUG: "F" };
       const response = await fetchData("report/listData", params);
@@ -74,8 +88,9 @@ const ReportInfoManage = ({ reportId: initialReportId, reportTitle, number, onBa
   };
 
   const handleDynamicEvent = (eventType) => {
-    if (eventType === 'search') handleSearch();
-    else if (eventType === 'showWriteModal') {
+    //if (eventType === 'search') handleSearch();
+    //else 
+    if (eventType === 'showWriteModal') {
       setShowWriteModal(true);
     }
   };
@@ -130,9 +145,11 @@ const ReportInfoManage = ({ reportId: initialReportId, reportTitle, number, onBa
     };
 
     initializeTable();
-
+    handleSearch();
     return () => {
       tableInstance.current?.destroy();
+      tableInstance.current = null;
+      setTableStatus("initializing");
     };
   }, []);
 
@@ -149,8 +166,45 @@ const ReportInfoManage = ({ reportId: initialReportId, reportTitle, number, onBa
     setRowCount(table.getDataCount());
   }, [data, tableStatus]);
   
+  useEffect(() => {
+    if (isInitialRender.current || !tableInstance.current || tableStatus !== 'ready' || loading) return;
+    const { filterSelect, filterText } = tableFilters;
+
+    setFilterTableFields((prevFields) => {
+      return prevFields.map((filter) => {
+        if (filter.id === 'filterSelect') {  
+          return { ...filter };
+        } else {
+          return { ...filter, disabled: filterSelect !== '' ? '' : 'disabled', value: '' }; // 기본적으로 숨김 처리
+        }
+      });
+    });
+    
+    if (filterText && filterSelect) {
+      tableInstance.current.setFilter(filterSelect, 'like', filterText);
+    } else if (filterText) {
+      if (filterText !== '') {
+        tableInstance.current.setFilter(filterSelect, "like", filterText);
+      } else {
+        tableInstance.current.clearFilter();
+      }
+    } else if (filterSelect) {
+      if(filterSelect === '') {
+        setTableFilters(initialFilters(filterTableFields)); 
+      }
+      tableInstance.current.clearFilter();
+    }
+  }, [tableFilters.filterSelect, tableFilters.filterText, tableStatus, loading]);
+
+  useEffect(() => {
+  setTableFilters((prev) => ({
+    ...prev,
+    filterText: '',
+  }));
+}, [tableFilters.filterSelect]);
+
   return (
-    <div className='container'>
+    <div className='container'>                                                                                                                                                                                                                                                      
       <div className="d-flex justify-content-between align-items-center mb-2">      
         <div className={reportStyles.detailBanner}>
           <div className={reportStyles.detailTitleLeft}>
@@ -179,11 +233,11 @@ const ReportInfoManage = ({ reportId: initialReportId, reportTitle, number, onBa
         buttonStyles={styles}
         excelYn={'N'}
       >
-        <div className='btnGroupCustom'>
+        {/*<div className='btnGroupCustom'>
           <button className='btn btn-secondary' onClick={() => handleDynamicEvent('showWriteModal')}>
             추가
           </button>
-        </div>
+        </div>*/}
       </TableSearch>
 
       <div className={styles.tableWrapper}>
